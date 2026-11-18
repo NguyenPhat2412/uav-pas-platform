@@ -9,6 +9,7 @@ import {
 } from '@/components/billing/invoices/AdminInvoiceDialogs';
 import {Pagination} from '@/components/data/Pagination';
 import {QueryState} from '@/components/data/WorkspaceState';
+import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {Alert, Badge, Button, Card, CardContent, StatusBadge} from '@/components/ui';
 import {
@@ -136,12 +137,12 @@ export function AdminInvoicesPanel() {
                         {query.data.content.length ? (
                             <div className="overflow-x-auto" tabIndex={0} aria-label={t('admin.invoices.table')}>
                                 <table className="w-full min-w-[880px] border-collapse text-left text-[13px]">
-                                    <thead className="bg-slate-50 text-[11.5px] font-semibold uppercase tracking-wide text-slate-500">
+                                    <thead className="bg-slate-50 text-[11.5px] font-semibold uppercase tracking-wide text-slate-500 [&_th]:whitespace-nowrap">
                                     <tr>
                                         <th className="px-4 py-3">{t('admin.invoices.col.code')}</th>
                                         <th className="px-4 py-3">{t('admin.invoices.col.customer')}</th>
                                         <th className="px-4 py-3">{t('admin.invoices.col.item')}</th>
-                                        <th className="px-4 py-3 text-right">{t('admin.invoices.col.amount')}</th>
+                                        <th className="px-4 py-3 text-right">{t('admin.invoices.col.amount')} <IllustrativeTag/></th>
                                         <th className="px-4 py-3">{t('admin.invoices.col.status')}</th>
                                         <th className="px-4 py-3">{t('admin.invoices.col.due')}</th>
                                         <th className="px-4 py-3">{t('admin.invoices.col.paid')}</th>

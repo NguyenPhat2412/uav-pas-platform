@@ -8,6 +8,7 @@ import {useI18n} from '@/providers/I18nContext';
 import {planName} from '@/lib/presentation';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
+import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
 import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
 import {useAllPlans, usePlanMutations, usePlanStats} from '@/hooks/billing/useBillingAdmin';
@@ -45,7 +46,7 @@ export function AdminPlansManager() {
             <ErrorNotice error={toggle.error}/>
             <QueryState query={query}>{query.data?.length ? <div className="overflow-x-auto" tabIndex={0} aria-label={t('admin.plans.table')}>
                 <table className="w-full min-w-[920px] border-collapse text-left text-[13px]">
-                    <thead className="bg-slate-50 text-[11.5px] font-semibold uppercase tracking-wide text-slate-500">
+                    <thead className="bg-slate-50 text-[11.5px] font-semibold uppercase tracking-wide text-slate-500 [&_th]:whitespace-nowrap">
                     <tr>
                         <th className="px-4 py-3">{t('admin.plans.col.plan')}</th>
                         <th className="px-4 py-3 text-right">{t('admin.plans.col.price')}</th>
@@ -63,8 +64,8 @@ export function AdminPlansManager() {
                             <td className="px-4 py-3"><strong className="block text-slate-900">{planName(p.name)}</strong>
                                 <span className="font-mono text-[11.5px] text-slate-500">{p.code}</span>
                                 {p.description && <span className="mt-0.5 line-clamp-2 block max-w-56 text-xs text-slate-500" title={p.description}>{p.description}</span>}</td>
-                            <td className="px-4 py-3 text-right tabular-nums"><strong className="text-slate-900">{formatCurrency(p.price)}</strong>
-                                <span className="block text-xs text-slate-500">{t(`admin.plans.cycle.${p.billingCycle}`)}</span></td>
+                            <td className="px-4 py-3 text-right tabular-nums"><span className="inline-flex items-center justify-end gap-1.5 whitespace-nowrap"><strong className="text-slate-900">{formatCurrency(p.price)}</strong><IllustrativeTag/></span>
+                                <span className="block text-xs whitespace-nowrap text-slate-500">{t(`admin.plans.cycle.${p.billingCycle}`)}</span></td>
                             {/* Hours, UAVs and SAR/AI share one column so the table fits beside the statistics. */}
                             <td className="whitespace-nowrap px-4 py-3 tabular-nums">
                                 <span className="block text-slate-900">{t('admin.plans.hours', {count: p.maxMonthlyFlightHours})}</span>

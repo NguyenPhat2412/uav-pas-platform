@@ -31,7 +31,7 @@ export function DataTable({headers, rows}: { headers: string[]; rows: ReactNode[
         <div className="overflow-x-auto rounded-panel border border-border bg-card" tabIndex={0} aria-label={t('opsShared.state.dataTable')}>
             <table className="w-full min-w-[680px] border-collapse text-left text-sm">
                 <thead className="sticky top-0 z-10 border-b border-border bg-slate-50/90 text-xs font-bold uppercase tracking-wider text-slate-500">
-                    <tr>{headers.map(h => <th key={h} className="px-4 py-3">{h}</th>)}</tr>
+                    <tr>{headers.map(h => <th key={h} className="px-4 py-3 whitespace-nowrap">{h}</th>)}</tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                     {rows.length ? (

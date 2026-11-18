@@ -52,7 +52,7 @@ export function AdminServicesPanel() {
         <section className="border border-slate-200 bg-white">
             <QueryState query={query}>{rows.length ? <div className="overflow-x-auto" tabIndex={0} aria-label={t('admin.services.table')}>
                 <table className="w-full min-w-[760px] border-collapse text-left text-[13px]">
-                    <thead className="bg-slate-50 text-[11.5px] font-semibold uppercase tracking-wide text-slate-500">
+                    <thead className="bg-slate-50 text-[11.5px] font-semibold uppercase tracking-wide text-slate-500 [&_th]:whitespace-nowrap">
                     <tr>
                         <th className="px-4 py-3">{t('admin.services.col.service')}</th>
                         <th className="px-4 py-3">{t('admin.services.col.description')}</th>
