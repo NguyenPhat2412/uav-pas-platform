@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "UAV PAS Platform API - Complete Test Suite",
-    "description": "# UAV PAS Platform API Documentation & Postman Collection\n\nTập hợp đầy đủ **130 API endpoints** với Sample Request Body chi tiết, Query Params, Path Variables mặc định, và **Cơ chế Tự Động Đăng Nhập (Auto-Login)**.\n\n### 🔑 Tài khoản Quản trị viên mặc định:\n- **Username:** `admin`\n- **Password:** `Password123@`\n- **Role:** `ROLE_ADMIN`\n\n### 🚀 Các tính năng tự động tích hợp:\n1. **Auto-Login:** Pre-request Script tự động gọi API login để cấp token mới nếu chưa có hoặc hết hạn.\n2. **Auto-Save Token:** Khi gọi request Login thủ công, token và refreshToken mới sẽ tự động lưu vào biến `{{token}}` và `{{refreshToken}}`.\n3. **Full Sample Body:** Tất cả ~60+ POST/PUT/PATCH đều đã được điền sẵn JSON body mẫu hợp lệ, không bị rỗng `{}`.\n4. **Default Path Variables:** Tất cả `:id`, `:userId`, `:missionId`... đều đã được gán sẵn giá trị mặc định `1`.\n5. **Test Scripts:** Tự động kiểm tra HTTP status 2xx và thời gian phản hồi cho từng request.\n",
+    "description": "# UAV PAS Platform API Documentation & Postman Collection\n\nTập hợp đầy đủ các API endpoints với Sample Request Body chi tiết, Query Params, Path Variables mặc định, và **Cơ chế Tự Động Đăng Nhập (Auto-Login)**.\n\n### 🔑 Biến tài khoản kiểm thử (`app.dev-seed.enabled=true`):\n- **Biến đăng nhập:** `{{username}}` / `{{password}}`\n- **Tài khoản dev seed:** `demo_admin` (ROLE_ADMIN), `demo_fleet` (Đội bay xác minh), `demo_customer` (Khách hàng dự án)\n\n### 🚀 Các tính năng tự động tích hợp:\n1. **Auto-Login:** Pre-request Script tự động gọi API login bằng `{{username}}` / `{{password}}` để cấp token mới nếu chưa có.\n2. **Auto-Save Token:** Khi gọi request Login, token và refreshToken mới sẽ tự động lưu vào biến `{{token}}` và `{{refreshToken}}`.\n3. **Full Sample Body:** Tất cả POST/PUT/PATCH đều điền sẵn JSON body mẫu hợp lệ.\n4. **Default Path Variables:** Tất cả `:id`, `:subId`, `:missionId`... đều gán sẵn giá trị mặc định.\n5. **Test Scripts:** Tự động kiểm tra HTTP status và thời gian phản hồi cho từng request.\n",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "event": [
@@ -14,37 +14,39 @@
           "var baseUrl = pm.collectionVariables.get(\"baseUrl\") || \"http://localhost:8080\";",
           "var token = pm.collectionVariables.get(\"token\");",
           "var urlStr = pm.request.url ? pm.request.url.toString() : \"\";",
-          "var isAuth = urlStr.indexOf(\"/auth/login\") !== -1 || urlStr.indexOf(\"/auth/register\") !== -1;",
+          "var isAuth = urlStr.indexOf(\"/auth/login\") !== -1 || urlStr.indexOf(\"/auth/register\") !== -1 || urlStr.indexOf(\"/public/\") !== -1;",
           "",
           "if (!token && !isAuth) {",
-          "    var username = pm.collectionVariables.get(\"defaultUsername\") || \"admin\";",
-          "    var password = pm.collectionVariables.get(\"defaultPassword\") || \"Password123@\";",
+          "    var username = pm.collectionVariables.get(\"username\") || pm.collectionVariables.get(\"defaultUsername\") || \"demo_admin\";",
+          "    var password = pm.collectionVariables.get(\"password\") || pm.collectionVariables.get(\"defaultPassword\") || \"\";",
           "    ",
-          "    pm.sendRequest({",
-          "        url: baseUrl + \"/api/v1/auth/login\",",
-          "        method: \"POST\",",
-          "        header: { \"Content-Type\": \"application/json\" },",
-          "        body: {",
-          "            mode: \"raw\",",
-          "            raw: JSON.stringify({",
-          "                usernameOrEmail: username,",
-          "                password: password",
-          "            })",
-          "        }",
-          "    }, function (err, res) {",
-          "        if (!err && res.code === 200) {",
-          "            var data = res.json();",
-          "            var newToken = data.accessToken || (data.data && data.data.accessToken);",
-          "            var newRefreshToken = data.refreshToken || (data.data && data.data.refreshToken);",
-          "            if (newToken) {",
-          "                pm.collectionVariables.set(\"token\", newToken);",
-          "                pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + newToken });",
+          "    if (username && password) {",
+          "        pm.sendRequest({",
+          "            url: baseUrl + \"/api/v1/auth/login\",",
+          "            method: \"POST\",",
+          "            header: { \"Content-Type\": \"application/json\" },",
+          "            body: {",
+          "                mode: \"raw\",",
+          "                raw: JSON.stringify({",
+          "                    usernameOrEmail: username,",
+          "                    password: password",
+          "                })",
           "            }",
-          "            if (newRefreshToken) {",
-          "                pm.collectionVariables.set(\"refreshToken\", newRefreshToken);",
+          "        }, function (err, res) {",
+          "            if (!err && res.code === 200) {",
+          "                var data = res.json();",
+          "                var newToken = data.accessToken || (data.data && data.data.accessToken);",
+          "                var newRefreshToken = data.refreshToken || (data.data && data.data.refreshToken);",
+          "                if (newToken) {",
+          "                    pm.collectionVariables.set(\"token\", newToken);",
+          "                    pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + newToken });",
+          "                }",
+          "                if (newRefreshToken) {",
+          "                    pm.collectionVariables.set(\"refreshToken\", newRefreshToken);",
+          "                }",
           "            }",
-          "        }",
-          "    });",
+          "        });",
+          "    }",
           "} else if (token && !isAuth) {",
           "    pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token });",
           "}",
@@ -80,13 +82,23 @@
       "type": "string"
     },
     {
+      "key": "username",
+      "value": "demo_admin",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "",
+      "type": "string"
+    },
+    {
       "key": "defaultUsername",
-      "value": "admin",
+      "value": "demo_admin",
       "type": "string"
     },
     {
       "key": "defaultPassword",
-      "value": "Password123@",
+      "value": "",
       "type": "string"
     }
   ],
@@ -123,7 +135,7 @@
             "description": "### Đăng nhập hệ thống (Login)\n\nĐăng nhập với username/email và mật khẩu để lấy Access Token (JWT) và Refresh Token.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/auth/login`",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"usernameOrEmail\": \"admin\",\n  \"password\": \"Password123@\"\n}",
+              "raw": "{\n  \"usernameOrEmail\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1256,6 +1268,24 @@
                   "value": "20",
                   "description": "",
                   "disabled": false
+                },
+                {
+                  "key": "projectId",
+                  "value": "1",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "providerId",
+                  "value": "1",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "statusGroup",
+                  "value": "PENDING",
+                  "description": "",
+                  "disabled": true
                 }
               ],
               "variable": []
@@ -1421,7 +1451,7 @@
                 }
               ]
             },
-            "description": "### Chứng nhận nghiệm thu & Tệp bàn giao Geotag (Inspection Report)\n\nTổng hợp chứng chỉ nghiệm thu tự động, điểm chất lượng RTK và danh sách tệp bàn giao gắn toạ độ GPS.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/missions/{id}/inspection-report`"
+            "description": "### Chứng nhận nghiệm thu & Tệp bàn giao Geotag (Inspection Report)\n\nTổng hợp chứng chỉ nghiệm thu tự động, điểm chất lượng định vị GNSS và danh sách tệp bàn giao gắn toạ độ GPS.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/missions/{id}/inspection-report`"
           },
           "event": [
             {
@@ -2052,7 +2082,68 @@
           "response": []
         },
         {
-          "name": "24. Hoàn thành nhiệm vụ (Complete Mission)",
+          "name": "24. Gửi đánh giá dịch vụ sau bàn giao (Submit Order Review)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/missions/:id/review",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "missions",
+                ":id",
+                "review"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Gửi đánh giá dịch vụ sau bàn giao (Submit Order Review)\n\nĐánh giá 1–5 sao và nhận xét cho đơn hàng đã hoàn thành.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/missions/{id}/review`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 1,\n  \"comment\": \"Dữ liệu bình đồ rõ nét, bàn giao đúng tiến độ.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "25. Hoàn thành nhiệm vụ (Complete Mission)",
           "request": {
             "method": "POST",
             "header": [
@@ -2113,7 +2204,7 @@
           "response": []
         },
         {
-          "name": "25. Huỷ bỏ nhiệm vụ (Cancel Mission)",
+          "name": "26. Huỷ bỏ nhiệm vụ (Cancel Mission)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2159,7 +2250,7 @@
           "response": []
         },
         {
-          "name": "26. Khách hàng xác nhận nghiệm thu (Confirm Mission)",
+          "name": "27. Khách hàng xác nhận nghiệm thu (Confirm Mission)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2205,7 +2296,7 @@
           "response": []
         },
         {
-          "name": "27. Thay thế UAV dự phòng (Replace UAV)",
+          "name": "28. Thay thế UAV dự phòng (Replace UAV)",
           "request": {
             "method": "POST",
             "header": [
@@ -2266,7 +2357,7 @@
           "response": []
         },
         {
-          "name": "28. Từ chối nhiệm vụ (Reject Mission)",
+          "name": "29. Từ chối nhiệm vụ (Reject Mission)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2319,7 +2410,7 @@
           "response": []
         },
         {
-          "name": "29. Xác nhận sẵn sàng bay (Mark Ready)",
+          "name": "30. Xác nhận sẵn sàng bay (Mark Ready)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2365,7 +2456,7 @@
           "response": []
         },
         {
-          "name": "30. Điều phối lại nhân sự (Redispatch Operator)",
+          "name": "31. Điều phối lại nhân sự (Redispatch Operator)",
           "request": {
             "method": "POST",
             "header": [
@@ -2426,7 +2517,7 @@
           "response": []
         },
         {
-          "name": "31. Điều phối lại trạm bay (Redispatch Station)",
+          "name": "32. Điều phối lại trạm bay (Redispatch Station)",
           "request": {
             "method": "POST",
             "header": [
@@ -2487,7 +2578,68 @@
           "response": []
         },
         {
-          "name": "32. Cập nhật nhiệm vụ bay (Update Mission)",
+          "name": "33. Cập nhật đánh giá dịch vụ (Upsert Order Review)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/missions/:id/review",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "missions",
+                ":id",
+                "review"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Cập nhật đánh giá dịch vụ (Upsert Order Review)\n\nTạo hoặc cập nhật đánh giá sao và nhận xét của khách hàng.\n\n* **Phương thức:** `PUT`\n* **Endpoint:** `/api/v1/missions/{id}/review`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 1,\n  \"comment\": \"Dữ liệu bình đồ rõ nét, bàn giao đúng tiến độ.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "34. Cập nhật nhiệm vụ bay (Update Mission)",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2929,7 +3081,7 @@
             "description": "### Đăng ký máy bay UAV mới (Create UAV)\n\nKhai báo thêm một máy bay UAV vào phi đội.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/uavs`",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"model\": \"Matrice 300 RTK\",\n  \"serialNumber\": \"SN-DJI-M300-2026\",\n  \"manufacturer\": \"DJI Enterprise\"\n}",
+              "raw": "{\n  \"model\": \"Matrice 350 Survey\",\n  \"serialNumber\": \"SN-DJI-M300-2026\",\n  \"manufacturer\": \"DJI Enterprise\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3041,7 +3193,7 @@
             "description": "### Cập nhật thông tin UAV (Update UAV)\n\nChỉnh sửa model, serial, nhà sản xuất máy bay.\n\n* **Phương thức:** `PUT`\n* **Endpoint:** `/api/v1/uavs/{id}`",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"model\": \"Matrice 300 RTK\",\n  \"serialNumber\": \"SN-DJI-M300-2026\",\n  \"manufacturer\": \"DJI Enterprise\"\n}",
+              "raw": "{\n  \"model\": \"Matrice 350 Survey\",\n  \"serialNumber\": \"SN-DJI-M300-2026\",\n  \"manufacturer\": \"DJI Enterprise\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -7224,6 +7376,1996 @@
                 }
               }
             }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "23. Customer Projects & Subscriptions",
+      "description": "Quản lý các API thuộc phân hệ 23. Customer Projects & Subscriptions",
+      "item": [
+        {
+          "name": "01. Danh sách dự án của khách hàng (List My Projects)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "### Danh sách dự án của khách hàng (List My Projects)\n\nLấy danh sách phân trang các dự án của khách hàng kèm số gói đăng ký và số đơn bay.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/projects`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "02. Chi tiết dự án (Get Project By ID)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Chi tiết dự án (Get Project By ID)\n\nXem thông tin chi tiết một dự án thuộc quyền sở hữu của khách hàng.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/projects/{id}`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "03. Danh sách gói đăng ký theo dự án (List Project Subscriptions)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id",
+                "subscriptions"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Danh sách gói đăng ký theo dự án (List Project Subscriptions)\n\nXem các gói dịch vụ bay định kỳ hoặc một lần gắn với dự án.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/projects/{id}/subscriptions`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "04. Tạo dự án mới (Create Project)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Tạo dự án mới (Create Project)\n\nKhởi tạo dự án mới với tỉnh/thành và vùng ranh giới GeoJSON.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/projects`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Trạm Vận Hành Trung Tâm Alpha\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"areaGeoJson\": \"{\\\"type\\\":\\\"Polygon\\\",\\\"coordinates\\\":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}\",\n  \"note\": \"Khảo sát tiến độ san lấp mặt bằng định kỳ\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "05. Đăng ký dịch vụ cho dự án (Create Subscription & Initial Order)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id",
+                "subscriptions"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Đăng ký dịch vụ cho dự án (Create Subscription & Initial Order)\n\nĐăng ký gói dịch vụ cho dự án và tự động sinh đơn hàng đầu tiên chờ điều phối.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/projects/{id}/subscriptions`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listingId\": 1,\n  \"areaGeoJson\": \"{\\\"type\\\":\\\"Polygon\\\",\\\"coordinates\\\":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}\",\n  \"scheduleType\": \"ONCE\",\n  \"startDate\": \"2026-10-23\",\n  \"units\": 100.0,\n  \"note\": \"Bay khảo sát vào buổi sáng\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "06. Cập nhật dự án (Update Project)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Cập nhật dự án (Update Project)\n\nCập nhật tên, tỉnh/thành, vùng ranh giới GeoJSON hoặc ghi chú dự án.\n\n* **Phương thức:** `PATCH`\n* **Endpoint:** `/api/v1/projects/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Trạm Vận Hành Trung Tâm Alpha\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"areaGeoJson\": \"{\\\"type\\\":\\\"Polygon\\\",\\\"coordinates\\\":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}\",\n  \"note\": \"Cập nhật ranh giới phân khu 2\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "07. Đổi lịch hoặc tạm dừng gói đăng ký (Update Subscription)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id/subscriptions/:subId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id",
+                "subscriptions",
+                ":subId"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                },
+                {
+                  "key": "subId",
+                  "value": "1",
+                  "description": "Tham số đường dẫn subId"
+                }
+              ]
+            },
+            "description": "### Đổi lịch hoặc tạm dừng gói đăng ký (Update Subscription)\n\nĐổi chu kỳ (ONCE/WEEKLY/MONTHLY), khối lượng hoặc tạm dừng/tiếp tục gói đăng ký.\n\n* **Phương thức:** `PATCH`\n* **Endpoint:** `/api/v1/projects/{id}/subscriptions/{subId}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"areaGeoJson\": \"string_sample\",\n  \"scheduleType\": \"ONCE\",\n  \"startDate\": \"2026-10-23\",\n  \"units\": 100.0,\n  \"status\": \"ACTIVE\",\n  \"note\": \"Tạm điều chỉnh lịch tuần tới\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "08. Huỷ gói đăng ký dự án (Cancel Subscription)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id/subscriptions/:subId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id",
+                "subscriptions",
+                ":subId"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                },
+                {
+                  "key": "subId",
+                  "value": "1",
+                  "description": "Tham số đường dẫn subId"
+                }
+              ]
+            },
+            "description": "### Huỷ gói đăng ký dự án (Cancel Subscription)\n\nHuỷ mềm gói đăng ký dịch vụ thuộc dự án.\n\n* **Phương thức:** `DELETE`\n* **Endpoint:** `/api/v1/projects/{id}/subscriptions/{subId}`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "09. Xoá mềm dự án (Soft Delete Project)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Xoá mềm dự án (Soft Delete Project)\n\nXoá mềm dự án khi không còn đơn hàng đang thực hiện.\n\n* **Phương thức:** `DELETE`\n* **Endpoint:** `/api/v1/projects/{id}`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "24. Customer Orders & Live Tracking",
+      "description": "Quản lý các API thuộc phân hệ 24. Customer Orders & Live Tracking",
+      "item": [
+        {
+          "name": "01. Tổng hợp 5 nhóm trạng thái đơn hàng (Order Status Summary)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "summary"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Tổng hợp 5 nhóm trạng thái đơn hàng (Order Status Summary)\n\nĐếm số đơn hàng của khách theo 5 nhóm: pending, scheduled, inFlight, delivered, toReview.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/orders/summary`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "02. Theo dõi tiến độ bay mô phỏng trực tuyến (Live Order Tracking)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/:id/tracking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                ":id",
+                "tracking"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Theo dõi tiến độ bay mô phỏng trực tuyến (Live Order Tracking)\n\nLấy tiến độ phần trăm, toạ độ tàu bay, dung lượng pin, tín hiệu kết nối và ETA từ phiên mô phỏng.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/orders/{id}/tracking`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "25. Public Service Marketplace",
+      "description": "Quản lý các API thuộc phân hệ 25. Public Service Marketplace",
+      "item": [
+        {
+          "name": "01. Chi tiết dịch vụ công khai (Get Listing Detail)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/marketplace/listings/:slug",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "marketplace",
+                "listings",
+                ":slug"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "khao-sat-ban-do-2d-du-an-minh-hoa",
+                  "description": "Tham số đường dẫn slug"
+                }
+              ]
+            },
+            "description": "### Chi tiết dịch vụ công khai (Get Listing Detail)\n\nXem thông tin gói dịch vụ, sản phẩm bàn giao và huy hiệu đối tác xác minh.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/public/marketplace/listings/{slug}`",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "02. Danh mục dịch vụ trên chợ công khai (Browse Public Listings)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/marketplace/listings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "marketplace",
+                "listings"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "khảo sát",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "DATA_COLLECTION",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "province",
+                  "value": "TP. Hồ Chí Minh",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "### Danh mục dịch vụ trên chợ công khai (Browse Public Listings)\n\nTìm kiếm, lọc dịch vụ theo danh mục, tỉnh/thành, từ khoá (ẩn danh tên đội bay, trả providerBadge).\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/public/marketplace/listings`",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "26. Fleet Partner Workspace",
+      "description": "Quản lý các API thuộc phân hệ 26. Fleet Partner Workspace",
+      "item": [
+        {
+          "name": "01. Thêm UAV vào đội bay (Register Fleet UAV)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/fleet/uavs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "fleet",
+                "uavs"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Thêm UAV vào đội bay (Register Fleet UAV)\n\nĐăng ký thiết bị bay mới cho đội bay đối tác.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/fleet/uavs`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"Matrice 350 Survey\",\n  \"serialNumber\": \"SN-DJI-M300-2026\",\n  \"manufacturer\": \"DJI Enterprise\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "02. Danh sách dịch vụ của đội bay (List My Listings)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/listings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "listings"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "### Danh sách dịch vụ của đội bay (List My Listings)\n\nQuản lý danh sách tin đăng dịch vụ thuộc đội bay.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/marketplace/provider/listings`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "03. Danh sách kỹ sư điều khiển của đội (List Provider Pilots)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/pilots",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "pilots"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Danh sách kỹ sư điều khiển của đội (List Provider Pilots)\n\nXem danh sách kỹ sư vận hành bay, chứng chỉ và tàu bay phụ trách.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/marketplace/provider/pilots`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "04. Danh sách tàu bay của đội (List Fleet UAVs)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/fleet/uavs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "fleet",
+                "uavs"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Danh sách tàu bay của đội (List Fleet UAVs)\n\nLấy danh sách UAV thuộc đội bay kèm trạng thái sẵn sàng/đang bay/bảo trì.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/marketplace/provider/fleet/uavs`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "05. Danh sách đơn hàng được giao cho đội bay (List Provider Orders)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "### Danh sách đơn hàng được giao cho đội bay (List Provider Orders)\n\nXem các đơn hàng nền tảng đã điều phối về đội bay.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/marketplace/provider/orders`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "06. Hồ sơ đội bay đối tác của tôi (Get My Provider Profile)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "me"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Hồ sơ đội bay đối tác của tôi (Get My Provider Profile)\n\nXem hồ sơ năng lực và trạng thái thẩm định KYC của đội bay.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/marketplace/provider/me`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "07. Tạo dịch vụ nhanh từ mẫu chuẩn (Create Listing From Template)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/listings/from-template",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "listings",
+                "from-template"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Tạo dịch vụ nhanh từ mẫu chuẩn (Create Listing From Template)\n\nTạo gói dịch vụ nhanh dựa trên danh mục mẫu chuẩn của nền tảng.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/listings/from-template`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"serviceOfferingId\": 1,\n  \"title\": \"Nhiệm vụ bay kiểm tra đê điều và lưới điện\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"serviceRadiusKm\": 1,\n  \"basePriceVnd\": 100.0,\n  \"pricingModel\": \"PER_HOUR\",\n  \"minBookingUnits\": 100.0,\n  \"deliverySlaHours\": 1,\n  \"onSiteSlaHours\": 1,\n  \"submitForReview\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "08. Bắt đầu chuyến bay mô phỏng cho đơn hàng (Start Order Simulation)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/:missionId/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                ":missionId",
+                "start"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "missionId",
+                  "value": "1",
+                  "description": "Tham số đường dẫn missionId"
+                }
+              ]
+            },
+            "description": "### Bắt đầu chuyến bay mô phỏng cho đơn hàng (Start Order Simulation)\n\nKhởi động phiên bay mô phỏng gắn với đơn hàng và chuyển sang IN_PROGRESS.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/orders/{missionId}/start`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "09. Hoàn thành chuyến bay và bàn giao dữ liệu (Complete Order)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/:missionId/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                ":missionId",
+                "complete"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "missionId",
+                  "value": "1",
+                  "description": "Tham số đường dẫn missionId"
+                }
+              ]
+            },
+            "description": "### Hoàn thành chuyến bay và bàn giao dữ liệu (Complete Order)\n\nĐánh dấu hoàn tất bay để chuyển đơn sang bước bàn giao nghiệm thu.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/orders/{missionId}/complete`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "10. Nhận hoặc từ chối đơn được giao (Respond To Dispatched Order)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/:missionId/respond",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                ":missionId",
+                "respond"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "missionId",
+                  "value": "1",
+                  "description": "Tham số đường dẫn missionId"
+                }
+              ]
+            },
+            "description": "### Nhận hoặc từ chối đơn được giao (Respond To Dispatched Order)\n\nXác nhận nhận đơn hoặc từ chối kèm lý do để trả đơn về hàng đợi điều phối.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/orders/{missionId}/respond`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accept\": true,\n  \"reason\": \"Kiểm tra an toàn tự động định kỳ theo lịch trình kỹ thuật\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "11. Phân công kỹ sư và UAV cho đơn hàng (Assign Pilot & UAV)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/:missionId/assign",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                ":missionId",
+                "assign"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "missionId",
+                  "value": "1",
+                  "description": "Tham số đường dẫn missionId"
+                }
+              ]
+            },
+            "description": "### Phân công kỹ sư và UAV cho đơn hàng (Assign Pilot & UAV)\n\nChỉ định kỹ sư điều khiển và tàu bay thuộc đội cho đơn hàng.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/orders/{missionId}/assign`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pilotId\": 1,\n  \"pilotUserId\": 1,\n  \"uavId\": 1,\n  \"note\": \"Phân công tàu bay khảo sát chính\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "12. Thêm kỹ sư điều khiển vào đội (Create Provider Pilot)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/pilots",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "pilots"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Thêm kỹ sư điều khiển vào đội (Create Provider Pilot)\n\nThêm kỹ sư điều khiển mới và liên kết tài khoản vận hành.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/pilots`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pilotUserId\": 1,\n  \"fullName\": \"Kỹ sư Nguyễn Văn Minh — minh hoạ\",\n  \"email\": \"admin@uav-platform.com\",\n  \"phone\": \"0987654321\",\n  \"licenseNumber\": \"CC-UAV-2026-19\",\n  \"specialization\": \"Khảo sát bản đồ & kiểm tra nhiệt\",\n  \"status\": \"AVAILABLE\",\n  \"assignedUavId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "13. Đăng ký hồ sơ đối tác đội bay (Create Provider Profile)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "me"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Đăng ký hồ sơ đối tác đội bay (Create Provider Profile)\n\nGửi hồ sơ đăng ký trở thành đối tác vận hành bay trên nền tảng.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/me`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Đội bay Khảo sát Đông Nam Bộ — minh hoạ\",\n  \"providerType\": \"COMPANY\",\n  \"taxOrIdNumber\": \"0319008899\",\n  \"flightLicenseNumber\": \"GP-BAY-2026-88\",\n  \"bio\": \"Đội bay khảo sát bản đồ và hạ tầng khu công nghiệp\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"serviceRadiusKm\": 1,\n  \"contactPhone\": \"0987654321\",\n  \"bankName\": \"Vietcombank\",\n  \"bankAccountNumber\": \"0071000889900\",\n  \"bankAccountHolder\": \"DOI BAY DONG NAM BO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "14. Cập nhật hồ sơ đội bay (Update Provider Profile)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "me"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Cập nhật hồ sơ đội bay (Update Provider Profile)\n\nChỉnh sửa thông tin liên hệ, bán kính phục vụ và tài khoản đối soát.\n\n* **Phương thức:** `PATCH`\n* **Endpoint:** `/api/v1/marketplace/provider/me`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Đội bay Khảo sát Đông Nam Bộ — minh hoạ\",\n  \"providerType\": \"COMPANY\",\n  \"taxOrIdNumber\": \"0319008899\",\n  \"flightLicenseNumber\": \"GP-BAY-2026-88\",\n  \"bio\": \"Đội bay khảo sát bản đồ và hạ tầng khu công nghiệp\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"serviceRadiusKm\": 1,\n  \"contactPhone\": \"0987654321\",\n  \"bankName\": \"Vietcombank\",\n  \"bankAccountNumber\": \"0071000889900\",\n  \"bankAccountHolder\": \"DOI BAY DONG NAM BO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "15. Cập nhật kỹ sư điều khiển (Update Provider Pilot)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/pilots/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "pilots",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Cập nhật kỹ sư điều khiển (Update Provider Pilot)\n\nĐổi trạng thái làm việc, chứng chỉ hoặc UAV gán cho kỹ sư.\n\n* **Phương thức:** `PATCH`\n* **Endpoint:** `/api/v1/marketplace/provider/pilots/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Kỹ sư Nguyễn Văn Minh — minh hoạ\",\n  \"phone\": \"0987654321\",\n  \"specialization\": \"Khảo sát bản đồ & mô hình 3D\",\n  \"status\": \"AVAILABLE\",\n  \"assignedUavId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "16. Cập nhật trạng thái hoặc thông tin UAV (Update Fleet UAV)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/fleet/uavs/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "fleet",
+                "uavs",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Cập nhật trạng thái hoặc thông tin UAV (Update Fleet UAV)\n\nCập nhật model, serial hoặc đổi trạng thái AVAILABLE/MAINTENANCE.\n\n* **Phương thức:** `PATCH`\n* **Endpoint:** `/api/v1/marketplace/provider/fleet/uavs/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"Matrice 350 Survey\",\n  \"serialNumber\": \"SN-DJI-M300-2026\",\n  \"manufacturer\": \"DJI Enterprise\",\n  \"status\": \"AVAILABLE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "17. Gỡ UAV khỏi đội bay (Remove Fleet UAV)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/fleet/uavs/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "fleet",
+                "uavs",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Gỡ UAV khỏi đội bay (Remove Fleet UAV)\n\nNgừng khai thác UAV khi không nằm trong đơn hàng đang hoạt động.\n\n* **Phương thức:** `DELETE`\n* **Endpoint:** `/api/v1/marketplace/provider/fleet/uavs/{id}`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "18. Xoá mềm dịch vụ của đội bay (Delete Provider Listing)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/listings/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "listings",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Xoá mềm dịch vụ của đội bay (Delete Provider Listing)\n\nẨn và xoá mềm tin đăng dịch vụ của đội bay.\n\n* **Phương thức:** `DELETE`\n* **Endpoint:** `/api/v1/marketplace/provider/listings/{id}`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "19. Xoá mềm kỹ sư điều khiển (Delete Provider Pilot)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/pilots/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "pilots",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Tham số đường dẫn id"
+                }
+              ]
+            },
+            "description": "### Xoá mềm kỹ sư điều khiển (Delete Provider Pilot)\n\nGỡ kỹ sư điều khiển khỏi danh sách hoạt động của đội bay.\n\n* **Phương thức:** `DELETE`\n* **Endpoint:** `/api/v1/marketplace/provider/pilots/{id}`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "27. Admin Marketplace & Dispatch",
+      "description": "Quản lý các API thuộc phân hệ 27. Admin Marketplace & Dispatch",
+      "item": [
+        {
+          "name": "01. Hàng đợi điều phối đơn hàng & Gợi ý đội bay (Get Dispatch Queue)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/dispatch",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "dispatch"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "### Hàng đợi điều phối đơn hàng & Gợi ý đội bay (Get Dispatch Queue)\n\nLấy danh sách đơn PENDING_DISPATCH kèm danh sách ứng viên đội bay xếp hạng theo khoảng cách, UAV rảnh và điểm đánh giá.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/admin/marketplace/dispatch`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "02. Thống kê vận hành chợ dịch vụ (Marketplace Operations Stats)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "stats"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Thống kê vận hành chợ dịch vụ (Marketplace Operations Stats)\n\nSố liệu đơn theo trạng thái, số đội bay xác minh, tin đăng và doanh số minh hoạ.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/admin/marketplace/stats`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "03. Điều phối thủ công đơn hàng cho đội bay (Manual Dispatch Order)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/dispatch/:missionId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "dispatch",
+                ":missionId"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "missionId",
+                  "value": "1",
+                  "description": "Tham số đường dẫn missionId"
+                }
+              ]
+            },
+            "description": "### Điều phối thủ công đơn hàng cho đội bay (Manual Dispatch Order)\n\nGiao đơn hàng cho một đội bay xác minh cụ thể.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/admin/marketplace/dispatch/{missionId}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"providerId\": 1,\n  \"note\": \"Điều phối cho đội bay gần khu vực dự án nhất\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "04. Điều phối tự động hàng loạt (Batch Auto Dispatch)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/dispatch/auto",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "dispatch",
+                "auto"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Điều phối tự động hàng loạt (Batch Auto Dispatch)\n\nTự động giao hàng loạt đơn trong hàng đợi PENDING_DISPATCH.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/admin/marketplace/dispatch/auto`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"limit\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "05. Điều phối tự động đơn hàng theo gợi ý số 1 (Auto Dispatch Single Order)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/dispatch/:missionId/auto",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "dispatch",
+                ":missionId",
+                "auto"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "missionId",
+                  "value": "1",
+                  "description": "Tham số đường dẫn missionId"
+                }
+              ]
+            },
+            "description": "### Điều phối tự động đơn hàng theo gợi ý số 1 (Auto Dispatch Single Order)\n\nTự động chọn đội bay điểm cao nhất cho đơn hàng.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/admin/marketplace/dispatch/{missionId}/auto`"
           },
           "event": [
             {

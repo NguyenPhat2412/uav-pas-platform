@@ -67,7 +67,7 @@ ENDPOINT_METADATA = {
     ("POST", "/api/v1/missions/:id/media/upload-url"): ("Lấy Presigned URL tải media cho nhiệm vụ", "Xin link upload trực tiếp lên cloud storage (S3/MinIO)."),
     ("POST", "/api/v1/missions/:id/media/:mediaId/confirm"): ("Xác nhận tải xong media của nhiệm vụ", "Xác nhận tệp media nhiệm vụ đã upload thành công."),
     ("GET", "/api/v1/missions/:id/telemetry/replay"): ("Phát lại hành trình 3D & Mặt cắt địa hình (3D Telemetry Replay)", "Lấy toàn bộ chuỗi mẫu góc nghiêng 3D (pitch/roll/yaw/gimbal), quãng đường tích luỹ và độ cao địa hình ASL/AGL."),
-    ("GET", "/api/v1/missions/:id/inspection-report"): ("Chứng nhận nghiệm thu & Tệp bàn giao Geotag (Inspection Report)", "Tổng hợp chứng chỉ nghiệm thu tự động, điểm chất lượng RTK và danh sách tệp bàn giao gắn toạ độ GPS."),
+    ("GET", "/api/v1/missions/:id/inspection-report"): ("Chứng nhận nghiệm thu & Tệp bàn giao Geotag (Inspection Report)", "Tổng hợp chứng chỉ nghiệm thu tự động, điểm chất lượng định vị GNSS và danh sách tệp bàn giao gắn toạ độ GPS."),
 
     # 05. Services
     ("GET", "/api/v1/uav-services"): ("Danh mục dịch vụ bay (Get Service Offerings)", "Lấy danh sách các gói dịch vụ UAV cung cấp cho khách hàng."),
@@ -192,7 +192,57 @@ ENDPOINT_METADATA = {
     # 22. Settings
     ("GET", "/api/v1/settings"): ("Danh sách cấu hình hệ thống (Get All System Configs)", "Lấy các tham số cấu hình động của hệ thống."),
     ("GET", "/api/v1/settings/:key"): ("Xem cấu hình theo khoá (Get Config By Key)", "Lấy giá trị của một biến cấu hình cụ thể."),
-    ("PUT", "/api/v1/settings/:key"): ("Cập nhật cấu hình hệ thống (Update Config)", "Thay đổi giá trị cấu hình động (hạn mức bay, thời gian timeout...).")
+    ("PUT", "/api/v1/settings/:key"): ("Cập nhật cấu hình hệ thống (Update Config)", "Thay đổi giá trị cấu hình động (hạn mức bay, thời gian timeout...)."),
+
+    # 23. Projects & Subscriptions
+    ("GET", "/api/v1/projects"): ("Danh sách dự án của khách hàng (List My Projects)", "Lấy danh sách phân trang các dự án của khách hàng kèm số gói đăng ký và số đơn bay."),
+    ("POST", "/api/v1/projects"): ("Tạo dự án mới (Create Project)", "Khởi tạo dự án mới với tỉnh/thành và vùng ranh giới GeoJSON."),
+    ("GET", "/api/v1/projects/:id"): ("Chi tiết dự án (Get Project By ID)", "Xem thông tin chi tiết một dự án thuộc quyền sở hữu của khách hàng."),
+    ("PATCH", "/api/v1/projects/:id"): ("Cập nhật dự án (Update Project)", "Cập nhật tên, tỉnh/thành, vùng ranh giới GeoJSON hoặc ghi chú dự án."),
+    ("DELETE", "/api/v1/projects/:id"): ("Xoá mềm dự án (Soft Delete Project)", "Xoá mềm dự án khi không còn đơn hàng đang thực hiện."),
+    ("GET", "/api/v1/projects/:id/subscriptions"): ("Danh sách gói đăng ký theo dự án (List Project Subscriptions)", "Xem các gói dịch vụ bay định kỳ hoặc một lần gắn với dự án."),
+    ("POST", "/api/v1/projects/:id/subscriptions"): ("Đăng ký dịch vụ cho dự án (Create Subscription & Initial Order)", "Đăng ký gói dịch vụ cho dự án và tự động sinh đơn hàng đầu tiên chờ điều phối."),
+    ("PATCH", "/api/v1/projects/:id/subscriptions/:subId"): ("Đổi lịch hoặc tạm dừng gói đăng ký (Update Subscription)", "Đổi chu kỳ (ONCE/WEEKLY/MONTHLY), khối lượng hoặc tạm dừng/tiếp tục gói đăng ký."),
+    ("DELETE", "/api/v1/projects/:id/subscriptions/:subId"): ("Huỷ gói đăng ký dự án (Cancel Subscription)", "Huỷ mềm gói đăng ký dịch vụ thuộc dự án."),
+
+    # 24. Customer Orders & Tracking
+    ("GET", "/api/v1/orders/summary"): ("Tổng hợp 5 nhóm trạng thái đơn hàng (Order Status Summary)", "Đếm số đơn hàng của khách theo 5 nhóm: pending, scheduled, inFlight, delivered, toReview."),
+    ("GET", "/api/v1/orders/:id/tracking"): ("Theo dõi tiến độ bay mô phỏng trực tuyến (Live Order Tracking)", "Lấy tiến độ phần trăm, toạ độ tàu bay, dung lượng pin, tín hiệu kết nối và ETA từ phiên mô phỏng."),
+    ("POST", "/api/v1/missions/:id/review"): ("Gửi đánh giá dịch vụ sau bàn giao (Submit Order Review)", "Đánh giá 1–5 sao và nhận xét cho đơn hàng đã hoàn thành."),
+    ("PUT", "/api/v1/missions/:id/review"): ("Cập nhật đánh giá dịch vụ (Upsert Order Review)", "Tạo hoặc cập nhật đánh giá sao và nhận xét của khách hàng."),
+
+    # 25. Public Marketplace
+    ("GET", "/api/v1/public/marketplace/listings"): ("Danh mục dịch vụ trên chợ công khai (Browse Public Listings)", "Tìm kiếm, lọc dịch vụ theo danh mục, tỉnh/thành, từ khoá (ẩn danh tên đội bay, trả providerBadge)."),
+    ("GET", "/api/v1/public/marketplace/listings/:slug"): ("Chi tiết dịch vụ công khai (Get Listing Detail)", "Xem thông tin gói dịch vụ, sản phẩm bàn giao và huy hiệu đối tác xác minh."),
+
+    # 26. Fleet Partner Workspace (Operations)
+    ("GET", "/api/v1/marketplace/provider/me"): ("Hồ sơ đội bay đối tác của tôi (Get My Provider Profile)", "Xem hồ sơ năng lực và trạng thái thẩm định KYC của đội bay."),
+    ("POST", "/api/v1/marketplace/provider/me"): ("Đăng ký hồ sơ đối tác đội bay (Create Provider Profile)", "Gửi hồ sơ đăng ký trở thành đối tác vận hành bay trên nền tảng."),
+    ("PATCH", "/api/v1/marketplace/provider/me"): ("Cập nhật hồ sơ đội bay (Update Provider Profile)", "Chỉnh sửa thông tin liên hệ, bán kính phục vụ và tài khoản đối soát."),
+    ("GET", "/api/v1/marketplace/provider/listings"): ("Danh sách dịch vụ của đội bay (List My Listings)", "Quản lý danh sách tin đăng dịch vụ thuộc đội bay."),
+    ("POST", "/api/v1/marketplace/provider/listings"): ("Tạo tin đăng dịch vụ mới (Create Provider Listing)", "Tạo mới gói dịch vụ của đội bay."),
+    ("POST", "/api/v1/marketplace/provider/listings/from-template"): ("Tạo dịch vụ nhanh từ mẫu chuẩn (Create Listing From Template)", "Tạo gói dịch vụ nhanh dựa trên danh mục mẫu chuẩn của nền tảng."),
+    ("DELETE", "/api/v1/marketplace/provider/listings/:id"): ("Xoá mềm dịch vụ của đội bay (Delete Provider Listing)", "Ẩn và xoá mềm tin đăng dịch vụ của đội bay."),
+    ("GET", "/api/v1/marketplace/provider/fleet/uavs"): ("Danh sách tàu bay của đội (List Fleet UAVs)", "Lấy danh sách UAV thuộc đội bay kèm trạng thái sẵn sàng/đang bay/bảo trì."),
+    ("POST", "/api/v1/marketplace/provider/fleet/uavs"): ("Thêm UAV vào đội bay (Register Fleet UAV)", "Đăng ký thiết bị bay mới cho đội bay đối tác."),
+    ("PATCH", "/api/v1/marketplace/provider/fleet/uavs/:id"): ("Cập nhật trạng thái hoặc thông tin UAV (Update Fleet UAV)", "Cập nhật model, serial hoặc đổi trạng thái AVAILABLE/MAINTENANCE."),
+    ("DELETE", "/api/v1/marketplace/provider/fleet/uavs/:id"): ("Gỡ UAV khỏi đội bay (Remove Fleet UAV)", "Ngừng khai thác UAV khi không nằm trong đơn hàng đang hoạt động."),
+    ("GET", "/api/v1/marketplace/provider/pilots"): ("Danh sách kỹ sư điều khiển của đội (List Provider Pilots)", "Xem danh sách kỹ sư vận hành bay, chứng chỉ và tàu bay phụ trách."),
+    ("POST", "/api/v1/marketplace/provider/pilots"): ("Thêm kỹ sư điều khiển vào đội (Create Provider Pilot)", "Thêm kỹ sư điều khiển mới và liên kết tài khoản vận hành."),
+    ("PATCH", "/api/v1/marketplace/provider/pilots/:id"): ("Cập nhật kỹ sư điều khiển (Update Provider Pilot)", "Đổi trạng thái làm việc, chứng chỉ hoặc UAV gán cho kỹ sư."),
+    ("DELETE", "/api/v1/marketplace/provider/pilots/:id"): ("Xoá mềm kỹ sư điều khiển (Delete Provider Pilot)", "Gỡ kỹ sư điều khiển khỏi danh sách hoạt động của đội bay."),
+    ("GET", "/api/v1/marketplace/provider/orders"): ("Danh sách đơn hàng được giao cho đội bay (List Provider Orders)", "Xem các đơn hàng nền tảng đã điều phối về đội bay."),
+    ("POST", "/api/v1/marketplace/provider/orders/:missionId/respond"): ("Nhận hoặc từ chối đơn được giao (Respond To Dispatched Order)", "Xác nhận nhận đơn hoặc từ chối kèm lý do để trả đơn về hàng đợi điều phối."),
+    ("POST", "/api/v1/marketplace/provider/orders/:missionId/assign"): ("Phân công kỹ sư và UAV cho đơn hàng (Assign Pilot & UAV)", "Chỉ định kỹ sư điều khiển và tàu bay thuộc đội cho đơn hàng."),
+    ("POST", "/api/v1/marketplace/provider/orders/:missionId/start"): ("Bắt đầu chuyến bay mô phỏng cho đơn hàng (Start Order Simulation)", "Khởi động phiên bay mô phỏng gắn với đơn hàng và chuyển sang IN_PROGRESS."),
+    ("POST", "/api/v1/marketplace/provider/orders/:missionId/complete"): ("Hoàn thành chuyến bay và bàn giao dữ liệu (Complete Order)", "Đánh dấu hoàn tất bay để chuyển đơn sang bước bàn giao nghiệm thu."),
+
+    # 27. Admin Marketplace & Dispatch
+    ("GET", "/api/v1/admin/marketplace/dispatch"): ("Hàng đợi điều phối đơn hàng & Gợi ý đội bay (Get Dispatch Queue)", "Lấy danh sách đơn PENDING_DISPATCH kèm danh sách ứng viên đội bay xếp hạng theo khoảng cách, UAV rảnh và điểm đánh giá."),
+    ("POST", "/api/v1/admin/marketplace/dispatch/:missionId"): ("Điều phối thủ công đơn hàng cho đội bay (Manual Dispatch Order)", "Giao đơn hàng cho một đội bay xác minh cụ thể."),
+    ("POST", "/api/v1/admin/marketplace/dispatch/:missionId/auto"): ("Điều phối tự động đơn hàng theo gợi ý số 1 (Auto Dispatch Single Order)", "Tự động chọn đội bay điểm cao nhất cho đơn hàng."),
+    ("POST", "/api/v1/admin/marketplace/dispatch/auto"): ("Điều phối tự động hàng loạt (Batch Auto Dispatch)", "Tự động giao hàng loạt đơn trong hàng đợi PENDING_DISPATCH."),
+    ("GET", "/api/v1/admin/marketplace/stats"): ("Thống kê vận hành chợ dịch vụ (Marketplace Operations Stats)", "Số liệu đơn theo trạng thái, số đội bay xác minh, tin đăng và doanh số minh hoạ.")
 }
 
 def resolve_schema(schema_ref):
@@ -213,9 +263,9 @@ def get_field_smart_example(field_name, prop_spec):
         return prop_spec['enum'][0]
     
     if 'username' in name_lower:
-        return 'admin'
+        return '{{username}}'
     if 'password' in name_lower:
-        return 'Password123@'
+        return '{{password}}'
     if 'email' in name_lower:
         return 'admin@uav-platform.com'
     if 'phone' in name_lower:
@@ -239,7 +289,7 @@ def get_field_smart_example(field_name, prop_spec):
     if name_lower == 'serialnumber':
         return 'SN-DJI-M300-2026'
     if name_lower == 'model':
-        return 'Matrice 300 RTK'
+        return 'Matrice 350 Survey'
     if name_lower == 'manufacturer':
         return 'DJI Enterprise'
     if name_lower in ('code', 'permissioncode'):
@@ -330,6 +380,9 @@ def sample_from_schema(s, depth=0):
 
 PATH_VAR_DEFAULTS = {
     'id': '1',
+    'subId': '1',
+    'pilotId': '1',
+    'slug': 'khao-sat-ban-do-2d-du-an-minh-hoa',
     'userId': '1',
     'missionId': '1',
     'stationId': '1',
@@ -347,37 +400,39 @@ COLLECTION_PRE_REQUEST_SCRIPT = """// UAV PAS Platform - Automated Auto-Login Pr
 var baseUrl = pm.collectionVariables.get("baseUrl") || "http://localhost:8080";
 var token = pm.collectionVariables.get("token");
 var urlStr = pm.request.url ? pm.request.url.toString() : "";
-var isAuth = urlStr.indexOf("/auth/login") !== -1 || urlStr.indexOf("/auth/register") !== -1;
+var isAuth = urlStr.indexOf("/auth/login") !== -1 || urlStr.indexOf("/auth/register") !== -1 || urlStr.indexOf("/public/") !== -1;
 
 if (!token && !isAuth) {
-    var username = pm.collectionVariables.get("defaultUsername") || "admin";
-    var password = pm.collectionVariables.get("defaultPassword") || "Password123@";
+    var username = pm.collectionVariables.get("username") || pm.collectionVariables.get("defaultUsername") || "demo_admin";
+    var password = pm.collectionVariables.get("password") || pm.collectionVariables.get("defaultPassword") || "";
     
-    pm.sendRequest({
-        url: baseUrl + "/api/v1/auth/login",
-        method: "POST",
-        header: { "Content-Type": "application/json" },
-        body: {
-            mode: "raw",
-            raw: JSON.stringify({
-                usernameOrEmail: username,
-                password: password
-            })
-        }
-    }, function (err, res) {
-        if (!err && res.code === 200) {
-            var data = res.json();
-            var newToken = data.accessToken || (data.data && data.data.accessToken);
-            var newRefreshToken = data.refreshToken || (data.data && data.data.refreshToken);
-            if (newToken) {
-                pm.collectionVariables.set("token", newToken);
-                pm.request.headers.upsert({ key: "Authorization", value: "Bearer " + newToken });
+    if (username && password) {
+        pm.sendRequest({
+            url: baseUrl + "/api/v1/auth/login",
+            method: "POST",
+            header: { "Content-Type": "application/json" },
+            body: {
+                mode: "raw",
+                raw: JSON.stringify({
+                    usernameOrEmail: username,
+                    password: password
+                })
             }
-            if (newRefreshToken) {
-                pm.collectionVariables.set("refreshToken", newRefreshToken);
+        }, function (err, res) {
+            if (!err && res.code === 200) {
+                var data = res.json();
+                var newToken = data.accessToken || (data.data && data.data.accessToken);
+                var newRefreshToken = data.refreshToken || (data.data && data.data.refreshToken);
+                if (newToken) {
+                    pm.collectionVariables.set("token", newToken);
+                    pm.request.headers.upsert({ key: "Authorization", value: "Bearer " + newToken });
+                }
+                if (newRefreshToken) {
+                    pm.collectionVariables.set("refreshToken", newRefreshToken);
+                }
             }
-        }
-    });
+        });
+    }
 } else if (token && !isAuth) {
     pm.request.headers.upsert({ key: "Authorization", value: "Bearer " + token });
 }
@@ -387,17 +442,16 @@ collection = {
     'info': {
         'name': 'UAV PAS Platform API - Complete Test Suite',
         'description': '# UAV PAS Platform API Documentation & Postman Collection\n\n'
-                       'Tập hợp đầy đủ **130 API endpoints** với Sample Request Body chi tiết, Query Params, Path Variables mặc định, và **Cơ chế Tự Động Đăng Nhập (Auto-Login)**.\n\n'
-                       '### 🔑 Tài khoản Quản trị viên mặc định:\n'
-                       '- **Username:** `admin`\n'
-                       '- **Password:** `Password123@`\n'
-                       '- **Role:** `ROLE_ADMIN`\n\n'
+                       'Tập hợp đầy đủ các API endpoints với Sample Request Body chi tiết, Query Params, Path Variables mặc định, và **Cơ chế Tự Động Đăng Nhập (Auto-Login)**.\n\n'
+                       '### 🔑 Biến tài khoản kiểm thử (`app.dev-seed.enabled=true`):\n'
+                       '- **Biến đăng nhập:** `{{username}}` / `{{password}}`\n'
+                       '- **Tài khoản dev seed:** `demo_admin` (ROLE_ADMIN), `demo_fleet` (Đội bay xác minh), `demo_customer` (Khách hàng dự án)\n\n'
                        '### 🚀 Các tính năng tự động tích hợp:\n'
-                       '1. **Auto-Login:** Pre-request Script tự động gọi API login để cấp token mới nếu chưa có hoặc hết hạn.\n'
-                       '2. **Auto-Save Token:** Khi gọi request Login thủ công, token và refreshToken mới sẽ tự động lưu vào biến `{{token}}` và `{{refreshToken}}`.\n'
-                       '3. **Full Sample Body:** Tất cả ~60+ POST/PUT/PATCH đều đã được điền sẵn JSON body mẫu hợp lệ, không bị rỗng `{}`.\n'
-                       '4. **Default Path Variables:** Tất cả `:id`, `:userId`, `:missionId`... đều đã được gán sẵn giá trị mặc định `1`.\n'
-                       '5. **Test Scripts:** Tự động kiểm tra HTTP status 2xx và thời gian phản hồi cho từng request.\n',
+                       '1. **Auto-Login:** Pre-request Script tự động gọi API login bằng `{{username}}` / `{{password}}` để cấp token mới nếu chưa có.\n'
+                       '2. **Auto-Save Token:** Khi gọi request Login, token và refreshToken mới sẽ tự động lưu vào biến `{{token}}` và `{{refreshToken}}`.\n'
+                       '3. **Full Sample Body:** Tất cả POST/PUT/PATCH đều điền sẵn JSON body mẫu hợp lệ.\n'
+                       '4. **Default Path Variables:** Tất cả `:id`, `:subId`, `:missionId`... đều gán sẵn giá trị mặc định.\n'
+                       '5. **Test Scripts:** Tự động kiểm tra HTTP status và thời gian phản hồi cho từng request.\n',
         'schema': 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'
     },
     'event': [
@@ -419,8 +473,10 @@ collection = {
         {'key': 'baseUrl', 'value': 'http://localhost:8080', 'type': 'string'},
         {'key': 'token', 'value': CURRENT_ADMIN_TOKEN, 'type': 'string'},
         {'key': 'refreshToken', 'value': CURRENT_REFRESH_TOKEN, 'type': 'string'},
-        {'key': 'defaultUsername', 'value': 'admin', 'type': 'string'},
-        {'key': 'defaultPassword', 'value': 'Password123@', 'type': 'string'}
+        {'key': 'username', 'value': 'demo_admin', 'type': 'string'},
+        {'key': 'password', 'value': '', 'type': 'string'},
+        {'key': 'defaultUsername', 'value': 'demo_admin', 'type': 'string'},
+        {'key': 'defaultPassword', 'value': '', 'type': 'string'}
     ],
     'item': []
 }
@@ -448,7 +504,12 @@ TAG_NAMES = {
     'dashboard-controller': '19. Executive Dashboard',
     'report-controller': '20. Operational Reports',
     'audit-log-controller': '21. System Audit Logs',
-    'system-config-controller': '22. System Configurations'
+    'system-config-controller': '22. System Configurations',
+    'project-controller': '23. Customer Projects & Subscriptions',
+    'order-controller': '24. Customer Orders & Live Tracking',
+    'marketplace-public-controller': '25. Public Service Marketplace',
+    'marketplace-provider-controller': '26. Fleet Partner Workspace',
+    'marketplace-admin-controller': '27. Admin Marketplace & Dispatch'
 }
 
 folders = {}
@@ -530,8 +591,8 @@ for path_str, methods in paths.items():
                 # Special overrides
                 if path_str in ('/api/v1/auth/login', '/api/v1/auth/login-json'):
                     sample_body = {
-                        "usernameOrEmail": "admin",
-                        "password": "Password123@"
+                        "usernameOrEmail": "{{username}}",
+                        "password": "{{password}}"
                     }
                 elif path_str == '/api/v1/auth/refresh':
                     sample_body = {
@@ -648,7 +709,7 @@ for path_str, methods in paths.items():
         if body_obj:
             req_item['request']['body'] = body_obj
             
-        if path_str in ('/api/v1/auth/login', '/api/v1/auth/login-json', '/api/v1/auth/register', '/api/v1/billing/webhook/payment-ipn'):
+        if path_str in ('/api/v1/auth/login', '/api/v1/auth/login-json', '/api/v1/auth/register', '/api/v1/billing/webhook/payment-ipn') or path_str.startswith('/api/v1/public/'):
             req_item['request']['auth'] = {'type': 'noauth'}
 
         folders[folder_name]['item'].append(req_item)
