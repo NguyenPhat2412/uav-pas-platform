@@ -13,7 +13,27 @@ import type {AuditFilters} from "@/types/admin";
 
 const actions = ['CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT', 'GRANT', 'REVOKE', 'ASSIGN', 'STATUS_CHANGE',
     'STOCK_IN', 'STOCK_OUT', 'RESERVE', 'RELEASE', 'TRANSFER', 'UPLOAD', 'DOWNLOAD'];
-const entityTypes = ['USER', 'USER_PROFILE', 'USER_PERMISSION', 'ROLE_TEMPLATE', 'MISSION', 'UAV', 'STATION', 'MAINTENANCE_SCHEDULE', 'REPAIR_ORDER', 'EQUIPMENT', 'MEDIA'];
+const entityTypes = [
+    'USER',
+    'USER_PROFILE',
+    'USER_PERMISSION',
+    'ROLE_TEMPLATE',
+    'MISSION',
+    'MISSION_DISPATCH',
+    'PROJECT',
+    'PROJECT_SUBSCRIPTION',
+    'PROVIDER_PROFILE',
+    'MARKETPLACE_LISTING',
+    'PROVIDER_PAYOUT',
+    'PROVIDER_PILOT',
+    'PROVIDER_UAV',
+    'UAV',
+    'STATION',
+    'MAINTENANCE_SCHEDULE',
+    'REPAIR_ORDER',
+    'EQUIPMENT',
+    'MEDIA',
+];
 const emptyFilters: AuditFilters = {actor: '', action: '', entityType: '', from: '', to: ''};
 
 export function AuditLogs() {

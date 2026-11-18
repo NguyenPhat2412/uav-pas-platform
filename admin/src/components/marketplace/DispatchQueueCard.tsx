@@ -3,7 +3,7 @@
 import {Calendar, FolderKanban, MapPin, Plane, Send, Sparkles, Star, User, Zap} from 'lucide-react';
 import {Button, OptionalMark} from '@/components/ui';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
-import {formatMarketplaceVnd} from '@/forms/marketplace/admin-marketplace-form';
+import {formatMarketplaceVnd, sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
 import {useI18n} from '@/providers/I18nContext';
 import type {AdminDispatchQueueItem} from '@/types/marketplace/marketplace.types';
 
@@ -36,20 +36,20 @@ export function DispatchQueueCard({
                             {mission.code}
                         </span>
                         <strong className="line-clamp-2 text-base font-semibold text-on-surface">
-                            {mission.title}
+                            {sanitizeMarketplaceText(mission.title)}
                         </strong>
                     </div>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted tabular-nums">
                         {mission.customerName && (
                             <span className="inline-flex items-center gap-1 whitespace-nowrap">
                                 <User size={13} aria-hidden="true"/>
-                                <strong className="text-on-surface">{mission.customerName}</strong>
+                                <strong className="text-on-surface">{sanitizeMarketplaceText(mission.customerName)}</strong>
                             </span>
                         )}
                         {mission.projectName && (
                             <span className="inline-flex items-center gap-1 whitespace-nowrap">
                                 <FolderKanban size={13} aria-hidden="true"/>
-                                <span>{mission.projectName}</span>
+                                <span>{sanitizeMarketplaceText(mission.projectName)}</span>
                             </span>
                         )}
                         {mission.locationName && (

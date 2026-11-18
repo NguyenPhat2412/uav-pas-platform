@@ -24,7 +24,7 @@ import {
     MarketplaceStatusTabs,
 } from '@/components/marketplace/MarketplaceShared';
 import {OrderTwoSidedDrawer} from '@/components/marketplace/OrderTwoSidedDrawer';
-import {formatMarketplaceVnd} from '@/forms/marketplace/admin-marketplace-form';
+import {formatMarketplaceVnd, sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
 import {
     useAdminMarketplaceOrders,
     useAdminMarketplaceRealtime,
@@ -205,7 +205,7 @@ export function AdminMarketplaceOrders() {
                                                 {order.code}
                                             </span>
                                             <strong className="line-clamp-2 text-sm font-semibold text-on-surface">
-                                                {order.title}
+                                                {sanitizeMarketplaceText(order.title)}
                                             </strong>
                                             <StatusBadge status={order.status}/>
                                             {order.providerResponseStatus &&
@@ -217,19 +217,19 @@ export function AdminMarketplaceOrders() {
                                             <span className="inline-flex items-center gap-1 whitespace-nowrap">
                                                 <User size={13} aria-hidden="true"/>
                                                 <strong className="text-on-surface">
-                                                    {order.customerName || (order.customerId ? `#${order.customerId}` : '—')}
+                                                    {sanitizeMarketplaceText(order.customerName) || (order.customerId ? `#${order.customerId}` : '—')}
                                                 </strong>
                                             </span>
                                             {(order.projectName || order.projectId) && (
                                                 <span className="inline-flex items-center gap-1 whitespace-nowrap">
                                                     <FolderKanban size={13} aria-hidden="true"/>
-                                                    <span>{order.projectName || `#${order.projectId}`}</span>
+                                                    <span>{sanitizeMarketplaceText(order.projectName) || `#${order.projectId}`}</span>
                                                 </span>
                                             )}
                                             <span className="inline-flex items-center gap-1 whitespace-nowrap">
                                                 <Store size={13} aria-hidden="true"/>
                                                 <strong className="text-on-surface">
-                                                    {order.providerDisplayName ||
+                                                    {sanitizeMarketplaceText(order.providerDisplayName) ||
                                                         t('adminCommerce.marketplace.orders.unassignedProvider')}
                                                 </strong>
                                             </span>

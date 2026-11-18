@@ -49,6 +49,10 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         CREATED: 'Created', UPDATED: 'Updated', PAUSED: 'Paused', STARTED: 'Repair started',
         AVATAR_UPDATED: 'Profile picture updated', AVATAR_REMOVED: 'Profile picture removed',
         PENDING_DISPATCH: 'Pending dispatch', PENDING_PROVIDER: 'Awaiting team', ACCEPTED: 'Team accepted', DECLINED: 'Team declined',
+        PENDING_REVIEW: 'Pending review', VERIFIED: 'Verified', PUBLISHED: 'Published', PAID: 'Paid',
+        PROVIDER_PROFILE: 'Partner KYC profile', MARKETPLACE_LISTING: 'Service listing', MISSION_DISPATCH: 'Order dispatch',
+        PROVIDER_PAYOUT: 'Partner payout', PROJECT: 'Customer project', PROJECT_SUBSCRIPTION: 'Project subscription',
+        PROVIDER_PILOT: 'Fleet pilot', PROVIDER_UAV: 'Fleet UAV', USER_PERMISSION: 'User permission', ROLE_TEMPLATE: 'Role template',
     },
     ja: {
         DRAFT: '下書き', PENDING_CONFIRMATION: '確認待ち', CONFIRMED: '確認済み', RESOURCE_RESERVED: 'リソース手配済み',
@@ -81,6 +85,10 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         YEARLY: '年', CREATED: '作成済み', UPDATED: '更新済み', PAUSED: '一時停止', STARTED: '修理開始',
         AVATAR_UPDATED: 'プロフィール画像を更新', AVATAR_REMOVED: 'プロフィール画像を削除',
         PENDING_DISPATCH: '割当待ち', PENDING_PROVIDER: 'チーム応答待ち', ACCEPTED: '受諾済み', DECLINED: '辞退',
+        PENDING_REVIEW: '審査待ち', VERIFIED: '承認済み', PUBLISHED: '公開中', PAID: '振込済み',
+        PROVIDER_PROFILE: 'パートナーKYC', MARKETPLACE_LISTING: '出品サービス', MISSION_DISPATCH: '注文ディスパッチ',
+        PROVIDER_PAYOUT: 'パートナー出金', PROJECT: '顧客プロジェクト', PROJECT_SUBSCRIPTION: '定期サービス契約',
+        PROVIDER_PILOT: 'チーム操縦士', PROVIDER_UAV: 'チーム機体', USER_PERMISSION: '個別権限', ROLE_TEMPLATE: 'ロールテンプレート',
     },
 };
 
@@ -203,6 +211,20 @@ const labels: Record<string, string> = {
     STARTED: 'Đã bắt đầu sửa chữa',
     AVATAR_UPDATED: 'Cập nhật ảnh đại diện',
     AVATAR_REMOVED: 'Xóa ảnh đại diện',
+    PENDING_REVIEW: 'Chờ duyệt',
+    VERIFIED: 'Đã xác minh',
+    PUBLISHED: 'Đang mở bán',
+    PAID: 'Đã giải ngân',
+    PROVIDER_PROFILE: 'Hồ sơ đối tác KYC',
+    MARKETPLACE_LISTING: 'Dịch vụ sàn',
+    MISSION_DISPATCH: 'Điều phối giao đơn',
+    PROVIDER_PAYOUT: 'Giải ngân đối tác',
+    PROJECT: 'Dự án khách hàng',
+    PROJECT_SUBSCRIPTION: 'Gói đăng ký dự án',
+    PROVIDER_PILOT: 'Kỹ sư đội bay',
+    PROVIDER_UAV: 'UAV đội bay',
+    USER_PERMISSION: 'Quyền người dùng',
+    ROLE_TEMPLATE: 'Mẫu vai trò',
 };
 
 export function displayLabel(value?: string | null): string {
@@ -212,21 +234,25 @@ export function displayLabel(value?: string | null): string {
 const auditText: Record<PresentationLocale, {
     profile: (fields: string) => string; fullName: string; phone: string;
     materials: (lines: string, total: string) => string; advanced: (order: string) => string;
+    dispatchedProvider: (providerId: string) => string;
 }> = {
     vi: {
         profile: fields => `Cập nhật hồ sơ: ${fields}`, fullName: 'họ tên', phone: 'số điện thoại',
         materials: (lines, total) => `Cập nhật ${lines} dòng vật tư · Tổng ${total} ₫`,
-        advanced: order => `Cập nhật kỳ bảo trì tiếp theo sau phiếu #${order}`
+        advanced: order => `Cập nhật kỳ bảo trì tiếp theo sau phiếu #${order}`,
+        dispatchedProvider: providerId => `Giao đơn cho đội bay #${providerId}`,
     },
     en: {
         profile: fields => `Profile updated: ${fields}`, fullName: 'full name', phone: 'phone number',
         materials: (lines, total) => `Updated ${lines} material lines · Total ₫${total}`,
-        advanced: order => `Next maintenance period updated after order #${order}`
+        advanced: order => `Next maintenance period updated after order #${order}`,
+        dispatchedProvider: providerId => `Dispatched order to fleet team #${providerId}`,
     },
     ja: {
         profile: fields => `プロフィール更新：${fields}`, fullName: '氏名', phone: '電話番号',
         materials: (lines, total) => `資材 ${lines} 行を更新・合計 ${total} ₫`,
-        advanced: order => `修理票 #${order} の後に次回メンテナンス時期を更新`
+        advanced: order => `修理票 #${order} の後に次回メンテナンス時期を更新`,
+        dispatchedProvider: providerId => `運航チーム #${providerId} に注文を割当`,
     },
 };
 
@@ -239,6 +265,8 @@ export function auditDetail(value?: string | null): string {
     if (materials) return text.materials(materials[1], new Intl.NumberFormat(intlLocales[activeLocale]).format(BigInt(materials[2])));
     const advanced = /^ADVANCED order=([0-9]+)$/.exec(value);
     if (advanced) return text.advanced(advanced[1]);
+    const dispatched = /^providerId=([0-9]+)$/.exec(value);
+    if (dispatched) return text.dispatchedProvider(dispatched[1]);
     const separator = value.indexOf(':');
     const prefix = value.slice(0, separator);
     const prefixLabel = separator > 0 ? label(prefix) : undefined;

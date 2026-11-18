@@ -195,3 +195,40 @@ test('Admin customer projects & subscriptions governance wires read-only view, s
         assert.ok(lines <= 301, `${rel} must stay <= 300 lines (got ${lines - 1})`);
     }
 });
+
+test('Admin audit log localizes marketplace moderation, dispatch, project, and cancellation entities across vi/en/ja', async () => {
+    const pres = await load(compile(read('src/lib/presentation.ts')));
+    const auditView = read('src/components/audit/AdminAuditLogs.tsx');
+    for (const entity of [
+        'PROVIDER_PROFILE',
+        'MARKETPLACE_LISTING',
+        'MISSION_DISPATCH',
+        'PROVIDER_PAYOUT',
+        'PROJECT',
+        'PROJECT_SUBSCRIPTION',
+    ]) {
+        assert.match(auditView, new RegExp(`'${entity}'`));
+    }
+
+    for (const locale of ['vi', 'en', 'ja']) {
+        pres.setPresentationLocale(locale);
+        for (const key of [
+            'PROVIDER_PROFILE',
+            'MARKETPLACE_LISTING',
+            'MISSION_DISPATCH',
+            'PROVIDER_PAYOUT',
+            'PROJECT',
+            'PROJECT_SUBSCRIPTION',
+            'VERIFIED',
+            'PUBLISHED',
+            'PAID',
+        ]) {
+            const out = pres.displayLabel(key);
+            assert.notEqual(out, key, `${key} should be localized in ${locale}`);
+        }
+        const dispatchDetail = pres.auditDetail('providerId=4');
+        assert.match(dispatchDetail, /#4/);
+        assert.doesNotMatch(dispatchDetail, /^providerId=/);
+    }
+    pres.setPresentationLocale('vi');
+});

@@ -8,6 +8,7 @@ import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
 import {
     canAdminCancelMarketplaceOrder,
     formatMarketplaceVnd,
+    sanitizeMarketplaceText,
     validateAdminOrderCancelReason,
 } from '@/forms/marketplace/admin-marketplace-form';
 import {useAdminMarketplaceOrderDetail, useCancelMarketplaceOrder} from '@/hooks/marketplace/useAdminMarketplace';
@@ -61,9 +62,9 @@ export function OrderTwoSidedDrawer({
         >
             <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="min-w-0 space-y-1">
-                    <h3 className="m-0 line-clamp-2 text-base font-semibold text-on-surface">{order.title}</h3>
+                    <h3 className="m-0 line-clamp-2 text-base font-semibold text-on-surface">{sanitizeMarketplaceText(order.title)}</h3>
                     {order.listingTitle && (
-                        <p className="m-0 text-xs text-muted">{order.listingTitle}</p>
+                        <p className="m-0 text-xs text-muted">{sanitizeMarketplaceText(order.listingTitle)}</p>
                     )}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
