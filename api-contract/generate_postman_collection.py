@@ -379,21 +379,74 @@ def sample_from_schema(s, depth=0):
     return get_field_smart_example('sample', s)
 
 PATH_VAR_DEFAULTS = {
-    'id': '1',
-    'subId': '1',
-    'pilotId': '1',
-    'slug': 'khao-sat-ban-do-2d-du-an-minh-hoa',
-    'userId': '1',
-    'missionId': '1',
-    'stationId': '1',
-    'uavId': '1',
-    'mediaId': '1',
-    'detectionId': '1',
-    'equipmentId': '1',
+    'id': '{{sampleMissionId}}',
+    'subId': '{{sampleSubId}}',
+    'pilotId': '{{samplePilotId}}',
+    'slug': '{{sampleListingSlug}}',
+    'userId': '{{sampleUserId}}',
+    'missionId': '{{sampleMissionId}}',
+    'stationId': '{{sampleStationId}}',
+    'uavId': '{{sampleUavId}}',
+    'mediaId': '{{sampleMediaId}}',
+    'detectionId': '{{sampleDetectionId}}',
+    'equipmentId': '{{sampleEquipmentId}}',
     'code': 'UAV_SERVICES_READ',
     'role': 'ROLE_ADMIN',
-    'key': 'STORAGE_QUOTA',
-    'serviceId': '1'
+    'key': '{{sampleSettingKey}}',
+    'serviceId': '{{sampleServiceId}}'
+}
+
+def resolve_path_var_value(pm_path_str, pv_name):
+    if pv_name in ('id', 'userId') and any(x in pm_path_str for x in ['/users/', '/permissions/users/', '/billing/admin/quotas/']):
+        return '{{sampleUserId}}'
+    if pv_name == 'id':
+        if '/projects/' in pm_path_str:
+            return '{{sampleProjectId}}'
+        if '/uavs/' in pm_path_str:
+            return '{{sampleUavId}}'
+        if '/stations/' in pm_path_str:
+            return '{{sampleStationId}}'
+        if '/inventory/equipment/' in pm_path_str:
+            return '{{sampleEquipmentId}}'
+        if '/maintenance/schedules/' in pm_path_str:
+            return '{{sampleScheduleId}}'
+        if '/maintenance/orders/' in pm_path_str:
+            return '{{sampleRepairOrderId}}'
+        if '/billing/invoices/' in pm_path_str:
+            return '{{sampleInvoiceId}}'
+        if '/media/' in pm_path_str:
+            return '{{sampleMediaId}}'
+        if '/notifications/' in pm_path_str:
+            return '{{sampleNotificationId}}'
+        if '/webhooks/subscriptions/' in pm_path_str:
+            return '{{sampleWebhookId}}'
+        if '/marketplace/provider/listings/' in pm_path_str:
+            return '{{sampleListingId}}'
+        if '/marketplace/provider/pilots/' in pm_path_str:
+            return '{{samplePilotId}}'
+        if '/orders/' in pm_path_str or '/missions/' in pm_path_str:
+            return '{{sampleMissionId}}'
+    return PATH_VAR_DEFAULTS.get(pv_name, '{{sampleMissionId}}')
+
+LIST_VAR_EXTRACTION = {
+    '/api/v1/users': ('sampleUserId', 'id'),
+    '/api/v1/missions': ('sampleMissionId', 'id'),
+    '/api/v1/uav-services': ('sampleServiceId', 'id'),
+    '/api/v1/uavs': ('sampleUavId', 'id'),
+    '/api/v1/stations': ('sampleStationId', 'id'),
+    '/api/v1/inventory/equipment': ('sampleEquipmentId', 'id'),
+    '/api/v1/maintenance/schedules': ('sampleScheduleId', 'id'),
+    '/api/v1/maintenance/orders': ('sampleRepairOrderId', 'id'),
+    '/api/v1/billing/invoices': ('sampleInvoiceId', 'id'),
+    '/api/v1/media': ('sampleMediaId', 'id'),
+    '/api/v1/notifications': ('sampleNotificationId', 'id'),
+    '/api/v1/webhooks/subscriptions': ('sampleWebhookId', 'id'),
+    '/api/v1/settings': ('sampleSettingKey', 'configKey'),
+    '/api/v1/projects': ('sampleProjectId', 'id'),
+    '/api/v1/projects/:id/subscriptions': ('sampleSubId', 'id'),
+    '/api/v1/marketplace/provider/pilots': ('samplePilotId', 'id'),
+    '/api/v1/marketplace/provider/fleet/uavs': ('sampleUavId', 'id'),
+    '/api/v1/marketplace/provider/listings': ('sampleListingId', 'id'),
 }
 
 COLLECTION_PRE_REQUEST_SCRIPT = """// UAV PAS Platform - Automated Auto-Login Pre-request Script
@@ -401,8 +454,9 @@ var baseUrl = pm.collectionVariables.get("baseUrl") || "http://localhost:8080";
 var token = pm.collectionVariables.get("token");
 var urlStr = pm.request.url ? pm.request.url.toString() : "";
 var isAuth = urlStr.indexOf("/auth/login") !== -1 || urlStr.indexOf("/auth/register") !== -1 || urlStr.indexOf("/public/") !== -1;
+var hasExplicitAuthHeader = pm.request.headers.has("Authorization");
 
-if (!token && !isAuth) {
+if (!hasExplicitAuthHeader && !token && !isAuth) {
     var username = pm.collectionVariables.get("username") || pm.collectionVariables.get("defaultUsername") || "demo_admin";
     var password = pm.collectionVariables.get("password") || pm.collectionVariables.get("defaultPassword") || "";
     
@@ -433,7 +487,7 @@ if (!token && !isAuth) {
             }
         });
     }
-} else if (token && !isAuth) {
+} else if (!hasExplicitAuthHeader && token && !isAuth) {
     pm.request.headers.upsert({ key: "Authorization", value: "Bearer " + token });
 }
 """
@@ -476,7 +530,41 @@ collection = {
         {'key': 'username', 'value': 'demo_admin', 'type': 'string'},
         {'key': 'password', 'value': '', 'type': 'string'},
         {'key': 'defaultUsername', 'value': 'demo_admin', 'type': 'string'},
-        {'key': 'defaultPassword', 'value': '', 'type': 'string'}
+        {'key': 'defaultPassword', 'value': '', 'type': 'string'},
+        {'key': 'customerUsername', 'value': 'demo_customer', 'type': 'string'},
+        {'key': 'fleetUsername', 'value': 'demo_fleet', 'type': 'string'},
+        {'key': 'adminUsername', 'value': 'demo_admin', 'type': 'string'},
+        {'key': 'customerToken', 'value': '', 'type': 'string'},
+        {'key': 'fleetToken', 'value': '', 'type': 'string'},
+        {'key': 'adminToken', 'value': '', 'type': 'string'},
+        {'key': 'sampleUserId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleMissionId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleServiceId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleUavId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleStationId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleEquipmentId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleScheduleId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleRepairOrderId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleInvoiceId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleMediaId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleNotificationId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleWebhookId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleDetectionId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleSettingKey', 'value': 'marketplace.platform_fee_rate', 'type': 'string'},
+        {'key': 'sampleProjectId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleSubId', 'value': '1', 'type': 'string'},
+        {'key': 'samplePilotId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleListingId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleListingSlug', 'value': 'khao-sat-ban-do-2d-du-an-minh-hoa', 'type': 'string'},
+        {'key': 'flowListingId', 'value': '', 'type': 'string'},
+        {'key': 'flowListingSlug', 'value': '', 'type': 'string'},
+        {'key': 'flowProjectId', 'value': '', 'type': 'string'},
+        {'key': 'flowSubId', 'value': '', 'type': 'string'},
+        {'key': 'flowMissionId', 'value': '', 'type': 'string'},
+        {'key': 'flowMissionCancelId', 'value': '', 'type': 'string'},
+        {'key': 'flowPilotId', 'value': '', 'type': 'string'},
+        {'key': 'flowUavId', 'value': '', 'type': 'string'},
+        {'key': 'flowStartDate', 'value': '2026-11-25', 'type': 'string'}
     ],
     'item': []
 }
@@ -545,13 +633,11 @@ for path_str, methods in paths.items():
         
         path_var_names = re.findall(r':([a-zA-Z0-9_]+)', pm_path_str)
         for pv_name in path_var_names:
-            val = PATH_VAR_DEFAULTS.get(pv_name, '1')
-            if pv_name in ('id', 'userId') and any(x in pm_path_str for x in ['/users/', '/permissions/users/', '/billing/admin/quotas/']):
-                val = '2'
+            val = resolve_path_var_value(pm_path_str, pv_name)
             url_obj['variable'].append({
                 'key': pv_name,
                 'value': val,
-                'description': f'Tham số đường dẫn {pv_name}'
+                'description': f'Tham số đường dẫn {pv_name} (lấy động từ danh sách trước đó)'
             })
             
         for param in op.get('parameters', []):
@@ -683,6 +769,28 @@ for path_str, methods in paths.items():
                 'pm.collectionVariables.set("token", "");',
                 'pm.collectionVariables.unset("token");',
             ]
+        elif m_upper == 'GET' and pm_path_str == '/api/v1/public/marketplace/listings':
+            test_script_lines.extend([
+                'if (pm.response.code === 200) {',
+                '    var body = pm.response.json();',
+                '    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);',
+                '    if (items.length > 0) {',
+                '        if (items[0].id !== undefined) pm.collectionVariables.set("sampleListingId", String(items[0].id));',
+                '        if (items[0].slug) pm.collectionVariables.set("sampleListingSlug", String(items[0].slug));',
+                '    }',
+                '}'
+            ])
+        elif m_upper == 'GET' and pm_path_str in LIST_VAR_EXTRACTION:
+            var_name, field_key = LIST_VAR_EXTRACTION[pm_path_str]
+            test_script_lines.extend([
+                'if (pm.response.code === 200) {',
+                '    var body = pm.response.json();',
+                '    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);',
+                f'    if (items.length > 0 && items[0] && items[0]["{field_key}"] !== undefined && items[0]["{field_key}"] !== null) {{',
+                f'        pm.collectionVariables.set("{var_name}", String(items[0]["{field_key}"]));',
+                '    }',
+                '}'
+            ])
             
         req_item = {
             'name': req_name,
@@ -721,7 +829,7 @@ for folder_key in sorted(folders.keys()):
         1 if 'refresh' in x['name'].lower() else
         2 if 'register' in x['name'].lower() else
         3 if 'me' in x['name'].lower() else
-        4 if x['request']['method'] == 'GET' and 'id' not in x['request']['url']['raw'] else
+        4 if x['request']['method'] == 'GET' and not x['request']['url'].get('variable') else
         5 if x['request']['method'] == 'GET' else
         6 if x['request']['method'] == 'POST' and 'tạo' in x['name'].lower() else
         7 if x['request']['method'] == 'POST' else
@@ -733,6 +841,345 @@ for folder_key in sorted(folders.keys()):
         item['name'] = f"{idx:02d}. {item['name']}"
         
     collection['item'].append(f_obj)
+
+def make_flow_item(name, method, raw_path, token_var=None, body=None, test_lines=None, prereq_lines=None):
+    headers = []
+    if token_var:
+        headers.append({'key': 'Authorization', 'value': f'Bearer {{{{{token_var}}}}}', 'type': 'text'})
+    if body is not None:
+        headers.append({'key': 'Content-Type', 'value': 'application/json', 'type': 'text'})
+    segs = [seg for seg in raw_path.strip('/').split('/') if seg]
+    req = {
+        'method': method,
+        'header': headers,
+        'url': {
+            'raw': '{{baseUrl}}' + raw_path,
+            'host': ['{{baseUrl}}'],
+            'path': segs
+        },
+        'auth': {'type': 'noauth'}
+    }
+    if body is not None:
+        req['body'] = {
+            'mode': 'raw',
+            'raw': json.dumps(body, indent=2, ensure_ascii=False),
+            'options': {'raw': {'language': 'json'}}
+        }
+    events = []
+    if prereq_lines:
+        events.append({'listen': 'prerequest', 'script': {'type': 'text/javascript', 'exec': prereq_lines}})
+    events.append({
+        'listen': 'test',
+        'script': {
+            'type': 'text/javascript',
+            'exec': test_lines or [
+                'pm.test("HTTP 2xx OK", function () {',
+                '    pm.expect(pm.response.code).to.be.within(200, 299);',
+                '});'
+            ]
+        }
+    })
+    return {'name': name, 'request': req, 'event': events, 'response': []}
+
+order_flow_folder = {
+    'name': '28. Luồng đặt hàng (E2E Order Flow)',
+    'description': (
+        'Chuỗi kiểm thử tự động xuyên suốt luồng đặt hàng chợ dịch vụ UAV trên DB trắng có dev seed '
+        '(`demo_customer`, `demo_admin`, `demo_fleet` dùng chung `{{password}}`). '
+        'Tất cả ID đều lấy động từ phản hồi bước trước, không dùng `id=1` cố định.'
+    ),
+    'item': [
+        make_flow_item(
+            '01. Đăng nhập Khách hàng (demo_customer)',
+            'POST',
+            '/api/v1/auth/login',
+            body={'usernameOrEmail': '{{customerUsername}}', 'password': '{{password}}'},
+            prereq_lines=[
+                'var d = new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10);',
+                'pm.collectionVariables.set("flowStartDate", d);'
+            ],
+            test_lines=[
+                'pm.test("Customer login 200", function () { pm.response.to.have.status(200); });',
+                'var data = pm.response.json();',
+                'pm.collectionVariables.set("customerToken", data.accessToken || (data.data && data.data.accessToken));'
+            ]
+        ),
+        make_flow_item(
+            '02. Lấy dịch vụ công khai đầu tiên trên chợ',
+            'GET',
+            '/api/v1/public/marketplace/listings',
+            test_lines=[
+                'pm.test("Public listings 200", function () { pm.response.to.have.status(200); });',
+                'var items = pm.response.json().content || [];',
+                'pm.expect(items.length).to.be.above(0);',
+                'pm.collectionVariables.set("flowListingId", String(items[0].id));',
+                'pm.collectionVariables.set("flowListingSlug", String(items[0].slug));',
+                'pm.test("Fleet identity is anonymized for customer", function () {',
+                '    pm.expect(items[0].providerDisplayName).to.be.null;',
+                '    pm.expect(items[0].providerBadge).to.be.an("object");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '03. Khách tạo Dự án mới',
+            'POST',
+            '/api/v1/projects',
+            token_var='customerToken',
+            body={
+                'name': 'Dự án Kiểm thử Tự động Postman — minh hoạ',
+                'province': 'TP. Hồ Chí Minh',
+                'areaGeoJson': '{"type":"Polygon","coordinates":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}',
+                'note': 'Khởi tạo từ chuỗi Luồng đặt hàng Postman'
+            },
+            test_lines=[
+                'pm.test("Project created 201", function () { pm.response.to.have.status(201); });',
+                'var prj = pm.response.json();',
+                'pm.collectionVariables.set("flowProjectId", String(prj.id));'
+            ]
+        ),
+        make_flow_item(
+            '04. Khách cập nhật ghi chú Dự án',
+            'PATCH',
+            '/api/v1/projects/{{flowProjectId}}',
+            token_var='customerToken',
+            body={'note': 'Đã xác nhận ranh giới bay khảo sát — minh hoạ'},
+            test_lines=[
+                'pm.test("Project updated 200", function () { pm.response.to.have.status(200); });'
+            ]
+        ),
+        make_flow_item(
+            '05. Khách đăng ký Dịch vụ cho Dự án (tạo đơn đầu tiên)',
+            'POST',
+            '/api/v1/projects/{{flowProjectId}}/subscriptions',
+            token_var='customerToken',
+            body={
+                'listingId': '{{flowListingId}}',
+                'scheduleType': 'WEEKLY',
+                'startDate': '{{flowStartDate}}',
+                'units': 10,
+                'note': 'Đăng ký bay định kỳ hàng tuần'
+            },
+            prereq_lines=[
+                'var lid = Number(pm.collectionVariables.get("flowListingId"));',
+                'var sdate = pm.collectionVariables.get("flowStartDate");',
+                'pm.request.body.raw = JSON.stringify({',
+                '    listingId: lid,',
+                '    scheduleType: "WEEKLY",',
+                '    startDate: sdate,',
+                '    units: 10,',
+                '    note: "Đăng ký bay định kỳ hàng tuần — minh hoạ"',
+                '});'
+            ],
+            test_lines=[
+                'pm.test("Subscription & first order created 201", function () { pm.response.to.have.status(201); });',
+                'var sub = pm.response.json();',
+                'pm.collectionVariables.set("flowSubId", String(sub.id));',
+                'pm.collectionVariables.set("flowMissionId", String(sub.firstMissionId));'
+            ]
+        ),
+        make_flow_item(
+            '06. Khách kiểm tra Thanh 5 trạng thái đơn (/orders/summary)',
+            'GET',
+            '/api/v1/orders/summary',
+            token_var='customerToken',
+            test_lines=[
+                'pm.test("Order summary 200 & pending >= 1", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().pending).to.be.at.least(1);',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '07. Đăng nhập Quản trị viên (demo_admin)',
+            'POST',
+            '/api/v1/auth/login',
+            body={'usernameOrEmail': '{{adminUsername}}', 'password': '{{password}}'},
+            test_lines=[
+                'pm.test("Admin login 200", function () { pm.response.to.have.status(200); });',
+                'var data = pm.response.json();',
+                'pm.collectionVariables.set("adminToken", data.accessToken || (data.data && data.data.accessToken));'
+            ]
+        ),
+        make_flow_item(
+            '08. Admin kiểm tra Hàng đợi điều phối PENDING_DISPATCH',
+            'GET',
+            '/api/v1/admin/marketplace/dispatch',
+            token_var='adminToken',
+            test_lines=[
+                'pm.test("Dispatch queue 200", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().content.length).to.be.at.least(1);',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '09. Admin giao đơn cho Đội bay demo_fleet',
+            'POST',
+            '/api/v1/admin/marketplace/dispatch/{{flowMissionId}}',
+            token_var='adminToken',
+            body={'providerId': 1, 'note': 'Giao cho đội bay kiểm thử tự động'},
+            prereq_lines=[
+                'var baseUrl = pm.collectionVariables.get("baseUrl") || "http://localhost:8080";',
+                'var adminTok = pm.collectionVariables.get("adminToken");',
+                'pm.sendRequest({',
+                '    url: baseUrl + "/api/v1/admin/marketplace/providers?keyword=doi-bay-mien-nam",',
+                '    method: "GET",',
+                '    header: { "Authorization": "Bearer " + adminTok }',
+                '}, function (err, res) {',
+                '    if (!err && res.code === 200) {',
+                '        var list = res.json().content || [];',
+                '        if (list.length > 0) {',
+                '            pm.request.body.raw = JSON.stringify({ providerId: list[0].id, note: "Giao đội bay miền Nam — minh hoạ" });',
+                '        }',
+                '    }',
+                '});'
+            ],
+            test_lines=[
+                'pm.test("Dispatched to fleet 200", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().providerResponseStatus).to.eql("PENDING_PROVIDER");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '10. Đăng nhập Chủ đội bay (demo_fleet)',
+            'POST',
+            '/api/v1/auth/login',
+            body={'usernameOrEmail': '{{fleetUsername}}', 'password': '{{password}}'},
+            test_lines=[
+                'pm.test("Fleet login 200", function () { pm.response.to.have.status(200); });',
+                'var data = pm.response.json();',
+                'pm.collectionVariables.set("fleetToken", data.accessToken || (data.data && data.data.accessToken));'
+            ]
+        ),
+        make_flow_item(
+            '11. Đội bay lấy danh sách UAV & Kỹ sư rảnh',
+            'GET',
+            '/api/v1/marketplace/provider/fleet/uavs',
+            token_var='fleetToken',
+            test_lines=[
+                'pm.test("Fleet UAVs 200", function () { pm.response.to.have.status(200); });',
+                'var uavs = pm.response.json() || [];',
+                'var avail = uavs.filter(function (u) { return u.status === "AVAILABLE"; });',
+                'var chosen = avail.length > 0 ? avail[0] : uavs[0];',
+                'pm.collectionVariables.set("flowUavId", String(chosen.id));'
+            ]
+        ),
+        make_flow_item(
+            '12. Đội bay lấy Kỹ sư điều khiển đầu tiên',
+            'GET',
+            '/api/v1/marketplace/provider/pilots',
+            token_var='fleetToken',
+            test_lines=[
+                'pm.test("Fleet pilots 200", function () { pm.response.to.have.status(200); });',
+                'var pilots = pm.response.json() || [];',
+                'if (pilots.length > 0) pm.collectionVariables.set("flowPilotId", String(pilots[0].id));'
+            ]
+        ),
+        make_flow_item(
+            '13. Đội bay xác nhận nhận đơn',
+            'POST',
+            '/api/v1/marketplace/provider/orders/{{flowMissionId}}/respond',
+            token_var='fleetToken',
+            body={'accept': True, 'reason': 'Đội bay tiếp nhận lịch bay dự án'},
+            test_lines=[
+                'pm.test("Fleet accepted order 200", function () { pm.response.to.have.status(200); });'
+            ]
+        ),
+        make_flow_item(
+            '14. Đội bay phân công Kỹ sư & UAV',
+            'POST',
+            '/api/v1/marketplace/provider/orders/{{flowMissionId}}/assign',
+            token_var='fleetToken',
+            body={'pilotId': 1, 'uavId': 1, 'note': 'Phân công tổ bay khảo sát'},
+            prereq_lines=[
+                'var pid = Number(pm.collectionVariables.get("flowPilotId"));',
+                'var uid = Number(pm.collectionVariables.get("flowUavId"));',
+                'pm.request.body.raw = JSON.stringify({ pilotId: pid || null, uavId: uid, note: "Phân công tổ bay khảo sát — minh hoạ" });'
+            ],
+            test_lines=[
+                'pm.test("Assigned pilot & UAV 200", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().statusGroup).to.eql("SCHEDULED");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '15. Đội bay bắt đầu chuyến bay mô phỏng',
+            'POST',
+            '/api/v1/marketplace/provider/orders/{{flowMissionId}}/start',
+            token_var='fleetToken',
+            test_lines=[
+                'pm.test("Order simulation started 200", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().statusGroup).to.eql("IN_FLIGHT");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '16. Khách theo dõi tiến độ bay mô phỏng trực tuyến',
+            'GET',
+            '/api/v1/orders/{{flowMissionId}}/tracking',
+            token_var='customerToken',
+            test_lines=[
+                'pm.test("Live tracking 200 with telemetry", function () {',
+                '    pm.response.to.have.status(200);',
+                '    var trk = pm.response.json();',
+                '    pm.expect(trk.statusGroup).to.eql("IN_FLIGHT");',
+                '    pm.expect(trk.position).to.be.an("object");',
+                '    pm.expect(trk.battery).to.be.a("number");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '17. Đội bay hoàn thành chuyến bay & bàn giao dữ liệu',
+            'POST',
+            '/api/v1/marketplace/provider/orders/{{flowMissionId}}/complete',
+            token_var='fleetToken',
+            body={'deliverySummary': 'Bàn giao bình đồ trực giao GeoTIFF — minh hoạ'},
+            test_lines=[
+                'pm.test("Order completed 200", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().statusGroup).to.eql("DELIVERED");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '18. Khách đánh giá 5 sao & kiểm tra đồng bộ rating',
+            'PUT',
+            '/api/v1/missions/{{flowMissionId}}/review',
+            token_var='customerToken',
+            body={'rating': 5, 'comment': 'Dữ liệu bàn giao rõ nét, đúng tiến độ dự án.'},
+            test_lines=[
+                'pm.test("Customer review saved 200", function () { pm.response.to.have.status(200); });'
+            ]
+        ),
+        make_flow_item(
+            '19. Kiểm tra providerBadge cập nhật điểm đánh giá trên chợ',
+            'GET',
+            '/api/v1/public/marketplace/listings/{{flowListingSlug}}',
+            test_lines=[
+                'pm.test("Listing rating updated & fleet still anonymized", function () {',
+                '    pm.response.to.have.status(200);',
+                '    var d = pm.response.json();',
+                '    pm.expect(d.providerDisplayName).to.be.null;',
+                '    pm.expect(d.providerBadge.reviewCount).to.be.at.least(1);',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '20. Khách xoá mềm Dự án kiểm thử sau khi đơn kết thúc',
+            'DELETE',
+            '/api/v1/projects/{{flowProjectId}}',
+            token_var='customerToken',
+            test_lines=[
+                'pm.test("Soft-deleted completed test project 204", function () { pm.response.to.have.status(204); });'
+            ]
+        )
+    ]
+}
+
+collection['item'].append(order_flow_folder)
 
 with open(POSTMAN_PATH, 'w', encoding='utf-8') as f:
     json.dump(collection, f, indent=2, ensure_ascii=False)
