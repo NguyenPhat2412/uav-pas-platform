@@ -22,9 +22,10 @@
     },
     "nav": {
         "dashboard": "Dashboard",
-        "services": "UAV Services",
+        "services": "Service Shop",
+        "projects": "My Projects",
         "training": "User guide",
-        "missions": "My Missions",
+        "missions": "Flight Orders",
         "billing": "Plans & Billing",
         "notifications": "Notifications",
         "profile": "Profile",

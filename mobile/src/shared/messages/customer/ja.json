@@ -22,9 +22,10 @@
     },
     "nav": {
         "dashboard": "ダッシュボード",
-        "services": "UAVサービス",
+        "services": "サービス市場",
+        "projects": "マイプロジェクト",
         "training": "利用ガイド",
-        "missions": "マイミッション",
+        "missions": "飛行オーダー",
         "billing": "プラン・請求",
         "notifications": "通知",
         "profile": "アカウント情報",

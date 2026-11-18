@@ -10,13 +10,37 @@ import type {
     SavedFlightSite,
     SavedFlightSiteUpsertInput,
 } from '@/shared/types/mission/mission.types';
+import type {OrderStatusGroup} from '@/shared/types/project/project.types';
 import type {MissionTelemetryReplay} from '@/shared/types/uav/telemetry.types';
+
+export interface CustomerMissionListParams {
+    status?: MissionStatus;
+    search?: string;
+    projectId?: number;
+    statusGroup?: OrderStatusGroup;
+}
 
 /** Same requests as the web customerMissionService; the backend scopes every list to the signed-in customer. */
 export const customerMissionService = {
     services: (signal?: AbortSignal) => apiClient.get<UavService[]>(API_ROUTES.uavServices.list, {signal}),
-    missions: (page = 0, status?: MissionStatus, search = '', signal?: AbortSignal) =>
-        apiClient.get<PageResponse<Mission>>(`${API_ROUTES.missions.list}?${buildQueryString({size: 20, page, status, search: search || undefined})}`, {signal}),
+    missions: (
+        page = 0,
+        status?: MissionStatus,
+        search = '',
+        signal?: AbortSignal,
+        extra?: { projectId?: number; statusGroup?: OrderStatusGroup },
+    ) =>
+        apiClient.get<PageResponse<Mission>>(
+            `${API_ROUTES.missions.list}?${buildQueryString({
+                size: 20,
+                page,
+                status,
+                search: search || undefined,
+                projectId: extra?.projectId,
+                statusGroup: extra?.statusGroup,
+            })}`,
+            {signal},
+        ),
     mission: (id: number, signal?: AbortSignal) => apiClient.get<Mission>(API_ROUTES.missions.detail(id), {signal}),
     telemetryReplay: (id: number, signal?: AbortSignal) =>
         apiClient.get<MissionTelemetryReplay>(API_ROUTES.missions.telemetryReplay(id), {signal}),

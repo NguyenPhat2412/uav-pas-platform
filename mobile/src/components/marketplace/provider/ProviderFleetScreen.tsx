@@ -133,7 +133,7 @@ export function ProviderFleetScreen() {
                         <SectionTitle title={t('mobile.provider.addUavTitle')}/>
                         <TextField
                             label={t('mobile.provider.uavModelLabel')} required
-                            placeholder="DJI Matrice 350 RTK"
+                            placeholder="M350 / M3E"
                             value={uavForm.model}
                             onChangeText={val => setUavForm(prev => ({...prev, model: val}))}
                         />

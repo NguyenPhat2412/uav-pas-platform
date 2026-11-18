@@ -1,4 +1,4 @@
-import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {billingKeys} from '@/shared/hooks/billing/query-keys';
 import {queryKeys} from '@/shared/lib/query';
 import {customerMissionService} from '@/api/mission/customer-missions.api';
@@ -9,6 +9,7 @@ import type {
     MissionReviewUpsertInput,
     SavedFlightSiteUpsertInput,
 } from '@/shared/types/mission/mission.types';
+import type {OrderStatusGroup} from '@/shared/types/project/project.types';
 
 /** Same cache keys as the web customer portal: ['session', userId, 'customer', ...]. */
 function useCustomerKey() {
@@ -65,13 +66,18 @@ export function useServices() {
 }
 
 /** The mission list, 20 at a time, loading the next page as the list scrolls. */
-export function useMissionList(status?: MissionStatus, search = '') {
+export function useMissionList(
+    status?: MissionStatus,
+    search = '',
+    extra?: { projectId?: number; statusGroup?: OrderStatusGroup },
+) {
     const {key, can, permissionsReady} = useCustomerKey();
     return useInfiniteQuery({
-        queryKey: [...key, 'missions', 'infinite', {status, search}],
-        queryFn: ({pageParam, signal}) => customerMissionService.missions(pageParam, status, search, signal),
+        queryKey: [...key, 'missions', 'infinite', {status, search, ...extra}],
+        queryFn: ({pageParam, signal}) => customerMissionService.missions(pageParam, status, search, signal, extra),
         initialPageParam: 0,
         getNextPageParam: last => (last.page + 1 < last.totalPages ? last.page + 1 : undefined),
+        placeholderData: keepPreviousData,
         enabled: permissionsReady && can('MISSION_VIEW'),
     });
 }

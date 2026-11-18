@@ -16,12 +16,12 @@ interface HotspotSpec {
 }
 
 const HOTSPOTS: HotspotSpec[] = [
-    {id: 'rtk', label: 'Định vị chính xác', detail: 'Hai ăng-ten định vị vệ tinh, sai số chỉ khoảng 1–2 cm, ít bị nhiễu sóng.', x: 140, y: 42},
+    {id: 'gnss', label: 'Định vị vệ tinh', detail: 'Hai ăng-ten định vị vệ tinh giúp giữ hướng bay ổn định, giảm nhiễu sóng.', x: 140, y: 42},
     {id: 'gimbal', label: 'Camera & Ảnh nhiệt', detail: 'Camera chụp rõ nét, phóng to xa và camera ảnh nhiệt; giá đỡ giữ hình không rung.', x: 140, y: 124},
     {id: 'motors', label: 'Động cơ kháng nước', detail: 'Động cơ chịu nước và bụi, tự theo dõi nhiệt độ để bay an toàn.', x: 64, y: 58},
     {id: 'battery', label: 'Pin dung lượng cao', detail: 'Pin lớn cho chuyến bay dài, tự làm ấm khi trời lạnh và báo khi pin yếu.', x: 140, y: 84},
-    {id: 'frame', label: 'Khung sợi carbon', detail: 'Khung sợi carbon nhẹ mà chắc, bay ổn định khi gió khoảng 15 m/s.', x: 196, y: 92},
-    {id: 'payload', label: 'Đèn pha & Cứu hộ', detail: 'Đèn pha rất sáng để tìm kiếm ban đêm và cơ cấu thả phao cứu sinh.', x: 92, y: 120},
+    {id: 'frame', label: 'Khung sợi carbon', detail: 'Khung sợi carbon nhẹ mà chắc, giữ cân bằng ổn định ngoài trời.', x: 196, y: 92},
+    {id: 'payload', label: 'Đèn pha & Cứu hộ', detail: 'Đèn pha hỗ trợ tìm kiếm ban đêm và cơ cấu thả phao cứu sinh.', x: 92, y: 120},
 ];
 
 const AIRFRAME_NAME: Record<MobileAirframeClass, string> = {
@@ -31,8 +31,8 @@ const AIRFRAME_NAME: Record<MobileAirframeClass, string> = {
 };
 
 export interface MobileUav3DViewerProps {
-    serialNumber?: string;
-    modelName?: string;
+    serialNumber: string;
+    modelName: string;
     airframeClass?: MobileAirframeClass;
     pitchDeg?: number;
     rollDeg?: number;
@@ -43,15 +43,15 @@ export interface MobileUav3DViewerProps {
 }
 
 export function MobileUav3DViewerCard({
-    serialNumber = 'UAV-350-RTK',
-    modelName = 'DJI Matrice 350 RTK',
+    serialNumber,
+    modelName,
     airframeClass: initialAirframe = 'QUADCOPTER_RTK',
     pitchDeg = 0,
     rollDeg = 0,
     yawDeg = 0,
-    altitudeM = 85,
-    speedMps = 12.4,
-    batteryPct = 88,
+    altitudeM = 0,
+    speedMps = 0,
+    batteryPct = 0,
 }: MobileUav3DViewerProps) {
     const [airframe, setAirframe] = useState<MobileAirframeClass>(initialAirframe);
     const [exploded, setExploded] = useState(false);

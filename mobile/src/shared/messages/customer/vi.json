@@ -22,9 +22,10 @@
     },
     "nav": {
         "dashboard": "Tổng quan",
-        "services": "Dịch vụ UAV",
+        "services": "Chợ dịch vụ",
+        "projects": "Dự án của tôi",
         "training": "Hướng dẫn sử dụng",
-        "missions": "Nhiệm vụ của tôi",
+        "missions": "Đơn hàng bay",
         "billing": "Gói cước & hóa đơn",
         "notifications": "Thông báo",
         "profile": "Tài khoản",

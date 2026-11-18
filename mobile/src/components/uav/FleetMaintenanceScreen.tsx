@@ -182,16 +182,18 @@ export function FleetMaintenanceScreen() {
                             />
                         )}
 
-                        <MobileUav3DViewerCard
-                            key={selectedProfile?.uavId ?? 'default-uav'}
-                            serialNumber={selectedProfile?.serialNumber ?? uavs[0]?.serialNumber ?? 'UAV-350-RTK'}
-                            modelName={selectedProfile?.model ?? uavs[0]?.model ?? 'DJI Matrice 350 RTK'}
-                            airframeClass={selectedProfile?.airframeClass ?? 'QUADCOPTER_RTK'}
-                            altitudeM={activeSample?.altitudeAglMeters ?? 85}
-                            speedMps={activeSample?.groundSpeedMs ?? 12.4}
-                            batteryPct={activeSample?.batteryPct ?? selectedProfile?.batteryStateOfHealthPct ?? 88}
-                            yawDeg={activeSample?.headingDeg ?? 45}
-                        />
+                        {(selectedProfile || uavs[0]) && (
+                            <MobileUav3DViewerCard
+                                key={selectedProfile?.uavId ?? uavs[0]?.id ?? 'uav-3d'}
+                                serialNumber={selectedProfile?.serialNumber ?? uavs[0]!.serialNumber}
+                                modelName={selectedProfile?.model ?? uavs[0]!.model}
+                                airframeClass={selectedProfile?.airframeClass ?? 'QUADCOPTER_RTK'}
+                                altitudeM={activeSample?.altitudeAglMeters ?? 0}
+                                speedMps={activeSample?.groundSpeedMs ?? 0}
+                                batteryPct={activeSample?.batteryPct ?? selectedProfile?.batteryStateOfHealthPct ?? 0}
+                                yawDeg={activeSample?.headingDeg ?? 0}
+                            />
+                        )}
                     </>
                 )}
 
