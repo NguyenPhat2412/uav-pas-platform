@@ -26,7 +26,7 @@ const PRESET_SPHERICAL: Record<CameraPreset, THREE.Spherical> = {
 };
 
 const AIRFRAME_LABELS: Record<UavAirframeClass, string> = {
-    QUADCOPTER_RTK: '4-Rotor RTK',
+    QUADCOPTER_RTK: '4-Rotor GNSS',
     HEXACOPTER_SAR: '6-Rotor SAR',
     VTOL_FIXED_WING: 'VTOL Wing',
 };
@@ -298,8 +298,8 @@ function ThreeUavCanvas({
 }
 
 export function UavModelViewer({
-    serial = 'UAV-350-RTK',
-    model = 'Enterprise RTK Quadcopter',
+    serial = 'UAV-350-PRO',
+    model = 'Enterprise GNSS Quadcopter',
     status = 'UNKNOWN',
     airframeClass: explicitAirframe,
     attitude,

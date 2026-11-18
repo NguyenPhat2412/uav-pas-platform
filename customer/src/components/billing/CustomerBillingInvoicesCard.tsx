@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import {Download, FileText, Mail, MessageCircleMore} from 'lucide-react';
 import {Badge, Button, Card, CardContent, CardHeader, CardTitle, StatusBadge} from '@/components/ui';
 import {openPublicSupportWidget} from '@/hooks/support/usePublicSupport';
@@ -91,7 +92,10 @@ export function CustomerBillingInvoicesCard({
                                 <td className="whitespace-nowrap px-4 py-4 align-middle text-xs tabular-nums text-slate-500 sm:px-5">{formatDate(inv.createdAt)}</td>
                                 <td className="whitespace-nowrap px-4 py-4 align-middle text-xs tabular-nums text-slate-500 sm:px-5">{formatDate(inv.dueDate)}</td>
                                 <td className="whitespace-nowrap px-4 py-4 align-middle font-extrabold tabular-nums text-slate-900 sm:px-5">
-                                    {formatCurrency(inv.amount)}
+                                    <span>{formatCurrency(inv.amount)}</span>
+                                    <span className="ml-1 text-xs font-medium text-slate-500">
+                                        · {t('marketplaceShop.illustrative')}
+                                    </span>
                                 </td>
                                 <td className="whitespace-nowrap px-4 py-4 align-middle text-xs text-slate-700 sm:px-5">
                                     <StatusBadge
@@ -192,9 +196,18 @@ export function CustomerBillingInvoicesCard({
                     </table>
                 </div>
                 {invoices.length === 0 && !isLoading && !hasError && (
-                    <p role="status" className="m-0 px-5 py-8 text-center text-slate-500">
-                        {t('billingPage.noInvoices')}
-                    </p>
+                    <div role="status" className="flex flex-col items-center justify-center gap-2.5 px-5 py-10 text-center">
+                        <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-uav-red-light text-primary">
+                            <FileText size={20} aria-hidden="true" />
+                        </span>
+                        <p className="m-0 text-sm text-slate-600">{t('billingPage.noInvoices')}</p>
+                        <Link
+                            href="/customer/services"
+                            className="inline-flex min-h-9 items-center justify-center rounded-control border border-slate-200 bg-white px-3.5 text-xs font-semibold whitespace-nowrap text-primary transition-colors hover:bg-slate-50"
+                        >
+                            {t('marketplaceShop.exploreCatalogCta')}
+                        </Link>
+                    </div>
                 )}
             </CardContent>
         </Card>

@@ -76,7 +76,9 @@ export function ServicePlanCards({plans, currentPlanCode, onSelect, pendingCode}
                                 <strong className="whitespace-nowrap text-2xl font-extrabold leading-tight tabular-nums text-primary sm:text-3xl">
                                     {formatCurrency(plan.price)}
                                 </strong>
-                                <span className="text-xs text-slate-500">/ {displayLabel(plan.billingCycle)}</span>
+                                <span className="whitespace-nowrap text-xs text-slate-500">
+                                    / {displayLabel(plan.billingCycle)} · {t('marketplaceShop.illustrative')}
+                                </span>
                             </div>
                             <dl className="mt-auto mb-0 grid gap-3.5 border-t border-border pt-[18px]">
                                 <div className="flex items-center justify-between gap-3 text-[13px]">

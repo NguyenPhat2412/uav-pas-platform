@@ -8,6 +8,7 @@ import {MissionTimeline} from "@/components/shared/MissionTimeline";
 import {displayLabel, formatDate, missionHint, serviceName} from "@/lib/presentation";
 import {PageGuard} from "@/components/customer/CustomerLayout";
 import {Button, Status} from "@/components/customer/CustomerUi";
+import {PageSkeleton} from "@/components/ui";
 import {useAuth} from '@/providers/AuthContext';
 import {useMissionActions, useMissionDetail, useServices} from '@/hooks/mission/useCustomerMissions';
 import {canEditMission} from "@/forms/mission/mission-form";
@@ -48,21 +49,7 @@ function MissionDetail() {
     const [siteSavedMsg, setSiteSavedMsg] = useState('');
     const mission = q.detail.data;
     const actionError = actions.submit.error || actions.cancel.error || actions.clone.error || actions.createSite.error;
-    if (q.detail.isLoading) return (
-        <div role="status" aria-label={t('missionDetail.loading')} className="flex flex-1 flex-col gap-5 bg-white p-4 md:p-5">
-            <span className="sr-only">{t('missionDetail.loading')}</span>
-            <div className="space-y-3 border border-border p-5">
-                <div className="h-4 w-28 animate-pulse rounded-control bg-slate-100"/>
-                <div className="h-7 w-2/3 animate-pulse rounded-control bg-slate-100"/>
-                <div className="h-4 w-1/3 animate-pulse rounded-control bg-slate-100"/>
-                <div className="grid grid-cols-2 gap-3 pt-2 md:grid-cols-4">
-                    {[0, 1, 2, 3].map(i => <div key={i} className="h-14 animate-pulse rounded-panel bg-slate-100"/>)}
-                </div>
-            </div>
-            <div className="h-16 animate-pulse rounded-panel bg-slate-100"/>
-            <div className="h-64 animate-pulse rounded-panel bg-slate-100"/>
-        </div>
-    );
+    if (q.detail.isLoading) return <PageSkeleton label={t('missionDetail.loading')} rows={5}/>;
     const canViewAny = can('MISSION_VIEW_ALL');
     if (q.detail.isError || !mission || (!canViewAny && mission.customerId !== user?.id)) return <div className="flex flex-wrap items-center gap-3 rounded-panel bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline"
                                                                                      role="alert">{t('missionDetail.loadError')} <Button variant="secondary" onClick={() => void q.detail.refetch()}>{t('common.retry')}</Button> <Link href="/customer/missions">{t('missionDetail.backToList')}</Link></div>;
@@ -228,7 +215,7 @@ function MissionDetail() {
                                                setTab(next);
                                                document.getElementById(`mission-tab-${next}`)?.focus();
                                            }}
-                                           className={`-mb-px inline-flex min-h-12 shrink-0 items-center gap-2 border-b-2 px-3 text-sm font-semibold transition-colors ${tab === key ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-foreground'}`}>
+                                           className={`-mb-px inline-flex min-h-12 shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-3 text-sm font-semibold transition-colors ${tab === key ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-foreground'}`}>
                     {t(`missionTabs.${key}`)}
                     {key === 'delivery' && (q.media.data?.length ?? 0) > 0 && <span className="rounded-panel bg-background px-2 py-0.5 text-xs text-muted">{q.media.data!.length}</span>}
                 </button>)}

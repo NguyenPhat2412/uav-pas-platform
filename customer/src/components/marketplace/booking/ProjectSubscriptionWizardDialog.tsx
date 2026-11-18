@@ -3,23 +3,10 @@
 import {useRef, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {CalendarClock, Check, FolderKanban, MapPin, X} from 'lucide-react';
-import {
-    AreaStepPanel,
-    ProjectStepPanel,
-    ScheduleStepPanel,
-} from '@/components/marketplace/booking/ProjectSubscriptionStepPanels';
+import {AreaStepPanel, ProjectStepPanel, ScheduleStepPanel} from '@/components/marketplace/booking/ProjectSubscriptionStepPanels';
 import {Alert, Button} from '@/components/ui';
-import {
-    estimateBookingSubtotal,
-    extractActionableError,
-    pricingUnitLabel,
-} from '@/forms/marketplace/marketplace-forms';
-import {
-    flightPlanToGeoJson,
-    geoJsonToFlightPlan,
-    validateProjectInput,
-    validateSubscriptionBooking,
-} from '@/forms/project/project-form';
+import {estimateBookingSubtotal, extractActionableError, pricingUnitLabel} from '@/forms/marketplace/marketplace-forms';
+import {flightPlanToGeoJson, geoJsonToFlightPlan, validateProjectInput, validateSubscriptionBooking} from '@/forms/project/project-form';
 import {useCustomerProjects, useProjectActions} from '@/hooks/project/useCustomerProjects';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {ApiError} from '@/lib/api';

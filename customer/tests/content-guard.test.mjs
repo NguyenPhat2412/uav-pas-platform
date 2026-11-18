@@ -105,3 +105,23 @@ test('customer, operations, and root catalogs avoid internal stack jargon and aw
     ];
     assert.deepEqual(offences(userCatalogs, USER_FACING_JARGON), []);
 });
+
+test('all JSON message catalogs contain zero RTK claims in user-facing string values', () => {
+    function collectRtkValues(obj, file, prefix = '', hits = []) {
+        if (typeof obj === 'string') {
+            if (/\bRTK\b/i.test(obj)) hits.push(`${file}:${prefix}: ${obj}`);
+        } else if (Array.isArray(obj)) {
+            obj.forEach((v, idx) => collectRtkValues(v, file, `${prefix}[${idx}]`, hits));
+        } else if (obj && typeof obj === 'object') {
+            for (const [k, v] of Object.entries(obj)) {
+                collectRtkValues(v, file, prefix ? `${prefix}.${k}` : k, hits);
+            }
+        }
+        return hits;
+    }
+    const hits = [];
+    for (const file of files('src/messages', ['.json'])) {
+        collectRtkValues(JSON.parse(readFileSync(`${root}${file}`, 'utf8')), file, '', hits);
+    }
+    assert.deepEqual(hits, []);
+});

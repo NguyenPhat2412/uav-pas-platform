@@ -2,11 +2,12 @@
 
 import {useMemo, useState} from 'react';
 import Link from 'next/link';
-import {CircleCheck, RefreshCw, Search, X} from 'lucide-react';
+import {BookOpen, CircleCheck, RefreshCw, Search, X} from 'lucide-react';
 import {Badge, Button, Input} from '@/components/ui';
 import {useTrainingCourses} from '@/hooks/training/useTraining';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
+import {useI18n} from '@/providers/I18nContext';
 import type {TrainingCourseSummary, TrainingPortalTier} from '@/types/training/training.types';
 import {PORTAL_META, TRAINING_CATEGORY_ICONS, TrainingDefaultCategoryIcon, trainingCategoryLabel} from '@/utils/training/training-meta';
 import {courseCallToAction, matchesCourseSearch} from '@/utils/training/course-helpers';
@@ -24,6 +25,7 @@ export function TrainingCourseCatalog({portal, courseHref, embedded = false, man
     embedded?: boolean;
     manage?: boolean;
 }) {
+    const {t} = useI18n();
     const [search, setSearch] = useState('');
     const [category, setCategory] = useState('ALL');
     const query = useTrainingCourses(portal);
@@ -33,10 +35,10 @@ export function TrainingCourseCatalog({portal, courseHref, embedded = false, man
         const counts = new Map<string, number>();
         courses.forEach(course => counts.set(course.category, (counts.get(course.category) ?? 0) + 1));
         return [
-            {value: 'ALL', label: 'Tất cả', count: courses.length},
+            {value: 'ALL', label: t('marketplaceShop.trainingAll'), count: courses.length},
             ...Array.from(counts, ([value, count]) => ({value, label: trainingCategoryLabel(portal, value), count})),
         ];
-    }, [courses, portal]);
+    }, [courses, portal, t]);
 
     const visible = courses.filter(course =>
         (category === 'ALL' || course.category === category) && matchesCourseSearch(course, search));
@@ -47,13 +49,17 @@ export function TrainingCourseCatalog({portal, courseHref, embedded = false, man
         <div className="bg-card">
             <div className="flex flex-col gap-3 border-b border-border px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
                 {embedded ? (
-                    <p className="text-sm text-muted">Danh mục khóa học như {meta.audience} nhìn thấy.</p>
+                    <p className="text-sm text-muted">
+                        {t('marketplaceShop.trainingAudienceHint', {audience: meta.audience})}
+                    </p>
                 ) : (
                     <div className="space-y-1">
                         <h1 className="text-lg font-bold tracking-tight text-foreground sm:text-xl">{meta.title}</h1>
                         <p className="text-sm text-muted">
                             {meta.subtitle}
-                            {courses.length > 0 && <> · Đã hoàn thành <strong className="text-foreground">{completed}/{courses.length}</strong> khóa</>}
+                            {courses.length > 0 && (
+                                <> · <strong className="text-foreground">{t('marketplaceShop.trainingCompletedSummary', {completed, total: courses.length})}</strong></>
+                            )}
                         </p>
                     </div>
                 )}
@@ -64,8 +70,8 @@ export function TrainingCourseCatalog({portal, courseHref, embedded = false, man
                             type="search"
                             value={search}
                             onChange={event => setSearch(event.target.value)}
-                            placeholder="Tìm khóa học"
-                            aria-label="Tìm khóa học"
+                            placeholder={t('marketplaceShop.trainingSearch')}
+                            aria-label={t('marketplaceShop.trainingSearch')}
                             className="h-9 pr-8 pl-8 text-xs"
                         />
                         {search && (
@@ -74,21 +80,21 @@ export function TrainingCourseCatalog({portal, courseHref, embedded = false, man
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setSearch('')}
-                                aria-label="Xóa từ khóa"
+                                aria-label={t('marketplaceShop.trainingClearSearch')}
                                 className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2 px-0"
                             >
                                 <X className="h-3.5 w-3.5" />
                             </Button>
                         )}
                     </div>
-                    <FilterSelect label="Chủ đề" value={category} onChange={setCategory} options={categoryOptions} />
+                    <FilterSelect label={t('marketplaceShop.trainingTopic')} value={category} onChange={setCategory} options={categoryOptions} />
                     <Button
                         type="button"
                         variant="outline"
                         size="sm"
                         onClick={() => void query.refetch()}
-                        aria-label="Làm mới"
-                        title="Làm mới"
+                        aria-label={t('marketplaceShop.trainingRefresh')}
+                        title={t('marketplaceShop.trainingRefresh')}
                         className="h-9 w-9 px-0"
                     >
                         <RefreshCw className={`h-3.5 w-3.5 ${query.isFetching ? 'animate-spin' : ''}`} />
@@ -98,9 +104,14 @@ export function TrainingCourseCatalog({portal, courseHref, embedded = false, man
 
             <div className="p-5">
                 {query.error ? (
-                    <ErrorNotice error={query.error} />
+                    <div className="space-y-3">
+                        <ErrorNotice error={query.error} />
+                        <Button type="button" size="sm" variant="outline" onClick={() => void query.refetch()} className="whitespace-nowrap">
+                            {t('common.retry')}
+                        </Button>
+                    </div>
                 ) : query.isPending ? (
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4" role="status" aria-label="Đang tải khóa học">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4" role="status" aria-label={t('marketplaceShop.trainingLoading')}>
                         {[0, 1, 2, 3].map(index => (
                             <div key={index} className="overflow-hidden rounded-panel border border-border">
                                 <div className="aspect-video animate-pulse bg-surface-variant" />
@@ -112,13 +123,37 @@ export function TrainingCourseCatalog({portal, courseHref, embedded = false, man
                         ))}
                     </div>
                 ) : visible.length === 0 ? (
-                    <div className="flex flex-col items-center gap-1 py-14 text-center">
-                        <p className="text-sm font-semibold text-foreground">
-                            {courses.length === 0 ? 'Chưa có khóa học' : 'Không có khóa học phù hợp'}
+                    <div role="status" className="flex flex-col items-center gap-2.5 py-14 text-center">
+                        <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-uav-red-light text-primary">
+                            <BookOpen size={22} aria-hidden="true" />
+                        </span>
+                        <p className="m-0 text-sm font-semibold text-foreground">
+                            {courses.length === 0 ? t('marketplaceShop.trainingEmptyTitle') : t('marketplaceShop.trainingNoMatchTitle')}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                            {courses.length === 0 ? 'Khóa học mới sẽ hiện ở đây.' : 'Thử bỏ bộ lọc hoặc đổi từ khóa.'}
+                        <p className="m-0 text-xs text-muted-foreground">
+                            {courses.length === 0 ? t('marketplaceShop.trainingEmptyDesc') : t('marketplaceShop.trainingNoMatchDesc')}
                         </p>
+                        {(search || category !== 'ALL') ? (
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                    setSearch('');
+                                    setCategory('ALL');
+                                }}
+                                className="whitespace-nowrap"
+                            >
+                                {t('publicSite.catalog.resetFilters')}
+                            </Button>
+                        ) : (
+                            <Link
+                                href="/customer/services"
+                                className="inline-flex min-h-9 items-center justify-center rounded-control border border-slate-200 bg-white px-3.5 text-xs font-semibold whitespace-nowrap text-primary transition-colors hover:bg-slate-50"
+                            >
+                                {t('marketplaceShop.exploreCatalogCta')}
+                            </Link>
+                        )}
                     </div>
                 ) : (
                     <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">

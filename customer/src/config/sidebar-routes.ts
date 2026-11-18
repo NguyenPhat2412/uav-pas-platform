@@ -40,11 +40,9 @@ import {
     ShieldAlert,
     ShieldCheck,
     Siren,
-    Store,
     TableProperties,
     User,
     Users,
-    Wallet,
     Wrench,
 } from 'lucide-react';
 import {activeDestination} from '@/lib/navigation';
@@ -508,7 +506,6 @@ export const CUSTOMER_SIDEBAR_GROUPS: readonly CustomerNavGroup[] = [
     'overview',
     'missions',
     'services',
-    'partner',
     'support',
 ] as const;
 
@@ -522,6 +519,7 @@ export const CUSTOMER_SIDEBAR_ROUTES: SidebarRouteItem<CustomerNavGroup>[] = [
         group: 'overview',
         icon: LayoutDashboard,
         permission: 'MISSION_VIEW',
+        aliases: ['/customer/dashboard/analytics'],
     },
     {
         href: '/customer/notifications',
@@ -557,6 +555,7 @@ export const CUSTOMER_SIDEBAR_ROUTES: SidebarRouteItem<CustomerNavGroup>[] = [
         icon: Activity,
         permission: 'MISSION_VIEW',
         badge: 'activeMissions',
+        aliases: ['/customer/orders'],
     },
     {
         href: '/customer/weather',
@@ -583,43 +582,6 @@ export const CUSTOMER_SIDEBAR_ROUTES: SidebarRouteItem<CustomerNavGroup>[] = [
         group: 'services',
         icon: CreditCard,
         badge: 'pendingInvoices',
-    },
-
-    // Nhóm: Kênh Đối tác UAV — Seller Studio (partner)
-    {
-        href: '/customer/provider/onboarding',
-        key: 'providerOnboarding',
-        defaultLabel: 'Hồ sơ Đối tác UAV',
-        group: 'partner',
-        icon: Store,
-    },
-    {
-        href: '/customer/provider/listings',
-        key: 'providerListings',
-        defaultLabel: 'Tin đăng dịch vụ & thuê',
-        group: 'partner',
-        icon: Package,
-    },
-    {
-        href: '/customer/provider/fleet',
-        key: 'providerFleet',
-        defaultLabel: 'Đội bay & Thiết bị 3P',
-        group: 'partner',
-        icon: PlaneTakeoff,
-    },
-    {
-        href: '/customer/provider/orders',
-        key: 'providerOrders',
-        defaultLabel: 'Đơn đặt & Đấu thầu RFQ',
-        group: 'partner',
-        icon: ClipboardList,
-    },
-    {
-        href: '/customer/provider/wallet',
-        key: 'providerWallet',
-        defaultLabel: 'Ví ký quỹ & Rút tiền',
-        group: 'partner',
-        icon: Wallet,
     },
 
     // Nhóm: Hỗ trợ & tài khoản (support)

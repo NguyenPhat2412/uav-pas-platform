@@ -357,6 +357,19 @@
     "homeTraining": "Guide",
     "homeQuickTitle": "Quick access",
     "homeFeaturedTitle": "Featured services",
-    "homeViewDetails": "Details"
+    "homeViewDetails": "Details",
+    "exploreCatalogCta": "Explore service marketplace",
+    "trainingSearch": "Search courses",
+    "trainingClearSearch": "Clear keyword",
+    "trainingTopic": "Topic",
+    "trainingAll": "All",
+    "trainingRefresh": "Refresh",
+    "trainingLoading": "Loading courses",
+    "trainingEmptyTitle": "No courses yet",
+    "trainingNoMatchTitle": "No matching courses",
+    "trainingEmptyDesc": "New guide courses will appear here.",
+    "trainingNoMatchDesc": "Try clearing filters or changing your keyword.",
+    "trainingCompletedSummary": "Completed {completed}/{total} courses",
+    "trainingAudienceHint": "Course catalog as seen by {audience}."
   }
 }

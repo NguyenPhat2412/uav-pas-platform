@@ -129,7 +129,7 @@ export function DigitalTwinShowcase() {
 
             <section className="bg-background px-4 py-14 sm:px-6">
                 <div className="mx-auto max-w-5xl space-y-10">
-                    <UavModelViewer serial="UAV-350-RTK" model="Enterprise RTK Quadcopter" status="IN_USE"/>
+                    <UavModelViewer serial="UAV-350-PRO" model="Enterprise GNSS Quadcopter" status="IN_USE"/>
                     <div>
                         <h2 className="m-0 text-center text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">{t('digitalTwin.explainer.title')}</h2>
                     <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-6 text-slate-600">{t('digitalTwin.explainer.subtitle')}</p>

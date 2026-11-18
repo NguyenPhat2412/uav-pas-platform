@@ -1,9 +1,11 @@
 'use client';
 
 import React, {useState} from 'react';
-import {AlertCircle, CheckCheck, CheckCircle2, Clock, Filter, Info, ShieldAlert} from 'lucide-react';
+import Link from 'next/link';
+import {AlertCircle, Bell, CheckCheck, CheckCircle2, Clock, Filter, Info, ShieldAlert} from 'lucide-react';
 import {PageGuard} from "@/components/customer/CustomerLayout";
 import {Button, Panel} from "@/components/customer/CustomerUi";
+import {PageSkeleton} from "@/components/ui";
 import {type NotificationItem, useNotifications} from '@/hooks/notification/useNotifications';
 import {useI18n} from '@/providers/I18nContext';
 import {FilterSelect} from '@/components/shared/FilterSelect';
@@ -34,7 +36,7 @@ export default function CustomerNotificationsPage() {
             <div className="mb-4">
                 <UserNotificationPreferencesCard/>
             </div>
-            {loading && <p role="status" className="m-0 border-b border-slate-200 px-5 py-4 text-sm text-slate-500">{t('notificationsPage.loading')}</p>}
+            {loading && <PageSkeleton label={t('notificationsPage.loading')} rows={4}/>}
             {error && (
                 <div role="alert" className="border-b border-rose-200 bg-rose-50 px-4 py-3 text-danger text-[13px] flex items-center justify-between gap-3 flex-wrap">
                     <span>{error}</span>
@@ -71,7 +73,24 @@ export default function CustomerNotificationsPage() {
                 }
             >
                 {!loading && !error && visibleItems.length === 0 ? (
-                    <div className="p-8 text-center text-slate-500">{t('notificationsPage.empty')}</div>
+                    <div role="status" className="flex flex-col items-center justify-center gap-2.5 p-10 text-center">
+                        <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-uav-red-light text-primary">
+                            <Bell size={20} aria-hidden="true"/>
+                        </span>
+                        <p className="m-0 text-sm text-slate-600">{t('notificationsPage.empty')}</p>
+                        {filter === 'UNREAD' ? (
+                            <Button type="button" variant="secondary" onClick={() => setFilter('ALL')}>
+                                {t('notificationsPage.all', {count: notifications.length})}
+                            </Button>
+                        ) : (
+                            <Link
+                                href="/customer/services"
+                                className="inline-flex min-h-9 items-center justify-center rounded-control border border-slate-200 bg-white px-3.5 text-xs font-semibold whitespace-nowrap text-primary transition-colors hover:bg-slate-50"
+                            >
+                                {t('marketplaceShop.exploreCatalogCta')}
+                            </Link>
+                        )}
+                    </div>
                 ) : (
                     <div className="flex flex-col divide-y divide-slate-200">
                         {visibleItems.map(item => {

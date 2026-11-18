@@ -96,6 +96,7 @@ export const customerProjectsService = {
             ...(payload.province !== undefined ? {province: payload.province.trim()} : {}),
             ...(payload.areaGeoJson !== undefined ? {areaGeoJson: payload.areaGeoJson?.trim() || null} : {}),
             ...(payload.note !== undefined ? {note: payload.note?.trim() || null} : {}),
+            ...(payload.status !== undefined ? {status: payload.status} : {}),
         }),
 
     remove: (id: number) =>

@@ -357,6 +357,19 @@
     "homeTraining": "ガイド",
     "homeQuickTitle": "クイックメニュー",
     "homeFeaturedTitle": "注目サービス",
-    "homeViewDetails": "詳細"
+    "homeViewDetails": "詳細",
+    "exploreCatalogCta": "サービス市場を見る",
+    "trainingSearch": "講座を検索",
+    "trainingClearSearch": "キーワード消去",
+    "trainingTopic": "テーマ",
+    "trainingAll": "すべて",
+    "trainingRefresh": "更新",
+    "trainingLoading": "講座を読み込み中",
+    "trainingEmptyTitle": "講座はまだありません",
+    "trainingNoMatchTitle": "一致する講座がありません",
+    "trainingEmptyDesc": "新しいガイド講座がここに表示されます。",
+    "trainingNoMatchDesc": "絞り込みを解除するかキーワードを変更してください。",
+    "trainingCompletedSummary": "{completed}/{total} 講座完了",
+    "trainingAudienceHint": "{audience}向けの講座一覧を表示しています。"
   }
 }
