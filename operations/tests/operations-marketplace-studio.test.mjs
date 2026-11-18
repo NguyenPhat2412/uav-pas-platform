@@ -181,4 +181,36 @@ test('S3 control engineer today workspace wires preflight checklist, simulation 
     assert.match(marketplaceHooks, /confirmMedia/);
 });
 
+test('S3 every static opsMarketplace.* translation key used in components exists in vi, en, and ja', () => {
+    const [vi, en, ja] = ['vi', 'en', 'ja'].map(l =>
+        JSON.parse(read(`src/messages/sections/opsMarketplace/${l}.json`)),
+    );
+    const lookup = (obj, path) =>
+        path.split('.').reduce((acc, part) => (acc && typeof acc === 'object' ? acc[part] : undefined), obj);
+
+    const componentFiles = [
+        'src/components/marketplace/provider/ProviderStudioShell.tsx',
+        'src/components/marketplace/provider/ProviderOnboardingView.tsx',
+        'src/components/marketplace/provider/ProviderFleetView.tsx',
+        'src/components/marketplace/provider/ProviderPilotsView.tsx',
+        'src/components/marketplace/provider/ProviderListingsView.tsx',
+        'src/components/marketplace/provider/ProviderOrdersView.tsx',
+        'src/components/marketplace/provider/ProviderWalletView.tsx',
+        'src/components/mission/operations/PilotTodayWorkspace.tsx',
+        'src/components/dashboard/OperationsOverviewPanel.tsx',
+        'src/components/simulation/SimulationConsole.tsx',
+    ];
+
+    for (const file of componentFiles) {
+        const src = read(file);
+        for (const match of src.matchAll(/t\('(opsMarketplace\.[a-zA-Z0-9_.]+)'/g)) {
+            const key = match[1];
+            assert.equal(typeof lookup(vi, key), 'string', `Missing vi key ${key} in ${file}`);
+            assert.equal(typeof lookup(en, key), 'string', `Missing en key ${key} in ${file}`);
+            assert.equal(typeof lookup(ja, key), 'string', `Missing ja key ${key} in ${file}`);
+        }
+    }
+});
+
+
 
