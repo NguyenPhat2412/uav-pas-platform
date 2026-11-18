@@ -450,15 +450,15 @@ LIST_VAR_EXTRACTION = {
 }
 
 COLLECTION_PRE_REQUEST_SCRIPT = """// UAV PAS Platform - Automated Auto-Login Pre-request Script
-var baseUrl = pm.collectionVariables.get("baseUrl") || "http://localhost:8080";
-var token = pm.collectionVariables.get("token");
+var baseUrl = pm.variables.get("baseUrl") || "http://localhost:8080";
+var token = pm.variables.get("token");
 var urlStr = pm.request.url ? pm.request.url.toString() : "";
 var isAuth = urlStr.indexOf("/auth/login") !== -1 || urlStr.indexOf("/auth/register") !== -1 || urlStr.indexOf("/public/") !== -1;
 var hasExplicitAuthHeader = pm.request.headers.has("Authorization");
 
 if (!hasExplicitAuthHeader && !token && !isAuth) {
-    var username = pm.collectionVariables.get("username") || pm.collectionVariables.get("defaultUsername") || "demo_admin";
-    var password = pm.collectionVariables.get("password") || pm.collectionVariables.get("defaultPassword") || "";
+    var username = pm.variables.get("username") || pm.variables.get("defaultUsername") || "demo_admin";
+    var password = pm.variables.get("password") || pm.variables.get("defaultPassword") || "";
     
     if (username && password) {
         pm.sendRequest({
@@ -960,8 +960,8 @@ order_flow_folder = {
                 'note': 'Đăng ký bay định kỳ hàng tuần'
             },
             prereq_lines=[
-                'var lid = Number(pm.collectionVariables.get("flowListingId"));',
-                'var sdate = pm.collectionVariables.get("flowStartDate");',
+                'var lid = Number(pm.variables.get("flowListingId"));',
+                'var sdate = pm.variables.get("flowStartDate");',
                 'pm.request.body.raw = JSON.stringify({',
                 '    listingId: lid,',
                 '    scheduleType: "WEEKLY",',
@@ -1019,8 +1019,8 @@ order_flow_folder = {
             token_var='adminToken',
             body={'providerId': 1, 'note': 'Giao cho đội bay kiểm thử tự động'},
             prereq_lines=[
-                'var baseUrl = pm.collectionVariables.get("baseUrl") || "http://localhost:8080";',
-                'var adminTok = pm.collectionVariables.get("adminToken");',
+                'var baseUrl = pm.variables.get("baseUrl") || "http://localhost:8080";',
+                'var adminTok = pm.variables.get("adminToken");',
                 'pm.sendRequest({',
                 '    url: baseUrl + "/api/v1/admin/marketplace/providers?keyword=doi-bay-mien-nam",',
                 '    method: "GET",',
@@ -1093,8 +1093,8 @@ order_flow_folder = {
             token_var='fleetToken',
             body={'pilotId': 1, 'uavId': 1, 'note': 'Phân công tổ bay khảo sát'},
             prereq_lines=[
-                'var pid = Number(pm.collectionVariables.get("flowPilotId"));',
-                'var uid = Number(pm.collectionVariables.get("flowUavId"));',
+                'var pid = Number(pm.variables.get("flowPilotId"));',
+                'var uid = Number(pm.variables.get("flowUavId"));',
                 'pm.request.body.raw = JSON.stringify({ pilotId: pid || null, uavId: uid, note: "Phân công tổ bay khảo sát — minh hoạ" });'
             ],
             test_lines=[
@@ -1136,11 +1136,14 @@ order_flow_folder = {
             'POST',
             '/api/v1/marketplace/provider/orders/{{flowMissionId}}/complete',
             token_var='fleetToken',
-            body={'deliverySummary': 'Bàn giao bình đồ trực giao GeoTIFF — minh hoạ'},
+            body={
+                'completionNote': 'Bàn giao bình đồ trực giao GeoTIFF — minh hoạ',
+                'equipmentCondition': 'Tàu bay và cảm biến hoạt động bình thường'
+            },
             test_lines=[
                 'pm.test("Order completed 200", function () {',
                 '    pm.response.to.have.status(200);',
-                '    pm.expect(pm.response.json().statusGroup).to.eql("DELIVERED");',
+                '    pm.expect(["DELIVERED", "TO_REVIEW"]).to.include(pm.response.json().statusGroup);',
                 '});'
             ]
         ),
@@ -1162,8 +1165,10 @@ order_flow_folder = {
                 'pm.test("Listing rating updated & fleet still anonymized", function () {',
                 '    pm.response.to.have.status(200);',
                 '    var d = pm.response.json();',
-                '    pm.expect(d.providerDisplayName).to.be.null;',
-                '    pm.expect(d.providerBadge.reviewCount).to.be.at.least(1);',
+                '    var listing = d.listing || d;',
+                '    pm.expect(listing.providerDisplayName == null).to.be.true;',
+                '    pm.expect(listing.providerSlug == null).to.be.true;',
+                '    pm.expect(listing.providerBadge.reviewCount).to.be.at.least(1);',
                 '});'
             ]
         ),

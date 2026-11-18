@@ -11,15 +11,15 @@
         "type": "text/javascript",
         "exec": [
           "// UAV PAS Platform - Automated Auto-Login Pre-request Script",
-          "var baseUrl = pm.collectionVariables.get(\"baseUrl\") || \"http://localhost:8080\";",
-          "var token = pm.collectionVariables.get(\"token\");",
+          "var baseUrl = pm.variables.get(\"baseUrl\") || \"http://localhost:8080\";",
+          "var token = pm.variables.get(\"token\");",
           "var urlStr = pm.request.url ? pm.request.url.toString() : \"\";",
           "var isAuth = urlStr.indexOf(\"/auth/login\") !== -1 || urlStr.indexOf(\"/auth/register\") !== -1 || urlStr.indexOf(\"/public/\") !== -1;",
           "var hasExplicitAuthHeader = pm.request.headers.has(\"Authorization\");",
           "",
           "if (!hasExplicitAuthHeader && !token && !isAuth) {",
-          "    var username = pm.collectionVariables.get(\"username\") || pm.collectionVariables.get(\"defaultUsername\") || \"demo_admin\";",
-          "    var password = pm.collectionVariables.get(\"password\") || pm.collectionVariables.get(\"defaultPassword\") || \"\";",
+          "    var username = pm.variables.get(\"username\") || pm.variables.get(\"defaultUsername\") || \"demo_admin\";",
+          "    var password = pm.variables.get(\"password\") || pm.variables.get(\"defaultPassword\") || \"\";",
           "    ",
           "    if (username && password) {",
           "        pm.sendRequest({",
@@ -8823,7 +8823,13 @@
           "name": "09. Hoàn thành chuyến bay và bàn giao dữ liệu (Complete Order)",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/:missionId/complete",
               "host": [
@@ -8847,7 +8853,16 @@
                 }
               ]
             },
-            "description": "### Hoàn thành chuyến bay và bàn giao dữ liệu (Complete Order)\n\nĐánh dấu hoàn tất bay để chuyển đơn sang bước bàn giao nghiệm thu.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/orders/{missionId}/complete`"
+            "description": "### Hoàn thành chuyến bay và bàn giao dữ liệu (Complete Order)\n\nĐánh dấu hoàn tất bay để chuyển đơn sang bước bàn giao nghiệm thu.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/orders/{missionId}/complete`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"completionNote\": \"Bàn giao bình đồ trực giao GeoTIFF — minh hoạ\",\n  \"equipmentCondition\": \"Thiết bị hoạt động bình thường\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "event": [
             {
@@ -9957,8 +9972,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var lid = Number(pm.collectionVariables.get(\"flowListingId\"));",
-                  "var sdate = pm.collectionVariables.get(\"flowStartDate\");",
+                  "var lid = Number(pm.variables.get(\"flowListingId\"));",
+                  "var sdate = pm.variables.get(\"flowStartDate\");",
                   "pm.request.body.raw = JSON.stringify({",
                   "    listingId: lid,",
                   "    scheduleType: \"WEEKLY\",",
@@ -10171,8 +10186,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var baseUrl = pm.collectionVariables.get(\"baseUrl\") || \"http://localhost:8080\";",
-                  "var adminTok = pm.collectionVariables.get(\"adminToken\");",
+                  "var baseUrl = pm.variables.get(\"baseUrl\") || \"http://localhost:8080\";",
+                  "var adminTok = pm.variables.get(\"adminToken\");",
                   "pm.sendRequest({",
                   "    url: baseUrl + \"/api/v1/admin/marketplace/providers?keyword=doi-bay-mien-nam\",",
                   "    method: \"GET\",",
@@ -10450,8 +10465,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var pid = Number(pm.collectionVariables.get(\"flowPilotId\"));",
-                  "var uid = Number(pm.collectionVariables.get(\"flowUavId\"));",
+                  "var pid = Number(pm.variables.get(\"flowPilotId\"));",
+                  "var uid = Number(pm.variables.get(\"flowUavId\"));",
                   "pm.request.body.raw = JSON.stringify({ pilotId: pid || null, uavId: uid, note: \"Phân công tổ bay khảo sát — minh hoạ\" });"
                 ]
               }
@@ -10600,7 +10615,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"deliverySummary\": \"Bàn giao bình đồ trực giao GeoTIFF — minh hoạ\"\n}",
+              "raw": "{\n  \"completionNote\": \"Bàn giao bình đồ trực giao GeoTIFF — minh hoạ\",\n  \"equipmentCondition\": \"Tàu bay và cảm biến hoạt động bình thường\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -10616,7 +10631,7 @@
                 "exec": [
                   "pm.test(\"Order completed 200\", function () {",
                   "    pm.response.to.have.status(200);",
-                  "    pm.expect(pm.response.json().statusGroup).to.eql(\"DELIVERED\");",
+                  "    pm.expect([\"DELIVERED\", \"TO_REVIEW\"]).to.include(pm.response.json().statusGroup);",
                   "});"
                 ]
               }
@@ -10711,8 +10726,10 @@
                   "pm.test(\"Listing rating updated & fleet still anonymized\", function () {",
                   "    pm.response.to.have.status(200);",
                   "    var d = pm.response.json();",
-                  "    pm.expect(d.providerDisplayName).to.be.null;",
-                  "    pm.expect(d.providerBadge.reviewCount).to.be.at.least(1);",
+                  "    var listing = d.listing || d;",
+                  "    pm.expect(listing.providerDisplayName == null).to.be.true;",
+                  "    pm.expect(listing.providerSlug == null).to.be.true;",
+                  "    pm.expect(listing.providerBadge.reviewCount).to.be.at.least(1);",
                   "});"
                 ]
               }

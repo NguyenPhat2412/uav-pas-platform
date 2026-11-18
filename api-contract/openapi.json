@@ -5888,6 +5888,16 @@
           "200": {
             "description": "OK"
           }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderOrderCompleteRequest"
+              }
+            }
+          }
         }
       }
     },
@@ -11131,6 +11141,22 @@
           },
           "illustrativePlatformFeeVnd": {
             "type": "number"
+          }
+        }
+      },
+      "ProviderOrderCompleteRequest": {
+        "type": "object",
+        "required": [
+          "completionNote"
+        ],
+        "properties": {
+          "completionNote": {
+            "type": "string",
+            "example": "Bàn giao bình đồ trực giao GeoTIFF — minh hoạ"
+          },
+          "equipmentCondition": {
+            "type": "string",
+            "example": "Thiết bị hoạt động bình thường"
           }
         }
       }
