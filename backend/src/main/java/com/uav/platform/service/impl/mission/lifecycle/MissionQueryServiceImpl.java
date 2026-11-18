@@ -175,9 +175,44 @@ public class MissionQueryServiceImpl implements MissionQueryService {
     @Transactional(readOnly = true)
     public List<MissionEventResponse> timeline(Long id, Authentication authentication) {
         Mission mission = access.accessible(id, authentication);
+        boolean anonymize = shouldAnonymizeProvider(mission, authentication);
         return events.findByMissionIdOrderByCreatedAtAsc(mission.getId()).stream()
                 .map(missionEventMapper::toResponse)
+                .map(ev -> anonymize ? sanitizeTimelineEventForCustomer(ev, mission) : ev)
                 .toList();
+    }
+
+    private static MissionEventResponse sanitizeTimelineEventForCustomer(
+            MissionEventResponse ev, Mission mission) {
+        String customerUsername =
+                mission.getCustomer() != null ? mission.getCustomer().getUsername() : null;
+        String safeActor =
+                (ev.actor() != null
+                                && customerUsername != null
+                                && ev.actor().equalsIgnoreCase(customerUsername))
+                        ? ev.actor()
+                        : "Điều phối nền tảng UAV PAS";
+        String desc = ev.description();
+        if (desc != null) {
+            if (mission.getProvider() != null && mission.getProvider().getDisplayName() != null) {
+                desc = desc.replace(mission.getProvider().getDisplayName(), "đối tác đã xác minh");
+            }
+            if (mission.getOperator() != null && mission.getOperator().getFullName() != null) {
+                desc = desc.replace(mission.getOperator().getFullName(), "kỹ sư đối tác");
+            }
+            if (mission.getUav() != null && mission.getUav().getSerialNumber() != null) {
+                desc = desc.replace(mission.getUav().getSerialNumber(), "thiết bị bay chuyên dụng");
+            }
+        }
+        return new MissionEventResponse(
+                ev.id(),
+                ev.eventType(),
+                safeActor,
+                ev.oldStatus(),
+                ev.newStatus(),
+                desc,
+                null,
+                ev.createdAt());
     }
 
     @Override

@@ -216,12 +216,12 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
         MarketplaceListing listing =
                 listings.findWithDetailsById(listingId)
                         .filter(l -> !l.isDeleted())
-                        .filter(
-                                l ->
-                                        l.getProvider() != null
-                                                && Objects.equals(
-                                                        l.getProvider().getId(), provider.getId()))
                         .orElseThrow(() -> SystemException.notFound("LISTING_NOT_FOUND"));
+        if (listing.getProvider() == null
+                || !Objects.equals(listing.getProvider().getId(), provider.getId())) {
+            throw SystemException.forbidden(
+                    "Chỉ được xoá dịch vụ thuộc đội bay của bạn.", "LISTING_ACCESS_DENIED");
+        }
         listing.setModerationStatus(ListingModerationStatus.PAUSED);
         listing.setDeleted(true);
         listings.save(listing);
@@ -408,8 +408,15 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
     public void deletePilot(Long pilotId, String username) {
         ProviderProfile provider = requireMyProfile(username);
         ProviderPilot pilot =
-                pilots.findByIdAndProviderIdAndDeletedFalse(pilotId, provider.getId())
+                pilots.findById(pilotId)
+                        .filter(p -> !p.isDeleted())
                         .orElseThrow(() -> SystemException.notFound("PILOT_NOT_FOUND"));
+        if (pilot.getProvider() == null
+                || !Objects.equals(pilot.getProvider().getId(), provider.getId())) {
+            throw SystemException.forbidden(
+                    "Chỉ được thao tác trên kỹ sư thuộc đội bay của bạn.",
+                    "PROVIDER_PILOT_MISMATCH");
+        }
         pilot.setPilotStatus(ProviderPilotStatus.OFF_DUTY);
         pilot.setAssignedUav(null);
         pilot.setDeleted(true);
@@ -426,15 +433,28 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
     @Override
     @Transactional(readOnly = true)
     public MissionResponse getMyOrder(Long missionId, String username) {
-        ProviderProfile provider = requireMyProfile(username);
+        ProviderProfile provider =
+                resolveProfile(username)
+                        .orElseThrow(
+                                () ->
+                                        SystemException.forbidden(
+                                                "Tài khoản không thuộc đội bay nào.",
+                                                "PROVIDER_PROFILE_REQUIRED"));
         Mission mission =
                 missions.findById(missionId)
-                        .filter(
-                                m ->
-                                        m.getProvider() != null
-                                                && Objects.equals(
-                                                        m.getProvider().getId(), provider.getId()))
                         .orElseThrow(() -> SystemException.notFound("ORDER_NOT_FOUND"));
+        if (mission.getProvider() == null
+                || !Objects.equals(mission.getProvider().getId(), provider.getId())) {
+            throw SystemException.forbidden(
+                    "Bạn không có quyền xem đơn hàng thuộc đội bay khác.", "ORDER_ACCESS_DENIED");
+        }
+        if (!isFleetOwner(provider, username)
+                && (mission.getOperator() == null
+                        || !username.equalsIgnoreCase(mission.getOperator().getUsername()))) {
+            throw SystemException.forbidden(
+                    "Kỹ sư chỉ được xem đơn hàng được phân công cho chính mình.",
+                    "PILOT_ORDER_ACCESS_DENIED");
+        }
         return missionMapper.toResponse(mission);
     }
 
@@ -444,12 +464,13 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
         ProviderProfile provider = requireVerifiedProfile(username);
         Mission mission =
                 missions.findByIdForUpdate(missionId)
-                        .filter(
-                                m ->
-                                        m.getProvider() != null
-                                                && Objects.equals(
-                                                        m.getProvider().getId(), provider.getId()))
                         .orElseThrow(() -> SystemException.notFound("ORDER_NOT_FOUND"));
+        if (mission.getProvider() == null
+                || !Objects.equals(mission.getProvider().getId(), provider.getId())) {
+            throw SystemException.forbidden(
+                    "Bạn không có quyền phân công đơn hàng thuộc đội bay khác.",
+                    "ORDER_ACCESS_DENIED");
+        }
         if (OrderStatusGroups.TERMINAL_NON_ACTIVE_STATUSES.contains(mission.getStatus())
                 || mission.getStatus() == MissionStatus.IN_PROGRESS) {
             throw SystemException.conflict(
@@ -607,13 +628,27 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
                                         .findFirst());
     }
 
+    private boolean isFleetOwner(ProviderProfile provider, String username) {
+        return provider != null
+                && provider.getUser() != null
+                && username != null
+                && username.equalsIgnoreCase(provider.getUser().getUsername());
+    }
+
     private ProviderProfile requireMyProfile(String username) {
-        return resolveProfile(username)
-                .orElseThrow(
-                        () ->
-                                SystemException.conflict(
-                                        "Vui lòng khởi tạo Hồ sơ Đối tác trước khi thực hiện thao tác này.",
-                                        "PROVIDER_PROFILE_REQUIRED"));
+        ProviderProfile profile =
+                resolveProfile(username)
+                        .orElseThrow(
+                                () ->
+                                        SystemException.conflict(
+                                                "Vui lòng khởi tạo Hồ sơ Đối tác trước khi thực hiện thao tác này.",
+                                                "PROVIDER_PROFILE_REQUIRED"));
+        if (!isFleetOwner(profile, username)) {
+            throw SystemException.forbidden(
+                    "Chỉ chủ đội bay mới có quyền quản trị tài nguyên đội bay.",
+                    "FLEET_OWNER_REQUIRED");
+        }
+        return profile;
     }
 
     private ProviderProfile requireVerifiedProfile(String username) {

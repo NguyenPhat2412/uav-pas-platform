@@ -419,7 +419,14 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     public List<MissionResponse> listMyOrders(String username) {
         ProviderProfile provider = resolveProfile(username).orElse(null);
         if (provider == null) return List.of();
+        boolean isOwner = isFleetOwner(provider, username);
         return missions.findByProviderIdOrderByCreatedAtDesc(provider.getId()).stream()
+                .filter(
+                        m ->
+                                isOwner
+                                        || (m.getOperator() != null
+                                                && username.equalsIgnoreCase(
+                                                        m.getOperator().getUsername())))
                 .map(missionMapper::toResponse)
                 .toList();
     }
@@ -427,15 +434,8 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     @Override
     public MissionResponse respondToOrder(
             Long missionId, ProviderOrderActionRequest request, String username) {
-        ProviderProfile provider = requireVerifiedProfile(username);
-        Mission mission =
-                missions.findByIdForUpdate(missionId)
-                        .filter(
-                                m ->
-                                        m.getProvider() != null
-                                                && Objects.equals(
-                                                        m.getProvider().getId(), provider.getId()))
-                        .orElseThrow(() -> SystemException.notFound("ORDER_NOT_FOUND"));
+        ProviderProfile provider = requireOwnedVerifiedProfile(username);
+        Mission mission = requireFleetOrderForUpdate(missionId, provider, username, true);
 
         if (mission.getStatus() == MissionStatus.COMPLETED
                 || mission.getStatus() == MissionStatus.CANCELLED
@@ -527,14 +527,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     @Override
     public MissionResponse startOrder(Long missionId, String username) {
         ProviderProfile provider = requireVerifiedProfile(username);
-        Mission mission =
-                missions.findByIdForUpdate(missionId)
-                        .filter(
-                                m ->
-                                        m.getProvider() != null
-                                                && Objects.equals(
-                                                        m.getProvider().getId(), provider.getId()))
-                        .orElseThrow(() -> SystemException.notFound("ORDER_NOT_FOUND"));
+        Mission mission = requireFleetOrderForUpdate(missionId, provider, username, false);
         if (mission.getStatus() != MissionStatus.CONFIRMED
                 && mission.getStatus() != MissionStatus.RESOURCE_RESERVED
                 && mission.getStatus() != MissionStatus.READY) {
@@ -605,14 +598,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     public MissionResponse completeOrder(
             Long missionId, ProviderOrderCompleteRequest request, String username) {
         ProviderProfile provider = requireVerifiedProfile(username);
-        Mission mission =
-                missions.findByIdForUpdate(missionId)
-                        .filter(
-                                m ->
-                                        m.getProvider() != null
-                                                && Objects.equals(
-                                                        m.getProvider().getId(), provider.getId()))
-                        .orElseThrow(() -> SystemException.notFound("ORDER_NOT_FOUND"));
+        Mission mission = requireFleetOrderForUpdate(missionId, provider, username, false);
         if (mission.getStatus() != MissionStatus.IN_PROGRESS
                 && mission.getStatus() != MissionStatus.READY
                 && mission.getStatus() != MissionStatus.CONFIRMED) {
@@ -1032,6 +1018,46 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                                 SystemException.conflict(
                                         "Vui lòng khởi tạo Hồ sơ Đối tác trước khi thực hiện thao tác này.",
                                         "PROVIDER_PROFILE_REQUIRED"));
+    }
+
+    private boolean isFleetOwner(ProviderProfile provider, String username) {
+        return provider != null
+                && provider.getUser() != null
+                && username != null
+                && username.equalsIgnoreCase(provider.getUser().getUsername());
+    }
+
+    private ProviderProfile requireOwnedVerifiedProfile(String username) {
+        ProviderProfile profile = requireVerifiedProfile(username);
+        if (!isFleetOwner(profile, username)) {
+            throw SystemException.forbidden(
+                    "Chỉ chủ đội bay mới có quyền thực hiện thao tác quản trị đội bay này.",
+                    "FLEET_OWNER_REQUIRED");
+        }
+        return profile;
+    }
+
+    private Mission requireFleetOrderForUpdate(
+            Long missionId, ProviderProfile provider, String username, boolean ownerOnly) {
+        Mission mission =
+                missions.findByIdForUpdate(missionId)
+                        .orElseThrow(() -> SystemException.notFound("ORDER_NOT_FOUND"));
+        if (mission.getProvider() == null
+                || !Objects.equals(mission.getProvider().getId(), provider.getId())) {
+            throw SystemException.forbidden(
+                    "Bạn không có quyền thao tác trên đơn hàng thuộc đội bay khác.",
+                    "ORDER_ACCESS_DENIED");
+        }
+        if (!isFleetOwner(provider, username)) {
+            if (ownerOnly
+                    || mission.getOperator() == null
+                    || !username.equalsIgnoreCase(mission.getOperator().getUsername())) {
+                throw SystemException.forbidden(
+                        "Kỹ sư chỉ được thao tác trên đơn hàng được phân công cho chính mình.",
+                        "PILOT_ORDER_ACCESS_DENIED");
+            }
+        }
+        return mission;
     }
 
     private ProviderProfile requireVerifiedProfile(String username) {
