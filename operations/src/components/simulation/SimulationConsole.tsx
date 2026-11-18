@@ -12,6 +12,7 @@ import {SimulationTargetCard} from '@/components/simulation/SimulationTargetCard
 import {SimulationTelemetryHud} from '@/components/simulation/SimulationTelemetryHud';
 import {UavModelViewer} from '@/components/visuals/UavModelViewer';
 import {useAirspaceZones} from '@/hooks/airspace/useAirspace';
+import {useProviderOrders} from '@/hooks/marketplace/useMarketplace';
 import {useMissions} from '@/hooks/mission/useOperationsMissions';
 import {useSimulationMutations, useSimulationRuns, useSimulations} from '@/hooks/simulation/useSimulation';
 import {useUavs} from '@/hooks/uav/useUavs';
@@ -52,15 +53,24 @@ function errorText(error: unknown, fallback: string) {
  */
 export function SimulationConsole({initialMissionId}: { initialMissionId?: number } = {}) {
     const {t, formatNumber, formatDate} = useI18n();
-    const {can, permissionsReady} = useAuth();
-    const canFly = can('UAV_UPDATE');
+    const {can, permissionsReady, isAuthenticated} = useAuth();
+    const canFly = can('UAV_UPDATE') || can('MISSION_UPDATE') || can('UAV_VIEW');
     const canViewMissions = permissionsReady && (can('MISSION_VIEW') || can('MISSION_VIEW_ALL'));
 
     const uavs = useUavs(0);
     const sims = useSimulations();
     const runs = useSimulationRuns();
     const airspace = useAirspaceZones(true);
-    const {missions} = useMissions(undefined, canViewMissions);
+    const {missions: opsMissions} = useMissions(undefined, canViewMissions);
+    const providerOrdersQuery = useProviderOrders(isAuthenticated);
+    const missions = useMemo(() => {
+        const byId = new Map<number, (typeof opsMissions)[number]>();
+        for (const m of opsMissions) byId.set(m.id, m);
+        for (const m of providerOrdersQuery.data ?? []) {
+            if (!byId.has(m.id)) byId.set(m.id, m);
+        }
+        return Array.from(byId.values());
+    }, [opsMissions, providerOrdersQuery.data]);
     const {start, rehearseMission, command, stop, surveyPlan} = useSimulationMutations();
 
     const fleet = useMemo(() => uavs.data?.content ?? [], [uavs.data]);
