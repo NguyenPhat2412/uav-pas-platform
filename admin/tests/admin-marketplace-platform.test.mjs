@@ -232,3 +232,72 @@ test('Admin audit log localizes marketplace moderation, dispatch, project, and c
     }
     pres.setPresentationLocale('vi');
 });
+
+test('Every marketplace component t() lookup resolves in vi/en/ja with matching placeholders and zero leaked Vietnamese in en/ja', () => {
+    const bundles = {
+        vi: {
+            ...JSON.parse(read('src/messages/vi.json')),
+            ...JSON.parse(read('src/messages/sections/adminCommerce/vi.json')),
+        },
+        en: {
+            ...JSON.parse(read('src/messages/en.json')),
+            ...JSON.parse(read('src/messages/sections/adminCommerce/en.json')),
+        },
+        ja: {
+            ...JSON.parse(read('src/messages/ja.json')),
+            ...JSON.parse(read('src/messages/sections/adminCommerce/ja.json')),
+        },
+    };
+
+    const getByPath = (obj, dotPath) => dotPath.split('.').reduce((acc, part) => acc?.[part], obj);
+    const extractPlaceholders = str =>
+        Array.from(str.matchAll(/\{([a-zA-Z0-9_]+)\}/g))
+            .map(m => m[1])
+            .sort()
+            .join(',');
+
+    const targetFiles = [
+        'src/components/marketplace/MarketplaceShared.tsx',
+        'src/components/marketplace/AdminMarketplaceProviders.tsx',
+        'src/components/marketplace/ProviderModerationRow.tsx',
+        'src/components/marketplace/ProviderKycDrawer.tsx',
+        'src/components/marketplace/AdminMarketplaceListings.tsx',
+        'src/components/marketplace/ListingModerationRow.tsx',
+        'src/components/marketplace/ListingModerationDrawer.tsx',
+        'src/components/marketplace/AdminMarketplaceDispatch.tsx',
+        'src/components/marketplace/DispatchQueueCard.tsx',
+        'src/components/marketplace/AdminMarketplaceOrders.tsx',
+        'src/components/marketplace/OrderTwoSidedDrawer.tsx',
+        'src/components/marketplace/AdminMarketplaceProjects.tsx',
+        'src/components/marketplace/ProjectSubscriptionsDrawer.tsx',
+        'src/components/marketplace/AdminMarketplaceStats.tsx',
+        'src/components/marketplace/AdminMarketplacePayouts.tsx',
+        'src/components/user/AdminUserProviderCard.tsx',
+    ];
+
+    const staticKeys = new Set();
+    for (const rel of targetFiles) {
+        const src = read(rel);
+        for (const m of src.matchAll(/\bt\(\s*'((?:adminCommerce|adminNav)\.[a-zA-Z0-9_.]+)'/g)) {
+            staticKeys.add(m[1]);
+        }
+    }
+    assert.ok(staticKeys.size >= 90, `Expected >= 90 static marketplace i18n keys, got ${staticKeys.size}`);
+
+    const viDiacritics = /[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]/i;
+    for (const key of staticKeys) {
+        const viVal = getByPath(bundles.vi, key);
+        const enVal = getByPath(bundles.en, key);
+        const jaVal = getByPath(bundles.ja, key);
+        assert.equal(typeof viVal, 'string', `Missing vi key: ${key}`);
+        assert.equal(typeof enVal, 'string', `Missing en key: ${key}`);
+        assert.equal(typeof jaVal, 'string', `Missing ja key: ${key}`);
+        assert.ok(viVal.trim().length > 0, `Empty vi key: ${key}`);
+        assert.ok(enVal.trim().length > 0, `Empty en key: ${key}`);
+        assert.ok(jaVal.trim().length > 0, `Empty ja key: ${key}`);
+        assert.equal(extractPlaceholders(enVal), extractPlaceholders(viVal), `Placeholder mismatch in en for ${key}`);
+        assert.equal(extractPlaceholders(jaVal), extractPlaceholders(viVal), `Placeholder mismatch in ja for ${key}`);
+        assert.equal(viDiacritics.test(enVal), false, `Vietnamese diacritic leaked into en for ${key}: ${enVal}`);
+        assert.equal(viDiacritics.test(jaVal), false, `Vietnamese diacritic leaked into ja for ${key}: ${jaVal}`);
+    }
+});
