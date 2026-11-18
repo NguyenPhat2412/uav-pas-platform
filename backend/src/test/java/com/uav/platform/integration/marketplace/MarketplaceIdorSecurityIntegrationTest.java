@@ -544,6 +544,30 @@ class MarketplaceIdorSecurityIntegrationTest {
         // =========================================================================
         // 4. CONTROL ENGINEER (PILOT B1 vs PILOT B2) ISOLATION CHECKS
         // =========================================================================
+        // Empty body `{}` on /respond, /assign, /complete MUST check authorization (403) BEFORE
+        // schema validation (400), while valid owner sending `{}` still receives 400
+        mvc.perform(
+                        post("/api/v1/marketplace/provider/orders/" + missionB1Id + "/respond")
+                                .with(authentication(authFleetA))
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{}"))
+                .andExpect(status().isForbidden());
+        mvc.perform(
+                        post("/api/v1/marketplace/provider/orders/" + missionB1Id + "/respond")
+                                .with(authentication(authPilotB1))
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{}"))
+                .andExpect(status().isForbidden());
+        mvc.perform(
+                        post("/api/v1/marketplace/provider/orders/" + missionB1Id + "/respond")
+                                .with(authentication(authFleetB))
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{}"))
+                .andExpect(status().isBadRequest());
+
         // Fleet B accepts both orders; assigns missionB1 -> Pilot B1, missionB2 -> Pilot B2
         mvc.perform(
                         post("/api/v1/marketplace/provider/orders/" + missionB1Id + "/assign")

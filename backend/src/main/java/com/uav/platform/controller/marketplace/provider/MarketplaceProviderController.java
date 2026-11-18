@@ -235,7 +235,7 @@ public class MarketplaceProviderController {
     @PostMapping(ApiRoutes.Marketplace.ORDER_RESPOND)
     public ResponseEntity<MissionResponse> respondToOrder(
             @PathVariable Long missionId,
-            @Valid @RequestBody ProviderOrderActionRequest request,
+            @RequestBody(required = false) ProviderOrderActionRequest request,
             Authentication auth) {
         return ResponseEntity.ok(
                 providerService.respondToOrder(missionId, request, auth.getName()));
@@ -244,7 +244,7 @@ public class MarketplaceProviderController {
     @PostMapping(ApiRoutes.Marketplace.ORDER_ASSIGN)
     public ResponseEntity<MissionResponse> assignOrder(
             @PathVariable Long missionId,
-            @Valid @RequestBody ProviderOrderAssignRequest request,
+            @RequestBody(required = false) ProviderOrderAssignRequest request,
             Authentication auth) {
         return ResponseEntity.ok(fleetService.assignOrder(missionId, request, auth.getName()));
     }
@@ -258,7 +258,7 @@ public class MarketplaceProviderController {
     @PostMapping(ApiRoutes.Marketplace.ORDER_COMPLETE)
     public ResponseEntity<MissionResponse> completeOrder(
             @PathVariable Long missionId,
-            @Valid @RequestBody ProviderOrderCompleteRequest request,
+            @RequestBody(required = false) ProviderOrderCompleteRequest request,
             Authentication auth) {
         return ResponseEntity.ok(providerService.completeOrder(missionId, request, auth.getName()));
     }

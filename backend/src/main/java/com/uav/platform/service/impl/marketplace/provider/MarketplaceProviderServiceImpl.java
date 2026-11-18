@@ -436,6 +436,11 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
             Long missionId, ProviderOrderActionRequest request, String username) {
         ProviderProfile provider = requireOwnedVerifiedProfile(username);
         Mission mission = requireFleetOrderForUpdate(missionId, provider, username, true);
+        if (request == null || request.accept() == null) {
+            throw SystemException.badRequest(
+                            "Vui lòng xác nhận chấp nhận hoặc từ chối đơn.", "VALIDATION_ERROR")
+                    .at("accept");
+        }
 
         if (mission.getStatus() == MissionStatus.COMPLETED
                 || mission.getStatus() == MissionStatus.CANCELLED
@@ -599,6 +604,13 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
             Long missionId, ProviderOrderCompleteRequest request, String username) {
         ProviderProfile provider = requireVerifiedProfile(username);
         Mission mission = requireFleetOrderForUpdate(missionId, provider, username, false);
+        if (request == null
+                || request.completionNote() == null
+                || request.completionNote().isBlank()) {
+            throw SystemException.badRequest(
+                            "Nhập biên bản kết quả bàn giao cho khách hàng.", "VALIDATION_ERROR")
+                    .at("completionNote");
+        }
         if (mission.getStatus() != MissionStatus.IN_PROGRESS
                 && mission.getStatus() != MissionStatus.READY
                 && mission.getStatus() != MissionStatus.CONFIRMED) {

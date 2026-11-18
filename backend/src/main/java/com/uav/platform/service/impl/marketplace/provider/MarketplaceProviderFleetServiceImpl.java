@@ -471,6 +471,11 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
                     "Bạn không có quyền phân công đơn hàng thuộc đội bay khác.",
                     "ORDER_ACCESS_DENIED");
         }
+        if (request == null || request.uavId() == null) {
+            throw SystemException.badRequest(
+                            "Vui lòng chọn tàu bay UAV phân công cho đơn hàng.", "VALIDATION_ERROR")
+                    .at("uavId");
+        }
         if (OrderStatusGroups.TERMINAL_NON_ACTIVE_STATUSES.contains(mission.getStatus())
                 || mission.getStatus() == MissionStatus.IN_PROGRESS) {
             throw SystemException.conflict(
