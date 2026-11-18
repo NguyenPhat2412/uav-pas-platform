@@ -142,8 +142,22 @@ test('Admin dispatch queue wires manual/auto endpoints, ORDER_UPDATED realtime, 
     for (const rel of [
         'src/components/marketplace/AdminMarketplaceDispatch.tsx',
         'src/components/marketplace/DispatchQueueCard.tsx',
+        'src/components/marketplace/AdminMarketplaceOrders.tsx',
+        'src/components/marketplace/OrderTwoSidedDrawer.tsx',
     ]) {
         const lines = read(rel).split('\n').length;
         assert.ok(lines <= 301, `${rel} must stay <= 300 lines (got ${lines - 1})`);
     }
+
+    assert.equal(form.canAdminCancelMarketplaceOrder('PENDING_CONFIRMATION', 'PENDING'), true);
+    assert.equal(form.canAdminCancelMarketplaceOrder('CONFIRMED', 'SCHEDULED'), true);
+    assert.equal(form.canAdminCancelMarketplaceOrder('IN_PROGRESS', 'IN_FLIGHT'), false);
+    assert.equal(form.canAdminCancelMarketplaceOrder('COMPLETED', 'DELIVERED'), false);
+    assert.equal(form.canAdminCancelMarketplaceOrder('CANCELLED', 'CANCELLED'), false);
+
+    assert.equal(form.validateAdminOrderCancelReason('   ').ok, false);
+    assert.deepEqual(form.validateAdminOrderCancelReason(' Khách yêu cầu đổi lịch '), {
+        ok: true,
+        reason: 'Khách yêu cầu đổi lịch',
+    });
 });

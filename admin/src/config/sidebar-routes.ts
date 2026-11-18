@@ -280,6 +280,15 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
         permission: 'MARKETPLACE_MODERATE',
     },
     {
+        href: '/admin/marketplace/orders',
+        key: 'marketplaceOrders',
+        defaultLabel: 'Toàn cảnh đơn hàng',
+        group: 'commerce',
+        subGroup: 'marketplace3p',
+        icon: ClipboardList,
+        permission: 'MARKETPLACE_MODERATE',
+    },
+    {
         href: '/admin/billing/payouts',
         key: 'billingPayouts',
         defaultLabel: 'Giải ngân đối tác',

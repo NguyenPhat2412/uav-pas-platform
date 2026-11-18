@@ -48,6 +48,7 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         MAINTENANCE_SCHEDULE: 'Maintenance schedule', REPAIR_ORDER: 'Repair order', MONTHLY: 'month', YEARLY: 'year',
         CREATED: 'Created', UPDATED: 'Updated', PAUSED: 'Paused', STARTED: 'Repair started',
         AVATAR_UPDATED: 'Profile picture updated', AVATAR_REMOVED: 'Profile picture removed',
+        PENDING_DISPATCH: 'Pending dispatch', PENDING_PROVIDER: 'Awaiting team', ACCEPTED: 'Team accepted', DECLINED: 'Team declined',
     },
     ja: {
         DRAFT: '下書き', PENDING_CONFIRMATION: '確認待ち', CONFIRMED: '確認済み', RESOURCE_RESERVED: 'リソース手配済み',
@@ -79,6 +80,7 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         MAINTENANCE_SCHEDULE: 'メンテナンス計画', REPAIR_ORDER: '修理票', MONTHLY: 'か月',
         YEARLY: '年', CREATED: '作成済み', UPDATED: '更新済み', PAUSED: '一時停止', STARTED: '修理開始',
         AVATAR_UPDATED: 'プロフィール画像を更新', AVATAR_REMOVED: 'プロフィール画像を削除',
+        PENDING_DISPATCH: '割当待ち', PENDING_PROVIDER: 'チーム応答待ち', ACCEPTED: '受諾済み', DECLINED: '辞退',
     },
 };
 
@@ -95,6 +97,10 @@ const presentationText: Record<PresentationLocale, { notUpdated: string; mission
 const labels: Record<string, string> = {
     DRAFT: 'Bản nháp',
     PENDING_CONFIRMATION: 'Chờ xác nhận',
+    PENDING_DISPATCH: 'Chờ điều phối',
+    PENDING_PROVIDER: 'Chờ đội bay nhận',
+    ACCEPTED: 'Đội bay đã nhận',
+    DECLINED: 'Đội bay từ chối',
     CONFIRMED: 'Đã xác nhận',
     RESOURCE_RESERVED: 'Đã bố trí tài nguyên',
     READY: 'Sẵn sàng',
