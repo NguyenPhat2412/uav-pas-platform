@@ -144,11 +144,14 @@
     "field": {
       "organizationName": "Tên tổ chức",
       "taxCode": "Mã số thuế (MST)",
+      "billingEmail": "Email nhận hóa đơn VAT",
       "billingAddress": "Địa chỉ xuất hóa đơn",
       "emergencyContactName": "Liên hệ khẩn cấp",
       "emergencyContactPhone": "Số điện thoại khẩn cấp"
     },
     "taxCodeHint": "10 chữ số, hoặc dạng 0101234567-001.",
+    "billingEmailHint": "Email nhận hóa đơn VAT — để trống sẽ tự động gửi về email đăng ký tài khoản Google / Apple; khuyên dùng nếu đăng nhập bằng Apple \"Ẩn email của tôi\".",
+    "billingEmailDefault": "Tự động gửi về email đăng ký tài khoản",
     "taxCodeInvalid": "Mã số thuế phải gồm 10 chữ số, hoặc dạng 0101234567-001.",
     "phoneInvalid": "Chỉ gồm chữ số, dấu cách, chấm hoặc gạch (8–20 ký tự).",
     "empty": "Chưa cập nhật",

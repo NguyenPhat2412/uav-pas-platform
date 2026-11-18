@@ -34,6 +34,7 @@ export const ROOTS = [
     'types/marketplace/marketplace.types.ts',
     'types/catalog',
     'types/dashboard',
+    'types/i18n/i18n.types.ts',
     'types/maintenance/maintenance.types.ts',
     'types/notification',
     'types/profile',
@@ -87,6 +88,7 @@ export const ROOTS = [
     'messages/sections/opsMissions',
     // The assistant's texts (admin.assistant.*) live in the admin section on the web too.
     'messages/sections/admin',
+    'messages/sections/publicSite',
 ];
 
 /** Web-only modules left out on purpose; lines that import or re-export them are dropped from the copies. */

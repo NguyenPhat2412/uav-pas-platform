@@ -36,9 +36,6 @@ export default function AuthGroupLayout() {
                         headerShown: true,
                         ...detailHeader,
                         title: t('mobile.support.publicTitle'),
-                        presentation: 'formSheet',
-                        sheetAllowedDetents: [0.85, 1],
-                        sheetGrabberVisible: true,
                         headerTransparent: false,
                     }}
                 />

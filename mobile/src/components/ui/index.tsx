@@ -131,7 +131,10 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
                         ref={scrollRef}
                         onScroll={event => { scrolled.current = event.nativeEvent.contentOffset.y; }}
                         scrollEventThrottle={16}
-                        contentInsetAdjustmentBehavior="automatic"
+                        contentInsetAdjustmentBehavior="never"
+                        directionalLockEnabled
+                        alwaysBounceHorizontal={false}
+                        showsHorizontalScrollIndicator={false}
                         automaticallyAdjustKeyboardInsets
                         contentContainerStyle={[styles.content, {paddingBottom: bottomPad}]}
                         keyboardShouldPersistTaps="handled"
@@ -304,7 +307,7 @@ export function ChipGroup<T extends string>({options, value, onChange, wrap = fa
 
 export const styles = StyleSheet.create({
     flex: {flex: 1},
-    screen: {flex: 1, backgroundColor: colors.canvas},
+    screen: {flex: 1, backgroundColor: colors.canvas, overflow: 'hidden'},
     // Cards sit on the gradient; a hairline keeps them distinct without heavy shadows.
     content: {flexGrow: 1, padding: spacing.lg, paddingBottom: spacing.xxl},
     column: {width: '100%', alignSelf: 'center', gap: spacing.lg},

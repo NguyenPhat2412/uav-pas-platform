@@ -34,9 +34,7 @@ export default function OperationsLayout() {
                     <Stack.Screen
                         name="assistant"
                         options={{
-                            presentation: 'formSheet',
-                            sheetAllowedDetents: [0.75, 1],
-                            sheetGrabberVisible: true,
+                            title: t('admin.assistant.open'),
                             headerTransparent: false,
                         }}
                     />

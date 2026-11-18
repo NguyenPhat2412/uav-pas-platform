@@ -33,7 +33,18 @@ export default function RootLayout() {
                             <AuthProvider>
                                 <ToastProvider>
                                     <StatusBar style="dark"/>
-                                    <Stack screenOptions={{headerShown: false, contentStyle: {backgroundColor: colors.canvas}}}/>
+                                    <Stack
+                                        screenOptions={{
+                                            headerShown: false,
+                                            scrollEdgeEffects: {
+                                                top: 'hidden',
+                                                bottom: 'hidden',
+                                                left: 'hidden',
+                                                right: 'hidden',
+                                            },
+                                            contentStyle: {backgroundColor: colors.canvas},
+                                        }}
+                                    />
                                     <LiveNotificationBanner/>
                                     <GlobalOfflineScreen/>
                                 </ToastProvider>

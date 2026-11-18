@@ -1,12 +1,13 @@
 import React, {useState} from 'react';
-import {Platform, Pressable, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import {AlertTriangle, Clock3, CloudSun, Flame, Gauge, Save, Send} from 'lucide-react-native';
-import {AppText, Button, Card, ErrorState, FieldLabel, LoadingState, ScaledText, Screen, TextField} from '@/components/ui';
+import {AlertTriangle, ArrowLeft, ArrowRight, Clock3, Flame, Gauge, LocateFixed, Save, Send} from 'lucide-react-native';
+import {AppText, Button, Card, ErrorState, LoadingState, Screen, TextField} from '@/components/ui';
 import {GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
 import {MissionBookingOptionsCard} from '@/components/mission/MissionBookingOptionsCard';
+import {MissionCheckoutStepper, MissionCheckoutSummaryCard, type CheckoutStep} from '@/components/mission/MissionCheckoutStepper';
 import {MissionFlightPlanSection, sitePlanToInput} from '@/components/mission/MissionFlightPlanSection';
+import {MissionScheduleWeatherCard} from '@/components/mission/MissionScheduleWeatherCard';
 import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplaceCatalog';
 import {useMissionActions, useMissionDetail, useSavedFlightSites, useServices} from '@/hooks/mission/useCustomerMissions';
 import {useDeviceLocation} from '@/hooks/location/useDeviceLocation';
@@ -26,28 +27,12 @@ import {displayLabel} from '@/shared/lib/presentation';
 import {applyFlightWindow} from '@/shared/utils/weather/flight-window';
 import type {MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
 import type {Mission, MissionInput, MissionPriority, SavedFlightSite} from '@/shared/types/mission/mission.types';
-import {fromLocalIso, newMissionDraft, withEnd, withPoint, withStart} from '@/forms/mission/mission-draft';
+import {newMissionDraft, withEnd, withPoint, withStart} from '@/forms/mission/mission-draft';
 import {isFinitePoint} from '@/utils/operations/map-shapes';
-import {colors, font, radius, spacing} from '@/styles/tokens';
-
-function DateField({label, value, onChange, error}: { label: string; value: string; onChange: (date: Date) => void; error?: string }) {
-    const date = fromLocalIso(value) ?? new Date();
-    return (
-        <View style={styles.dateField}>
-            <View style={styles.dateRow}>
-                <FieldLabel label={label} required/>
-                <View style={styles.pickerAlign}>
-                    <DateTimePicker value={date} mode="datetime" display={Platform.OS === 'ios' ? 'compact' : 'default'} minuteInterval={5}
-                                    accentColor={colors.primary} onChange={(_event, next) => next && onChange(next)}/>
-                </View>
-            </View>
-            {error ? <AppText variant="caption" style={styles.error}>{error}</AppText> : null}
-        </View>
-    );
-}
+import {colors, spacing} from '@/styles/tokens';
 
 function MissionForm({initial, mission, initialListing}: { initial: MissionInput; mission?: Mission; initialListing?: MarketplaceListing | null }) {
-    const {t, formatDate} = useI18n();
+    const {t} = useI18n();
     const {can} = useAuth();
     const toast = useToast();
     const router = useRouter();
@@ -55,6 +40,7 @@ function MissionForm({initial, mission, initialListing}: { initial: MissionInput
     const flightSites = useSavedFlightSites();
     const actions = useMissionActions();
     const location = useDeviceLocation();
+    const [step, setStep] = useState<CheckoutStep>(1);
     const [form, setForm] = useState<MissionInput>(initial);
     const [errors, setErrors] = useState<MissionFormErrors>({});
     const [message, setMessage] = useState<string | null>(null);
@@ -72,6 +58,10 @@ function MissionForm({initial, mission, initialListing}: { initial: MissionInput
         const fields = missionFieldErrors(error);
         setErrors(fields ?? {});
         setMessage(fields ? t('missionForm.checkErrors') : missionFormError(error, t));
+        if (fields) {
+            if (fields.title || fields.description || fields.serviceId || fields.bookingUnits) setStep(1);
+            else if (fields.locationName || fields.startTime || fields.expectedEndTime || fields.requestedDate || fields.flightPlan) setStep(2);
+        }
     };
 
     const save = async (sendNow: boolean) => {
@@ -105,12 +95,7 @@ function MissionForm({initial, mission, initialListing}: { initial: MissionInput
         form.latitude != null && form.longitude != null && isFinitePoint(form.latitude, form.longitude)
             ? {latitude: form.latitude, longitude: form.longitude}
             : null;
-
-    const forecast = usePointForecast(
-        point ? {lat: point.latitude, lng: point.longitude} : null,
-        form.startTime,
-        form.serviceId,
-    );
+    const forecast = usePointForecast(point ? {lat: point.latitude, lng: point.longitude} : null, form.startTime, form.serviceId);
     const recommendedWindows = forecast.data?.recommendedWindows?.slice(0, 4) ?? [];
     const savedSites = flightSites.data ?? [];
 
@@ -162,97 +147,106 @@ function MissionForm({initial, mission, initialListing}: { initial: MissionInput
 
     const handleLocateCurrent = async () => {
         const found = await location.locate();
-        if (found) setForm(current => withPoint(current, found.lat, found.lng));
-        else toast.show(t('weather.workspace.locateDenied'), 'error');
+        if (found) {
+            setForm(current => withPoint(current, found.lat, found.lng));
+            toast.show(t('mobile.shop.gpsAppliedToast'), 'info');
+        } else {
+            toast.show(t('weather.workspace.locateDenied'), 'error');
+        }
     };
 
     return (
         <Screen>
-            <MissionBookingOptionsCard
-                form={form}
-                errors={errors}
-                services={services.data ?? []}
-                servicesLoading={services.isPending}
-                initialListing={initialListing}
-                isEditing={Boolean(mission)}
-                onChange={setForm}
-            />
+            <MissionCheckoutStepper step={step} onSelectStep={setStep}/>
 
-            <Card>
-                <TextField label={t('missionForm.title')} required value={form.title} onChangeText={value => set('title', value)} maxLength={180} error={errors.title}/>
-                <TextField label={t('missionForm.description')} optional value={form.description ?? ''} onChangeText={value => set('description', value)} multiline
-                           maxLength={2000} error={errors.description}/>
-            </Card>
+            {step === 1 && (
+                <>
+                    <MissionBookingOptionsCard
+                        form={form}
+                        errors={errors}
+                        services={services.data ?? []}
+                        servicesLoading={services.isPending}
+                        initialListing={initialListing}
+                        isEditing={Boolean(mission)}
+                        onChange={setForm}
+                    />
+                    <Card>
+                        <TextField label={t('missionForm.title')} required value={form.title} onChangeText={value => set('title', value)} maxLength={180} error={errors.title}/>
+                        <TextField label={t('missionForm.description')} optional value={form.description ?? ''} onChangeText={value => set('description', value)} multiline
+                                   maxLength={2000} error={errors.description}/>
+                    </Card>
+                </>
+            )}
 
-            <Card>
-                <DateField label={t('missionForm.start')} value={form.startTime} onChange={date => setForm(current => withStart(current, date))}
-                           error={errors.startTime ?? errors.requestedDate}/>
-                <DateField label={t('missionForm.expectedEnd')} value={form.expectedEndTime} onChange={date => setForm(current => withEnd(current, date))}
-                           error={errors.expectedEndTime}/>
-                <AppText variant="caption">{t('missionForm.timeHint')}</AppText>
+            {step === 2 && (
+                <>
+                    <Button tone="secondary" icon={LocateFixed} loading={location.locating} label={t('mobile.shop.useMyGpsBtn')} onPress={() => void handleLocateCurrent()}/>
+                    <MissionFlightPlanSection
+                        form={form}
+                        errors={errors}
+                        savedSites={savedSites}
+                        creatingSite={actions.createFlightSite.isPending}
+                        locating={location.locating}
+                        defaultCenter={{latitude: location.point.lat, longitude: location.point.lng}}
+                        onChangeLocationName={value => set('locationName', value)}
+                        onSelectPoint={(latitude, longitude) => setForm(current => withPoint(current, latitude, longitude))}
+                        onLocateCurrent={handleLocateCurrent}
+                        onApplySite={applyFlightSite}
+                        onSaveSite={handleSaveSite}
+                        onDeleteSite={handleDeleteSite}
+                    />
+                    <MissionScheduleWeatherCard
+                        startTime={form.startTime}
+                        expectedEndTime={form.expectedEndTime}
+                        startError={errors.startTime ?? errors.requestedDate}
+                        endError={errors.expectedEndTime}
+                        recommendedWindows={recommendedWindows}
+                        onChangeStart={date => setForm(current => withStart(current, date))}
+                        onChangeEnd={date => setForm(current => withEnd(current, date))}
+                        onSelectWindow={iso => {
+                            setForm(current => applyFlightWindow(current, iso));
+                            toast.show(t('mobile.missions.windowApplied'), 'info');
+                        }}
+                    />
+                </>
+            )}
 
-                {recommendedWindows.length > 0 && (
-                    <View style={styles.windowsSection}>
-                        <View style={styles.windowsHeader}>
-                            <CloudSun size={15} color={colors.slateDark}/>
-                            <AppText variant="small" style={styles.dateLabel}>{t('mobile.missions.safeWindowsTitle')}</AppText>
-                        </View>
-                        <View style={styles.windowsRow}>
-                            {recommendedWindows.map(win => {
-                                const selected = form.startTime.slice(0, 16) === win.startTime.slice(0, 16);
-                                return (
-                                    <Pressable
-                                        key={win.startTime}
-                                        accessibilityRole="button"
-                                        accessibilityState={{selected}}
-                                        onPress={() => {
-                                            setForm(current => applyFlightWindow(current, win.startTime));
-                                            toast.show(t('mobile.missions.windowApplied'), 'info');
-                                        }}
-                                        style={({pressed}) => [styles.windowChip, selected && styles.windowChipActive, pressed && styles.pressed]}>
-                                        <ScaledText style={[styles.windowChipText, selected && styles.windowChipTextActive]}>
-                                            {formatDate(win.startTime, {dateStyle: 'short', timeStyle: 'short'})} · {win.safetyScore}%
-                                        </ScaledText>
-                                    </Pressable>
-                                );
-                            })}
-                        </View>
-                    </View>
-                )}
-            </Card>
-
-            <MissionFlightPlanSection
-                form={form}
-                errors={errors}
-                savedSites={savedSites}
-                creatingSite={actions.createFlightSite.isPending}
-                locating={location.locating}
-                defaultCenter={{latitude: location.point.lat, longitude: location.point.lng}}
-                onChangeLocationName={value => set('locationName', value)}
-                onSelectPoint={(latitude, longitude) => setForm(current => withPoint(current, latitude, longitude))}
-                onLocateCurrent={handleLocateCurrent}
-                onApplySite={applyFlightSite}
-                onSaveSite={handleSaveSite}
-                onDeleteSite={handleDeleteSite}
-            />
-
-            <Card>
-                <GlassSelectField<MissionPriority>
-                    label={t('missionForm.priority')} required
-                    sheetTitle={t('missionForm.priority')}
-                    value={form.priority ?? 'NORMAL'}
-                    options={priorityOptions}
-                    onChange={value => set('priority', value)}
-                />
-                <TextField label={t('missionForm.notes')} optional value={form.notes ?? ''} onChangeText={value => set('notes', value)} multiline maxLength={2000}
-                           error={errors.notes}/>
-            </Card>
+            {step === 3 && (
+                <>
+                    <MissionCheckoutSummaryCard form={form} listing={initialListing}/>
+                    <Card>
+                        <GlassSelectField<MissionPriority>
+                            label={t('missionForm.priority')} required
+                            sheetTitle={t('missionForm.priority')}
+                            value={form.priority ?? 'NORMAL'}
+                            options={priorityOptions}
+                            onChange={value => set('priority', value)}
+                        />
+                        <TextField label={t('missionForm.notes')} optional value={form.notes ?? ''} onChangeText={value => set('notes', value)} multiline maxLength={2000}
+                                   error={errors.notes}/>
+                    </Card>
+                </>
+            )}
 
             {message ? <AppText variant="small" style={styles.error}>{message}</AppText> : null}
-            {mission ? <Button label={t('common.save')} icon={Save} loading={busy} onPress={() => void save(false)}/> : (
+
+            {step < 3 ? (
+                <View style={styles.navRow}>
+                    {step > 1 && <Button tone="secondary" icon={ArrowLeft} label={t('mobile.shop.prevStepBtn')} onPress={() => setStep(1)} style={styles.flex}/>}
+                    <Button icon={ArrowRight} label={t('mobile.shop.nextStepBtn')} onPress={() => setStep(prev => (prev === 1 ? 2 : 3))} style={styles.flex}/>
+                </View>
+            ) : mission ? (
                 <View style={styles.actions}>
-                    {can('MISSION_UPDATE') && <Button label={t('missionDetail.submit')} icon={Send} loading={busy} onPress={() => void save(true)}/>}
-                    <Button label={t('mobile.missions.saveDraft')} icon={Save} tone="secondary" disabled={busy} onPress={() => void save(false)}/>
+                    <Button label={t('common.save')} icon={Save} loading={busy} onPress={() => void save(false)}/>
+                    <Button tone="secondary" icon={ArrowLeft} label={t('mobile.shop.prevStepBtn')} disabled={busy} onPress={() => setStep(2)}/>
+                </View>
+            ) : (
+                <View style={styles.actions}>
+                    {can('MISSION_UPDATE') && <Button label={t('mobile.shop.confirmCheckoutBtn')} icon={Send} loading={busy} onPress={() => void save(true)}/>}
+                    <View style={styles.navRow}>
+                        <Button tone="secondary" icon={ArrowLeft} label={t('mobile.shop.prevStepBtn')} disabled={busy} onPress={() => setStep(2)} style={styles.flex}/>
+                        <Button label={t('mobile.missions.saveDraft')} icon={Save} tone="secondary" disabled={busy} onPress={() => void save(false)} style={styles.flex}/>
+                    </View>
                 </View>
             )}
         </Screen>
@@ -260,12 +254,7 @@ function MissionForm({initial, mission, initialListing}: { initial: MissionInput
 }
 
 export function MissionCreateScreen() {
-    const {serviceId, listingSlug, units, rfq} = useLocalSearchParams<{
-        serviceId?: string;
-        listingSlug?: string;
-        units?: string;
-        rfq?: string;
-    }>();
+    const {serviceId, listingSlug, units, rfq} = useLocalSearchParams<{ serviceId?: string; listingSlug?: string; units?: string; rfq?: string }>();
     const services = useServices();
     const listingDetail = usePublicListingDetail(listingSlug);
     const id = serviceId ? Number(serviceId) : undefined;
@@ -311,18 +300,8 @@ export function MissionEditScreen() {
 }
 
 const styles = StyleSheet.create({
+    flex: {flex: 1},
     error: {color: colors.danger},
-    dateField: {gap: spacing.xs},
-    dateRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: spacing.sm},
-    dateLabel: {fontWeight: '600', color: colors.text},
-    pickerAlign: {marginLeft: 'auto'},
-    windowsSection: {gap: spacing.xs, paddingTop: spacing.xs, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border},
-    windowsHeader: {flexDirection: 'row', alignItems: 'center', gap: spacing.xs},
-    windowsRow: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs},
-    windowChip: {minHeight: 36, justifyContent: 'center', borderRadius: radius.control, borderWidth: 1, borderColor: colors.inputBorder, backgroundColor: colors.surface, paddingHorizontal: spacing.md, paddingVertical: spacing.sm},
-    windowChipActive: {backgroundColor: colors.slateDark, borderColor: colors.slateDark},
-    windowChipText: {fontSize: font.caption, fontWeight: '600', color: colors.text},
-    windowChipTextActive: {color: colors.white},
-    pressed: {opacity: 0.75},
+    navRow: {flexDirection: 'row', gap: spacing.sm},
     actions: {gap: spacing.sm},
 });

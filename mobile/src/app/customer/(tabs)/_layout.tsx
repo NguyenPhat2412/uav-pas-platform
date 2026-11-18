@@ -5,25 +5,25 @@ import {useI18n} from '@/providers/I18nContext';
 import {colors} from '@/styles/tokens';
 
 /**
- * The system tab bar (Liquid Glass on iOS 26), SF Symbols icons, collapsing while scrolling down. It carries what a
- * customer comes for: overview, missions, services and contact; weather and notifications open from the home screen.
+ * System Liquid Glass tab bar ordered along the e-commerce buyer & seller journey:
+ * Trang chủ -> Khám phá -> Đơn bay -> Hỗ trợ -> Tôi
  */
 export default function CustomerTabs() {
     const {t} = useI18n();
     const {unreadCount} = usePublicSupportSession(false);
     return (
-        <NativeTabs tintColor={colors.primary} minimizeBehavior="onScrollDown">
+        <NativeTabs tintColor={colors.primary} minimizeBehavior="never" disableTransparentOnScrollEdge>
             <NativeTabs.Trigger name="home">
                 <NativeTabs.Trigger.Icon sf={{default: 'house', selected: 'house.fill'}} md="home"/>
-                <NativeTabs.Trigger.Label>{t('nav.dashboard')}</NativeTabs.Trigger.Label>
-            </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="missions">
-                <NativeTabs.Trigger.Icon sf={{default: 'list.bullet.clipboard', selected: 'list.bullet.clipboard.fill'}} md="assignment"/>
-                <NativeTabs.Trigger.Label>{t('mobile.nav.missions')}</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Label>{t('mobile.nav.home')}</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="services">
-                <NativeTabs.Trigger.Icon sf={{default: 'square.stack.3d.up', selected: 'square.stack.3d.up.fill'}} md="layers"/>
-                <NativeTabs.Trigger.Label>{t('mobile.nav.services')}</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf={{default: 'square.grid.2x2', selected: 'square.grid.2x2.fill'}} md="grid_view"/>
+                <NativeTabs.Trigger.Label>{t('mobile.nav.explore')}</NativeTabs.Trigger.Label>
+            </NativeTabs.Trigger>
+            <NativeTabs.Trigger name="missions">
+                <NativeTabs.Trigger.Icon sf={{default: 'airplane.circle', selected: 'airplane.circle.fill'}} md="flight_takeoff"/>
+                <NativeTabs.Trigger.Label>{t('mobile.nav.orders')}</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="support">
                 <NativeTabs.Trigger.Icon sf={{default: 'bubble.left.and.text.bubble.right', selected: 'bubble.left.and.text.bubble.right.fill'}} md="support_agent"/>
@@ -32,7 +32,7 @@ export default function CustomerTabs() {
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="account">
                 <NativeTabs.Trigger.Icon sf={{default: 'person.crop.circle', selected: 'person.crop.circle.fill'}} md="account_circle"/>
-                <NativeTabs.Trigger.Label>{t('nav.profile')}</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Label>{t('mobile.nav.me')}</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
         </NativeTabs>
     );

@@ -15,5 +15,5 @@ export const LAYOUT_META: LayoutMeta = {
 
 /** Expo Router stack layout for the customer UAV service catalog tab segment. */
 export default function Layout() {
-    return <TabStack titleKey="nav.services"/>;
+    return <TabStack titleKey="mobile.nav.explore"/>;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, View} from 'react-native';
-import {router, type NativeStackHeaderProps} from 'expo-router';
+import {router, usePathname, type NativeStackHeaderProps} from 'expo-router';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ChevronLeft, X, type LucideIcon} from 'lucide-react-native';
 import {AppBackground} from '@/components/layout/AppBackground';
@@ -40,6 +40,8 @@ export function HeaderIconButton({icon: Icon, label, onPress, count = 0, loading
  */
 export function AppHeader({back, options, route, navigation}: NativeStackHeaderProps) {
     const insets = useSafeAreaInsets();
+    const pathname = usePathname();
+    const isCustomer = pathname.startsWith('/customer');
     const activePortal = useOptionalAuth()?.activePortal ?? 'customer';
     const {t} = useI18n();
     const sheet = SHEETS.has(options.presentation ?? '');
@@ -58,11 +60,15 @@ export function AppHeader({back, options, route, navigation}: NativeStackHeaderP
     const label = sheet ? t('common.close') : t('common.back');
 
     return (
-        // A sheet starts below the status bar already; a pushed screen needs the top inset.
-        <View style={[styles.bar, {paddingTop: sheet ? 6 : insets.top}]}>
-            {/* The top slice of the page artwork: radar and grid run on from the header into the page. */}
-            <AppBackground/>
-            <View style={styles.row}>
+        // Fixed opaque header bar: extra top & horizontal clearance on sheets keeps buttons away from rounded top corners.
+        <View
+            style={[
+                styles.bar,
+                isCustomer && styles.barCustomer,
+                {paddingTop: sheet ? 14 : insets.top},
+            ]}>
+            {!isCustomer && <AppBackground/>}
+            <View style={[styles.row, sheet && styles.rowSheet]}>
                 {!root && (
                     <View style={styles.side}>
                         <Pressable onPress={leave} hitSlop={8} accessibilityRole="button" accessibilityLabel={label}
@@ -82,9 +88,17 @@ export function AppHeader({back, options, route, navigation}: NativeStackHeaderP
 }
 
 const styles = StyleSheet.create({
-    // Opaque (content never shows through); the hairline marks where the page scrolls under the bar.
-    bar: {overflow: 'hidden', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border},
-    row: {height: 52, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, gap: 8},
+    // Opaque & pinned header bar so scrolling content never bleeds through the top or top corners.
+    bar: {
+        backgroundColor: colors.canvas,
+        zIndex: 20,
+        overflow: 'hidden',
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: colors.border,
+    },
+    barCustomer: {backgroundColor: colors.surface},
+    row: {height: 52, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, gap: 8},
+    rowSheet: {paddingHorizontal: 18},
     // Equal side slots keep the title centred whatever sits on the right.
     side: {minWidth: 44, alignItems: 'flex-start', justifyContent: 'center'},
     sideRight: {alignItems: 'flex-end'},

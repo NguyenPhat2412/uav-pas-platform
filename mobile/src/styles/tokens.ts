@@ -1,4 +1,7 @@
-// Same palette as frontend/src/styles/globals.css (--uav-color-*): brand red for actions, slate greys, no blue or green.
+// Strict 60-30-10 color hierarchy for UAV PAS Marketplace & Operations:
+// - 60% Dominant: Clean neutral surfaces (#f8fafc canvas, #ffffff cards)
+// - 30% Secondary: Structural slate & charcoal (#0f172a, #334155, #475569, #f1f5f9, #e2e8f0)
+// - 10% Accent: Brand crimson (#ab2523, #fdf2f2) reserved for primary CTAs, prices, and official badges
 export const colors = {
     primary: '#ab2523',
     googleBlue: '#4285F4',
@@ -7,14 +10,17 @@ export const colors = {
     googleRed: '#EA4335',
     primaryHover: '#8f1c1a',
     primaryLight: '#fdf2f2',
+    primarySoftBorder: '#f5c2c1',
+    slate900: '#0f172a',
     slate: '#475569',
     slateDark: '#334155',
     slateLight: '#f1f5f9',
     surface: '#ffffff',
-    canvas: '#faf6f6',
-    text: '#202020',
-    textSecondary: '#646464',
-    muted: '#7c7c7c',
+    canvas: '#f8fafc',
+    customerCanvas: '#f8fafc',
+    text: '#0f172a',
+    textSecondary: '#475569',
+    muted: '#64748b',
     border: '#e2e8f0',
     inputBorder: '#cbd5e1',
     danger: '#b42318',
@@ -22,11 +28,11 @@ export const colors = {
     warning: '#b54708',
     warningLight: '#fffaeb',
     white: '#ffffff',
-    glassSurface: 'rgba(255, 255, 255, 0.86)',
-    glassSurfaceSelected: 'rgba(253, 242, 242, 0.94)',
-    glassBorder: 'rgba(203, 213, 225, 0.72)',
-    glassBorderSelected: 'rgba(171, 37, 35, 0.55)',
-    glassSheetSurface: 'rgba(250, 246, 246, 0.97)',
+    glassSurface: 'rgba(255, 255, 255, 0.92)',
+    glassSurfaceSelected: 'rgba(253, 242, 242, 0.96)',
+    glassBorder: 'rgba(226, 232, 240, 0.88)',
+    glassBorderSelected: 'rgba(171, 37, 35, 0.45)',
+    glassSheetSurface: 'rgba(248, 250, 252, 0.98)',
     sheetBackdrop: 'rgba(15, 23, 42, 0.42)',
 } as const;
 

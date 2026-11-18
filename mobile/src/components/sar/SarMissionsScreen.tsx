@@ -152,7 +152,10 @@ export function SarMissionsScreen() {
                 <FlatList
                     data={items}
                     keyExtractor={item => String(item.sarId)}
-                    contentInsetAdjustmentBehavior="automatic"
+                    contentInsetAdjustmentBehavior="never"
+                    directionalLockEnabled
+                    alwaysBounceHorizontal={false}
+                    showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.list}
                     ListHeaderComponent={
                         <ChipGroup<SarFilterMode>

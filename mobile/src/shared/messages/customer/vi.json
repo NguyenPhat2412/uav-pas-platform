@@ -412,7 +412,12 @@
         "invoiceAmount": "Hóa đơn {code}: {amount}.",
         "downloadPdf": "Tải PDF",
         "downloadPdfAria": "Tải hóa đơn PDF {code}",
-        "downloadPdfError": "Chưa tải được tệp PDF hóa đơn."
+        "downloadPdfError": "Chưa tải được tệp PDF hóa đơn.",
+        "sendEmail": "Gửi về Email",
+        "sendEmailAria": "Gửi hóa đơn {code} kèm PDF về email",
+        "sendEmailSuccess": "Đã gửi hóa đơn {invoiceCode} kèm tệp PDF tới {recipientEmail}",
+        "sendEmailError": "Chưa gửi được hóa đơn qua email. Vui lòng thử lại.",
+        "emailedTo": "Đã gửi mail: {email}"
     },
     "notificationsPage": {
         "urgent": "Khẩn cấp",

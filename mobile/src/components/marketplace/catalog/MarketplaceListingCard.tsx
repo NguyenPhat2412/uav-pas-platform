@@ -1,27 +1,57 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, View} from 'react-native';
 import {useRouter} from 'expo-router';
-import {Building2, CheckCircle2, MapPin, Plus, ShieldCheck, Star} from 'lucide-react-native';
-import {AppText, Badge, Button, Card} from '@/components/ui';
-import {useAuth} from '@/providers/AuthContext';
+import {
+    Award,
+    CheckCircle2,
+    Clock3,
+    MapPin,
+    Package,
+    Plane,
+    Star,
+    type LucideIcon,
+} from 'lucide-react-native';
+import {AppText, Card, ScaledText} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 import {
     formatVndCompact,
-    listingTypeLabel,
     pricingUnitLabel,
 } from '@/shared/forms/marketplace/marketplace-forms';
-import type {MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
-import {colors, radius, spacing} from '@/styles/tokens';
+import type {ListingType, MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
+import {colors, font, spacing} from '@/styles/tokens';
 
-export function MarketplaceListingCard({item}: { item: MarketplaceListing }) {
+const TYPE_ICONS: Record<ListingType, LucideIcon> = {
+    FLIGHT_SERVICE: Plane,
+    WET_LEASE: Award,
+    DRY_LEASE: Package,
+};
+
+/**
+ * Shopee-style Flight Service Card (UI-GUIDE §3.2):
+ * - 4:3 cover image (`coverImageUrl` or `primaryLight` + category icon, never blank grey)
+ * - Max 2-line title (`numberOfLines={2}`)
+ * - Compact 1-line icon row (province · delivery turnaround)
+ * - Red price + "minh hoạ" caption
+ * - "Đối tác đã xác minh ★4.8 (32)" badge — zero fleet/provider name exposed
+ */
+export function MarketplaceListingCard({
+    item,
+    compact = false,
+}: {
+    item: MarketplaceListing;
+    compact?: boolean;
+}) {
     const {t} = useI18n();
-    const {can} = useAuth();
     const router = useRouter();
     const unit = pricingUnitLabel(item.pricingModel);
-    const minUnits = Number(item.minBookingUnits || 1);
+    const CategoryIcon = TYPE_ICONS[item.listingType] ?? Plane;
+    const ratingAvg = Number(item.providerBadge?.ratingAvg ?? item.ratingAvg ?? 0);
+    const reviewCount = Number(item.providerBadge?.reviewCount ?? item.reviewCount ?? 0);
+    const deliveryHours = item.deliverySlaHours ?? 48;
 
     return (
         <Card
+            style={[styles.card, compact && styles.cardCompact]}
             onPress={() =>
                 router.push({
                     pathname: '/customer/marketplace/[slug]',
@@ -29,118 +59,102 @@ export function MarketplaceListingCard({item}: { item: MarketplaceListing }) {
                 })
             }
             accessibilityLabel={`${item.title} ${formatVndCompact(item.basePriceVnd)}`}>
-            <View style={styles.badgeRow}>
-                <Badge
-                    label={listingTypeLabel(item.listingType)}
-                    background={colors.slateLight}
-                    color={colors.slateDark}
-                />
-                <Badge
-                    icon={item.officialPlatformListing ? ShieldCheck : CheckCircle2}
-                    label={
-                        item.officialPlatformListing
-                            ? t('mobile.marketplace.officialBadge')
-                            : t('mobile.marketplace.verifiedPartnerBadge')
-                    }
-                    background={colors.primaryLight}
-                    color={colors.primary}
-                />
-            </View>
-
-            <AppText variant="title" numberOfLines={2}>
-                {item.title}
-            </AppText>
-            {item.summary ? (
-                <AppText variant="small" numberOfLines={1}>
-                    {item.summary}
-                </AppText>
-            ) : null}
-
-            <View style={styles.metaWrap}>
-                <View style={styles.metaChip}>
-                    <Building2 size={13} color={colors.slateDark}/>
-                    <AppText variant="caption" numberOfLines={1}>
-                        {item.providerDisplayName}
-                    </AppText>
-                </View>
-                <View style={styles.metaChip}>
-                    <MapPin size={13} color={colors.slate}/>
-                    <AppText variant="caption" numberOfLines={1}>
-                        {item.province} · {item.serviceRadiusKm} km
-                    </AppText>
-                </View>
-                <View style={styles.metaChip}>
-                    <Star size={13} color={colors.warning}/>
-                    <AppText variant="caption">
-                        {item.reviewCount > 0
-                            ? `${Number(item.ratingAvg).toFixed(1)} (${item.reviewCount})`
-                            : t('mobile.marketplace.newListing')}
-                    </AppText>
-                </View>
-            </View>
-
-            {item.equipmentSpecs ? (
-                <View style={styles.equipBox}>
-                    <AppText variant="caption" numberOfLines={1}>
-                        {item.equipmentSpecs}
-                    </AppText>
-                </View>
-            ) : null}
-
-            <View style={styles.priceFooter}>
-                <View style={styles.flex}>
-                    <AppText variant="title" style={styles.priceText}>
-                        {formatVndCompact(item.basePriceVnd)} / {unit}
-                    </AppText>
-                    <AppText variant="caption">
-                        {t('mobile.marketplace.minUnits', {units: minUnits, unit})}
-                    </AppText>
-                </View>
-                {can('MISSION_CREATE') ? (
-                    <Button
-                        size="sm"
-                        icon={Plus}
-                        label={t('mobile.marketplace.bookNow')}
-                        onPress={() =>
-                            router.push({
-                                pathname: '/customer/mission/create',
-                                params: {
-                                    listingSlug: item.slug,
-                                    units: String(minUnits),
-                                },
-                            })
-                        }
+            <View style={styles.coverWrap}>
+                {item.coverImageUrl ? (
+                    <Image
+                        source={{uri: item.coverImageUrl}}
+                        style={styles.coverImg}
+                        resizeMode="cover"
+                        accessibilityLabel={item.title}
                     />
-                ) : null}
+                ) : (
+                    <View style={styles.coverFallback}>
+                        <CategoryIcon size={compact ? 28 : 34} color={colors.primary} strokeWidth={1.8}/>
+                    </View>
+                )}
+            </View>
+
+            <View style={[styles.body, compact && styles.bodyCompact]}>
+                <AppText variant="title" style={compact ? styles.titleCompact : undefined} numberOfLines={2}>
+                    {item.title}
+                </AppText>
+
+                <View style={styles.metaRow}>
+                    <View style={styles.metaItem}>
+                        <MapPin size={13} color={colors.slate}/>
+                        <AppText variant="caption" numberOfLines={1} style={styles.shrink}>
+                            {item.province}
+                        </AppText>
+                    </View>
+                    <View style={styles.metaItem}>
+                        <Clock3 size={13} color={colors.slate}/>
+                        <AppText variant="caption" numberOfLines={1}>
+                            {deliveryHours}h
+                        </AppText>
+                    </View>
+                </View>
+
+                <View style={styles.priceBlock}>
+                    <ScaledText style={styles.priceText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
+                        {formatVndCompact(item.basePriceVnd)}/{unit}
+                    </ScaledText>
+                    <AppText variant="caption" numberOfLines={1}>
+                        {t('mobile.shop.illustrativePrice')}
+                    </AppText>
+                </View>
+
+                <View style={styles.verifiedRow}>
+                    <CheckCircle2 size={13} color={colors.primary}/>
+                    <AppText variant="caption" style={styles.verifiedLabel} numberOfLines={1}>
+                        {t('mobile.marketplace.verifiedPartnerBadge')}
+                    </AppText>
+                    {reviewCount > 0 ? (
+                        <View style={styles.ratingInline}>
+                            <Star size={12} color={colors.warning}/>
+                            <AppText variant="caption" style={styles.ratingText} numberOfLines={1}>
+                                {ratingAvg.toFixed(1)} ({reviewCount})
+                            </AppText>
+                        </View>
+                    ) : null}
+                </View>
             </View>
         </Card>
     );
 }
 
 const styles = StyleSheet.create({
-    badgeRow: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: spacing.xs,
+    card: {padding: 0, overflow: 'hidden', gap: 0},
+    cardCompact: {flex: 1},
+    coverWrap: {
+        width: '100%',
+        aspectRatio: 4 / 3,
+        backgroundColor: colors.primaryLight,
+        overflow: 'hidden',
     },
-    metaWrap: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm},
-    metaChip: {flexDirection: 'row', alignItems: 'center', gap: 4},
-    equipBox: {
-        backgroundColor: colors.slateLight,
-        borderRadius: radius.control,
-        paddingHorizontal: spacing.sm,
-        paddingVertical: spacing.xs,
+    coverImg: {width: '100%', height: '100%'},
+    coverFallback: {
+        flex: 1,
+        backgroundColor: colors.primaryLight,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    priceFooter: {
+    body: {padding: spacing.md, gap: 6},
+    bodyCompact: {padding: spacing.sm, gap: 5},
+    titleCompact: {fontSize: font.body, lineHeight: 20},
+    metaRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
+    metaItem: {flexDirection: 'row', alignItems: 'center', gap: 3, flexShrink: 1},
+    shrink: {flexShrink: 1},
+    priceBlock: {flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', gap: 6, marginTop: 2},
+    priceText: {fontSize: font.title, color: colors.primary, fontWeight: '700'},
+    verifiedRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: spacing.sm,
-        paddingTop: spacing.xs,
+        gap: 4,
+        paddingTop: 6,
         borderTopWidth: StyleSheet.hairlineWidth,
         borderTopColor: colors.border,
     },
-    priceText: {color: colors.primary, fontWeight: '700'},
-    flex: {flex: 1},
+    verifiedLabel: {color: colors.slateDark, fontWeight: '600', flexShrink: 1},
+    ratingInline: {flexDirection: 'row', alignItems: 'center', gap: 2, marginLeft: 'auto'},
+    ratingText: {color: colors.text, fontWeight: '600'},
 });

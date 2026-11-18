@@ -32,3 +32,19 @@ export type {
     DeliverableGeoPin,
     MissionInspectionReport,
 } from '@/shared/types/mission/mission.types';
+
+export type {
+    ProjectScheduleType,
+    ProjectSubscriptionStatus,
+    OrderStatusGroup,
+    CustomerProject,
+    CustomerProjectUpsertInput,
+    ProjectSubscription,
+    ProjectSubscriptionCreateInput,
+    ProjectSubscriptionUpdateInput,
+    CustomerOrderSummary,
+    OrderTrackingPosition,
+    OrderTrackingSnapshot,
+    CustomerProjectPage,
+    ProjectSubscriptionPage,
+} from '@/shared/types/project/project.types';

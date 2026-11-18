@@ -133,3 +133,34 @@ test('cross-platform Web ↔ Mobile sync: WebSocket invalidates live state and 4
     assert.match(missionHooks, /cancel:\s*useMutation\(\{[^}]*onSettled:/);
     assert.match(missionHooks, /upsertReview:\s*useMutation\(\{[\s\S]*?onSettled:/);
 });
+
+test('mobile 60-30-10 Shopee-style two-sided marketplace: Guest browse, zero floating bubbles, sticky checkout & 3-step wizard', () => {
+    const tokens = read('styles/tokens.ts');
+    assert.match(tokens, /customerCanvas:\s*'#f8fafc'/);
+    assert.match(tokens, /slate900:\s*'#0f172a'/);
+    assert.match(tokens, /primary:\s*'#ab2523'/);
+
+    const rootEntry = read('app/index.tsx');
+    assert.match(rootEntry, /'\/customer\/home'/);
+
+    const customerLayout = read('app/customer/_layout.tsx');
+    assert.doesNotMatch(customerLayout, /<AssistantLauncher\/>/);
+    assert.doesNotMatch(customerLayout, /<PulsingSupportLauncher/);
+    assert.match(customerLayout, /PRIVATE_CUSTOMER_ROUTE/);
+
+    const homeScreen = read('components/home/HomeScreen.tsx');
+    assert.match(homeScreen, /MarketplaceSearchHero/);
+    assert.match(homeScreen, /ServiceCategoryShowcase/);
+    assert.match(homeScreen, /MarketplaceListingCard/);
+
+    const detailScreen = read('components/marketplace/catalog/MarketplaceListingDetailScreen.tsx');
+    assert.match(detailScreen, /ListingStickyActionBar/);
+
+    const missionForm = read('components/mission/MissionFormScreen.tsx');
+    assert.match(missionForm, /MissionCheckoutStepper/);
+    assert.match(missionForm, /MissionCheckoutSummaryCard/);
+
+    const accountScreen = read('components/profile/AccountScreen.tsx');
+    assert.match(accountScreen, /sellerCenterCard/);
+    assert.match(accountScreen, /GuestPromptCard/);
+});

@@ -412,7 +412,12 @@
         "invoiceAmount": "Invoice {code}: {amount}.",
         "downloadPdf": "PDF",
         "downloadPdfAria": "Download PDF invoice {code}",
-        "downloadPdfError": "Could not download the invoice PDF."
+        "downloadPdfError": "Could not download the invoice PDF.",
+        "sendEmail": "Send to Email",
+        "sendEmailAria": "Send invoice {code} with PDF to your email",
+        "sendEmailSuccess": "Sent invoice {invoiceCode} with PDF attachment to {recipientEmail}",
+        "sendEmailError": "Could not send the invoice email. Please try again.",
+        "emailedTo": "Emailed: {email}"
     },
     "notificationsPage": {
         "urgent": "Urgent",

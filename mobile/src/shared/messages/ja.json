@@ -115,6 +115,16 @@
     "security": "セキュリティ",
     "infrastructure": "インフラ"
   },
+  "adminNavSubGroups": {
+    "operationsPulse": "運航・サポート",
+    "airspaceWeather": "マップ・空域",
+    "catalogPlans": "カタログ・プラン",
+    "marketplace3p": "3Pマーケットプレイス",
+    "billingLedger": "請求照合・台帳",
+    "rbacGovernance": "ロール・権限設計",
+    "runtimeOps": "サーバー・デプロイ",
+    "dataComms": "ストレージ・DB・メール"
+  },
   "adminNav": {
     "dashboard": "概要",
     "users": "ユーザー",
@@ -129,12 +139,16 @@
     "reports": "レポート・統計",
     "webhooks": "Webhook・連携",
     "settings": "システム設定",
+    "translations": "システム多言語管理 (i18n)",
     "auditLogs": "管理者監査ログ",
     "notifications": "通知",
     "supportInbox": "サポート受信箱",
     "fleetMap": "UAV機体マップ",
     "uavs": "UAV機体",
     "services": "サービスカタログ",
+    "marketplaceProviders": "パートナーKYC審査",
+    "marketplaceListings": "出品サービス審査",
+    "billingPayouts": "パートナー出金精算",
     "systemHealth": "システム状態",
     "aiRouter": "AIルーター制御",
     "aiConversations": "AIチャット監査ログ",

@@ -17,6 +17,7 @@ export type ProfileErrors = Partial<Record<keyof ProfileFields, string>>;
 export interface BillingProfile {
     organizationName: string | null;
     taxCode: string | null;
+    billingEmail?: string | null;
     billingAddress: string | null;
     emergencyContactName: string | null;
     emergencyContactPhone: string | null;
@@ -25,7 +26,7 @@ export interface BillingProfile {
 }
 
 export type BillingProfileFields = Record<
-    'organizationName' | 'taxCode' | 'billingAddress' | 'emergencyContactName' | 'emergencyContactPhone',
+    'organizationName' | 'taxCode' | 'billingEmail' | 'billingAddress' | 'emergencyContactName' | 'emergencyContactPhone',
     string
 >;
 

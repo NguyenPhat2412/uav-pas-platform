@@ -126,6 +126,7 @@ test('api client: 204 resolves to undefined and text bodies stay text', async ()
 
 test('api client: getBytes refreshes on 401 and bytesToBase64 encodes binary PDFs for Share sheet', async () => {
     assert.equal(API_ROUTES.billing.invoiceReceipt(55), '/api/v1/billing/invoices/55/receipt');
+    assert.equal(API_ROUTES.billing.sendInvoiceEmail(55), '/api/v1/billing/invoices/55/send-email');
     assert.equal(API_ROUTES.billing.sepayWebhook, '/api/v1/billing/webhook/sepay');
 
     for (const sample of ['', 'f', 'fo', 'foo', 'foob', 'fooba', 'foobar', '%PDF-1.4\n%%EOF']) {
@@ -157,14 +158,18 @@ test('api client: getBytes refreshes on 401 and bytesToBase64 encodes binary PDF
 
     const customerApiSource = readFileSync(new URL('../src/api/billing/customer-billing.api.ts', import.meta.url), 'utf8');
     assert.match(customerApiSource, /receiptDataUri:/);
+    assert.match(customerApiSource, /sendInvoiceEmail:/);
     assert.doesNotMatch(customerApiSource, /confirmPayment/, 'customer mobile app must never call admin-only confirmPayment');
 
     const hookSource = readFileSync(new URL('../src/hooks/billing/useCustomerBilling.ts', import.meta.url), 'utf8');
     assert.match(hookSource, /refetchInterval:.*status === 'PENDING' \? 5000 : false/);
     assert.match(hookSource, /downloadReceipt:/);
+    assert.match(hookSource, /sendEmail:/);
 
     const screenSource = readFileSync(new URL('../src/components/billing/InvoicePaymentScreen.tsx', import.meta.url), 'utf8');
     assert.match(screenSource, /Share\.share\(/);
     assert.match(screenSource, /mobile\.billing\.checkStatus/);
     assert.match(screenSource, /mobile\.billing\.shareReceiptPdf/);
+    assert.match(screenSource, /mobile\.billing\.sendInvoiceEmail/);
+    assert.match(screenSource, /mobile\.billing\.lastEmailedTo/);
 });

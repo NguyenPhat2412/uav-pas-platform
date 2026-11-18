@@ -9,7 +9,7 @@ export default function OperationsTabs() {
     const {t} = useI18n();
     const {unreadCount} = useNotifications();
     return (
-        <NativeTabs tintColor={colors.primary} minimizeBehavior="onScrollDown">
+        <NativeTabs tintColor={colors.primary} minimizeBehavior="never" disableTransparentOnScrollEdge>
             <NativeTabs.Trigger name="missions">
                 <NativeTabs.Trigger.Icon sf={{default: 'airplane.departure', selected: 'airplane.departure'}} md="flight_takeoff"/>
                 <NativeTabs.Trigger.Label>{t('mobile.ops.tabs.missions')}</NativeTabs.Trigger.Label>

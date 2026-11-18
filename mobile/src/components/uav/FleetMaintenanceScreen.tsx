@@ -110,7 +110,10 @@ export function FleetMaintenanceScreen() {
             />
 
             <ScrollView
-                contentInsetAdjustmentBehavior="automatic"
+                contentInsetAdjustmentBehavior="never"
+                directionalLockEnabled
+                alwaysBounceHorizontal={false}
+                showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.content}
                 keyboardShouldPersistTaps="handled"
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void handleRefresh()} tintColor={colors.primary}/>}>

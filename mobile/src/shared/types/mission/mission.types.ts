@@ -9,12 +9,19 @@ export type {PageResponse};
 export type MissionType = 'UAV_RENTAL' | 'AREA_INSPECTION' | 'AERIAL_RECORDING' | 'DATA_COLLECTION' | 'OTHER';
 export type MissionStatus =
     | 'DRAFT'
+    | 'PENDING_DISPATCH'
+    | 'PENDING_PROVIDER'
     | 'PENDING_CONFIRMATION'
+    | 'ACCEPTED'
+    | 'SCHEDULED'
     | 'CONFIRMED'
     | 'RESOURCE_RESERVED'
     | 'READY'
+    | 'IN_FLIGHT'
     | 'IN_PROGRESS'
+    | 'DELIVERED'
     | 'COMPLETED'
+    | 'REVIEWED'
     | 'CANCELLED'
     | 'REJECTED'
     | 'FAILED';
@@ -95,6 +102,11 @@ export interface Mission {
     securityDepositVnd?: number | null;
     providerResponseStatus?: 'NOT_APPLICABLE' | 'OPEN_RFQ' | 'PENDING_PROVIDER' | 'ACCEPTED' | 'DECLINED' | null;
     providerResponseNote?: string | null;
+    projectId?: number | null;
+    projectName?: string | null;
+    subscriptionId?: number | null;
+    statusGroup?: 'PENDING' | 'SCHEDULED' | 'IN_FLIGHT' | 'DELIVERED' | 'TO_REVIEW' | null;
+    reviewed?: boolean | null;
 }
 
 export interface MissionEvent {

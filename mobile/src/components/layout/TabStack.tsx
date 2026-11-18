@@ -11,6 +11,12 @@ import {colors} from '@/styles/tokens';
 export const detailHeader = {
     header: AppHeader,
     headerTransparent: false,
+    scrollEdgeEffects: {
+        top: 'hidden',
+        bottom: 'hidden',
+        left: 'hidden',
+        right: 'hidden',
+    },
     contentStyle: {backgroundColor: colors.canvas},
 } as const;
 

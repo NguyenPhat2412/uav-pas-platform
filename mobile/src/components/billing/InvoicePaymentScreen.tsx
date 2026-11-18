@@ -3,9 +3,9 @@ import {Alert, Pressable, Share, StyleSheet, View} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import QRCode from 'react-native-qrcode-svg';
-import {AlertTriangle, Ban, CalendarClock, CheckCircle2, Copy, Download, ImageDown, MessageCircle, Radio, Receipt, RefreshCw, XCircle} from 'lucide-react-native';
+import {AlertTriangle, Ban, CalendarClock, CheckCircle2, Copy, Download, ImageDown, Mail, MessageCircle, Radio, Receipt, RefreshCw, XCircle} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
-import {useBankTransferInstructions, useBillingActions, useBillingRealtime} from '@/hooks/billing/useCustomerBilling';
+import {useBankTransferInstructions, useBillingActions, useBillingRealtime, useInvoiceRecord} from '@/hooks/billing/useCustomerBilling';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {signInErrorText} from '@/forms/auth/sign-in-flow';
@@ -40,10 +40,12 @@ export function InvoicePaymentScreen() {
     const {id} = useLocalSearchParams<{ id: string }>();
     const invoiceId = Number(id);
     const instructions = useBankTransferInstructions(invoiceId);
+    const invoiceRecord = useInvoiceRecord(invoiceId);
     const {wsConnected} = useBillingRealtime(invoiceId);
-    const {refresh, downloadReceipt, cancel} = useBillingActions();
+    const {refresh, downloadReceipt, sendEmail, cancel} = useBillingActions();
     const [checkingStatus, setCheckingStatus] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [sentRecipient, setSentRecipient] = useState<string | null>(null);
     // Overdue is judged against when the screen opened; a refresh re-reads the invoice anyway.
     const [openedAt] = useState(() => Date.now());
     const data = instructions.data;
@@ -66,6 +68,18 @@ export function InvoicePaymentScreen() {
         }
     };
 
+    const handleSendEmail = async (targetInvoiceId: number) => {
+        try {
+            const res = await sendEmail.mutateAsync(targetInvoiceId);
+            setSentRecipient(res.recipientEmail);
+            toast.show(t('mobile.billing.emailSentToast', {invoiceCode: res.invoiceCode, recipientEmail: res.recipientEmail}), 'success');
+        } catch (error) {
+            toast.show(signInErrorText(error, t), 'error');
+        }
+    };
+
+    const lastEmailedTo = sentRecipient ?? data?.lastEmailedTo ?? invoiceRecord?.lastEmailedTo ?? null;
+
     const handlePullRefresh = async () => {
         setRefreshing(true);
         try {
@@ -85,6 +99,14 @@ export function InvoicePaymentScreen() {
                     <Card>
                         <SectionTitle title={t('mobile.billing.receiptTitle')}/>
                         <AppText variant="small">{t('mobile.billing.receiptPendingHint')}</AppText>
+                        {lastEmailedTo ? <AppText variant="caption">{t('mobile.billing.lastEmailedTo', {email: lastEmailedTo})}</AppText> : null}
+                        <Button
+                            label={t('mobile.billing.sendInvoiceEmail')}
+                            tone="secondary"
+                            icon={Mail}
+                            loading={sendEmail.isPending}
+                            onPress={() => void handleSendEmail(invoiceId)}
+                        />
                         <Button
                             label={t('mobile.billing.shareReceiptPdf')}
                             tone="secondary"
@@ -227,6 +249,19 @@ export function InvoicePaymentScreen() {
             {!closed && <Card>
                 <SectionTitle title={t('mobile.billing.receiptTitle')}/>
                 <AppText variant="small">{paid ? t('mobile.billing.receiptPaidHint') : t('mobile.billing.receiptPendingHint')}</AppText>
+                {lastEmailedTo ? (
+                    <View style={styles.due}>
+                        <Mail size={14} color={colors.primary}/>
+                        <AppText variant="caption">{t('mobile.billing.lastEmailedTo', {email: lastEmailedTo})}</AppText>
+                    </View>
+                ) : null}
+                <Button
+                    label={t('mobile.billing.sendInvoiceEmail')}
+                    tone="secondary"
+                    icon={Mail}
+                    loading={sendEmail.isPending}
+                    onPress={() => void handleSendEmail(data.invoiceId)}
+                />
                 <Button
                     label={t('mobile.billing.shareReceiptPdf')}
                     tone={paid ? 'primary' : 'secondary'}

@@ -174,7 +174,10 @@ export function OperationsMissionsScreen() {
                 <FlatList
                     data={missions}
                     keyExtractor={item => String(item.id)}
-                    contentInsetAdjustmentBehavior="automatic"
+                    contentInsetAdjustmentBehavior="never"
+                    directionalLockEnabled
+                    alwaysBounceHorizontal={false}
+                    showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.list}
                     keyboardShouldPersistTaps="handled"
                     ListHeaderComponent={

@@ -2,7 +2,7 @@ import {apiClient, API_ROUTES} from '@/lib/api/client';
 import {buildQueryString} from '@/shared/lib/format';
 import type {AiDetection, AiTask, SarCockpitMission, SarDispatchResult, SarFlightPlan} from '@/shared/types/sar/sar.types';
 
-/** Search-and-rescue tactical cockpit endpoints: active missions, AI detections, rescue dispatch, and search patterns. */
+/** Search-and-rescue field cockpit endpoints: active missions, AI detections, rescue dispatch, and search patterns. */
 export const sarService = {
     /** Lists active (and optionally closed) SAR missions with last-known-position datum and assigned UAV. */
     missions: (includeClosed = false, signal?: AbortSignal) =>

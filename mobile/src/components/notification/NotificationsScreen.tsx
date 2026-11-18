@@ -78,7 +78,10 @@ export function NotificationsScreen({portal = 'customer'}: { portal?: MobilePort
                         <FlatList
                             data={items}
                             keyExtractor={item => String(item.id)}
-                            contentInsetAdjustmentBehavior="automatic"
+                            contentInsetAdjustmentBehavior="never"
+                            directionalLockEnabled
+                            alwaysBounceHorizontal={false}
+                            showsHorizontalScrollIndicator={false}
                             contentContainerStyle={styles.list}
                             ListHeaderComponent={
                                 <View style={styles.headerStack}>

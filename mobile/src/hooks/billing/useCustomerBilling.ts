@@ -6,7 +6,7 @@ import {realtimeWs, type RealtimeServerFrame} from '@/lib/realtime/realtime-ws';
 import {useAuth} from '@/providers/AuthContext';
 import {billingKeys} from '@/shared/hooks/billing/query-keys';
 import {queryKeys} from '@/shared/lib/query';
-import type {BankTransferInstructions} from '@/shared/types/billing/billing.types';
+import type {BankTransferInstructions, InvoiceEmailDispatchResult} from '@/shared/types/billing/billing.types';
 import type {Invoice, InvoiceStatus, PageResponse} from '@/shared/types/customer';
 
 export interface InvoiceSettlementEvent {
@@ -128,6 +128,16 @@ export function useBankTransferInstructions(invoiceId: number) {
     return query;
 }
 
+export function useInvoiceRecord(invoiceId: number) {
+    const {user} = useAuth();
+    const query = useQuery({
+        queryKey: billingKeys.customer(user?.id, 'invoices'),
+        queryFn: ({signal}) => customerBillingService.invoices(0, signal),
+        enabled: !!user && Number.isSafeInteger(invoiceId) && invoiceId > 0,
+    });
+    return query.data?.content.find(inv => inv.id === invoiceId) ?? null;
+}
+
 export function useBillingActions() {
     const {user} = useAuth();
     const client = useQueryClient();
@@ -142,6 +152,31 @@ export function useBillingActions() {
         }),
         downloadReceipt: useMutation<string, Error, number>({
             mutationFn: (invoiceId: number) => customerBillingService.receiptDataUri(invoiceId),
+            retry: false,
+        }),
+        sendEmail: useMutation<InvoiceEmailDispatchResult, Error, number>({
+            mutationFn: (invoiceId: number) => customerBillingService.sendInvoiceEmail(invoiceId),
+            onSuccess: result => {
+                client.setQueryData<BankTransferInstructions>(
+                    billingKeys.customer(user?.id, 'bank-transfer', result.invoiceId),
+                    prev => (prev ? {...prev, lastEmailedTo: result.recipientEmail, lastEmailedAt: result.sentAt} : prev),
+                );
+                client.setQueryData<PageResponse<Invoice>>(
+                    billingKeys.customer(user?.id, 'invoices'),
+                    prev =>
+                        prev
+                            ? {
+                                  ...prev,
+                                  content: prev.content.map(inv =>
+                                      inv.id === result.invoiceId
+                                          ? {...inv, lastEmailedTo: result.recipientEmail, lastEmailedAt: result.sentAt}
+                                          : inv,
+                                  ),
+                              }
+                            : prev,
+                );
+                void refresh();
+            },
             retry: false,
         }),
     };

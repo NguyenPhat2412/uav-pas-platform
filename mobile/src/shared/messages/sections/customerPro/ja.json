@@ -144,11 +144,14 @@
     "field": {
       "organizationName": "組織名",
       "taxCode": "税番号（MST）",
+      "billingEmail": "請求書送付先メール",
       "billingAddress": "請求先住所",
       "emergencyContactName": "緊急連絡先",
       "emergencyContactPhone": "緊急連絡先電話番号"
     },
     "taxCodeHint": "10 桁、または 0101234567-001 形式。",
+    "billingEmailHint": "請求書送付先メール — 空欄の場合は登録済みの Google / Apple アカウントのメールへ自動送信されます（Apple「メールを非公開」利用時に推奨）。",
+    "billingEmailDefault": "登録アカウントのメールへ自動送信",
     "taxCodeInvalid": "税番号は10桁、または 0101234567-001 の形式で入力してください。",
     "phoneInvalid": "数字・空白・ドット・ハイフンのみ（8〜20 文字）。",
     "empty": "未登録",

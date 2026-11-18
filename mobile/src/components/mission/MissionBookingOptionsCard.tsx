@@ -162,7 +162,7 @@ export function MissionBookingOptionsCard({
     const listingOptions: GlassOption<string>[] = allListings.map(item => ({
         value: String(item.id),
         label: item.title,
-        description: item.providerDisplayName,
+        description: item.province,
         badge: `${formatVndCompact(item.basePriceVnd)}/${pricingUnitLabel(item.pricingModel)}`,
         icon: Store,
     }));

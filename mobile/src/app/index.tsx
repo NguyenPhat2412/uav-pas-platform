@@ -12,11 +12,12 @@ export const ROUTE_META = {
 } as const;
 
 /**
- * Entry: the Keychain session and active workspace decide between sign-in, Customer, and Operations.
+ * Entry: signed-in accounts enter their active portal; guests land directly on the Customer Marketplace
+ * (/customer/home) so they can browse flight packages, prices, and verified partner shops before signing in.
  */
 export default function Index() {
     const {status, activePortal, retry, logout} = useAuth();
     if (status === 'loading') return <AppSplash/>;
     if (status === 'unreachable') return <AppUnreachable onRetry={retry} onSignOut={() => void logout()}/>;
-    return <Redirect href={status === 'signed-in' ? resolvePortalEntryHref(activePortal) : '/login'}/>;
+    return <Redirect href={status === 'signed-in' ? resolvePortalEntryHref(activePortal) : '/customer/home'}/>;
 }
