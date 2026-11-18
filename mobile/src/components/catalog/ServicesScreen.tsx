@@ -31,7 +31,7 @@ import {
     TextField,
 } from '@/components/ui';
 import {GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
-import {MarketplaceListingCard} from '@/components/marketplace/catalog/MarketplaceListingCard';
+import {MarketplaceListingGrid} from '@/components/marketplace/catalog/MarketplaceListingGrid';
 import {usePublicListings} from '@/hooks/marketplace/useMarketplaceCatalog';
 import {useServices} from '@/hooks/mission/useCustomerMissions';
 import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
@@ -82,30 +82,10 @@ export function ServicesScreen() {
     const services = useServices();
 
     const leaseOptions: GlassOption<LeaseFilter>[] = [
-        {
-            value: 'ALL',
-            label: t('mobile.marketplace.filterAll'),
-            description: t('mobile.marketplace.filterAllDesc'),
-            icon: Layers,
-        },
-        {
-            value: 'FLIGHT_SERVICE',
-            label: t('mobile.marketplace.typeFlightService'),
-            description: t('mobile.marketplace.typeFlightServiceDesc'),
-            icon: Plane,
-        },
-        {
-            value: 'WET_LEASE',
-            label: t('mobile.marketplace.typeWetLease'),
-            description: t('mobile.marketplace.typeWetLeaseDesc'),
-            icon: Award,
-        },
-        {
-            value: 'DRY_LEASE',
-            label: t('mobile.marketplace.typeDryLease'),
-            description: t('mobile.marketplace.typeDryLeaseDesc'),
-            icon: Package,
-        },
+        {value: 'ALL', label: t('mobile.marketplace.filterAll'), description: t('mobile.marketplace.filterAllDesc'), icon: Layers},
+        {value: 'FLIGHT_SERVICE', label: t('mobile.marketplace.typeFlightService'), description: t('mobile.marketplace.typeFlightServiceDesc'), icon: Plane},
+        {value: 'WET_LEASE', label: t('mobile.marketplace.typeWetLease'), description: t('mobile.marketplace.typeWetLeaseDesc'), icon: Award},
+        {value: 'DRY_LEASE', label: t('mobile.marketplace.typeDryLease'), description: t('mobile.marketplace.typeDryLeaseDesc'), icon: Package},
     ];
 
     const sortOptions: GlassOption<ListingSortOption>[] = [
@@ -248,7 +228,7 @@ export function ServicesScreen() {
                 })}
             />
 
-            {listingsQuery.isPending ? (
+            {listingsQuery.isPending && !listings.length ? (
                 <LoadingState label={t('services.loading')}/>
             ) : listingsQuery.isError ? (
                 <ErrorState
@@ -257,9 +237,25 @@ export function ServicesScreen() {
                     onRetry={() => void listingsQuery.refetch()}
                 />
             ) : listings.length === 0 ? (
-                <EmptyState icon={Layers} message={t('mobile.marketplace.emptyListings')}/>
+                <EmptyState
+                    icon={Layers}
+                    message={t('mobile.marketplace.emptyListings')}
+                    action={
+                        keyword.trim() || leaseFilter !== 'ALL' ? (
+                            <Button
+                                size="sm"
+                                tone="secondary"
+                                label={t('mobile.marketplace.filterAll')}
+                                onPress={() => {
+                                    setKeyword('');
+                                    setLeaseFilter('ALL');
+                                }}
+                            />
+                        ) : undefined
+                    }
+                />
             ) : (
-                listings.map(item => <MarketplaceListingCard key={item.id} item={item}/>)
+                <MarketplaceListingGrid items={listings}/>
             )}
 
             {status === 'signed-in' && activeStandard.length > 0 ? (

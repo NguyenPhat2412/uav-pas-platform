@@ -2,11 +2,12 @@ import React, {useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
 import {Bell, CloudSun, Compass, Layers, LogIn} from 'lucide-react-native';
-import {BuyerLiveOrderStrip} from '@/components/home/BuyerLiveOrderStrip';
 import {MarketplaceSearchHero} from '@/components/home/MarketplaceSearchHero';
+import {OrderStatusBarCard} from '@/components/home/OrderStatusBarCard';
+import {ProjectPackagePromoCard} from '@/components/home/ProjectPackagePromoCard';
 import {ServiceCategoryShowcase} from '@/components/home/ServiceCategoryShowcase';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
-import {MarketplaceListingCard} from '@/components/marketplace/catalog/MarketplaceListingCard';
+import {MarketplaceListingGrid} from '@/components/marketplace/catalog/MarketplaceListingGrid';
 import {UserAvatar} from '@/components/profile/UserAvatar';
 import {AppLogo} from '@/components/shared/BrandMark';
 import {
@@ -18,10 +19,9 @@ import {
     Screen,
     SectionTitle,
 } from '@/components/ui';
-import {useCustomerAnalytics} from '@/hooks/dashboard/useCustomerAnalytics';
 import {usePublicListings} from '@/hooks/marketplace/useMarketplaceCatalog';
 import {useNotifications} from '@/hooks/notification/useNotifications';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+import {useCustomerOrderSummary} from '@/hooks/order/useOrders';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {colors, radius, spacing} from '@/styles/tokens';
@@ -61,16 +61,15 @@ function MarketplaceHomeHeader() {
 }
 
 /**
- * 60-30-10 Two-Sided Drone Service Marketplace Home Screen (Buyer + Seller e-commerce feed):
- * Search bar + Mall Escrow hero -> 8-icon category showcase -> live active bookings/VietQR strip
- * -> Verified Partner Shops rail -> endless recommended flight service packages.
+ * Shopee-style UAV PAS Marketplace Home (S1-mobile.md #2 & UI-GUIDE §3.1):
+ * Search + 3-slide banner -> 4x2 circular category icons -> 5-group Order Status Bar
+ * -> "Gói theo dự án" card -> 2-column recommended flight service grid.
  */
 export function HomeScreen() {
     const {t} = useI18n();
     const {status} = useAuth();
     const router = useRouter();
-    const {rfqEnabled} = useSiteInfo();
-    const analytics = useCustomerAnalytics();
+    const orderSummary = useCustomerOrderSummary();
     const listingsQuery = usePublicListings({sortBy: 'featured', size: 12});
     const {unreadCount} = useNotifications();
     const [refreshing, setRefreshing] = useState(false);
@@ -80,7 +79,7 @@ export function HomeScreen() {
     const handleRefresh = () => {
         setRefreshing(true);
         const tasks: Promise<unknown>[] = [listingsQuery.refetch()];
-        if (status === 'signed-in') tasks.push(analytics.refetch());
+        if (status === 'signed-in') tasks.push(orderSummary.refetch());
         void Promise.allSettled(tasks).finally(() => setRefreshing(false));
     };
 
@@ -109,7 +108,7 @@ export function HomeScreen() {
                                     onPress={() => router.push('/login')}
                                     style={({pressed}) => [styles.signInPill, pressed && styles.pressed]}>
                                     <LogIn size={14} color={colors.white}/>
-                                    <AppText variant="caption" style={styles.signInText}>
+                                    <AppText variant="caption" style={styles.signInText} numberOfLines={1}>
                                         {t('mobile.shop.signInShort')}
                                     </AppText>
                                 </Pressable>
@@ -119,11 +118,13 @@ export function HomeScreen() {
                 }}
             />
 
-            <MarketplaceSearchHero rfqEnabled={rfqEnabled}/>
+            <MarketplaceSearchHero/>
 
             <ServiceCategoryShowcase/>
 
-            {status === 'signed-in' ? <BuyerLiveOrderStrip data={analytics.data}/> : null}
+            {status === 'signed-in' ? <OrderStatusBarCard/> : null}
+
+            <ProjectPackagePromoCard/>
 
             <SectionTitle
                 title={t('mobile.shop.feedTitle')}
@@ -132,14 +133,14 @@ export function HomeScreen() {
                         accessibilityRole="button"
                         onPress={() => router.navigate('/customer/services')}
                         style={({pressed}) => [pressed && styles.pressed]}>
-                        <AppText variant="caption" style={styles.viewAllLink}>
+                        <AppText variant="caption" style={styles.viewAllLink} numberOfLines={1}>
                             {t('mobile.shop.viewAllBtn')}
                         </AppText>
                     </Pressable>
                 }
             />
 
-            {listingsQuery.isPending ? (
+            {listingsQuery.isPending && !listings.length ? (
                 <LoadingState label={t('services.loading')}/>
             ) : listingsQuery.isError ? (
                 <ErrorState
@@ -148,12 +149,22 @@ export function HomeScreen() {
                     onRetry={() => void listingsQuery.refetch()}
                 />
             ) : listings.length === 0 ? (
-                <EmptyState icon={Layers} message={t('mobile.marketplace.emptyListings')}/>
+                <EmptyState
+                    icon={Layers}
+                    message={t('mobile.marketplace.emptyListings')}
+                    action={
+                        <Button
+                            size="sm"
+                            tone="secondary"
+                            icon={Compass}
+                            label={t('mobile.overnight.orderExploreCta')}
+                            onPress={() => router.navigate('/customer/services')}
+                        />
+                    }
+                />
             ) : (
                 <>
-                    {listings.map(item => (
-                        <MarketplaceListingCard key={item.id} item={item}/>
-                    ))}
+                    <MarketplaceListingGrid items={listings}/>
                     <Button
                         tone="secondary"
                         icon={Compass}

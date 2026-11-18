@@ -151,7 +151,9 @@ test('mobile 60-30-10 Shopee-style two-sided marketplace: Guest browse, zero flo
     const homeScreen = read('components/home/HomeScreen.tsx');
     assert.match(homeScreen, /MarketplaceSearchHero/);
     assert.match(homeScreen, /ServiceCategoryShowcase/);
-    assert.match(homeScreen, /MarketplaceListingCard/);
+    assert.match(homeScreen, /OrderStatusBarCard/);
+    assert.match(homeScreen, /ProjectPackagePromoCard/);
+    assert.match(homeScreen, /MarketplaceListingGrid/);
 
     const detailScreen = read('components/marketplace/catalog/MarketplaceListingDetailScreen.tsx');
     assert.match(detailScreen, /ListingStickyActionBar/);

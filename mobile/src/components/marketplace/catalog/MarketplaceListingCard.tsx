@@ -11,6 +11,7 @@ import {
     Star,
     type LucideIcon,
 } from 'lucide-react-native';
+import {resolveListingCoverSource} from '@/components/marketplace/catalog/listing-cover';
 import {AppText, Card, ScaledText} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 import {
@@ -28,11 +29,10 @@ const TYPE_ICONS: Record<ListingType, LucideIcon> = {
 
 /**
  * Shopee-style Flight Service Card (UI-GUIDE §3.2):
- * - 4:3 cover image (`coverImageUrl` or `primaryLight` + category icon, never blank grey)
+ * - 4:3 cover image (`coverImageUrl` / bundled WebP / `primaryLight` + Lucide icon)
  * - Max 2-line title (`numberOfLines={2}`)
- * - Compact 1-line icon row (province · delivery turnaround)
- * - Red price + "minh hoạ" caption
- * - "Đối tác đã xác minh ★4.8 (32)" badge — zero fleet/provider name exposed
+ * - 1-line icon meta row, red price + "minh hoạ" caption, verified badge + rating
+ * - Zero fleet/provider name exposed
  */
 export function MarketplaceListingCard({
     item,
@@ -45,6 +45,7 @@ export function MarketplaceListingCard({
     const router = useRouter();
     const unit = pricingUnitLabel(item.pricingModel);
     const CategoryIcon = TYPE_ICONS[item.listingType] ?? Plane;
+    const coverSource = resolveListingCoverSource(item);
     const ratingAvg = Number(item.providerBadge?.ratingAvg ?? item.ratingAvg ?? 0);
     const reviewCount = Number(item.providerBadge?.reviewCount ?? item.reviewCount ?? 0);
     const deliveryHours = item.deliverySlaHours ?? 48;
@@ -60,9 +61,9 @@ export function MarketplaceListingCard({
             }
             accessibilityLabel={`${item.title} ${formatVndCompact(item.basePriceVnd)}`}>
             <View style={styles.coverWrap}>
-                {item.coverImageUrl ? (
+                {coverSource ? (
                     <Image
-                        source={{uri: item.coverImageUrl}}
+                        source={coverSource}
                         style={styles.coverImg}
                         resizeMode="cover"
                         accessibilityLabel={item.title}
@@ -95,7 +96,11 @@ export function MarketplaceListingCard({
                 </View>
 
                 <View style={styles.priceBlock}>
-                    <ScaledText style={styles.priceText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
+                    <ScaledText
+                        style={styles.priceText}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                        minimumFontScale={0.82}>
                         {formatVndCompact(item.basePriceVnd)}/{unit}
                     </ScaledText>
                     <AppText variant="caption" numberOfLines={1}>
@@ -104,15 +109,15 @@ export function MarketplaceListingCard({
                 </View>
 
                 <View style={styles.verifiedRow}>
-                    <CheckCircle2 size={13} color={colors.primary}/>
+                    <CheckCircle2 size={12} color={colors.primary}/>
                     <AppText variant="caption" style={styles.verifiedLabel} numberOfLines={1}>
                         {t('mobile.marketplace.verifiedPartnerBadge')}
                     </AppText>
                     {reviewCount > 0 ? (
                         <View style={styles.ratingInline}>
-                            <Star size={12} color={colors.warning}/>
+                            <Star size={11} color={colors.warning}/>
                             <AppText variant="caption" style={styles.ratingText} numberOfLines={1}>
-                                {ratingAvg.toFixed(1)} ({reviewCount})
+                                {ratingAvg.toFixed(1)}
                             </AppText>
                         </View>
                     ) : null}
@@ -141,11 +146,11 @@ const styles = StyleSheet.create({
     body: {padding: spacing.md, gap: 6},
     bodyCompact: {padding: spacing.sm, gap: 5},
     titleCompact: {fontSize: font.body, lineHeight: 20},
-    metaRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
+    metaRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.xs},
     metaItem: {flexDirection: 'row', alignItems: 'center', gap: 3, flexShrink: 1},
     shrink: {flexShrink: 1},
-    priceBlock: {flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', gap: 6, marginTop: 2},
-    priceText: {fontSize: font.title, color: colors.primary, fontWeight: '700'},
+    priceBlock: {flexDirection: 'row', alignItems: 'baseline', gap: 4, marginTop: 2},
+    priceText: {fontSize: font.body, color: colors.primary, fontWeight: '700', flexShrink: 1},
     verifiedRow: {
         flexDirection: 'row',
         alignItems: 'center',
