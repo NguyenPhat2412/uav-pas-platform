@@ -19,7 +19,8 @@ const BANNED_EVERYWHERE = [
     ['military wording', /tác chiến|chiến đấu|sĩ quan|chiến thuật|\btactical\b|\bcombat\b|作戦|戦闘/i],
     ['demo banner', /bản demo|demo edition|đồ án cá nhân|個人プロジェクト/i],
     ['parenthetical demo disclaimer', /\(\s*(minh hoạ|minh họa|mô phỏng|giả lập)\s*\)/i],
-    ['unverified cm accuracy', /\d\s*[–-]\s*\d\s*cm\s*RTK|RTK\s*\d\s*[–-]\s*\d\s*cm|sai số chỉ khoảng\s*\d/i],
+    ['unverified cm accuracy', /\d\s*[–-]\s*\d\s*cm|sai số chỉ khoảng\s*\d/i],
+    ['unverified RTK claim', /\bRTK\b/],
     ['unverified VAT or SLA promise', /hóa đơn VAT|hoá đơn VAT|bao gồm VAT|cam kết SLA|24\/7|chuẩn quốc tế/i],
     ['Math.random fake numbers', /Math\.random\s*\(/],
 ];

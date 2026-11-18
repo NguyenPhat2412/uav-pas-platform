@@ -22,8 +22,8 @@ export default function CustomerTabs() {
                 <NativeTabs.Trigger.Label>{t('mobile.nav.explore')}</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="missions">
-                <NativeTabs.Trigger.Icon sf={{default: 'airplane.circle', selected: 'airplane.circle.fill'}} md="flight_takeoff"/>
-                <NativeTabs.Trigger.Label>{t('mobile.nav.orders')}</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf={{default: 'folder', selected: 'folder.fill'}} md="folder"/>
+                <NativeTabs.Trigger.Label>{t('mobile.overnight.navProjects')}</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="support">
                 <NativeTabs.Trigger.Icon sf={{default: 'bubble.left.and.text.bubble.right', selected: 'bubble.left.and.text.bubble.right.fill'}} md="support_agent"/>

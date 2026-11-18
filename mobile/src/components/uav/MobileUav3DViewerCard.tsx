@@ -65,7 +65,7 @@ export function MobileUav3DViewerCard({
     return (
         <Card>
             <SectionTitle
-                title={`Thiết bị bay dự kiến · ${modelName && !/RTK|Quadcopter|Enterprise/i.test(modelName) ? modelName : AIRFRAME_NAME[airframe]}`}
+                title={`Thiết bị bay dự kiến · ${modelName && !/(Quadcopter|Enterprise)/i.test(modelName) ? modelName : AIRFRAME_NAME[airframe]}`}
                 action={<Badge icon={Cpu} label={serialNumber} background={colors.slateDark} color={colors.white}/>}
             />
 
@@ -167,7 +167,7 @@ export function MobileUav3DViewerCard({
                             stroke={colors.primary}
                             strokeWidth={2}
                         />
-                        {/* Dual RTK Antennas (rises in Exploded mode) */}
+                        {/* Dual GNSS Antennas (rises in Exploded mode) */}
                         <Line x1={130} y1={68 - spread} x2={130} y2={46 - spread} stroke={colors.primary} strokeWidth={2.5}/>
                         <Line x1={150} y1={68 - spread} x2={150} y2={46 - spread} stroke={colors.primary} strokeWidth={2.5}/>
                         <Circle cx={130} cy={44 - spread} r={4} fill={colors.primary}/>

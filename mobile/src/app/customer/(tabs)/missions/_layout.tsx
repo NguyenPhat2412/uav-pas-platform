@@ -15,5 +15,5 @@ export const LAYOUT_META: LayoutMeta = {
 
 /** Expo Router stack layout for the customer missions tab segment. */
 export default function Layout() {
-    return <TabStack titleKey="mobile.nav.orders"/>;
+    return <TabStack titleKey="mobile.overnight.navProjects"/>;
 }

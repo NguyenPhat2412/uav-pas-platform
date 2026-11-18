@@ -1,5 +1,5 @@
 import React from 'react';
-import {MissionListScreen} from '@/components/mission/MissionListScreen';
+import {ProjectListScreen} from '@/components/project/ProjectListScreen';
 
 export interface RouteMeta {
     id: string;
@@ -11,11 +11,11 @@ export interface RouteMeta {
 export const ROUTE_META: RouteMeta = {
     id: 'customer.tabs.missions',
     portal: 'customer',
-    section: 'missions',
+    section: 'projects',
     requiresAuth: true,
 };
 
-/** Expo Router screen entry for the customer mission list tab. */
+/** Expo Router screen entry for the customer Projects tab (S1-mobile.md #3). */
 export default function CustomerMissionListRoute() {
-    return <MissionListScreen/>;
+    return <ProjectListScreen/>;
 }

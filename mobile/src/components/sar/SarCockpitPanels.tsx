@@ -121,7 +121,7 @@ export function SarTelemetryHudCard({
                         </AppText>
                     </View>
                     <View style={styles.hudItem}>
-                        <AppText variant="caption">RTK</AppText>
+                        <AppText variant="caption">GNSS</AppText>
                         <AppText variant="title">{liveTelemetry.rtkStatus ?? 'NONE'}</AppText>
                     </View>
                 </View>
