@@ -30,7 +30,7 @@ export function MissionList({missions, loading, error, onRefresh, label, showCus
             accessorKey: 'title',
             header: t('opsMissions.list.col.title'),
             cell: ({row}) => (
-                <div className="space-y-1">
+                <div className="min-w-[200px] space-y-1">
                     <Link href={`/operations/missions/${toMissionSlug(row.original)}`}
                           className="font-semibold text-slate-900 hover:text-primary">{row.original.title}</Link>
                     <div>

@@ -34,7 +34,7 @@ export function SimulationRunHistoryCard({runs, num, formatDate}: SimulationRunH
             cell: ({row}) => {
                 const r = row.original;
                 return (
-                    <div>
+                    <div className="min-w-[160px]">
                         <div className="font-semibold text-slate-900">{r.uavCode}</div>
                         <div className="text-[11px] font-normal tabular-nums text-slate-400">
                             {formatDate(r.startedAt, {month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'})}
@@ -50,11 +50,11 @@ export function SimulationRunHistoryCard({runs, num, formatDate}: SimulationRunH
             cell: ({row}) => {
                 const r = row.original;
                 return r.missionId != null && r.missionCode ? (
-                    <Link href={`/operations/missions/${r.missionId}`} className="font-bold text-uav-blue hover:underline">
+                    <Link href={`/operations/missions/${r.missionId}`} className="whitespace-nowrap font-bold text-uav-blue hover:underline">
                         {r.missionCode}
                     </Link>
                 ) : (
-                    <span className="text-slate-400">{t('simulation.history.freeFlight')}</span>
+                    <span className="whitespace-nowrap text-slate-400">{t('simulation.history.freeFlight')}</span>
                 );
             },
         },
@@ -65,7 +65,7 @@ export function SimulationRunHistoryCard({runs, num, formatDate}: SimulationRunH
             cell: ({row}) => {
                 const r = row.original;
                 return (
-                    <span className="tabular-nums text-slate-600">
+                    <span className="inline-block min-w-[130px] tabular-nums text-slate-600">
                         {num(r.altitudeMeters)} m · {num(r.windSpeedMs, 1)} m/s ({num(r.windDirectionDeg)}°) · {num(r.timeScale)}x
                     </span>
                 );
@@ -78,7 +78,7 @@ export function SimulationRunHistoryCard({runs, num, formatDate}: SimulationRunH
             cell: ({row}) => {
                 const r = row.original;
                 return (
-                    <div className="tabular-nums text-slate-600">
+                    <div className="min-w-[110px] tabular-nums text-slate-600">
                         <div>{r.waypointsReached}/{r.waypointCount} · {num(r.distanceFlownMeters)} m</div>
                         <div className="text-[11px] text-slate-400">
                             {num(r.startBatteryPct)}% → {r.endBatteryPct != null ? `${num(r.endBatteryPct)}%` : '—'}

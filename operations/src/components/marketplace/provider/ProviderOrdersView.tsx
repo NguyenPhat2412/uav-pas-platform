@@ -61,7 +61,7 @@ export function ProviderOrdersView() {
     const {respondToOrder, assignOrder, startOrder, completeOrder} = useProviderOrderActions();
     const {uploadDeliverable} = usePilotTodayActions();
 
-    const [activeTab, setActiveTab] = useState<SellerOrderTab>('PENDING_ACCEPT');
+    const [pickedTab, setActiveTab] = useState<SellerOrderTab | null>(null);
     const [selectedUavByMission, setSelectedUavByMission] = useState<Record<number, number>>({});
     const [selectedPilotByMission, setSelectedPilotByMission] = useState<Record<number, number>>({});
     const [rejectingMissionId, setRejectingMissionId] = useState<number | null>(null);
@@ -82,6 +82,16 @@ export function ProviderOrdersView() {
         IN_FLIGHT: orders.filter(m => classifySellerOrderTab(m) === 'IN_FLIGHT').length,
         DELIVERED: orders.filter(m => classifySellerOrderTab(m) === 'DELIVERED').length,
     };
+
+    const activeTab: SellerOrderTab =
+        pickedTab ??
+        (counts.PENDING_ACCEPT > 0
+            ? 'PENDING_ACCEPT'
+            : counts.WAITING_FLIGHT > 0
+              ? 'WAITING_FLIGHT'
+              : counts.IN_FLIGHT > 0
+                ? 'IN_FLIGHT'
+                : 'PENDING_ACCEPT');
 
     const filteredOrders = orders.filter(m => classifySellerOrderTab(m) === activeTab);
 

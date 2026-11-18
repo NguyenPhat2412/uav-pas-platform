@@ -183,7 +183,7 @@ export function SimulationConsole({initialMissionId}: { initialMissionId?: numbe
                     <p className="m-0 mt-1 text-xs text-slate-500">{t('simulation.subtitle')}</p>
                 </div>
                 {!!sims.data?.length && (
-                    <div className="flex flex-wrap gap-1.5" aria-label={t('simulation.running')}>
+                    <div className="flex max-w-full min-w-0 flex-wrap gap-1.5" aria-label={t('simulation.running')}>
                         {sims.data.map(s => (
                             <Button
                                 key={s.uavId}
@@ -193,13 +193,15 @@ export function SimulationConsole({initialMissionId}: { initialMissionId?: numbe
                                 onClick={() => setPicked(s.uavId)}
                                 leftIcon={<Radio size={12} aria-hidden="true"/>}
                                 className={cn(
-                                    'h-7 rounded-badge px-2.5 text-[11px] font-bold',
+                                    'h-7 max-w-full shrink min-w-0 rounded-badge px-2.5 text-[11px] font-bold',
                                     s.uavId === uavId
                                         ? 'border-primary bg-uav-red-light text-primary hover:bg-uav-red-light'
                                         : 'bg-card text-slate-600',
                                 )}
                             >
-                                {s.uavCode}{s.missionCode ? ` · ${s.missionCode}` : ''}
+                                <span className="truncate">
+                                    {s.uavCode}{s.missionCode ? ` · ${s.missionCode}` : ''}
+                                </span>
                             </Button>
                         ))}
                     </div>

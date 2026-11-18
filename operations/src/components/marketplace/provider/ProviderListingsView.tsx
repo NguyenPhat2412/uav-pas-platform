@@ -33,6 +33,7 @@ import {
     PRICING_MODEL_CODES,
     sanitizeMarketplaceText,
 } from '@/forms/marketplace/marketplace-forms';
+import {displayLabel, serviceName} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 import type {UavService} from '@/types/mission/mission.types';
 import type {
@@ -68,13 +69,14 @@ export function ProviderListingsView() {
     const openFromTemplate = (tpl: UavService) => {
         setErrorMsg('');
         setSelectedTemplateId(tpl.id);
-        setForm(
-            listingFormFromTemplate(
+        setForm({
+            ...listingFormFromTemplate(
                 tpl,
                 profile?.province || 'Hà Nội',
                 profile?.serviceRadiusKm ?? defaultServiceRadiusKm,
             ),
-        );
+            title: serviceName(tpl),
+        });
         setEditingId('template');
     };
 
@@ -250,12 +252,12 @@ export function ProviderListingsView() {
                                                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-uav-red-light text-primary">
                                                     <Boxes size={18} aria-hidden="true"/>
                                                 </span>
-                                                <span className="rounded-md bg-white px-2 py-0.5 font-mono text-xs font-semibold whitespace-nowrap text-slate-600">
-                                                    {tpl.code}
+                                                <span className="rounded-md bg-white px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-slate-600">
+                                                    {displayLabel(tpl.code)}
                                                 </span>
                                             </div>
                                             <h3 className="m-0 line-clamp-2 text-sm font-semibold text-slate-900">
-                                                {tpl.name}
+                                                {serviceName(tpl)}
                                             </h3>
                                             {tpl.description && (
                                                 <p className="m-0 line-clamp-1 text-xs text-slate-500">

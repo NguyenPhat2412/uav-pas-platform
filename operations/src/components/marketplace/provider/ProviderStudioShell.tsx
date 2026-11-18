@@ -73,7 +73,7 @@ export function ProviderStudioShell({
                         </div>
                     </div>
 
-                    <nav className="flex gap-1 overflow-x-auto" aria-label={t('opsMarketplace.studio.badge')}>
+                    <nav className="grid grid-cols-3 gap-1 pb-2 sm:flex sm:pb-0 sm:overflow-x-auto" aria-label={t('opsMarketplace.studio.badge')}>
                         {STUDIO_TABS.map(tab => {
                             const Icon = tab.icon;
                             const active = pathname === tab.href || pathname.startsWith(`${tab.href}/`);
@@ -82,10 +82,10 @@ export function ProviderStudioShell({
                                     key={tab.href}
                                     href={tab.href}
                                     aria-current={active ? 'page' : undefined}
-                                    className={`-mb-px inline-flex min-h-11 shrink-0 items-center gap-1.5 border-b-2 px-3 text-xs font-semibold whitespace-nowrap transition-colors ${
+                                    className={`inline-flex min-h-10 sm:min-h-11 shrink-0 items-center justify-center sm:justify-start gap-1.5 rounded-control sm:rounded-none sm:-mb-px border sm:border-0 sm:border-b-2 px-2 sm:px-3 text-xs font-semibold whitespace-nowrap transition-colors ${
                                         active
-                                            ? 'border-primary text-primary'
-                                            : 'border-transparent text-slate-600 hover:text-slate-900'
+                                            ? 'border-primary bg-uav-red-light sm:bg-transparent text-primary'
+                                            : 'border-slate-200 sm:border-transparent text-slate-600 hover:text-slate-900'
                                     }`}
                                 >
                                     <Icon size={15} aria-hidden="true"/>

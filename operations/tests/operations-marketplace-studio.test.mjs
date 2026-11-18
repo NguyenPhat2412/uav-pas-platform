@@ -212,5 +212,24 @@ test('S3 every static opsMarketplace.* translation key used in components exists
     }
 });
 
+test('S3 responsive toast, notification popup, table headers, and localized template badges prevent 390px overflow and raw enum leak', () => {
+    const toastSrc = read('src/components/ui/Toast.tsx');
+    assert.match(toastSrc, /left-4\s+right-4/);
+    assert.match(toastSrc, /max-w-\[calc\(100vw-2rem\)\]/);
+    assert.doesNotMatch(toastSrc, /<h4[^>]*truncate/);
+
+    const popupSrc = read('src/components/notification/popup/LiveNotificationPopupHost.tsx');
+    assert.match(popupSrc, /left-4\s+right-4/);
+    assert.match(popupSrc, /max-w-\[calc\(100vw-2rem\)\]/);
+
+    const listingsSrc = read('src/components/marketplace/provider/ProviderListingsView.tsx');
+    assert.match(listingsSrc, /displayLabel\(tpl\.code\)/);
+    assert.match(listingsSrc, /serviceName\(tpl\)/);
+
+    const dataTableSrc = read('src/components/data/DataTable.tsx');
+    assert.match(dataTableSrc, /px-4 py-3 whitespace-nowrap/);
+});
+
+
 
 

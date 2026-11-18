@@ -4,6 +4,7 @@ import {useEffect} from 'react';
 import Link from 'next/link';
 import {
     ArrowUpRight,
+    Bell,
     Boxes,
     CheckCircle2,
     ClipboardList,
@@ -12,11 +13,9 @@ import {
     CreditCard,
     Crosshair,
     Gamepad2,
-    MapPinned,
     PlaneTakeoff,
     ShieldCheck,
     Users,
-    Wrench,
 } from 'lucide-react';
 import {useRouter} from 'next/navigation';
 import {AppShell} from '@/components/layout/AppShell';
@@ -44,8 +43,8 @@ const SHOP_SHORTCUTS = [
     {icon: CreditCard, key: 'wallet', href: '/operations/provider/wallet'},
     {icon: ShieldCheck, key: 'onboarding', href: '/operations/provider/onboarding'},
     {icon: CloudSun, key: 'weather', href: '/operations/weather', navKey: 'operationsNav.weather'},
-    {icon: MapPinned, key: 'stations', href: '/operations/stations', navKey: 'operationsNav.stations'},
-    {icon: Wrench, key: 'maintenance', href: '/operations/maintenance', navKey: 'operationsNav.maintenance'},
+    {icon: ClipboardList, key: 'assignedMissions', href: '/operations/assigned-missions', navKey: 'operationsNav.assignedMissions'},
+    {icon: Bell, key: 'notifications', href: '/operations/notifications', navKey: 'operationsNav.notifications'},
 ] as const;
 
 export default function HomePage() {
@@ -203,7 +202,7 @@ export default function HomePage() {
                                     <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-uav-red-light text-primary transition-transform group-hover:scale-105">
                                         <Icon size={20} aria-hidden="true"/>
                                     </span>
-                                    <span className="max-w-full truncate text-xs font-semibold whitespace-nowrap text-slate-800 group-hover:text-primary">
+                                    <span className="max-w-full line-clamp-2 break-words text-xs font-semibold leading-snug text-slate-800 group-hover:text-primary">
                                         {label}
                                     </span>
                                 </Link>

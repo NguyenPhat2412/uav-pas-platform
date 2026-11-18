@@ -407,7 +407,7 @@ export function ProviderPilotsView() {
                                                             {sanitizeMarketplaceText(pilot.fullName)}
                                                         </h3>
                                                         {pilot.specialization && (
-                                                            <p className="m-0 mt-0.5 truncate text-xs text-slate-500">
+                                                            <p className="m-0 mt-0.5 line-clamp-2 break-words text-xs text-slate-500">
                                                                 {sanitizeMarketplaceText(pilot.specialization)}
                                                             </p>
                                                         )}

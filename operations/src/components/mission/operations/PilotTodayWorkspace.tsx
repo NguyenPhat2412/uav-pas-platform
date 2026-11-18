@@ -56,7 +56,7 @@ export function PilotTodayWorkspace({
     const {user, can} = useAuth();
     const {startTask, uploadDeliverable, completeTask} = usePilotTodayActions();
 
-    const [activeTab, setActiveTab] = useState<PilotTaskTab>('ACTIVE');
+    const [pickedTab, setActiveTab] = useState<PilotTaskTab | null>(null);
     const [openPreflightId, setOpenPreflightId] = useState<number | null>(null);
     const [openCompleteId, setOpenCompleteId] = useState<number | null>(null);
     const [uploadingMissionId, setUploadingMissionId] = useState<number | null>(null);
@@ -77,6 +77,14 @@ export function PilotTodayWorkspace({
         IN_FLIGHT: ownMissions.filter(m => classifyPilotTaskTab(m) === 'IN_FLIGHT').length,
         COMPLETED: ownMissions.filter(m => classifyPilotTaskTab(m) === 'COMPLETED').length,
     };
+
+    const activeTab: PilotTaskTab =
+        pickedTab ??
+        (counts.ACTIVE > 0
+            ? 'ACTIVE'
+            : counts.IN_FLIGHT > 0
+              ? 'IN_FLIGHT'
+              : 'ACTIVE');
 
     const visibleMissions = ownMissions.filter(m => classifyPilotTaskTab(m) === activeTab);
 
