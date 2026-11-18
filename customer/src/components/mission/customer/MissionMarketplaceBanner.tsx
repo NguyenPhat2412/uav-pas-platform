@@ -42,7 +42,7 @@ export function MissionMarketplaceBanner({
                             </span>
                             <h3 className="m-0 text-base font-semibold text-on-surface">{activeListing.title}</h3>
                             <p className="m-0 text-xs text-muted tabular-nums">
-                                Đơn vị cung cấp: <strong className="text-on-surface">{activeListing.providerDisplayName}</strong> ({activeListing.province}) · Đơn giá:{' '}
+                                Đối tác đã xác minh · Khu vực {activeListing.province} · Đơn giá minh hoạ:{' '}
                                 <strong className="text-on-surface">{formatVndCompact(activeListing.basePriceVnd)} / {pricingUnitLabel(activeListing.pricingModel)}</strong>
                             </p>
                             <p className="m-0 text-xs text-muted tabular-nums">
@@ -60,7 +60,7 @@ export function MissionMarketplaceBanner({
                                 className="h-10 w-36 rounded-control border border-border-input bg-card px-3 text-sm font-bold text-on-surface tabular-nums"
                             />
                             <span className="text-xs font-semibold text-on-surface">
-                                Tạm tính: {formatVndCompact(estimatedSubtotal)}
+                                Tạm tính minh hoạ: {formatVndCompact(estimatedSubtotal)}
                             </span>
                         </label>
                     </div>

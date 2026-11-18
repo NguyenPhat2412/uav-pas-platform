@@ -2,6 +2,7 @@
 
 import type {MouseEvent} from 'react';
 import {ChevronDown} from 'lucide-react';
+import {useI18n} from '@/providers/I18nContext';
 
 interface HeroScrollDownButtonProps {
     targetId?: string;
@@ -12,6 +13,8 @@ interface HeroScrollDownButtonProps {
  * and smooth eased scrolling to the target landing section.
  */
 export function HeroScrollDownButton({targetId = 'home-overview'}: HeroScrollDownButtonProps) {
+    const {t} = useI18n();
+
     const handleScrollDown = (event: MouseEvent<HTMLAnchorElement>) => {
         const target = document.getElementById(targetId);
         if (!target) return;
@@ -55,7 +58,7 @@ export function HeroScrollDownButton({targetId = 'home-overview'}: HeroScrollDow
         <a
             href={`#${targetId}`}
             onClick={handleScrollDown}
-            aria-label="Cuộn xuống phần giới thiệu"
+            aria-label={t('publicSite.header.scrollDownAria')}
             className="group absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2 rounded-2xl px-5 py-2 text-center text-white/85 transition-colors duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
         >
             <span className="flex flex-col items-center" aria-hidden="true">

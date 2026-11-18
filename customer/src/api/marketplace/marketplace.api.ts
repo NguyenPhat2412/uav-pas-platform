@@ -27,9 +27,18 @@ import type {
 
 function toQueryString(filters: PublicListingFilters = {}): string {
     const params = new URLSearchParams();
-    if (filters.keyword?.trim()) params.set('keyword', filters.keyword.trim());
+    const search = (filters.q ?? filters.keyword ?? '').trim();
+    if (search) {
+        params.set('keyword', search);
+        params.set('q', search);
+    }
     if (filters.listingType) params.set('listingType', filters.listingType);
-    if (filters.missionType) params.set('missionType', filters.missionType);
+    if (filters.missionType) {
+        params.set('missionType', filters.missionType);
+        params.set('category', filters.missionType);
+    } else if (filters.category?.trim()) {
+        params.set('category', filters.category.trim());
+    }
     if (filters.pricingModel) params.set('pricingModel', filters.pricingModel);
     if (filters.province?.trim()) params.set('province', filters.province.trim());
     if (filters.maxPriceVnd !== '' && filters.maxPriceVnd != null) params.set('maxPriceVnd', String(filters.maxPriceVnd));

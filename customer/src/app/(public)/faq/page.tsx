@@ -15,8 +15,8 @@ const faqs = [
         'UAV PAS phục vụ doanh nghiệp khảo sát địa hình, ban quản lý dự án hạ tầng, đơn vị kiểm tra kỹ thuật và đội ứng phó hiện trường. Nền tảng kết nối ba phân hệ: Khách hàng gửi yêu cầu bay, Trung tâm Điều hành phân bổ nguồn lực và Quản trị viên giám sát vận hành.',
     ],
     [
-        'Chi phí và các gói thuê bao trên UAV PAS được tính như thế nào?',
-        'Nền tảng cung cấp 3 gói thuê bao theo chu kỳ 30 ngày: Gói Tiêu chuẩn (Basic - 5.000.000đ / 20 giờ bay), Gói Pro (15.000.000đ / 80 giờ bay) và Gói Enterprise (45.000.000đ / 300 giờ bay, hỗ trợ buồng lái SAR IAMSAR, mô-đun AI thử nghiệm và Webhook API).',
+        'Chi phí và các gói phần mềm trên UAV PAS được tính như thế nào?',
+        'Nền tảng cung cấp 3 gói thuê bao phần mềm theo chu kỳ 30 ngày: Gói Basic (5.000.000đ / 20 nhiệm vụ điều phối), Gói Pro (15.000.000đ / 80 nhiệm vụ điều phối) và Gói Enterprise (45.000.000đ / 300 nhiệm vụ điều phối, hỗ trợ buồng lái SAR IAMSAR, mô-đun AI thử nghiệm và Webhook API).',
     ],
     [
         'Tôi thanh toán và kích hoạt gói dịch vụ bằng cách nào?',

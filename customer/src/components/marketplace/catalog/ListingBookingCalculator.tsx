@@ -28,12 +28,14 @@ export function ListingBookingCalculator({listing}: { listing: MarketplaceListin
             <div className="uav-bezel sticky top-20">
                 <div className="uav-bezel-core space-y-4 p-6">
                     <div>
-                        <span className="text-xs font-semibold text-muted">{pricingModelLabel(listing.pricingModel)}</span>
+                        <span className="text-xs font-semibold text-muted">
+                            {pricingModelLabel(listing.pricingModel)} · minh hoạ
+                        </span>
                         <div className="mt-1 flex items-baseline gap-1.5 tabular-nums">
                             <span className="text-2xl font-bold text-primary">
                                 {formatVndCompact(listing.basePriceVnd)}
                             </span>
-                            <span className="text-xs font-medium text-muted">/ {unitText}</span>
+                            <span className="text-xs font-medium text-muted">/ {unitText} · minh hoạ</span>
                         </div>
                     </div>
 
@@ -108,23 +110,14 @@ export function ListingBookingCalculator({listing}: { listing: MarketplaceListin
                     </div>
 
                     <Link
-                        href={`/customer/missions/create?listing=${encodeURIComponent(listing.slug)}&units=${encodeURIComponent(String(Math.max(parsedUnits || minUnits, minUnits)))}`}
+                        href={`/customer/services/${encodeURIComponent(listing.slug)}?subscribe=1&units=${encodeURIComponent(String(Math.max(parsedUnits || minUnits, minUnits)))}`}
                         className="group inline-flex min-h-11 w-full items-center justify-between rounded-control bg-primary pr-3 pl-5 text-xs font-semibold whitespace-nowrap text-primary-foreground shadow-xs transition-[background-color,transform] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-primary-hover active:scale-[0.985]"
                     >
-                        <span>Đặt thuê gói này ngay</span>
+                        <span>Đăng ký cho dự án</span>
                         <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/15 transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5">
                             <ArrowUpRight size={14} aria-hidden="true"/>
                         </span>
                     </Link>
-
-                    {listing.providerSlug && (
-                        <Link
-                            href={`/providers/${listing.providerSlug}`}
-                            className="inline-flex min-h-10 w-full items-center justify-center rounded-control border border-slate-200 bg-card px-4 text-xs font-semibold whitespace-nowrap text-on-surface transition-colors hover:bg-surface-container-low"
-                        >
-                            Xem gian hàng của {listing.providerDisplayName}
-                        </Link>
-                    )}
 
                     {rfqEnabled && (
                         <Link

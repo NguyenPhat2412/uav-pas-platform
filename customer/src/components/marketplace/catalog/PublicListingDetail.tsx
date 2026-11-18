@@ -1,12 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import {Building2, CheckCircle2, Lock, MapPin, ShieldCheck, Star} from 'lucide-react';
+import {CheckCircle2, Lock, MapPin, ShieldCheck, Star} from 'lucide-react';
 import {ListingBookingCalculator} from '@/components/marketplace/catalog/ListingBookingCalculator';
 import {resolveListingPhoto} from '@/components/marketplace/catalog/MarketplaceListingCard';
 import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplace';
 import {listingTypeLabel} from '@/forms/marketplace/marketplace-forms';
+import {resolveListingBadge} from '@/forms/project/project-form';
 import {displayLabel} from '@/lib/presentation';
+import {useI18n} from '@/providers/I18nContext';
 
 const DETAIL_ESCROW_STEPS = [
     '1. Chốt đơn & Hóa đơn',
@@ -16,6 +18,7 @@ const DETAIL_ESCROW_STEPS = [
 ] as const;
 
 export function PublicListingDetail({slug}: { slug: string }) {
+    const {t} = useI18n();
     const query = usePublicListingDetail(slug);
     const listing = query.data?.listing;
     const reviews = query.data?.reviews ?? [];
@@ -48,6 +51,7 @@ export function PublicListingDetail({slug}: { slug: string }) {
     }
 
     const photo = resolveListingPhoto(listing);
+    const badge = resolveListingBadge(listing);
 
     return (
         <div className="bg-slate-50/60 py-10 sm:py-14">
@@ -73,15 +77,15 @@ export function PublicListingDetail({slug}: { slug: string }) {
                                     <span className="rounded-badge bg-slate-950/75 px-3 py-1 text-xs font-semibold text-white backdrop-blur-xs">
                                         {listingTypeLabel(listing.listingType)}
                                     </span>
-                                    {listing.officialPlatformListing ? (
+                                    {listing.featured ? (
                                         <span className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white">
                                             <ShieldCheck size={14} aria-hidden="true"/>
-                                            Đội bay UAV PAS
+                                            {t('publicSite.catalog.featuredPartner')}
                                         </span>
                                     ) : (
                                         <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/90 px-3 py-1 text-xs font-semibold text-white ring-1 ring-white/20 backdrop-blur-xs">
                                             <CheckCircle2 size={14} aria-hidden="true"/>
-                                            Đối tác đã xác minh KYC
+                                            {t('publicSite.catalog.verifiedPartner')}
                                         </span>
                                     )}
                                 </div>
@@ -98,31 +102,20 @@ export function PublicListingDetail({slug}: { slug: string }) {
                                 )}
 
                                 <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-slate-100 pt-4 text-xs text-muted tabular-nums">
-                                    {listing.providerSlug ? (
-                                        <Link
-                                            href={`/providers/${listing.providerSlug}`}
-                                            className="inline-flex items-center gap-1.5 font-semibold text-on-surface hover:text-primary"
-                                        >
-                                            <Building2 size={15} className="text-primary" aria-hidden="true"/>
-                                            {listing.providerDisplayName}
-                                        </Link>
-                                    ) : (
-                                        <span className="inline-flex items-center gap-1.5 font-semibold text-on-surface">
-                                            <Building2 size={15} className="text-primary" aria-hidden="true"/>
-                                            {listing.providerDisplayName}
-                                        </span>
-                                    )}
+                                    <span className="inline-flex items-center gap-1.5 font-semibold text-on-surface">
+                                        <ShieldCheck size={15} className="text-primary" aria-hidden="true"/>
+                                        {t('publicSite.catalog.verifiedPartner')}
+                                    </span>
                                     <span className="inline-flex items-center gap-1">
                                         <MapPin size={14} aria-hidden="true"/>
-                                        {listing.province} (bán kính {listing.serviceRadiusKm} km)
+                                        {listing.province} · {listing.serviceRadiusKm} km
                                     </span>
                                     <span className="inline-flex items-center gap-1 font-semibold text-amber-600">
                                         <Star size={14} className="fill-amber-400 text-amber-500" aria-hidden="true"/>
-                                        {listing.reviewCount > 0
-                                            ? `${Number(listing.ratingAvg).toFixed(1)} · ${listing.reviewCount} đánh giá`
-                                            : 'Chưa có đánh giá'}
+                                        {badge.reviewCount > 0
+                                            ? `${badge.ratingAvg.toFixed(1)} (${badge.reviewCount})`
+                                            : t('publicSite.catalog.newListing')}
                                     </span>
-                                    <span>Đã nhận {listing.bookingCount} lượt đặt</span>
                                 </div>
 
                                 <div className="uav-bezel mt-5">

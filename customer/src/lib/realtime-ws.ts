@@ -17,6 +17,13 @@ export type RealtimeServerFrame =
     | { type: 'SUPPORT_THREAD_DELETED'; timestamp: string; threadId: number }
     | { type: 'INVOICE_UPDATED'; timestamp: string; invoiceId: number; invoiceCode: string; status: InvoiceStatus | string }
     | {
+          type: 'ORDER_UPDATED';
+          timestamp?: string;
+          missionId: number;
+          status: string;
+          statusGroup?: string | null;
+      }
+    | {
           type: 'NOTIFICATION_CREATED';
           timestamp: string;
           notification: {

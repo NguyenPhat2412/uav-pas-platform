@@ -4,8 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {useState} from 'react';
 import {usePathname} from 'next/navigation';
-import {Briefcase, LogOut, Menu, Radar, ShieldCheck, UserCheck, X} from 'lucide-react';
+import {Briefcase, LogOut, Menu, Radar, ShieldCheck, Store, UserCheck, X} from 'lucide-react';
 import {Button} from '@/components/ui';
+import {customerUrl} from '@/content/marketing/origins';
+import {supportedLocales} from '@/i18n/config';
+import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {openAuthModal} from '@/components/auth/modal/AuthModalPopup';
@@ -25,23 +28,52 @@ export function PublicHeader() {
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
     const {user, isAuthenticated, logout} = useAuth();
-    const {t} = useI18n();
-    const dashboardHref = user ? (portalForRole(user.role) === 'operations' ? '/operations/overview' : portalHome(portalForRole(user.role))) : '/customer/dashboard';
+    const {t, locale, setLocale} = useI18n();
+    const dashboardHref = user ? (portalForRole(user.role) === 'operations' ? '/operations/overview' : portalHome(portalForRole(user.role))) : `${customerUrl}/dashboard`;
 
     const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
     const close = () => setOpen(false);
-    const outline = 'inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-primary';
-    const filled = 'inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary-hover';
+    const outline = 'inline-flex min-h-9 items-center justify-center gap-1.5 rounded-control border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-primary';
+    const filled = 'inline-flex min-h-9 items-center justify-center gap-1.5 rounded-control bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary-hover';
     const multiPortal = canUsePortal(user?.role ?? '', 'admin') || canUsePortal(user?.role ?? '', 'operations');
 
+    const localeToggle = (
+        <div
+            className="inline-flex items-center rounded-control border border-slate-200 bg-slate-50 p-0.5"
+            role="group"
+            aria-label={t('publicSite.header.languageLabel')}
+        >
+            {supportedLocales.map(code => (
+                <button
+                    key={code}
+                    type="button"
+                    aria-pressed={locale === code}
+                    onClick={() => setLocale(code)}
+                    className={cn(
+                        'cursor-pointer rounded-badge px-2 py-1 text-[11px] font-bold uppercase transition-colors',
+                        locale === code
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-slate-600 hover:text-slate-900',
+                    )}
+                >
+                    {code}
+                </button>
+            ))}
+        </div>
+    );
+
     const actions = isAuthenticated && user ? <>
+        <Link href={`${customerUrl}/provider/onboarding`} onClick={close} className={outline}>
+            <Store size={14} aria-hidden="true"/>
+            <span>{t('publicSite.header.becomeProvider')}</span>
+        </Link>
         {multiPortal ? (
-            <div className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-100/90 p-1" aria-label={t('shell.portalSwitcher.ariaLabel')}>
+            <div className="inline-flex items-center gap-1 rounded-control border border-slate-200 bg-slate-100/90 p-1" aria-label={t('shell.portalSwitcher.ariaLabel')}>
                 {canUsePortal(user.role, 'admin') && (
                     <Link
                         href="/admin/dashboard"
                         onClick={close}
-                        className="inline-flex size-8 items-center justify-center rounded-md bg-primary text-white shadow-2xs transition-colors hover:bg-primary-hover"
+                        className="inline-flex size-8 items-center justify-center rounded-badge bg-primary text-white transition-colors hover:bg-primary-hover"
                         title={t('publicHeader.adminPortal')}
                         aria-label={t('publicHeader.adminPortal')}
                     >
@@ -53,7 +85,7 @@ export function PublicHeader() {
                     <Link
                         href="/operations/overview"
                         onClick={close}
-                        className="inline-flex size-8 items-center justify-center rounded-md text-slate-700 transition-colors hover:bg-white hover:text-slate-900"
+                        className="inline-flex size-8 items-center justify-center rounded-badge text-slate-700 transition-colors hover:bg-white hover:text-slate-900"
                         title={t('publicHeader.operationsPortal')}
                         aria-label={t('publicHeader.operationsPortal')}
                     >
@@ -62,9 +94,9 @@ export function PublicHeader() {
                     </Link>
                 )}
                 <Link
-                    href="/customer/dashboard"
+                    href={`${customerUrl}/dashboard`}
                     onClick={close}
-                    className="inline-flex size-8 items-center justify-center rounded-md text-slate-700 transition-colors hover:bg-white hover:text-slate-900"
+                    className="inline-flex size-8 items-center justify-center rounded-badge text-slate-700 transition-colors hover:bg-white hover:text-slate-900"
                     title={t('publicHeader.customerPortal')}
                     aria-label={t('publicHeader.customerPortal')}
                 >
@@ -84,6 +116,10 @@ export function PublicHeader() {
             <LogOut size={14}/>
         </button>
     </> : <>
+        <Link href={`${customerUrl}/provider/onboarding`} onClick={close} className={outline}>
+            <Store size={14} aria-hidden="true"/>
+            <span>{t('publicSite.header.becomeProvider')}</span>
+        </Link>
         <button type="button" onClick={() => {
             close();
             openAuthModal('login');
@@ -104,17 +140,17 @@ export function PublicHeader() {
                 }
             }}
         >
-            <div className="relative mx-auto flex min-h-[76px] w-full max-w-[1380px] items-center justify-between gap-5 px-5 sm:px-8 lg:px-12">
-                <Link href="/" className="flex min-w-0 items-center gap-3.5" aria-label="UAV PAS - Trang chủ">
-                    <Image src="/uav-pas-logo.svg" alt="" width={46} height={46} priority
-                         className="size-[46px] shrink-0 rounded-full bg-white p-0.5 object-contain shadow-2xs ring-1 ring-slate-200"/>
+            <div className="relative mx-auto flex min-h-[76px] w-full max-w-[1380px] items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
+                <Link href="/" className="flex min-w-0 items-center gap-3.5" aria-label="UAV PAS">
+                    <Image src="/uav-pas-logo.svg" alt="" width={44} height={44} priority
+                         className="size-[44px] shrink-0 rounded-full bg-white p-0.5 object-contain shadow-2xs ring-1 ring-slate-200"/>
                     <span className="min-w-0 border-l border-slate-200 pl-3.5">
                         <span className="block text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-[10px]">{t('publicHeader.tagline')}</span>
                         <span className="mt-0.5 block text-[17px] font-extrabold tracking-tight text-slate-900">UAV<span className="text-primary">PAS</span></span>
                     </span>
                 </Link>
 
-                <nav className="hidden items-center gap-7 xl:flex" aria-label="Điều hướng chính">
+                <nav className="hidden items-center gap-6 xl:flex" aria-label={t('publicHeader.services')}>
                     {navLinks.map(([href, labelKey]) => (
                         <Link key={href} href={href} aria-current={isActive(href) ? 'page' : undefined}
                               className={`text-xs transition-colors hover:text-primary ${isActive(href) ? 'font-bold text-primary' : 'font-medium text-slate-600'}`}>
@@ -123,25 +159,31 @@ export function PublicHeader() {
                     ))}
                 </nav>
 
-                <div className="hidden items-center gap-2.5 xl:flex">{actions}</div>
+                <div className="hidden items-center gap-2.5 xl:flex">
+                    {localeToggle}
+                    {actions}
+                </div>
 
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className="menu-button grid size-10 cursor-pointer place-items-center rounded-lg border border-slate-200 bg-white p-0 text-foreground hover:bg-slate-50 xl:hidden"
-                    type="button"
-                    aria-expanded={open}
-                    aria-controls="public-nav"
-                    onClick={() => setOpen(!open)}
-                >
-                    <span className="sr-only">{open ? t('shell.closeNavigation') : t('shell.openNavigation')}</span>
-                    {open ? <X size={18} aria-hidden="true"/> : <Menu size={18} aria-hidden="true"/>}
-                </Button>
+                <div className="flex items-center gap-2 xl:hidden">
+                    {localeToggle}
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="menu-button grid size-10 cursor-pointer place-items-center rounded-control border border-slate-200 bg-white p-0 text-foreground hover:bg-slate-50"
+                        type="button"
+                        aria-expanded={open}
+                        aria-controls="public-nav"
+                        onClick={() => setOpen(!open)}
+                    >
+                        <span className="sr-only">{open ? t('shell.closeNavigation') : t('shell.openNavigation')}</span>
+                        {open ? <X size={18} aria-hidden="true"/> : <Menu size={18} aria-hidden="true"/>}
+                    </Button>
+                </div>
             </div>
-            {open && <nav id="public-nav" className="absolute left-0 right-0 top-full grid gap-0.5 border-b border-slate-200 bg-white px-5 py-3 shadow-lg xl:hidden" aria-label="Điều hướng chính">
+            {open && <nav id="public-nav" className="absolute left-0 right-0 top-full grid gap-0.5 border-b border-slate-200 bg-white px-5 py-3 shadow-lg xl:hidden" aria-label={t('publicHeader.services')}>
                 {navLinks.map(([href, labelKey]) => (
                     <Link key={href} href={href} onClick={close} aria-current={isActive(href) ? 'page' : undefined}
-                          className={`rounded-lg px-3 py-2.5 text-sm hover:bg-slate-50 ${isActive(href) ? 'font-semibold text-primary' : 'text-slate-700'}`}>
+                          className={`rounded-control px-3 py-2.5 text-sm hover:bg-slate-50 ${isActive(href) ? 'font-semibold text-primary' : 'text-slate-700'}`}>
                         {t(labelKey)}
                     </Link>
                 ))}

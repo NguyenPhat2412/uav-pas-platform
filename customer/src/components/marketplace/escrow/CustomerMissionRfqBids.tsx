@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import {CheckCircle2, Gavel, Star} from 'lucide-react';
+import {CheckCircle2, Gavel, ShieldCheck, Star} from 'lucide-react';
 import {Button} from '@/components/customer/CustomerUi';
 import {
     extractActionableError,
@@ -54,7 +53,7 @@ export function CustomerMissionRfqBids({
                 </p>
             ) : (
                 <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
-                    {bids.map(bid => (
+                    {bids.map((bid, idx) => (
                         <article
                             key={bid.id}
                             className={`rounded-xl border p-3.5 tabular-nums ${
@@ -65,12 +64,10 @@ export function CustomerMissionRfqBids({
                         >
                             <div className="flex flex-wrap items-start justify-between gap-2">
                                 <div>
-                                    <Link
-                                        href={`/providers/${bid.providerSlug}`}
-                                        className="text-xs font-extrabold text-slate-900 hover:text-primary"
-                                    >
-                                        {bid.providerDisplayName}
-                                    </Link>
+                                    <span className="inline-flex items-center gap-1 text-xs font-extrabold text-slate-900">
+                                        <ShieldCheck size={13} className="text-primary" aria-hidden="true"/>
+                                        Đối tác đã xác minh #{idx + 1}
+                                    </span>
                                     <div className="mt-0.5 flex items-center gap-2 text-xs text-slate-500">
                                         <span className="inline-flex items-center gap-0.5 font-bold text-amber-600">
                                             <Star size={11} className="fill-amber-400 text-amber-500" aria-hidden="true"/>
@@ -83,6 +80,7 @@ export function CustomerMissionRfqBids({
                                     <strong className="block text-sm font-black text-primary">
                                         {formatVndCompact(bid.proposedPriceVnd)}
                                     </strong>
+                                    <span className="block text-[11px] text-slate-500">minh hoạ</span>
                                     {bid.estimatedDeliveryHours != null && (
                                         <span className="text-xs text-slate-500">
                                             Bàn giao: {bid.estimatedDeliveryHours}h

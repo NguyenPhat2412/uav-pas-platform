@@ -1,23 +1,13 @@
-import {pageMetadata} from "@/content/marketing/metadata";
-import {PublicPage} from "@/components/marketing/PublicPage";
+import {pageMetadata} from '@/content/marketing/metadata';
+import {TermsPageView} from '@/components/marketing/TermsPageView';
 
-export const metadata = pageMetadata("Trạng thái công bố điều khoản", "Điều khoản đang chờ phê duyệt để công bố. Thông tin giới thiệu không xác nhận đặt dịch vụ hay quyền thực hiện nhiệm vụ.", "/terms", false);
+export const metadata = pageMetadata(
+    'Quy chế Hoạt động & Hồ sơ Pháp lý Đối tác',
+    'Quy chế vận hành nền tảng UAV PAS, danh mục chứng từ pháp lý bắt buộc và cơ chế đối soát thanh toán.',
+    '/terms',
+    false,
+);
 
 export default function TermsPage() {
-    return (
-        <PublicPage
-            eyebrow="Điều khoản"
-            title="Điều khoản đang chờ duyệt công bố."
-            intro="Trang này thông báo tình trạng hiện tại trong thời gian chờ điều khoản được phê duyệt."
-        >
-            <div className="max-w-3xl space-y-4 text-slate-600">
-                <p className="text-base leading-relaxed">
-                    Các trang giới thiệu chỉ mô tả tính năng và mức độ sẵn sàng. Nội dung không xác nhận đặt dịch vụ, báo giá, cam kết ứng phó khẩn cấp hay quyền thực hiện nhiệm vụ.
-                </p>
-                <p className="text-base leading-relaxed">
-                    Nội dung cần được duyệt công bố trước khi được xem là điều khoản pháp lý đầy đủ.
-                </p>
-            </div>
-        </PublicPage>
-    );
+    return <TermsPageView />;
 }

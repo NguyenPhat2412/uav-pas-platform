@@ -25,10 +25,10 @@ export function ProviderKycReadinessCard({
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                         <span className="text-xs font-extrabold uppercase tracking-wider text-primary">
-                            Tiến độ hoàn thiện gian hàng ({completedSteps}/3 bước)
+                            Tiến độ hoàn thiện hồ sơ pháp lý & đối soát ({completedSteps}/3 bước)
                         </span>
                         <p className="m-0 mt-0.5 text-xs text-slate-600">
-                            Miễn phí mở gian hàng · Phí vận hành sàn mặc định {(platformFeeRate * 100).toFixed(1)}% chỉ thu khi hoàn tất nghiệm thu đơn hàng.
+                            Cần đính kèm đầy đủ giấy phép hoạt động, chứng chỉ bay và bản xác nhận Phụ lục Biểu phí đối soát ({(platformFeeRate * 100).toFixed(1)}% theo khung tiêu chuẩn) trước khi niêm yết dịch vụ.
                         </p>
                     </div>
                     <span className="rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-xs font-bold text-slate-800 tabular-nums">
@@ -37,9 +37,9 @@ export function ProviderKycReadinessCard({
                 </div>
                 <ol className="m-0 mt-3 grid list-none grid-cols-1 gap-2 p-0 sm:grid-cols-3">
                     {[
-                        {label: '1. Hồ sơ đơn vị & Khu vực', done: step1Done},
-                        {label: '2. Ngân hàng nhận Ký quỹ', done: step2Done},
-                        {label: '3. Chứng chỉ & Pháp lý', done: step3Done},
+                        {label: '1. Hồ sơ pháp nhân & Khu vực', done: step1Done},
+                        {label: '2. Tài khoản nhận đối soát', done: step2Done},
+                        {label: '3. Giấy phép, Chứng chỉ & Phụ lục Biểu phí', done: step3Done},
                     ].map(step => (
                         <li
                             key={step.label}

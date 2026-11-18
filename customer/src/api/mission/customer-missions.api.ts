@@ -14,6 +14,7 @@ import type {
     MissionReviewUpsertInput,
     MissionStatus,
     MissionType,
+    OrderStatusGroup,
     PageResponse,
     SavedFlightSite,
     SavedFlightSiteUpsertInput,
@@ -31,10 +32,22 @@ export const customerMissionService = {
     deleteFlightSite: (id: number) =>
         apiClient.delete<void>(API_ROUTES.flightSites.detail(id)),
     // This narrows privileged accounts' UI; the backend still enforces customer ownership.
-    missions: (search = '', page = 0, status?: MissionStatus, missionType?: MissionType, signal?: AbortSignal) =>
+    missions: (
+        search = '',
+        page = 0,
+        status?: MissionStatus,
+        missionType?: MissionType,
+        signal?: AbortSignal,
+        extra?: { projectId?: number | null; statusGroup?: OrderStatusGroup | '' },
+    ) =>
         apiClient.get<PageResponse<Mission>>(`${API_ROUTES.missions.list}?${new URLSearchParams({
             size: '20',
-            page: String(page), ...(search ? {search} : {}), ...(status ? {status} : {}), ...(missionType ? {missionType} : {})
+            page: String(page),
+            ...(search ? {search} : {}),
+            ...(status ? {status} : {}),
+            ...(missionType ? {missionType} : {}),
+            ...(extra?.projectId ? {projectId: String(extra.projectId)} : {}),
+            ...(extra?.statusGroup ? {statusGroup: extra.statusGroup} : {}),
         })}`, {signal}),
     mission: (id: number, signal?: AbortSignal) => apiClient.get<Mission>(API_ROUTES.missions.detail(id), {signal}),
     /** Runs the server's create rules without saving; rejects with field errors when the request would fail. */
@@ -46,7 +59,8 @@ export const customerMissionService = {
     update: (id: number, data: MissionInput, expectedVersion: number) =>
         apiClient.patch<Mission>(API_ROUTES.missions.detail(id), missionDraftUpdatePayload(data, expectedVersion)),
     submit: (id: number) => apiClient.post<Mission>(API_ROUTES.missions.submit(id)),
-    cancel: (id: number) => apiClient.post<Mission>(API_ROUTES.missions.cancel(id)),
+    cancel: (id: number, reason?: string) =>
+        apiClient.post<Mission>(API_ROUTES.missions.cancel(id), reason?.trim() ? {reason: reason.trim()} : undefined),
     getReview: (id: number, signal?: AbortSignal) =>
         apiClient.get<MissionReview>(API_ROUTES.missions.review(id), {signal}),
     inspectionReport: (id: number, signal?: AbortSignal) =>

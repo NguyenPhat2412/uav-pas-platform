@@ -22,9 +22,10 @@
     },
     "nav": {
         "dashboard": "ダッシュボード",
-        "services": "UAVサービス",
+        "services": "サービス市場",
+        "projects": "マイプロジェクト",
         "training": "利用ガイド",
-        "missions": "マイミッション",
+        "missions": "飛行オーダー",
         "billing": "プラン・請求",
         "notifications": "通知",
         "profile": "アカウント情報",
@@ -412,7 +413,12 @@
         "invoiceAmount": "請求書 {code}：{amount}。",
         "downloadPdf": "PDF",
         "downloadPdfAria": "請求書 {code} のPDFをダウンロード",
-        "downloadPdfError": "請求書PDFをダウンロードできませんでした。"
+        "downloadPdfError": "請求書PDFをダウンロードできませんでした。",
+        "sendEmail": "メールで受け取る",
+        "sendEmailAria": "請求書 {code} のPDFをメールで受け取る",
+        "sendEmailSuccess": "請求書 {invoiceCode}（PDF添付）を {recipientEmail} に送信しました",
+        "sendEmailError": "請求書メールを送信できませんでした。もう一度お試しください。",
+        "emailedTo": "送信先: {email}"
     },
     "notificationsPage": {
         "urgent": "緊急",

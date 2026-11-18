@@ -25,6 +25,7 @@ import {
     useCustomerBillingRealtime,
     useDownloadInvoiceReceipt,
     useRefreshCustomerBilling,
+    useSendInvoiceEmail,
     useSubscribePlan,
 } from '@/hooks/billing/useCustomerBilling';
 import {displayLabel, planName} from '@/lib/presentation';
@@ -56,6 +57,10 @@ export default function CustomerBillingPage() {
     });
     const downloadReceipt = useDownloadInvoiceReceipt({
         onError: (error) => toast.error(error instanceof Error ? error.message : t('billingPage.downloadPdfError')),
+    });
+    const sendInvoiceEmail = useSendInvoiceEmail({
+        onSuccess: (res) => toast.success(t('billingPage.sendEmailSuccess', {invoiceCode: res.invoiceCode, recipientEmail: res.recipientEmail})),
+        onError: (error) => toast.error(error instanceof Error ? error.message : t('billingPage.sendEmailError')),
     });
 
     useEffect(() => {
@@ -258,8 +263,10 @@ export default function CustomerBillingPage() {
                     wsConnected={billingRealtime.wsConnected}
                     awaitingTransferHint={t('payment.awaitingTransferHint')}
                     downloadingInvoiceId={downloadReceipt.isPending ? downloadReceipt.variables?.id ?? null : null}
+                    sendingEmailInvoiceId={sendInvoiceEmail.isPending ? sendInvoiceEmail.variables ?? null : null}
                     onPay={setPayingInvoice}
                     onDownloadReceipt={(id, code) => downloadReceipt.mutate({id, code})}
+                    onSendEmail={(id) => sendInvoiceEmail.mutate(id)}
                 />
 
                 {payingInvoice && (

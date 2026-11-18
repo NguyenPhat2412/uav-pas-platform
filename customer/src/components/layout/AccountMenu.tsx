@@ -59,10 +59,10 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
                             </span>
                         </div>
                     </div>
-                    {user && portal === 'admin' && (
+                    {user && (
                         <Link
                             role="menuitem"
-                            href="/admin/profile"
+                            href={portal === 'admin' ? '/admin/profile' : '/operations/profile'}
                             onClick={close}
                             className="flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                         >

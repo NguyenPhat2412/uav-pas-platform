@@ -821,7 +821,12 @@
       "confirmFailed": "入金を確認できませんでした。",
       "downloadPdf": "PDF",
       "downloadPdfAria": "請求書 {code} のPDFをダウンロード",
-      "downloadPdfFailed": "請求書PDFをダウンロードできませんでした。"
+      "downloadPdfFailed": "請求書PDFをダウンロードできませんでした。",
+      "sendEmail": "メール送信",
+      "sendEmailAria": "請求書 {code} をメール送信",
+      "sendEmailSent": "請求書 {invoiceCode}（PDF添付）を {recipientEmail} に送信しました",
+      "sendEmailFailed": "請求書メールを送信できませんでした。",
+      "emailedTo": "送信先: {email}"
     },
     "services": {
       "filter": {

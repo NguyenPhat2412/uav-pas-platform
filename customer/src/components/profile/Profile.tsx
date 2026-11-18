@@ -17,6 +17,8 @@ import {toast} from '@/providers/ToastContext';
 import {EnterpriseProfilePanel} from '@/components/profile/EnterpriseProfilePanel';
 import {AvatarEditor} from '@/components/profile/AvatarEditor';
 import {AccountDeletionCard} from '@/components/profile/AccountDeletionCard';
+import {PasswordChangeCard} from '@/components/profile/PasswordChangeCard';
+import {CustomerSellerDossierCard} from '@/components/profile/CustomerSellerDossierCard';
 
 export function CustomerProfilePage() {
     const {user} = useAuth();
@@ -264,6 +266,10 @@ function Profile() {
                 </Panel>
             </div>
             <EnterpriseProfilePanel/>
+            <div className="grid grid-cols-1 gap-px bg-slate-200 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] [&>*]:border-0">
+                <PasswordChangeCard/>
+                <CustomerSellerDossierCard/>
+            </div>
             <div className="bg-white [&>*]:rounded-none [&>*]:border-0">
                 <AccountDeletionCard/>
             </div>

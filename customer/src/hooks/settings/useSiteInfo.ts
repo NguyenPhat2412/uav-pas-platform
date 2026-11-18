@@ -83,6 +83,8 @@ export function useSiteInfo() {
         email: info?.email?.trim() || undefined,
         address: info?.address?.trim() || undefined,
         platformFeeRate: parseNumberSetting(settings['marketplace.platform_fee_rate'], 0.1, 0, 0.5),
+        proFeeRate: parseNumberSetting(settings['marketplace.pro_fee_rate'], 0.06, 0, 0.5),
+        enterpriseFeeRate: parseNumberSetting(settings['marketplace.enterprise_fee_rate'], 0.03, 0, 0.5),
         minPayoutVnd: parseNumberSetting(settings['marketplace.min_payout_vnd'], 100_000, 10_000),
         maxPayoutVnd: parseNumberSetting(settings['marketplace.max_payout_vnd'], 500_000_000, 50_000),
         defaultServiceRadiusKm: parseNumberSetting(settings['marketplace.default_service_radius_km'], 100, 5, 2000),

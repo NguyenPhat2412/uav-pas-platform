@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect, useRef, useState, useSyncExternalStore} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {ApiError} from '@/lib/api';
 import {
     acquireRealtimeConnection,
@@ -16,7 +16,7 @@ import {bankTransferService} from '@/api/billing/billing.api';
 import {billingKeys} from '@/hooks/billing/query-keys';
 import {triggerReceiptDownload} from '@/utils/billing/receipt-download';
 import type {Invoice, InvoiceStatus, PageResponse} from '@/types';
-import type {BankTransferInstructions, SettledInvoiceEvent} from '@/types/billing/billing.types';
+import type {BankTransferInstructions, InvoiceEmailDispatchResult, SettledInvoiceEvent} from '@/types/billing/billing.types';
 
 const getServerRealtimeStatus = () => 'disconnected' as const;
 
@@ -108,7 +108,7 @@ export function useCustomerBillingRealtime(enabled = true) {
 }
 
 /** The signed-in customer's quota, invoices and the plans they can switch to. */
-export function useBilling() {
+export function useBilling(invoicePage = 0) {
     const {user} = useAuth();
     const quota = useQuery({
         queryKey: billingKeys.customer(user?.id, 'quota'),
@@ -116,8 +116,9 @@ export function useBilling() {
         enabled: !!user,
     });
     const invoices = useQuery({
-        queryKey: billingKeys.customer(user?.id, 'invoices'),
-        queryFn: ({signal}) => customerBillingService.invoices(0, signal),
+        queryKey: billingKeys.customer(user?.id, 'invoices', invoicePage),
+        placeholderData: keepPreviousData,
+        queryFn: ({signal}) => customerBillingService.invoices(invoicePage, signal),
         enabled: !!user,
     });
     const plans = useQuery({
@@ -200,6 +201,35 @@ export function useDownloadInvoiceReceipt(options?: MutationOptions<Blob, {id: n
         ...options,
         mutationFn: ({id}) => customerBillingService.downloadReceipt(id),
         onSuccess: afterSuccess(options, (blob, {code}) => triggerReceiptDownload(blob, code)),
+        retry: false,
+    });
+}
+
+/** Sends the itemized VAT invoice + PDF attachment to the customer's billing or registered account email. */
+export function useSendInvoiceEmail(options?: MutationOptions<InvoiceEmailDispatchResult, number>) {
+    const client = useQueryClient();
+    const {user} = useAuth();
+    return useMutation<InvoiceEmailDispatchResult, Error, number>({
+        meta: options?.onError ? QUIET : undefined,
+        ...options,
+        mutationFn: (id: number) => customerBillingService.sendInvoiceEmail(id),
+        onSuccess: afterSuccess(options, (result) => {
+            client.setQueryData<PageResponse<Invoice> | undefined>(
+                billingKeys.customer(user?.id, 'invoices'),
+                (prev) =>
+                    prev
+                        ? {
+                              ...prev,
+                              content: prev.content.map((inv) =>
+                                  inv.id === result.invoiceId
+                                      ? {...inv, lastEmailedTo: result.recipientEmail, lastEmailedAt: result.sentAt}
+                                      : inv,
+                              ),
+                          }
+                        : prev,
+            );
+            void client.invalidateQueries({queryKey: billingKeys.customer(user?.id)});
+        }),
         retry: false,
     });
 }
