@@ -325,6 +325,7 @@
         "battery": "Pin",
         "altitude": "Độ cao",
         "speed": "Vận tốc",
+        "gnss": "Định vị",
         "liveFix": "GPS trực tiếp {lat}, {lng} · {seconds} giây trước",
         "staleFix": "Gói cuối {seconds} giây trước tại {lat}, {lng} · mất liên kết",
         "liveCount": "Đang gửi telemetry",

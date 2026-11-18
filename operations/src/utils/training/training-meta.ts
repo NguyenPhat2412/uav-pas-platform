@@ -42,7 +42,7 @@ export const PORTAL_META: Record<
             MISSION_PLANNING: 'Khởi tạo & Tọa độ bay',
             SAFETY_COMPLIANCE: 'An toàn bãi đáp & Hành lang',
             DATA_DELIVERABLES: 'Nghiệm thu dữ liệu & AI',
-            BILLING_SLA: 'Hạn mức & Đối soát SLA',
+            BILLING_SLA: 'Hạn mức & Đối soát dịch vụ',
         },
     },
     OPERATIONS: {

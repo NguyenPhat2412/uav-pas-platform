@@ -115,6 +115,16 @@
     "security": "Bảo mật",
     "infrastructure": "Hạ tầng"
   },
+  "adminNavSubGroups": {
+    "operationsPulse": "Điều hành & Hỗ trợ",
+    "airspaceWeather": "Bản đồ & Không phận",
+    "catalogPlans": "Danh mục & Gói cước",
+    "marketplace3p": "Sàn đối tác 3P",
+    "billingLedger": "Đối soát & Sổ cái",
+    "rbacGovernance": "Phân quyền & Vai trò",
+    "runtimeOps": "Máy chủ & Triển khai",
+    "dataComms": "Lưu trữ, Dữ liệu & Email"
+  },
   "adminNav": {
     "dashboard": "Tổng quan",
     "users": "Người dùng",
@@ -129,12 +139,16 @@
     "reports": "Báo cáo & thống kê",
     "webhooks": "Webhook & sự kiện",
     "settings": "Cấu hình hệ thống",
+    "translations": "Ngôn ngữ hệ thống (i18n)",
     "auditLogs": "Nhật ký quản trị",
     "notifications": "Thông báo",
     "supportInbox": "Tin nhắn hỗ trợ",
     "fleetMap": "Bản đồ đội bay",
     "uavs": "Đội UAV",
     "services": "Danh mục dịch vụ",
+    "marketplaceProviders": "Duyệt đối tác KYC",
+    "marketplaceListings": "Kiểm duyệt tin đăng",
+    "billingPayouts": "Giải ngân đối tác",
     "systemHealth": "Sức khỏe hệ thống",
     "aiRouter": "AI Router",
     "aiConversations": "Nhật ký hội thoại AI",

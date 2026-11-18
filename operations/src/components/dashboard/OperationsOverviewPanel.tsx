@@ -153,7 +153,7 @@ export default function HomePage() {
                                   tone={activeFix?.batteryPct != null && activeFix.batteryPct <= 25 ? 'text-primary' : undefined}/>
                         <HudValue label={t('opsMissions.overview.hud.altitude')} value={activeFix?.altitudeAglMeters != null ? `${formatNumber(Math.round(activeFix.altitudeAglMeters))} m` : '—'}/>
                         <HudValue label={t('opsMissions.overview.hud.speed')} value={activeFix?.groundSpeedMs != null ? `${formatNumber(Math.round(activeFix.groundSpeedMs * 10) / 10)} m/s` : '—'}/>
-                        <HudValue label="RTK" value={activeFix?.rtkStatus ?? '—'}/>
+                        <HudValue label={t('opsMissions.overview.hud.gnss')} value={activeFix?.rtkStatus ?? '—'}/>
                     </div>
                     <p className={`mb-0 mt-2 text-[11px] ${!activeFix ? 'text-slate-500' : activeFix.stale ? 'text-amber-700' : 'text-uav-blue'}`}>
                         {!activeUav ? t('opsMissions.overview.hud.noUav')

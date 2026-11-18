@@ -325,6 +325,7 @@
         "battery": "バッテリー",
         "altitude": "高度",
         "speed": "速度",
+        "gnss": "測位",
         "liveFix": "ライブGPS {lat}, {lng} · {seconds} 秒前",
         "staleFix": "最終 {seconds} 秒前 {lat}, {lng} · リンク切断",
         "liveCount": "テレメトリ送信中",

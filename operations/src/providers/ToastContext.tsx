@@ -8,6 +8,12 @@ export type {ToastItem, ToastOptions, ToastType};
 
 const TOAST_EVENT = 'uav:toast';
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
+let nextToastSeq = 0;
+
+function createToastId(): string {
+    nextToastSeq += 1;
+    return `toast_${Date.now()}_${nextToastSeq}`;
+}
 
 function normalizeOptions(titleOrOptions?: string | ToastOptions): ToastOptions {
     if (typeof titleOrOptions === 'string') {
@@ -23,7 +29,7 @@ function normalizeOptions(titleOrOptions?: string | ToastOptions): ToastOptions 
 export const toast = {
     show: (type: ToastType, message: string, options?: ToastOptions) => {
         if (typeof window !== 'undefined') {
-            const id = 'toast_' + Math.random().toString(36).substring(2, 9);
+            const id = createToastId();
             window.dispatchEvent(
                 new CustomEvent(TOAST_EVENT, {
                     detail: {id, type, message, ...options},
@@ -59,7 +65,7 @@ export function ToastProvider({children}: { children: ReactNode }) {
 
     const show = useCallback(
         (type: ToastType, message: string, options?: ToastOptions) => {
-            const id = 'toast_' + Math.random().toString(36).substring(2, 9);
+            const id = createToastId();
             const duration = options?.duration ?? (type === 'error' ? 5500 : 4200);
 
             const newItem: ToastItem = {

@@ -325,6 +325,7 @@
         "battery": "Battery",
         "altitude": "Altitude",
         "speed": "Speed",
+        "gnss": "Positioning",
         "liveFix": "Live GPS {lat}, {lng} · {seconds} s ago",
         "staleFix": "Last fix {seconds}s ago at {lat}, {lng} · link lost",
         "liveCount": "Reporting telemetry",

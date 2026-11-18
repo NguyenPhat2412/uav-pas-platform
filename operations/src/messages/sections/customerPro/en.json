@@ -138,11 +138,14 @@
     "field": {
       "organizationName": "Organization",
       "taxCode": "Tax code",
+      "billingEmail": "VAT invoice email",
       "billingAddress": "Billing address",
       "emergencyContactName": "Emergency contact",
       "emergencyContactPhone": "Emergency phone"
     },
     "taxCodeHint": "10 digits, or like 0101234567-001.",
+    "billingEmailHint": "VAT invoice email — leave blank to send automatically to your registered Google / Apple account email; recommended if you sign in with Apple \"Hide My Email\".",
+    "billingEmailDefault": "Sent automatically to your registered account email",
     "taxCodeInvalid": "The tax code must be 10 digits, or in the form 0101234567-001.",
     "phoneInvalid": "Digits, spaces, dots or dashes only (8–20).",
     "empty": "Not provided",

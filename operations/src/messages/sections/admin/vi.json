@@ -821,7 +821,12 @@
       "confirmFailed": "Không xác nhận được thanh toán.",
       "downloadPdf": "PDF",
       "downloadPdfAria": "Tải PDF hóa đơn {code}",
-      "downloadPdfFailed": "Chưa tải được tệp PDF hóa đơn."
+      "downloadPdfFailed": "Chưa tải được tệp PDF hóa đơn.",
+      "sendEmail": "Gửi email",
+      "sendEmailAria": "Gửi hóa đơn {code} qua email",
+      "sendEmailSent": "Đã gửi hóa đơn {invoiceCode} kèm tệp PDF tới {recipientEmail}",
+      "sendEmailFailed": "Chưa gửi được email hóa đơn.",
+      "emailedTo": "Đã gửi mail: {email}"
     },
     "services": {
       "filter": {

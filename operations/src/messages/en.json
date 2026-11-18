@@ -115,6 +115,16 @@
     "security": "Security",
     "infrastructure": "Infrastructure"
   },
+  "adminNavSubGroups": {
+    "operationsPulse": "Operations & Support",
+    "airspaceWeather": "Map & Airspace",
+    "catalogPlans": "Catalog & Plans",
+    "marketplace3p": "3P Partner Marketplace",
+    "billingLedger": "Reconciliation & Ledger",
+    "rbacGovernance": "Roles & Permissions",
+    "runtimeOps": "Runtime & Deployment",
+    "dataComms": "Storage, Data & Email"
+  },
   "adminNav": {
     "dashboard": "Dashboard",
     "users": "Users",
@@ -129,12 +139,16 @@
     "reports": "Reports & Analytics",
     "webhooks": "Webhooks & Events",
     "settings": "System Settings",
+    "translations": "System Translations (i18n)",
     "auditLogs": "Admin Audit Logs",
     "notifications": "Notifications",
     "supportInbox": "Support Inbox",
     "fleetMap": "Fleet Map",
     "uavs": "UAV Fleet",
     "services": "Service Catalog",
+    "marketplaceProviders": "Partner KYC Review",
+    "marketplaceListings": "Listing Moderation",
+    "billingPayouts": "Partner Payouts",
     "systemHealth": "System Health",
     "aiRouter": "AI Router Console",
     "aiConversations": "AI Chat Audit",
