@@ -107,19 +107,19 @@ export function PricingPageView() {
                     </h2>
                     <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-xs">
                         <table className="w-full min-w-[720px] border-collapse text-left text-sm">
-                            <thead className="border-b border-border bg-slate-50 text-xs font-extrabold uppercase tracking-wider text-slate-600">
+                            <thead className="border-b border-border bg-slate-50 text-[11px] font-extrabold uppercase tracking-wider text-slate-600">
                                 <tr>
-                                    <th className="px-5 py-4">
+                                    <th className="whitespace-nowrap px-4 py-3.5 sm:px-5">
                                         {t('publicSite.pricing.colFeature')}
                                     </th>
-                                    <th className="px-5 py-4">
-                                        Basic ({t('publicSite.pricing.basicPrice')})
+                                    <th className="whitespace-nowrap px-4 py-3.5 tabular-nums sm:px-5">
+                                        Basic · {t('publicSite.pricing.basicPrice')}
                                     </th>
-                                    <th className="bg-uav-red-light/40 px-5 py-4 text-primary">
-                                        Pro ({t('publicSite.pricing.proPrice')})
+                                    <th className="whitespace-nowrap bg-uav-red-light/40 px-4 py-3.5 text-primary tabular-nums sm:px-5">
+                                        Pro · {t('publicSite.pricing.proPrice')}
                                     </th>
-                                    <th className="px-5 py-4">
-                                        Enterprise ({t('publicSite.pricing.entPrice')})
+                                    <th className="whitespace-nowrap px-4 py-3.5 tabular-nums sm:px-5">
+                                        Enterprise · {t('publicSite.pricing.entPrice')}
                                     </th>
                                 </tr>
                             </thead>

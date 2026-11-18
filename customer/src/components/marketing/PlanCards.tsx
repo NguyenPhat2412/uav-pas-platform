@@ -115,7 +115,7 @@ export function PlanCards({detailed = false}: { detailed?: boolean }) {
                                     {plan.monthlyVnd}
                                 </p>
                                 <p className="m-0 mt-1 text-xs text-slate-500">
-                                    {t('publicSite.pricing.monthlySuffix')}
+                                    {t('publicSite.pricing.monthlySuffix')} · {t('marketplaceShop.illustrative')}
                                 </p>
                                 <dl className="m-0 mt-3 grid grid-cols-2 gap-2 text-xs">
                                     <div className="bg-slate-50 px-3 py-2">
@@ -177,13 +177,13 @@ export function PlanCards({detailed = false}: { detailed?: boolean }) {
                             </ul>
                             <Link
                                 href="/?auth=register"
-                                className={`inline-flex min-h-11 w-full items-center justify-center rounded-control px-4 py-2.5 text-sm font-bold transition-colors ${
+                                className={`inline-flex min-h-11 w-full items-center justify-center whitespace-nowrap rounded-control px-4 py-2.5 text-sm font-bold transition-colors ${
                                     featured
                                         ? 'bg-primary text-primary-foreground shadow-md hover:bg-primary-hover'
                                         : 'border border-primary text-primary hover:bg-uav-red-light'
                                 }`}
                             >
-                                {t('publicSite.pricing.choosePlan', {name: plan.name})}
+                                <span className="truncate">{t('publicSite.pricing.choosePlan', {name: plan.name})}</span>
                             </Link>
                         </div>
                     </article>
