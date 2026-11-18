@@ -169,7 +169,7 @@ export function ProjectSubscriptionWizardDialog({
                             return (
                                 <li
                                     key={s.num}
-                                    className={`flex min-w-0 items-center gap-1.5 rounded-control border px-2.5 py-1.5 text-xs font-semibold ${
+                                    className={`flex min-w-0 items-center gap-1.5 rounded-control border px-2 py-1.5 text-[11px] font-semibold sm:px-2.5 sm:text-xs ${
                                         current
                                             ? 'border-primary bg-uav-red-light text-primary'
                                             : done
@@ -180,7 +180,7 @@ export function ProjectSubscriptionWizardDialog({
                                     <span className="shrink-0" aria-hidden="true">
                                         {done ? <Check size={14}/> : <Icon size={14}/>}
                                     </span>
-                                    <span className="truncate whitespace-nowrap">{s.label}</span>
+                                    <span className="line-clamp-2 leading-tight">{s.label}</span>
                                 </li>
                             );
                         })}

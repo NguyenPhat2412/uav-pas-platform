@@ -31,7 +31,7 @@ export function CustomerShopCategoryStrip({
         <div
             role="group"
             aria-label={t('publicSite.catalog.allMissionTypes')}
-            className="grid grid-cols-5 gap-2 rounded-panel border border-slate-200 bg-card p-3"
+            className="grid grid-cols-5 gap-1 rounded-panel border border-slate-200 bg-card p-2 sm:gap-2 sm:p-3"
         >
             {CATEGORIES.map((cat, idx) => {
                 const Icon = cat.icon;
@@ -55,10 +55,10 @@ export function CustomerShopCategoryStrip({
                             const buttons = e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('button');
                             buttons?.[nextIdx]?.focus();
                         }}
-                        className="group flex min-h-16 min-w-0 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-control px-1 py-1.5 text-center transition-transform duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-[0.97] motion-reduce:transition-none"
+                        className="group flex min-h-16 min-w-0 cursor-pointer flex-col items-center justify-start gap-1.5 rounded-control px-0.5 py-1.5 text-center transition-transform duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-[0.97] sm:justify-center sm:px-1.5 motion-reduce:transition-none"
                     >
                         <span
-                            className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors ${
+                            className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors sm:h-11 sm:w-11 ${
                                 selected
                                     ? 'bg-primary text-primary-foreground shadow-xs'
                                     : 'bg-uav-red-light text-primary group-hover:bg-rose-100'
@@ -67,7 +67,7 @@ export function CustomerShopCategoryStrip({
                             <Icon size={20} strokeWidth={1.85} aria-hidden="true"/>
                         </span>
                         <span
-                            className={`block max-w-full truncate whitespace-nowrap text-xs leading-4 ${
+                            className={`line-clamp-2 text-center text-[11px] leading-tight sm:text-xs sm:leading-4 ${
                                 selected ? 'font-bold text-primary' : 'font-medium text-slate-700'
                             }`}
                         >

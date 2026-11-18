@@ -87,33 +87,33 @@ export function OrderDeliveryTrackingCard({mission}: { mission: Mission }) {
                 </div>
 
                 {snapshot ? (
-                    <dl className="m-0 grid grid-cols-3 gap-2.5 tabular-nums">
+                    <dl className="m-0 grid grid-cols-3 gap-2 tabular-nums sm:gap-2.5">
                         <div className="rounded-control border border-slate-200 bg-white p-2.5">
-                            <dt className="flex items-center gap-1 truncate whitespace-nowrap text-xs text-slate-500">
+                            <dt className="flex items-center gap-1 text-[11px] leading-tight text-slate-500 sm:text-xs">
                                 <Clock3 size={13} className="shrink-0 text-primary" aria-hidden="true"/>
-                                <span>{t('marketplaceShop.trackingEta')}</span>
+                                <span className="line-clamp-2">{t('marketplaceShop.trackingEta')}</span>
                             </dt>
-                            <dd className="m-0 mt-1 truncate text-sm font-bold text-slate-900">
+                            <dd className="m-0 mt-1 text-xs leading-tight font-bold text-slate-900 sm:text-sm">
                                 {snapshot.etaMinutes != null
                                     ? t('marketplaceShop.trackingMinutes', {value: formatNumber(snapshot.etaMinutes)})
                                     : '—'}
                             </dd>
                         </div>
                         <div className="rounded-control border border-slate-200 bg-white p-2.5">
-                            <dt className="flex items-center gap-1 truncate whitespace-nowrap text-xs text-slate-500">
+                            <dt className="flex items-center gap-1 text-[11px] leading-tight text-slate-500 sm:text-xs">
                                 <Battery size={13} className="shrink-0 text-slate-700" aria-hidden="true"/>
-                                <span>{t('marketplaceShop.trackingBattery')}</span>
+                                <span className="line-clamp-2">{t('marketplaceShop.trackingBattery')}</span>
                             </dt>
-                            <dd className="m-0 mt-1 truncate text-sm font-bold text-slate-900">
+                            <dd className="m-0 mt-1 text-xs leading-tight font-bold text-slate-900 sm:text-sm">
                                 {snapshot.battery != null ? `${Math.round(Number(snapshot.battery))}%` : '—'}
                             </dd>
                         </div>
                         <div className="rounded-control border border-slate-200 bg-white p-2.5">
-                            <dt className="flex items-center gap-1 truncate whitespace-nowrap text-xs text-slate-500">
+                            <dt className="flex items-center gap-1 text-[11px] leading-tight text-slate-500 sm:text-xs">
                                 <Radio size={13} className="shrink-0 text-slate-700" aria-hidden="true"/>
-                                <span>{t('marketplaceShop.trackingLink')}</span>
+                                <span className="line-clamp-2">{t('marketplaceShop.trackingLink')}</span>
                             </dt>
-                            <dd className="m-0 mt-1 truncate text-sm font-bold text-slate-900">
+                            <dd className="m-0 mt-1 text-xs leading-tight font-bold text-slate-900 sm:text-sm">
                                 {formatTrackingLink(snapshot.link)}
                             </dd>
                         </div>
@@ -147,7 +147,7 @@ export function OrderDeliveryTrackingCard({mission}: { mission: Mission }) {
                                     {done ? <Check size={13}/> : <Icon size={13}/>}
                                 </span>
                                 <span
-                                    className={`truncate whitespace-nowrap text-xs ${
+                                    className={`line-clamp-2 text-xs leading-snug ${
                                         current
                                             ? 'font-bold text-primary'
                                             : done

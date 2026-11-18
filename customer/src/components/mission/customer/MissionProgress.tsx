@@ -46,10 +46,10 @@ export function MissionProgress({status}: { status: MissionStatus }) {
                             : 'border-border bg-card text-muted';
                 const labelClass =
                     state === 'stopped'
-                        ? 'whitespace-nowrap truncate text-xs font-bold text-danger'
+                        ? 'line-clamp-2 text-xs leading-tight font-bold text-danger'
                         : state === 'current'
-                          ? 'whitespace-nowrap truncate text-xs font-bold text-primary'
-                          : 'whitespace-nowrap truncate text-xs text-muted';
+                          ? 'line-clamp-2 text-xs leading-tight font-bold text-primary'
+                          : 'line-clamp-2 text-xs leading-tight text-muted';
                 return (
                     <li
                         key={step.label}

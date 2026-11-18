@@ -128,9 +128,9 @@ export function PublicListingDetail({slug}: { slug: string }) {
                                 <div className="uav-bezel mt-5">
                                     <ol className="uav-bezel-core m-0 grid list-none grid-cols-2 gap-2 p-3 sm:grid-cols-4">
                                         {escrowSteps.map(step => (
-                                            <li key={step} className="flex items-center gap-1.5 text-xs font-semibold text-on-surface">
+                                            <li key={step} className="flex min-w-0 items-center gap-1.5 text-xs font-semibold text-on-surface">
                                                 <Lock size={13} className="shrink-0 text-on-surface" aria-hidden="true"/>
-                                                <span className="truncate whitespace-nowrap">{step}</span>
+                                                <span className="line-clamp-2 leading-tight">{step}</span>
                                             </li>
                                         ))}
                                     </ol>

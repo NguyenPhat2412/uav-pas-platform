@@ -293,6 +293,21 @@ test('customer-facing marketplace and portal screens hide fleet names, stay <= 3
     assert.doesNotMatch(toastSrc, /<h4[^>]*\btruncate\b/);
     assert.doesNotMatch(read('tailwind.config.mjs'), /translateX\(115%\)/);
 
+    for (const noTruncatePrimaryLabelFile of [
+        'src/components/dashboard/CustomerShopeeHome.tsx',
+        'src/components/mission/customer/OrderStatusBar.tsx',
+        'src/components/marketplace/shop/CustomerShopCategoryStrip.tsx',
+        'src/components/marketplace/shop/CustomerShopHeroBanner.tsx',
+        'src/components/profile/ProfileQuickGrid.tsx',
+        'src/components/weather/HomeWeatherWidget.tsx',
+    ]) {
+        assert.doesNotMatch(
+            read(noTruncatePrimaryLabelFile),
+            /\btruncate\b/,
+            `${noTruncatePrimaryLabelFile} must not truncate primary icon/widget labels with ellipsis`,
+        );
+    }
+
     const sidebar = read('src/config/sidebar-routes.ts');
     assert.match(sidebar, /href:\s*'\/customer\/projects'/);
     assert.match(sidebar, /aliases:\s*\['\/customer\/orders'\]/);

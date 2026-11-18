@@ -208,8 +208,8 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
                                     <SpecIcon size={17} aria-hidden="true"/>
                                 </span>
                                 <div className="min-w-0 tabular-nums">
-                                    <span className="block truncate whitespace-nowrap text-xs text-slate-500">{spec.label}</span>
-                                    <strong className="block truncate text-sm font-semibold text-slate-900">{spec.value}</strong>
+                                    <span className="block text-xs leading-tight text-slate-500">{spec.label}</span>
+                                    <strong className="mt-0.5 block line-clamp-2 text-sm leading-tight font-semibold text-slate-900">{spec.value}</strong>
                                 </div>
                             </div>
                         );
@@ -263,10 +263,10 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
             <div className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur-xs lg:left-[220px]">
                 <div className="mx-auto flex max-w-5xl items-center justify-between gap-3">
                     <div className="min-w-0 tabular-nums">
-                        <span className="block truncate whitespace-nowrap text-xs text-slate-500">
+                        <span className="block text-[11px] leading-tight text-slate-500 sm:text-xs">
                             {t('marketplaceShop.stickyPriceLabel')}
                         </span>
-                        <strong className="block truncate text-base font-bold text-primary">
+                        <strong className="mt-0.5 block text-sm leading-tight font-bold text-primary sm:text-base">
                             {formatVndCompact(listing.basePriceVnd)} / {unitLabel}
                         </strong>
                     </div>

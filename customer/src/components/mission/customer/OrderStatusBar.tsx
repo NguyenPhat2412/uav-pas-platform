@@ -42,7 +42,7 @@ export function OrderStatusBar({
     return (
         <nav
             aria-label={t('common.status')}
-            className={`grid gap-2 rounded-panel border border-slate-200 bg-card p-2.5 ${
+            className={`grid gap-1 rounded-panel border border-slate-200 bg-card p-2 sm:gap-2 sm:p-2.5 ${
                 showAllTab ? 'grid-cols-3 sm:grid-cols-6' : 'grid-cols-5'
             }`}
         >
@@ -51,20 +51,20 @@ export function OrderStatusBar({
                     type="button"
                     aria-pressed={activeGroup === ''}
                     onClick={() => onSelectGroup?.('')}
-                    className={`flex min-h-15 min-w-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-control px-1.5 py-1.5 text-center transition-colors ${
+                    className={`flex min-h-15 min-w-0 cursor-pointer flex-col items-center justify-start gap-1 rounded-control px-0.5 py-1.5 text-center transition-colors sm:justify-center sm:px-1.5 ${
                         activeGroup === ''
                             ? 'bg-uav-red-light text-primary'
                             : 'text-slate-700 hover:bg-slate-50'
                     }`}
                 >
                     <span
-                        className={`inline-flex h-9 w-9 items-center justify-center rounded-full ${
+                        className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
                             activeGroup === '' ? 'bg-primary text-white' : 'bg-slate-100 text-slate-700'
                         }`}
                     >
                         <Layers size={17} aria-hidden="true"/>
                     </span>
-                    <span className="block max-w-full truncate whitespace-nowrap text-xs font-semibold">
+                    <span className="line-clamp-2 text-center text-[11px] leading-tight font-semibold sm:text-xs sm:leading-4">
                         {t('marketplaceShop.ordersAll')}
                     </span>
                 </button>
@@ -93,7 +93,7 @@ export function OrderStatusBar({
                             )}
                         </span>
                         <span
-                            className={`block max-w-full truncate whitespace-nowrap text-xs leading-4 ${
+                            className={`line-clamp-2 text-center text-[11px] leading-tight sm:text-xs sm:leading-4 ${
                                 selected ? 'font-bold text-primary' : 'font-medium text-slate-700'
                             }`}
                         >
@@ -109,7 +109,7 @@ export function OrderStatusBar({
                             href={`/customer/missions?group=${meta.group}`}
                             title={label}
                             aria-label={count > 0 ? `${label}: ${count}` : label}
-                            className="flex min-h-15 min-w-0 flex-col items-center justify-center gap-1 rounded-control px-1 py-1.5 text-center transition-transform duration-150 hover:bg-slate-50 active:scale-[0.97] motion-reduce:transition-none"
+                            className="flex min-h-15 min-w-0 flex-col items-center justify-start gap-1 rounded-control px-0.5 py-1.5 text-center transition-transform duration-150 hover:bg-slate-50 active:scale-[0.97] sm:justify-center sm:px-1.5 motion-reduce:transition-none"
                         >
                             {inner}
                         </Link>
@@ -136,7 +136,7 @@ export function OrderStatusBar({
                                 buttons[(curr + step + buttons.length) % buttons.length]?.focus();
                             }
                         }}
-                        className={`flex min-h-15 min-w-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-control px-1 py-1.5 text-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                        className={`flex min-h-15 min-w-0 cursor-pointer flex-col items-center justify-start gap-1 rounded-control px-0.5 py-1.5 text-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:justify-center sm:px-1.5 ${
                             selected ? 'bg-uav-red-light/70' : 'hover:bg-slate-50'
                         }`}
                     >

@@ -66,10 +66,12 @@ function CustomerShopeeHomeBody() {
     const featured = featuredQuery.data?.content ?? [];
 
     const flyable = weatherData?.clearance === 'GO';
-    const weatherValue = weatherData
-        ? `${weatherData.temperatureC != null ? `${Math.round(weatherData.temperatureC)}°C · ` : ''}${
-              flyable ? t('marketplaceShop.homeFlyable') : t('marketplaceShop.homeCaution')
-          }`
+    const weatherTemp =
+        weatherData?.temperatureC != null ? `${Math.round(weatherData.temperatureC)}°` : '';
+    const weatherStatus = weatherData
+        ? flyable
+            ? t('marketplaceShop.homeFlyable')
+            : t('marketplaceShop.homeCaution')
         : '—';
 
     const quickItems: { href: string; label: string; icon: LucideIcon }[] = [
@@ -114,68 +116,69 @@ function CustomerShopeeHomeBody() {
             </form>
 
             {/* 3 Compact Live Icon Widgets: Weather · Active Flights · Projects */}
-            <section className="grid grid-cols-3 gap-2.5">
+            <section className="grid grid-cols-3 gap-2 sm:gap-3">
                 <Link
                     href="/customer/weather"
-                    className="flex min-w-0 flex-col justify-between gap-2 rounded-panel border border-slate-200 bg-card p-3.5 transition-colors hover:border-primary/40 hover:bg-slate-50"
+                    className="flex min-w-0 flex-col justify-between gap-1.5 rounded-panel border border-slate-200 bg-card p-3 transition-colors hover:border-primary/40 hover:bg-slate-50 sm:p-4"
                 >
-                    <div className="flex items-center justify-between gap-2">
-                        <span className="truncate whitespace-nowrap text-xs font-medium text-slate-500">
-                            {t('marketplaceShop.homeWeather')}
-                        </span>
-                        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-uav-red-light text-primary">
-                            {flyable ? <PlaneTakeoff size={16} aria-hidden="true"/> : <CloudSun size={16} aria-hidden="true"/>}
-                        </span>
-                    </div>
+                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-uav-red-light text-primary">
+                        {flyable ? <PlaneTakeoff size={16} aria-hidden="true"/> : <CloudSun size={16} aria-hidden="true"/>}
+                    </span>
                     {weatherSlot?.isPending ? (
-                        <span className="h-5 w-20 animate-pulse rounded bg-slate-100"/>
+                        <span className="mt-1 h-5 w-16 animate-pulse rounded bg-slate-100"/>
                     ) : (
-                        <strong className="block truncate whitespace-nowrap text-sm font-bold text-slate-900 tabular-nums sm:text-base">
-                            {weatherValue}
-                        </strong>
+                        <span className="mt-1 flex flex-wrap items-baseline gap-x-1 gap-y-0.5 tabular-nums">
+                            {weatherTemp && (
+                                <strong className="text-lg leading-none font-extrabold text-slate-900 sm:text-xl">
+                                    {weatherTemp}
+                                </strong>
+                            )}
+                            <span className="text-xs leading-tight font-bold text-slate-800 sm:text-sm">
+                                {weatherStatus}
+                            </span>
+                        </span>
                     )}
+                    <span className="line-clamp-2 text-[11px] leading-tight font-medium text-slate-500 sm:text-xs">
+                        {t('marketplaceShop.homeWeather')}
+                    </span>
                 </Link>
 
                 <Link
                     href="/customer/missions?group=IN_FLIGHT"
-                    className="flex min-w-0 flex-col justify-between gap-2 rounded-panel border border-slate-200 bg-card p-3.5 transition-colors hover:border-primary/40 hover:bg-slate-50"
+                    className="flex min-w-0 flex-col justify-between gap-1.5 rounded-panel border border-slate-200 bg-card p-3 transition-colors hover:border-primary/40 hover:bg-slate-50 sm:p-4"
                 >
-                    <div className="flex items-center justify-between gap-2">
-                        <span className="truncate whitespace-nowrap text-xs font-medium text-slate-500">
-                            {t('marketplaceShop.homeActiveFlights')}
-                        </span>
-                        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-uav-red-light text-primary">
-                            <Plane size={16} aria-hidden="true"/>
-                        </span>
-                    </div>
+                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-uav-red-light text-primary">
+                        <Plane size={16} aria-hidden="true"/>
+                    </span>
                     {missionsQuery.isLoading && orderSummaryQuery.isLoading ? (
-                        <span className="h-5 w-10 animate-pulse rounded bg-slate-100"/>
+                        <span className="mt-1 h-5 w-10 animate-pulse rounded bg-slate-100"/>
                     ) : (
-                        <strong className="block truncate whitespace-nowrap text-lg font-extrabold text-primary tabular-nums">
+                        <strong className="mt-1 block text-xl leading-none font-extrabold text-primary tabular-nums sm:text-2xl">
                             {inFlightCount}
                         </strong>
                     )}
+                    <span className="line-clamp-2 text-[11px] leading-tight font-medium text-slate-500 sm:text-xs">
+                        {t('marketplaceShop.homeActiveFlights')}
+                    </span>
                 </Link>
 
                 <Link
                     href="/customer/projects"
-                    className="flex min-w-0 flex-col justify-between gap-2 rounded-panel border border-slate-200 bg-card p-3.5 transition-colors hover:border-primary/40 hover:bg-slate-50"
+                    className="flex min-w-0 flex-col justify-between gap-1.5 rounded-panel border border-slate-200 bg-card p-3 transition-colors hover:border-primary/40 hover:bg-slate-50 sm:p-4"
                 >
-                    <div className="flex items-center justify-between gap-2">
-                        <span className="truncate whitespace-nowrap text-xs font-medium text-slate-500">
-                            {t('marketplaceShop.homeProjects')}
-                        </span>
-                        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-uav-red-light text-primary">
-                            <FolderKanban size={16} aria-hidden="true"/>
-                        </span>
-                    </div>
+                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-uav-red-light text-primary">
+                        <FolderKanban size={16} aria-hidden="true"/>
+                    </span>
                     {projectsQuery.isLoading ? (
-                        <span className="h-5 w-10 animate-pulse rounded bg-slate-100"/>
+                        <span className="mt-1 h-5 w-10 animate-pulse rounded bg-slate-100"/>
                     ) : (
-                        <strong className="block truncate whitespace-nowrap text-lg font-extrabold text-slate-900 tabular-nums">
+                        <strong className="mt-1 block text-xl leading-none font-extrabold text-slate-900 tabular-nums sm:text-2xl">
                             {projectCount != null ? projectCount : '—'}
                         </strong>
                     )}
+                    <span className="line-clamp-2 text-[11px] leading-tight font-medium text-slate-500 sm:text-xs">
+                        {t('marketplaceShop.homeProjects')}
+                    </span>
                 </Link>
             </section>
 
@@ -199,7 +202,7 @@ function CustomerShopeeHomeBody() {
                             <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-uav-red-light text-primary transition-colors group-hover:bg-primary group-hover:text-white">
                                 <Icon size={19} strokeWidth={1.85} aria-hidden="true"/>
                             </span>
-                            <span className="block max-w-full truncate whitespace-nowrap text-xs font-medium text-slate-700">
+                            <span className="line-clamp-2 text-center text-[11px] leading-tight font-medium text-slate-700 sm:text-xs sm:leading-4">
                                 {item.label}
                             </span>
                         </Link>

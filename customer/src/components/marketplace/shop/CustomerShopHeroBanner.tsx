@@ -8,7 +8,7 @@ import {useI18n} from '@/providers/I18nContext';
 const HERO_SLIDES = [
     {
         src: '/images/hero-slides/uav-hero-1.webp',
-        altKey: 'publicSite.catalog.title',
+        altKey: 'marketplaceShop.platformManagedTitle',
         eyebrowKey: 'publicSite.catalog.verifiedPartner',
     },
     {
@@ -59,11 +59,11 @@ export function CustomerShopHeroBanner() {
                     <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-transparent"/>
                     <div className="absolute inset-x-4 bottom-3.5 flex items-end justify-between gap-3">
                         <div className="min-w-0 space-y-1">
-                            <span className="inline-flex max-w-full items-center gap-1 rounded-badge bg-primary px-2.5 py-0.5 text-[11px] font-bold whitespace-nowrap text-white">
+                            <span className="inline-flex max-w-full items-center gap-1 rounded-badge bg-primary px-2.5 py-0.5 text-[11px] font-bold text-white">
                                 <ShieldCheck size={12} className="shrink-0" aria-hidden="true"/>
-                                <span className="truncate">{t(slide.eyebrowKey)}</span>
+                                <span className="line-clamp-1">{t(slide.eyebrowKey)}</span>
                             </span>
-                            <h1 className="m-0 line-clamp-2 text-base font-bold text-white sm:text-xl">
+                            <h1 className="m-0 line-clamp-2 text-base leading-snug font-bold text-white sm:text-xl">
                                 {t(slide.altKey)}
                             </h1>
                         </div>
@@ -105,22 +105,22 @@ export function CustomerShopHeroBanner() {
                         <FolderKanban size={22} aria-hidden="true"/>
                     </span>
                     <div className="min-w-0 space-y-1">
-                        <span className="block truncate whitespace-nowrap text-xs font-bold text-primary">
+                        <span className="block text-xs font-bold text-primary">
                             {t('marketplaceShop.projectBannerEyebrow')}
                         </span>
                         <h2 className="m-0 line-clamp-2 text-base font-semibold text-slate-900">
                             {t('marketplaceShop.projectBannerTitle')}
                         </h2>
-                        <p className="m-0 line-clamp-2 text-[13px] leading-snug text-slate-600">
+                        <p className="m-0 text-[13px] leading-snug text-slate-600">
                             {t('marketplaceShop.projectBannerDesc')}
                         </p>
                     </div>
                 </div>
                 <Link
                     href="/customer/projects"
-                    className="inline-flex min-h-11 w-full items-center justify-center rounded-control bg-primary px-4 text-xs font-bold whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary-hover"
+                    className="inline-flex min-h-11 w-full items-center justify-center rounded-control bg-primary px-4 text-center text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
                 >
-                    <span className="truncate">{t('marketplaceShop.projectBannerAction')}</span>
+                    <span>{t('marketplaceShop.projectBannerAction')}</span>
                 </Link>
             </div>
         </div>

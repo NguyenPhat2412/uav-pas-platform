@@ -2,7 +2,7 @@
 
 import {useState} from 'react';
 import Link from 'next/link';
-import {Camera, CheckCircle2, Clock3, Database, MapPin, MapPinned, Plane, ShieldCheck, Star, type LucideIcon} from 'lucide-react';
+import {Camera, CheckCircle2, Clock3, Database, MapPin, MapPinned, Plane, Star, type LucideIcon} from 'lucide-react';
 import {scenes} from '@/components/marketing/UavPhoto';
 import {formatVndCompact} from '@/forms/marketplace/marketplace-forms';
 import {resolveListingBadge, sanitizeMarketplaceText} from '@/forms/project/project-form';
@@ -86,16 +86,10 @@ export function MarketplaceListingCard({
                             <FallbackIcon size={36} strokeWidth={1.75} aria-hidden="true"/>
                         </div>
                     )}
-                    <div className="absolute top-2.5 right-2.5 left-2.5 flex items-center justify-between gap-1.5">
-                        <span className="max-w-[55%] truncate rounded-badge bg-slate-950/80 px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-white backdrop-blur-xs">
+                    <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start">
+                        <span className="rounded-badge bg-slate-950/80 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-xs">
                             {typeText(item.listingType)}
                         </span>
-                        {badge.verified && (
-                            <span className="inline-flex max-w-[45%] items-center gap-1 rounded-control bg-primary px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-white shadow-2xs">
-                                <ShieldCheck size={12} className="shrink-0" aria-hidden="true"/>
-                                <span className="truncate">{t('publicSite.catalog.verifiedPartner')}</span>
-                            </span>
-                        )}
                     </div>
                 </Link>
 
@@ -130,10 +124,10 @@ export function MarketplaceListingCard({
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-2 text-xs text-slate-600 tabular-nums">
-                        <span className="inline-flex min-w-0 items-center gap-1 rounded-badge bg-uav-red-light px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-primary">
+                    <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs text-slate-600 tabular-nums">
+                        <span className="inline-flex items-center gap-1 rounded-badge bg-uav-red-light px-2 py-0.5 text-[11px] leading-tight font-semibold text-primary">
                             <CheckCircle2 size={12} className="shrink-0" aria-hidden="true"/>
-                            <span className="truncate">{t('publicSite.catalog.verifiedPartner')}</span>
+                            <span>{t('publicSite.catalog.verifiedPartner')}</span>
                         </span>
                         <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold whitespace-nowrap text-slate-700">
                             <Star size={12} className="shrink-0 fill-amber-400 text-amber-500" aria-hidden="true"/>

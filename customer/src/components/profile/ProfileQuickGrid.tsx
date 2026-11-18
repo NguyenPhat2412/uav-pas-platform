@@ -32,7 +32,7 @@ export function ProfileQuickGrid() {
                             <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-uav-red-light text-primary">
                                 <Icon size={18} strokeWidth={1.9} aria-hidden="true"/>
                             </span>
-                            <span className="max-w-full truncate whitespace-nowrap text-xs font-semibold text-slate-800">
+                            <span className="line-clamp-2 text-center text-[11px] leading-tight font-semibold text-slate-800 sm:text-xs sm:leading-4">
                                 {item.label}
                             </span>
                         </Link>
