@@ -139,6 +139,7 @@
     "reports": "レポート・統計",
     "webhooks": "Webhook・連携",
     "settings": "システム設定",
+    "translations": "システム多言語管理 (i18n)",
     "auditLogs": "管理者監査ログ",
     "notifications": "通知",
     "supportInbox": "サポート受信箱",

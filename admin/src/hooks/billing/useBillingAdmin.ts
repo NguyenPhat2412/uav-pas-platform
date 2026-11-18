@@ -17,7 +17,7 @@ import type {
 import {quotasService} from '@/api/billing/quotas.api';
 import {usersService} from '@/api/user/users.api';
 import {billingKeys} from '@/hooks/billing/query-keys';
-import type {InvoiceFilters, PlanInput} from '@/types/billing/billing.types';
+import type {InvoiceEmailDispatchResult, InvoiceFilters, PlanInput} from '@/types/billing/billing.types';
 import type {Invoice} from '@/types';
 
 /** Subscribes finance workspaces to real-time INVOICE_UPDATED WebSocket events. */
@@ -214,6 +214,19 @@ export function useDownloadAdminInvoiceReceipt(options?: MutationOptions<Blob, {
         ...options,
         mutationFn: ({id}) => billingAdminService.downloadReceipt(id),
         onSuccess: afterSuccess(options, (blob, {code}) => triggerReceiptDownload(blob, code)),
+        retry: false,
+    });
+}
+
+/** Dispatches an itemized VAT invoice + PDF attachment to the customer's billing or account email. */
+export function useSendAdminInvoiceEmail(options?: MutationOptions<InvoiceEmailDispatchResult, number>) {
+    const client = useQueryClient();
+    const {user} = useAuth();
+    return useMutation<InvoiceEmailDispatchResult, Error, number>({
+        meta: options?.onError ? QUIET : undefined,
+        ...options,
+        mutationFn: (id: number) => billingAdminService.sendInvoiceEmail(id),
+        onSuccess: afterSuccess(options, () => void client.invalidateQueries({queryKey: billingKeys.invoices(user?.id)})),
         retry: false,
     });
 }

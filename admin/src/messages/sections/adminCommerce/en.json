@@ -121,6 +121,7 @@
       "empty": "The customer has not filled in a billing profile.",
       "organizationName": "Organization",
       "taxCode": "Tax code",
+      "billingEmail": "VAT invoice email",
       "billingAddress": "Billing address",
       "emergencyContactName": "Emergency contact",
       "emergencyContactPhone": "Emergency contact phone",

@@ -22,6 +22,7 @@ import {
     HardDrive,
     Inbox,
     KeyRound,
+    Languages,
     LayoutDashboard,
     Lock,
     Mail,
@@ -437,6 +438,14 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
         key: 'settings',
         group: 'system',
         icon: Settings,
+        permission: 'USER_MANAGE',
+    },
+    {
+        href: '/admin/translations',
+        key: 'translations',
+        defaultLabel: 'Ngôn ngữ hệ thống (i18n)',
+        group: 'system',
+        icon: Languages,
         permission: 'USER_MANAGE',
     },
     {

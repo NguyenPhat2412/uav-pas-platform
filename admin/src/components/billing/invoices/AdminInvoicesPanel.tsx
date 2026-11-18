@@ -1,7 +1,7 @@
 'use client';
 
 import {useState} from 'react';
-import {AlertTriangle, CheckCircle2, Download, FilePlus2, Landmark, Radio, Settings2} from 'lucide-react';
+import {AlertTriangle, CheckCircle2, Download, FilePlus2, Landmark, Mail, Radio, Settings2} from 'lucide-react';
 import {
     ConfirmBankTransferDialog,
     CreateInvoiceDialog,
@@ -16,6 +16,7 @@ import {
     useAdminInvoices,
     useDownloadAdminInvoiceReceipt,
     usePaymentGatewayConfig,
+    useSendAdminInvoiceEmail,
 } from '@/hooks/billing/useBillingAdmin';
 import {formatShortDate} from '@/lib/format';
 import {planName} from '@/lib/presentation';
@@ -45,6 +46,10 @@ export function AdminInvoicesPanel() {
 
     const downloadReceipt = useDownloadAdminInvoiceReceipt({
         onError: error => toast.error(error instanceof Error ? error.message : t('admin.invoices.downloadPdfFailed')),
+    });
+    const sendInvoiceEmail = useSendAdminInvoiceEmail({
+        onSuccess: res => toast.success(t('admin.invoices.sendEmailSent', {invoiceCode: res.invoiceCode, recipientEmail: res.recipientEmail})),
+        onError: error => toast.error(error instanceof Error ? error.message : t('admin.invoices.sendEmailFailed')),
     });
 
     const query = useAdminInvoices(page, toFilters(filter));
@@ -150,7 +155,18 @@ export function AdminInvoicesPanel() {
                                                 {inv.code}
                                                 {inv.notes && <span className="mt-0.5 block font-sans text-[11.5px] font-normal text-slate-500">{inv.notes}</span>}
                                             </td>
-                                            <td className="px-4 py-3 text-slate-800">@{inv.username}</td>
+                                            <td className="px-4 py-3 text-slate-800">
+                                                @{inv.username}
+                                                {inv.lastEmailedTo && (
+                                                    <span
+                                                        className="mt-0.5 flex items-center gap-1 text-[11px] font-normal text-slate-500"
+                                                        title={inv.lastEmailedAt ? formatDate(inv.lastEmailedAt, {dateStyle: 'short', timeStyle: 'short'}) : undefined}
+                                                    >
+                                                        <Mail size={11} className="shrink-0 text-uav-blue" aria-hidden="true"/>
+                                                        <span className="truncate">{t('admin.invoices.emailedTo', {email: inv.lastEmailedTo})}</span>
+                                                    </span>
+                                                )}
+                                            </td>
                                             <td className="px-4 py-3 text-slate-600">{inv.missionTitle || (inv.planName ? planName(inv.planName) : '—')}</td>
                                             <td className="px-4 py-3 text-right font-semibold tabular-nums text-slate-900">{formatCurrency(inv.amount)}</td>
                                             <td className="px-4 py-3">
@@ -175,6 +191,19 @@ export function AdminInvoicesPanel() {
                                                             {t('admin.invoices.confirm')}
                                                         </Button>
                                                     )}
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="sm"
+                                                        isLoading={sendInvoiceEmail.isPending && sendInvoiceEmail.variables === inv.id}
+                                                        leftIcon={<Mail size={13} aria-hidden="true"/>}
+                                                        onClick={() => sendInvoiceEmail.mutate(inv.id)}
+                                                        aria-label={t('admin.invoices.sendEmailAria', {code: inv.code})}
+                                                        title={t('admin.invoices.sendEmailAria', {code: inv.code})}
+                                                        className="h-7 whitespace-nowrap px-2 text-xs"
+                                                    >
+                                                        {t('admin.invoices.sendEmail')}
+                                                    </Button>
                                                     <Button
                                                         type="button"
                                                         variant="outline"

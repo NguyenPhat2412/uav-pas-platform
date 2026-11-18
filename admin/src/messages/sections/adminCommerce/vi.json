@@ -121,6 +121,7 @@
       "empty": "Khách hàng chưa khai báo hồ sơ thanh toán.",
       "organizationName": "Tên tổ chức",
       "taxCode": "Mã số thuế",
+      "billingEmail": "Email nhận hóa đơn VAT",
       "billingAddress": "Địa chỉ xuất hóa đơn",
       "emergencyContactName": "Người liên hệ khẩn cấp",
       "emergencyContactPhone": "SĐT liên hệ khẩn cấp",

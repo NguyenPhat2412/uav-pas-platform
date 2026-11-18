@@ -23,6 +23,7 @@ export function CustomerBillingProfileCard({userId}: { userId: number }) {
                 <Metadata items={[
                     [t('adminCommerce.profile.organizationName'), p.organizationName],
                     [t('adminCommerce.profile.taxCode'), p.taxCode ? <span key="tax" className="font-mono">{p.taxCode}</span> : null],
+                    [t('adminCommerce.profile.billingEmail'), p.billingEmail],
                     [t('adminCommerce.profile.billingAddress'), p.billingAddress],
                     [t('adminCommerce.profile.emergencyContactName'), p.emergencyContactName],
                     [t('adminCommerce.profile.emergencyContactPhone'), p.emergencyContactPhone],

@@ -101,3 +101,76 @@ export interface EmailTestResult {
     recipient: string;
     attemptedAt: string;
 }
+
+export interface MailOtpSettings {
+    mailEnabled: boolean;
+    smtpHost: string;
+    smtpPort: number | null;
+    smtpUsername: string;
+    fromAddress: string;
+    senderDisplayName: string | null;
+    smtpAuth: boolean;
+    smtpStarttls: boolean;
+    passwordConfigured: boolean;
+    passwordSource: 'DATABASE' | 'ENV' | 'NONE';
+    passwordHint: string | null;
+    hasDatabaseOverride: boolean;
+    otpTtlMinutes: number;
+    resendCooldownSeconds: number;
+    maxOtpAttempts: number;
+    otpPerAccount: number;
+    otpPerIp: number;
+    maxEmailsPerMinute: number;
+    updatedAt: string | null;
+    updatedBy: string | null;
+    connection: MailConnectionCheck;
+}
+
+export interface MailOtpSettingsUpdatePayload {
+    mailEnabled: boolean;
+    smtpHost: string;
+    smtpPort: number | null;
+    smtpUsername: string;
+    smtpPassword?: string;
+    resetToEnvDefaults?: boolean;
+    fromAddress: string;
+    senderDisplayName: string | null;
+    smtpAuth: boolean;
+    smtpStarttls: boolean;
+    otpTtlMinutes: number;
+    resendCooldownSeconds: number;
+    maxOtpAttempts: number;
+    otpPerAccount: number;
+    otpPerIp: number;
+    maxEmailsPerMinute: number;
+}
+
+export type OtpTokenPurpose = 'PASSWORD_RESET' | 'REGISTER_VERIFY' | 'LOGIN_2FA' | 'ENABLE_2FA_EMAIL' | string;
+export type OtpTokenStatus = 'ACTIVE' | 'CONSUMED' | 'EXPIRED' | 'LOCKED' | string;
+
+export interface AdminOtpToken {
+    id: number;
+    userId: number | null;
+    username: string | null;
+    email: string;
+    purpose: OtpTokenPurpose;
+    attempts: number;
+    maxAttempts: number;
+    status: OtpTokenStatus;
+    createdAt: string;
+    expiresAt: string;
+    consumedAt: string | null;
+}
+
+export interface OtpTokenFilters {
+    purpose?: string;
+    status?: string;
+    q?: string;
+}
+
+export interface OtpSupportActionResult {
+    email: string;
+    action: string;
+    message: string;
+    processedAt: string;
+}

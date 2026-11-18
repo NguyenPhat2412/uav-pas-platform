@@ -139,6 +139,7 @@
     "reports": "Reports & Analytics",
     "webhooks": "Webhooks & Events",
     "settings": "System Settings",
+    "translations": "System Translations (i18n)",
     "auditLogs": "Admin Audit Logs",
     "notifications": "Notifications",
     "supportInbox": "Support Inbox",

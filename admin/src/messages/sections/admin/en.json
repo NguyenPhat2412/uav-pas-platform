@@ -828,7 +828,12 @@
       "confirmFailed": "Couldn't confirm the payment.",
       "downloadPdf": "PDF",
       "downloadPdfAria": "Download PDF for invoice {code}",
-      "downloadPdfFailed": "Couldn't download the invoice PDF."
+      "downloadPdfFailed": "Couldn't download the invoice PDF.",
+      "sendEmail": "Send email",
+      "sendEmailAria": "Send invoice {code} by email",
+      "sendEmailSent": "Sent invoice {invoiceCode} with PDF attachment to {recipientEmail}",
+      "sendEmailFailed": "Couldn't send the invoice email.",
+      "emailedTo": "Emailed: {email}"
     },
     "services": {
       "filter": {

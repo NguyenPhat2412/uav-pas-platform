@@ -141,27 +141,27 @@ export function useAdminSupportRealtime(enabled = true) {
 }
 
 export function useSupportSummary(enabled = true) {
-    const {user} = useAuth();
+    const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: supportKeys.summary(user?.id),
         queryFn: ({signal}) => adminSupportService.summary(signal),
-        enabled: Boolean(user) && enabled,
+        enabled: Boolean(user) && permissionsReady && can('SUPPORT_MANAGE') && enabled,
         refetchInterval: () => (adminRealtimeClient.isConnected() ? 30_000 : 6_000),
     });
 }
 
 export function useSupportThreads(filter: SupportThreadFilter, enabled = true) {
-    const {user} = useAuth();
+    const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: supportKeys.threads(user?.id, filter),
         queryFn: ({signal}) => adminSupportService.threads(filter, signal),
-        enabled: Boolean(user) && enabled,
+        enabled: Boolean(user) && permissionsReady && can('SUPPORT_MANAGE') && enabled,
         refetchInterval: () => (adminRealtimeClient.isConnected() ? 30_000 : 6_000),
     });
 }
 
 export function useSupportThreadDetail(id: number | null) {
-    const {user} = useAuth();
+    const {user, can, permissionsReady} = useAuth();
     const client = useQueryClient();
     return useQuery({
         queryKey: supportKeys.thread(user?.id, id),
@@ -171,7 +171,7 @@ export function useSupportThreadDetail(id: number | null) {
             void client.invalidateQueries({queryKey: supportKeys.threadsAll(user?.id)});
             return detail;
         },
-        enabled: Boolean(user) && id !== null && id > 0,
+        enabled: Boolean(user) && permissionsReady && can('SUPPORT_MANAGE') && id !== null && id > 0,
         refetchInterval: () => (adminRealtimeClient.isConnected() ? 25_000 : 4_000),
     });
 }
@@ -225,11 +225,11 @@ export function useDeleteSupportThread() {
 }
 
 export function useSupportQuickReplies(enabled = true) {
-    const {user} = useAuth();
+    const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: supportKeys.quickReplies(user?.id),
         queryFn: ({signal}) => adminSupportService.quickReplies(signal),
-        enabled: Boolean(user) && enabled,
+        enabled: Boolean(user) && permissionsReady && can('SUPPORT_MANAGE') && enabled,
     });
 }
 

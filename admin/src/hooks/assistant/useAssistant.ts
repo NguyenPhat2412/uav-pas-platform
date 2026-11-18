@@ -16,13 +16,21 @@ import type {
 } from '@/types/assistant/assistant.types';
 
 export function useRouterSettings() {
-    const {user} = useAuth();
-    return useQuery({queryKey: assistantKeys.settings(user?.id), queryFn: ({signal}) => assistantService.settings(signal)});
+    const {user, can, permissionsReady} = useAuth();
+    return useQuery({
+        queryKey: assistantKeys.settings(user?.id),
+        queryFn: ({signal}) => assistantService.settings(signal),
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE'),
+    });
 }
 
 export function useRouterStatus() {
-    const {user} = useAuth();
-    return useQuery({queryKey: assistantKeys.status(user?.id), queryFn: ({signal}) => assistantService.status(signal)});
+    const {user, can, permissionsReady} = useAuth();
+    return useQuery({
+        queryKey: assistantKeys.status(user?.id),
+        queryFn: ({signal}) => assistantService.status(signal),
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE'),
+    });
 }
 
 /**
@@ -75,17 +83,22 @@ export function useAssistantChat(options?: MutationOptions<AssistantReply, Assis
 }
 
 export function useAssistantConversations(filter: ConversationFilter) {
-    const {user} = useAuth();
+    const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: assistantKeys.conversationList(user?.id, filter),
         queryFn: ({signal}) => assistantService.conversations(filter, signal),
         placeholderData: keepPreviousData,
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE'),
     });
 }
 
 export function useAssistantConversation(id: number) {
-    const {user} = useAuth();
-    return useQuery({queryKey: assistantKeys.conversation(user?.id, id), queryFn: ({signal}) => assistantService.conversation(id, signal)});
+    const {user, can, permissionsReady} = useAuth();
+    return useQuery({
+        queryKey: assistantKeys.conversation(user?.id, id),
+        queryFn: ({signal}) => assistantService.conversation(id, signal),
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE') && id > 0,
+    });
 }
 
 /** Deletes a stored conversation, drops its cached detail and refreshes the list. */

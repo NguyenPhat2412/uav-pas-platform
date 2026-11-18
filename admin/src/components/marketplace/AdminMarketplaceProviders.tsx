@@ -50,7 +50,7 @@ export function AdminMarketplaceProviders() {
                             Thẩm định Hồ sơ Đối tác & KYC (3P Providers)
                         </CardTitle>
                         <p className="m-0 mt-1 text-xs text-muted">
-                            Kiểm tra pháp nhân, chứng chỉ bay, tài khoản ngân hàng và cấu hình mức chiết khấu sàn riêng cho từng đối tác.
+                            Kiểm tra pháp nhân, chứng chỉ bay, tài khoản thụ hưởng và cấu hình tỷ lệ đối soát theo Phụ lục Biểu phí từng đối tác.
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -119,7 +119,7 @@ export function AdminMarketplaceProviders() {
                                     </div>
 
                                     <div className="text-right text-xs text-muted tabular-nums">
-                                        <div>Hoa hồng sàn: <strong className="text-on-surface">{p.commissionRateOverride != null ? `${(Number(p.commissionRateOverride) * 100).toFixed(1)}%` : `Mặc định (${configuredDefaultFeePct}%)`}</strong></div>
+                                        <div>Phụ lục đối soát: <strong className="text-on-surface">{p.commissionRateOverride != null ? `${(Number(p.commissionRateOverride) * 100).toFixed(1)}%` : `Khung chuẩn (${configuredDefaultFeePct}%)`}</strong></div>
                                         <div>Hoàn thành: <strong className="text-on-surface">{p.completedMissionsCount}</strong> chuyến</div>
                                     </div>
                                 </div>
@@ -151,9 +151,9 @@ export function AdminMarketplaceProviders() {
                                                 <span className="block">Ghi chú thẩm định (bắt buộc khi từ chối/đình chỉ)<OptionalMark/></span>
                                                 <input type="text" aria-label={`Ghi chú thẩm định đối tác ${p.displayName}`} value={noteById[p.id] ?? p.reviewNote ?? ''} onChange={e => setNoteById(s => ({...s, [p.id]: e.target.value}))} placeholder="Ghi chú thẩm định gửi đối tác..." className="h-9 w-full rounded-control border border-border-input bg-card px-3 text-xs font-normal"/>
                                             </label>
-                                            <label className="w-40 space-y-1 text-xs font-semibold text-on-surface">
-                                                <span className="block">Phí sàn riêng (%)<OptionalMark/></span>
-                                                <input type="number" aria-label={`Tỷ lệ phí hoa hồng sàn cho ${p.displayName}`} min={0} max={50} step={0.5} value={feePctById[p.id] ?? (p.commissionRateOverride != null ? String(Number(p.commissionRateOverride) * 100) : '')} onChange={e => setFeePctById(s => ({...s, [p.id]: e.target.value}))} placeholder="VD: 10" className="h-9 w-full rounded-control border border-border-input bg-card px-3 text-xs font-normal tabular-nums"/>
+                                            <label className="w-44 space-y-1 text-xs font-semibold text-on-surface">
+                                                <span className="block">Phụ lục đối soát (%)<OptionalMark/></span>
+                                                <input type="number" aria-label={`Tỷ lệ đối soát theo phụ lục cho ${p.displayName}`} min={0} max={50} step={0.5} value={feePctById[p.id] ?? (p.commissionRateOverride != null ? String(Number(p.commissionRateOverride) * 100) : '')} onChange={e => setFeePctById(s => ({...s, [p.id]: e.target.value}))} placeholder="VD: 10" className="h-9 w-full rounded-control border border-border-input bg-card px-3 text-xs font-normal tabular-nums"/>
                                             </label>
                                         </div>
                                         <div className="flex flex-wrap items-center gap-2">

@@ -9,6 +9,7 @@ import type {
     PaymentGatewayConfigInput,
     TransactionFilters,
 } from '@/types/billing/billing-admin.types';
+import type {InvoiceEmailDispatchResult} from '@/types/billing/billing.types';
 
 const BASE = API_ROUTES.billing.admin;
 
@@ -37,4 +38,5 @@ export const billingAdminService = {
     userBillingProfile: (userId: number, signal?: AbortSignal) =>
         apiClient.get<AdminBillingProfile>(API_ROUTES.admin.userBillingProfile(userId), {signal}),
     downloadReceipt: (id: number) => apiClient.getBlob(API_ROUTES.billing.invoiceReceipt(id)),
+    sendInvoiceEmail: (id: number) => apiClient.post<InvoiceEmailDispatchResult>(API_ROUTES.billing.sendInvoiceEmail(id)),
 };
