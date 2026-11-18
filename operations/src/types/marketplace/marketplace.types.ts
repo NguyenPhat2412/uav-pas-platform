@@ -215,7 +215,9 @@ export interface ProviderEquipmentCreateInput {
 
 export interface ProviderPilot {
     id: number;
+    providerId?: number | null;
     userId?: number | null;
+    pilotUserId?: number | null;
     username?: string | null;
     fullName: string;
     email?: string | null;

@@ -80,9 +80,18 @@ export function ProviderOrdersView() {
 
     const handleRespond = async (mission: Mission, accept: boolean) => {
         setErrorMsg('');
-        const chosenUavId = selectedUavByMission[mission.id] ?? mission.uavId;
-        const chosenPilotId = selectedPilotByMission[mission.id] ?? mission.operatorId;
-        const matchedPilot = pilots.find(p => p.id === chosenPilotId || p.userId === chosenPilotId);
+        const chosenUavId = selectedUavByMission[mission.id] ?? mission.uavId ?? uavs[0]?.id;
+        const matchedAssignedPilot = pilots.find(
+            p =>
+                p.id === mission.operatorId ||
+                p.userId === mission.operatorId ||
+                p.pilotUserId === mission.operatorId,
+        );
+        const chosenPilotId =
+            selectedPilotByMission[mission.id] ?? matchedAssignedPilot?.id ?? pilots[0]?.id;
+        const matchedPilot = pilots.find(
+            p => p.id === chosenPilotId || p.userId === chosenPilotId || p.pilotUserId === chosenPilotId,
+        );
         const reasonText = (rejectReasonByMission[mission.id] ?? '').trim();
         try {
             await respondToOrder.mutateAsync({
@@ -90,7 +99,9 @@ export function ProviderOrdersView() {
                 payload: {
                     accept,
                     uavId: accept ? chosenUavId : undefined,
-                    pilotUserId: accept ? (matchedPilot?.userId ?? chosenPilotId) : undefined,
+                    pilotUserId: accept
+                        ? (matchedPilot?.pilotUserId ?? matchedPilot?.userId ?? chosenPilotId)
+                        : undefined,
                     reason: accept ? undefined : reasonText || 'Đội bay từ chối nhận đơn',
                     responseNote: accept
                         ? 'Đội bay đã tiếp nhận đơn.'
@@ -104,7 +115,8 @@ export function ProviderOrdersView() {
                         payload: {
                             uavId: chosenUavId,
                             pilotId: matchedPilot?.id ?? chosenPilotId,
-                            pilotUserId: matchedPilot?.userId ?? chosenPilotId,
+                            pilotUserId:
+                                matchedPilot?.pilotUserId ?? matchedPilot?.userId ?? chosenPilotId,
                         },
                     });
                 } catch {
@@ -121,16 +133,25 @@ export function ProviderOrdersView() {
     const handleAssign = async (mission: Mission) => {
         setErrorMsg('');
         const uavId = selectedUavByMission[mission.id] ?? mission.uavId ?? uavs[0]?.id;
-        const pilotId = selectedPilotByMission[mission.id] ?? mission.operatorId ?? pilots[0]?.id;
+        const matchedAssignedPilot = pilots.find(
+            p =>
+                p.id === mission.operatorId ||
+                p.userId === mission.operatorId ||
+                p.pilotUserId === mission.operatorId,
+        );
+        const pilotId =
+            selectedPilotByMission[mission.id] ?? matchedAssignedPilot?.id ?? pilots[0]?.id;
         if (!uavId) return;
-        const matchedPilot = pilots.find(p => p.id === pilotId || p.userId === pilotId);
+        const matchedPilot = pilots.find(
+            p => p.id === pilotId || p.userId === pilotId || p.pilotUserId === pilotId,
+        );
         try {
             await assignOrder.mutateAsync({
                 missionId: mission.id,
                 payload: {
                     uavId,
                     pilotId: matchedPilot?.id ?? pilotId,
-                    pilotUserId: matchedPilot?.userId ?? pilotId,
+                    pilotUserId: matchedPilot?.pilotUserId ?? matchedPilot?.userId ?? pilotId,
                 },
             });
         } catch (err) {
@@ -271,8 +292,17 @@ export function ProviderOrdersView() {
                                 const tab = classifySellerOrderTab(mission);
                                 const selectedUavId =
                                     selectedUavByMission[mission.id] ?? mission.uavId ?? uavs[0]?.id ?? '';
+                                const matchedAssignedPilot = pilots.find(
+                                    p =>
+                                        p.id === mission.operatorId ||
+                                        p.userId === mission.operatorId ||
+                                        p.pilotUserId === mission.operatorId,
+                                );
                                 const selectedPilotId =
-                                    selectedPilotByMission[mission.id] ?? mission.operatorId ?? pilots[0]?.id ?? '';
+                                    selectedPilotByMission[mission.id] ??
+                                    matchedAssignedPilot?.id ??
+                                    pilots[0]?.id ??
+                                    '';
 
                                 return (
                                     <article
