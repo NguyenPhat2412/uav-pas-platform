@@ -378,6 +378,27 @@
     "orderRealtimeToastBody": "新しい状態: {status}",
     "emptyProjectsFirstCta": "最初の案件を作成",
     "emptyOrdersTitle": "サービス注文はまだありません",
-    "emptyOrdersDesc": "UAV PAS市場からサービスを選び、案件に登録して開始しましょう。"
+    "emptyOrdersDesc": "UAV PAS市場からサービスを選び、案件に登録して開始しましょう。",
+    "emptyCatalogDesc": "状態タブ、案件フィルター、または検索キーワードを変更してください。",
+    "pubEscrowStep1": "1. 案件へ登録",
+    "pubEscrowStep2": "2. エスクロー参考預託",
+    "pubEscrowStep3": "3. 飛行・データ納品",
+    "pubEscrowStep4": "4. 検収・星評価",
+    "pubBackCatalog": "← UAVサービス一覧へ戻る",
+    "pubCategoryCode": "カテゴリ: {name}",
+    "pubScopeHeading": "実施範囲の詳細",
+    "pubEquipmentHeading": "使用UAV・センサー構成",
+    "pubEquipmentDefault": "任務に最適化された審査済み標準機体・センサー構成で実施します。",
+    "pubDefaultDeliverable": "生データおよび検収レポートは署名付きURLで安全に納品されます。",
+    "pubCalcAria": "料金試算と案件登録",
+    "pubMinUnitsHint": "最小注文数量: {min} {unit}",
+    "pubMinPreset": "最小 · {val}",
+    "pubSubtotal": "小計 · 参考表示",
+    "pubDeposit": "機材保証金 · 参考表示",
+    "pubEscrowTotal": "合計 · 参考表示",
+    "pubOnSiteHours": "{hours}時間以内に現場手配",
+    "pubDeliveryHours": "{hours}時間以内にデータ納品",
+    "pubOpenRfqLink": "大規模エリアや特別要件は個別見積を依頼 →",
+    "pubEscrowNote": "エスクロー参考残高（期限 {days} 日）は安全に保全され、納品データの検収完了後に精算されます。"
   }
 }

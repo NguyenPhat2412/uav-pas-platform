@@ -378,6 +378,27 @@
     "orderRealtimeToastBody": "New status: {status}",
     "emptyProjectsFirstCta": "Create first project",
     "emptyOrdersTitle": "No service orders yet",
-    "emptyOrdersDesc": "Pick a flight service from the UAV PAS marketplace and subscribe it to a project."
+    "emptyOrdersDesc": "Pick a flight service from the UAV PAS marketplace and subscribe it to a project.",
+    "emptyCatalogDesc": "Try changing the order status tab, project filter, or keyword.",
+    "pubEscrowStep1": "1. Subscribe project",
+    "pubEscrowStep2": "2. Illustrative escrow",
+    "pubEscrowStep3": "3. Flight & handover",
+    "pubEscrowStep4": "4. Review & rate",
+    "pubBackCatalog": "← Back to UAV Marketplace",
+    "pubCategoryCode": "Category: {name}",
+    "pubScopeHeading": "Detailed scope of work",
+    "pubEquipmentHeading": "UAV & sensor configuration",
+    "pubEquipmentDefault": "Verified standard airframe and sensor suite tailored for the mission.",
+    "pubDefaultDeliverable": "Raw flight data and inspection deliverables stored securely via Signed-URL.",
+    "pubCalcAria": "Cost calculator and project booking",
+    "pubMinUnitsHint": "Minimum booking: {min} {unit}",
+    "pubMinPreset": "Min · {val}",
+    "pubSubtotal": "Subtotal · illustrative",
+    "pubDeposit": "Equipment deposit · illustrative",
+    "pubEscrowTotal": "Total escrow · illustrative",
+    "pubOnSiteHours": "On-site readiness within {hours}h",
+    "pubDeliveryHours": "Data handover within {hours}h",
+    "pubOpenRfqLink": "Large area or custom requirement? Submit custom request →",
+    "pubEscrowNote": "Illustrative escrow (due in {days} days) is held safely and settled only after you accept deliverables."
   }
 }
