@@ -1,137 +1,259 @@
 'use client';
-import Link from 'next/link';
-import {useRouter} from 'next/navigation';
+
 import {useEffect, useState} from 'react';
-import {displayLabel, formatDate} from "@/lib/presentation";
-import {PageGuard} from "@/components/customer/CustomerLayout";
-import {Button, Panel, Status} from "@/components/customer/CustomerUi";
-import {LoadingRows} from "@/components/data/WorkspaceState";
-import {useAuth} from '@/providers/AuthContext';
+import Link from 'next/link';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {FolderOpen, PackageSearch, Plus, RotateCcw, Search} from 'lucide-react';
+import {PageGuard} from '@/components/customer/CustomerLayout';
+import {Button, Status} from '@/components/customer/CustomerUi';
+import {LoadingRows} from '@/components/data/WorkspaceState';
+import {OrderStatusBar} from '@/components/mission/customer/OrderStatusBar';
+import {formatVndCompact} from '@/forms/marketplace/marketplace-forms';
+import {missionListFilters, missionPageRange} from '@/forms/mission/mission-form';
+import {mapMissionToOrderStatusGroup, ORDER_STATUS_GROUPS} from '@/forms/project/project-form';
 import {useMissionActions, useMissions} from '@/hooks/mission/useCustomerMissions';
-import {missionListFilters, missionPageRange, missionStatuses, missionTypes} from "@/forms/mission/mission-form";
-import type {MissionStatus, MissionType} from "@/types/customer";
-import {toMissionSlug} from "@/lib/url-slugs";
+import {useCustomerProjects, useOrderRealtimeSync} from '@/hooks/project/useCustomerProjects';
+import {formatDate} from '@/lib/presentation';
+import {toMissionSlug} from '@/lib/url-slugs';
+import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
+import type {OrderStatusGroup} from '@/types/project/project.types';
 
 export default function MissionsPage() {
-    return <PageGuard><Missions/></PageGuard>;
+    return (
+        <PageGuard>
+            <Missions/>
+        </PageGuard>
+    );
 }
 
 function Missions() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const initialGroup = (searchParams.get('group') || '') as OrderStatusGroup | '';
+    const validInitialGroup = ORDER_STATUS_GROUPS.includes(initialGroup as OrderStatusGroup) ? initialGroup : '';
+
     const actions = useMissionActions();
-    const [cloningId, setCloningId] = useState<number | null>(null);
-    const [filters, setFilters] = useState(missionListFilters('', ''));
-    const [missionType, setMissionType] = useState<MissionType | ''>('');
-    const [search, setSearch] = useState('');
     const {can} = useAuth();
     const {t} = useI18n();
-    // Query only after typing pauses instead of on every keystroke.
+    useOrderRealtimeSync();
+
+    const [cloningId, setCloningId] = useState<number | null>(null);
+    const [filters, setFilters] = useState(missionListFilters('', ''));
+    const [statusGroup, setStatusGroup] = useState<OrderStatusGroup | ''>(validInitialGroup);
+    const [projectId, setProjectId] = useState<number | ''>('');
+    const [search, setSearch] = useState('');
+
     useEffect(() => {
         const timer = setTimeout(() => setSearch(filters.search.trim()), 300);
         return () => clearTimeout(timer);
     }, [filters.search]);
-    const query = useMissions(search, filters.page, filters.status || undefined, missionType || undefined);
-    const filtered = !!(filters.search || filters.status || missionType);
+
+    const projectsQuery = useCustomerProjects(0, '', 50);
+    const projects = projectsQuery.data?.content ?? [];
+
+    const query = useMissions(search, filters.page, undefined, undefined, {
+        projectId: projectId === '' ? null : projectId,
+        statusGroup,
+    });
+
     const page = query.data;
+    const rawItems = page?.content ?? [];
+    const items = statusGroup
+        ? rawItems.filter(m => mapMissionToOrderStatusGroup(m) === statusGroup)
+        : rawItems;
     const range = page ? missionPageRange(page) : undefined;
-    const fieldClass = 'grid min-w-0 flex-1 gap-1.5 text-xs font-bold text-foreground sm:min-w-[140px]';
-    const controlClass = 'min-h-10 w-full rounded-control border border-slate-300 bg-white px-3 py-2 text-base font-normal text-foreground sm:text-sm';
-    return <>
-        <Panel className="flex-1 border-0 [&>div]:space-y-0 [&>div]:p-0">
-            <div className="flex flex-col items-stretch gap-3 border-b border-slate-200 bg-slate-50/70 p-4 sm:flex-row sm:flex-wrap sm:items-end">
-                <label className={fieldClass}><span>{t('missions.search')}</span><input className={controlClass} aria-label={t('missions.search')}
-                                                                         placeholder={t('missions.searchPlaceholder')}
-                                                                         value={filters.search}
-                                                                         onChange={event => setFilters(missionListFilters(event.target.value, filters.status))}/></label>
-                <label className={fieldClass}><span>{t('common.status')}</span><select className={controlClass} value={filters.status}
-                                                                        onChange={event => setFilters(missionListFilters(filters.search, event.target.value as MissionStatus | ''))}>
-                    <option value="">{t('missions.allStatuses')}</option>
-                    {missionStatuses.map(status => <option key={status} value={status}>{displayLabel(status)}</option>)}
-                </select></label>
-                <label className={fieldClass}><span>{t('missions.type')}</span><select className={controlClass} value={missionType}
-                                                                           onChange={event => {
-                                                                               setMissionType(event.target.value as MissionType | '');
-                                                                               setFilters(value => ({...value, page: 0}));
-                                                                           }}>
-                    <option value="">{t('missions.allTypes')}</option>
-                    {missionTypes.map(type => <option key={type} value={type}>{displayLabel(type)}</option>)}
-                </select></label>
-                {filtered &&
-                    <Button variant="secondary" onClick={() => {
-                        setFilters(missionListFilters('', ''));
-                        setMissionType('');
-                    }}>{t('missions.clearFilters')}</Button>}
-                {can('MISSION_CREATE') && <div className="sm:ml-auto"><Link className="inline-flex min-h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-control bg-primary px-4 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover" href="/customer/missions/create">{t('missions.create')}</Link></div>}
+    const filtered = Boolean(filters.search || statusGroup || projectId !== '');
+
+    const resetFilters = () => {
+        setFilters(missionListFilters('', ''));
+        setStatusGroup('');
+        setProjectId('');
+    };
+
+    return (
+        <div className="flex flex-1 flex-col gap-4 bg-background p-3.5 sm:p-5">
+            {/* Shopee-style 5 Status Icon Strip */}
+            <OrderStatusBar
+                showAllTab
+                activeGroup={statusGroup}
+                onSelectGroup={next => {
+                    setStatusGroup(next);
+                    setFilters(v => ({...v, page: 0}));
+                }}
+            />
+
+            {/* Search + Project Filter + Book Service CTA */}
+            <div className="flex flex-wrap items-center gap-2.5 rounded-panel border border-slate-200 bg-card p-3">
+                <label className="relative min-w-[200px] flex-1">
+                    <span className="sr-only">{t('missions.search')}</span>
+                    <Search size={15} aria-hidden="true" className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"/>
+                    <input
+                        type="search"
+                        aria-label={t('missions.search')}
+                        placeholder={t('missions.searchPlaceholder')}
+                        value={filters.search}
+                        onChange={e => setFilters(missionListFilters(e.target.value, filters.status))}
+                        className="h-10 w-full rounded-control border border-slate-200 bg-white pr-3 pl-9 text-sm text-slate-900 outline-none focus:border-primary"
+                    />
+                </label>
+
+                {projects.length > 0 && (
+                    <select
+                        value={projectId}
+                        aria-label={t('marketplaceShop.filterByProject')}
+                        onChange={e => {
+                            setProjectId(e.target.value ? Number(e.target.value) : '');
+                            setFilters(v => ({...v, page: 0}));
+                        }}
+                        className="h-10 rounded-control border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-800 outline-none focus:border-primary"
+                    >
+                        <option value="">{t('marketplaceShop.allProjects')}</option>
+                        {projects.map(p => (
+                            <option key={p.id} value={p.id}>
+                                {p.name}
+                            </option>
+                        ))}
+                    </select>
+                )}
+
+                {filtered && (
+                    <Button variant="secondary" onClick={resetFilters}>
+                        <RotateCcw size={13} className="mr-1 inline" aria-hidden="true"/>
+                        {t('missions.clearFilters')}
+                    </Button>
+                )}
+
+                {can('MISSION_CREATE') && (
+                    <Link
+                        href="/customer/services"
+                        className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-control bg-primary px-4 text-xs font-bold whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary-hover"
+                    >
+                        <Plus size={14} aria-hidden="true"/>
+                        <span>{t('marketplaceShop.subscribeForProject')}</span>
+                    </Link>
+                )}
             </div>
-            {actions.clone.error && (
-                <div className="flex flex-wrap items-center gap-3 border-b border-red-200 bg-red-50 px-4 py-3 text-xs text-danger" role="alert">
-                    {actions.clone.error instanceof Error && actions.clone.error.message
-                        ? actions.clone.error.message
-                        : t('missionDetail.actionFailed')}
-                </div>
-            )}
-            {query.isError ? <div className="flex flex-wrap items-center gap-3 border-b border-red-200 bg-red-50 px-4 py-3 text-xs text-danger" role="alert">{t('missions.loadError')} <Button variant="secondary"
-                                                                                                 onClick={() => void query.refetch()}>{t('common.retry')}</Button></div>
-                : query.isLoading ? <LoadingRows/>
-                    : <>
-                        {!!range?.total &&
-                            <div className="border-b border-slate-200 bg-white px-4 py-2 text-xs font-medium text-muted" role="status">
+
+            {/* List Body */}
+            <div className="overflow-hidden rounded-panel border border-slate-200 bg-card">
+                {query.isError ? (
+                    <div className="flex flex-wrap items-center justify-between gap-3 bg-rose-50 px-4 py-3 text-xs text-danger" role="alert">
+                        <span>{t('missions.loadError')}</span>
+                        <Button variant="secondary" onClick={() => void query.refetch()}>
+                            {t('common.retry')}
+                        </Button>
+                    </div>
+                ) : query.isLoading ? (
+                    <LoadingRows/>
+                ) : items.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center" role="status">
+                        <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-uav-red-light text-primary">
+                            <PackageSearch size={24} aria-hidden="true"/>
+                        </span>
+                        <p className="m-0 text-sm text-slate-600">
+                            {filtered ? t('missions.emptyFiltered') : t('missions.empty')}
+                        </p>
+                        <Link
+                            href="/customer/services"
+                            className="inline-flex min-h-10 items-center justify-center rounded-control bg-primary px-4 text-xs font-bold whitespace-nowrap text-primary-foreground"
+                        >
+                            {t('marketplaceShop.exploreCatalog')}
+                        </Link>
+                    </div>
+                ) : (
+                    <>
+                        {!!range?.total && (
+                            <div className="border-b border-slate-100 px-4 py-2 text-xs font-medium text-muted tabular-nums" role="status">
                                 {t('missions.range', {first: range.first, last: range.last, total: range.total})}
-                            </div>}
-                        {page?.content.length ? <div className="max-w-full overflow-x-auto">
-                            <table className="w-full border-collapse text-left text-sm">
-                                <thead className="hidden sm:table-header-group">
-                                <tr>
-                                    <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-xs font-bold text-muted">{t('missions.code')}</th>
-                                    <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-xs font-bold text-muted">{t('missions.titleColumn')}</th>
-                                    <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-xs font-bold text-muted">{t('missions.time')}</th>
-                                    <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-xs font-bold text-muted">{t('common.status')}</th>
-                                    {can('MISSION_CREATE') && <th className="border-b border-border bg-slate-50/70 px-4 py-3 text-right text-xs font-bold text-muted">{t('capabilities.clone.action')}</th>}
-                                </tr>
-                                </thead>
-                                <tbody className="block sm:table-row-group">{page.content.map(mission => <tr key={mission.id} className="group block border-b border-border px-4 py-3 last:border-b-0 hover:bg-slate-50 sm:table-row sm:px-0 sm:py-0">
-                                    <td data-label={t('missions.code')} className="block border-0 py-1.5 align-middle text-sm text-foreground before:inline-block before:min-w-[90px] before:text-xs before:text-muted before:content-[attr(data-label)] sm:table-cell sm:border-b sm:border-border sm:px-4 sm:py-3.5 sm:before:hidden"><Link href={`/customer/missions/${toMissionSlug(mission)}`}
-                                                              className="tabular-nums font-bold text-primary hover:underline">{mission.code}</Link></td>
-                                    <td data-label={t('missions.titleColumn')} className="block border-0 py-1.5 align-middle text-sm text-foreground before:inline-block before:min-w-[90px] before:text-xs before:text-muted before:content-[attr(data-label)] sm:table-cell sm:border-b sm:border-border sm:px-4 sm:py-3.5 sm:before:hidden">{mission.title}</td>
-                                    <td data-label={t('missions.time')} className="block border-0 py-1.5 align-middle tabular-nums text-sm text-foreground before:inline-block before:min-w-[90px] before:text-xs before:text-muted before:content-[attr(data-label)] sm:table-cell sm:border-b sm:border-border sm:px-4 sm:py-3.5 sm:before:hidden">{formatDate(mission.startTime)}</td>
-                                    <td data-label={t('common.status')} className="block border-0 py-1.5 align-middle text-sm text-foreground before:inline-block before:min-w-[90px] before:text-xs before:text-muted before:content-[attr(data-label)] sm:table-cell sm:border-b sm:border-border sm:px-4 sm:py-3.5 sm:before:hidden"><Status value={mission.status}/></td>
-                                    {can('MISSION_CREATE') && <td className="block border-0 py-1.5 text-right align-middle sm:table-cell sm:border-b sm:border-border sm:px-4 sm:py-3.5">
-                                        <Button
-                                            variant="secondary"
-                                            disabled={cloningId !== null}
-                                            onClick={async () => {
-                                                setCloningId(mission.id);
-                                                const cloned = await actions.clone.mutateAsync(mission.id).catch(() => null);
-                                                setCloningId(null);
-                                                if (cloned) router.push(`/customer/missions/${toMissionSlug(cloned)}`);
-                                            }}
-                                        >
-                                            {cloningId === mission.id ? t('capabilities.clone.cloning') : t('capabilities.clone.action')}
-                                        </Button>
-                                    </td>}
-                                </tr>)}</tbody>
-                            </table>
-                        </div> : <div
-                            className="px-6 py-9 text-center text-sm leading-relaxed text-muted">{filters.page > 0 ? t('missions.emptyPage') : filtered ? t('missions.emptyFiltered') : t('missions.empty')}</div>}
-                        {page && (page.totalPages > 1 || filters.page > 0) &&
-                            <nav className="flex flex-wrap items-center justify-center gap-3 border-t border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm sm:gap-4" aria-label={t('missions.pagination')}>
-                                <Button variant="secondary" disabled={filters.page === 0 || query.isFetching}
-                                        onClick={() => setFilters(value => ({
-                                            ...value,
-                                            page: Math.max(0, value.page - 1)
-                                        }))}>{t('missions.prevPage')}</Button>
-                                <span
-                                    aria-live="polite" className="order-first basis-full text-center sm:order-none sm:basis-auto">{t('missions.pageOf', {page: page.page + 1, total: Math.max(page.totalPages, page.page + 1)})}</span>
-                                <Button variant="secondary" disabled={!page.hasNext || query.isFetching}
-                                        onClick={() => setFilters(value => ({...value, page: value.page + 1}))}>{t('missions.nextPage')}</Button>
-                                {!page.content.length && filters.page > 0 && <Button variant="secondary"
-                                                                                     onClick={() => setFilters(value => ({
-                                                                                         ...value,
-                                                                                         page: 0
-                                                                                     }))}>{t('missions.firstPage')}</Button>}
-                            </nav>}
-                    </>}
-        </Panel>
-    </>;
+                            </div>
+                        )}
+                        <div
+                            className={`divide-y divide-slate-100 transition-opacity duration-150 ${
+                                query.isPlaceholderData ? 'opacity-65' : 'opacity-100'
+                            }`}
+                        >
+                            {items.map(mission => {
+                                const slugHref = `/customer/missions/${toMissionSlug(mission)}`;
+                                return (
+                                    <article key={mission.id} className="flex flex-col gap-2.5 p-4 transition-colors hover:bg-slate-50/70 sm:flex-row sm:items-center sm:justify-between">
+                                        <div className="min-w-0 space-y-1">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <Link href={slugHref} className="text-xs font-bold whitespace-nowrap text-primary tabular-nums hover:underline">
+                                                    {mission.code}
+                                                </Link>
+                                                <Status value={mission.status}/>
+                                                {mission.projectName && (
+                                                    <span className="inline-flex items-center gap-1 rounded-badge bg-slate-100 px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-slate-700">
+                                                        <FolderOpen size={11} aria-hidden="true"/>
+                                                        <span className="max-w-[160px] truncate">{mission.projectName}</span>
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <Link href={slugHref} className="block line-clamp-2 text-sm font-semibold text-slate-900 hover:text-primary">
+                                                {mission.title}
+                                            </Link>
+                                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 tabular-nums">
+                                                <span className="whitespace-nowrap">{formatDate(mission.startTime)}</span>
+                                                {mission.quotedSubtotalVnd != null && (
+                                                    <span className="font-bold whitespace-nowrap text-primary">
+                                                        {formatVndCompact(mission.quotedSubtotalVnd)} · {t('marketplaceShop.illustrative')}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex shrink-0 flex-wrap items-center gap-2">
+                                            <Link
+                                                href={slugHref}
+                                                className="inline-flex min-h-9 items-center justify-center rounded-control bg-primary px-3.5 text-xs font-bold whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary-hover"
+                                            >
+                                                {t('marketplaceShop.homeViewDetails')}
+                                            </Link>
+                                            {can('MISSION_CREATE') && (
+                                                <Button
+                                                    variant="secondary"
+                                                    disabled={cloningId !== null}
+                                                    onClick={async () => {
+                                                        setCloningId(mission.id);
+                                                        const cloned = await actions.clone.mutateAsync(mission.id).catch(() => null);
+                                                        setCloningId(null);
+                                                        if (cloned) router.push(`/customer/missions/${toMissionSlug(cloned)}`);
+                                                    }}
+                                                >
+                                                    {cloningId === mission.id ? t('capabilities.clone.cloning') : t('capabilities.clone.action')}
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </article>
+                                );
+                            })}
+                        </div>
+                    </>
+                )}
+
+                {page && (page.totalPages > 1 || filters.page > 0) && (
+                    <nav className="flex items-center justify-center gap-3 border-t border-slate-200 bg-slate-50/50 px-4 py-3 text-xs tabular-nums" aria-label={t('missions.pagination')}>
+                        <Button
+                            variant="secondary"
+                            disabled={filters.page === 0 || query.isFetching}
+                            onClick={() => setFilters(v => ({...v, page: Math.max(0, v.page - 1)}))}
+                        >
+                            {t('missions.prevPage')}
+                        </Button>
+                        <span aria-live="polite" className="whitespace-nowrap font-semibold text-slate-600">
+                            {t('missions.pageOf', {page: page.page + 1, total: Math.max(page.totalPages, page.page + 1)})}
+                        </span>
+                        <Button
+                            variant="secondary"
+                            disabled={!page.hasNext || query.isFetching}
+                            onClick={() => setFilters(v => ({...v, page: v.page + 1}))}
+                        >
+                            {t('missions.nextPage')}
+                        </Button>
+                    </nav>
+                )}
+            </div>
+        </div>
+    );
 }

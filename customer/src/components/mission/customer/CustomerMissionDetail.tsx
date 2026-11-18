@@ -11,7 +11,9 @@ import {Button, Status} from "@/components/customer/CustomerUi";
 import {useAuth} from '@/providers/AuthContext';
 import {useMissionActions, useMissionDetail, useServices} from '@/hooks/mission/useCustomerMissions';
 import {canEditMission} from "@/forms/mission/mission-form";
+import {canCancelCustomerOrder} from '@/forms/project/project-form';
 import {MissionProgress} from "@/components/mission/customer/MissionProgress";
+import {OrderDeliveryTrackingCard} from '@/components/mission/customer/OrderDeliveryTrackingCard';
 import {MediaPreview} from "@/components/mission/customer/MediaPreview";
 import {MissionFiles} from "@/components/mission/customer/MissionFiles";
 import {MissionResources} from "@/components/mission/customer/MissionResources";
@@ -64,12 +66,13 @@ function MissionDetail() {
     const canViewAny = can('MISSION_VIEW_ALL');
     if (q.detail.isError || !mission || (!canViewAny && mission.customerId !== user?.id)) return <div className="flex flex-wrap items-center gap-3 rounded-panel bg-red-50 px-3.5 py-3 text-xs text-danger [&_a]:underline"
                                                                                      role="alert">{t('missionDetail.loadError')} <Button variant="secondary" onClick={() => void q.detail.refetch()}>{t('common.retry')}</Button> <Link href="/customer/missions">{t('missionDetail.backToList')}</Link></div>;
-    const finished = ['COMPLETED', 'CANCELLED', 'REJECTED', 'FAILED'].includes(mission.status);
+    const deliveredOrDone = ['DELIVERED', 'COMPLETED', 'REVIEWED'].includes(mission.status);
+    const finished = [...(deliveredOrDone ? [mission.status] : []), 'CANCELLED', 'REJECTED', 'FAILED'].includes(mission.status);
     const tabs: MissionTab[] = finished ? ['monitoring', 'delivery', 'history'] : ['monitoring', 'weather', 'delivery', 'history'];
     // Finished missions open on their results; everything else on the live view.
-    const tab: MissionTab = chosenTab && tabs.includes(chosenTab) ? chosenTab : mission.status === 'COMPLETED' ? 'delivery' : 'monitoring';
+    const tab: MissionTab = chosenTab && tabs.includes(chosenTab) ? chosenTab : deliveredOrDone ? 'delivery' : 'monitoring';
     const canSubmit = canEditMission(mission, user?.id, can('MISSION_UPDATE'));
-    const canCancel = ['DRAFT', 'PENDING_CONFIRMATION'].includes(mission.status) && can('MISSION_CANCEL');
+    const canCancel = canCancelCustomerOrder(mission.status) && can('MISSION_CANCEL');
     const download = async (mediaId: number) => {
         setDownloading(mediaId);
         setMediaError(false);
@@ -231,7 +234,7 @@ function MissionDetail() {
                 </button>)}
             </div>
             <div role="tabpanel" id={`mission-panel-${tab}`} aria-labelledby={`mission-tab-${tab}`} className={panelBodyClass}>
-                {tab === 'monitoring' && <MissionMonitoring mission={mission}/>}
+                {tab === 'monitoring' && <div className="grid gap-4"><OrderDeliveryTrackingCard mission={mission}/><MissionMonitoring mission={mission}/></div>}
                 {tab === 'weather' && <SiteWeather mission={mission}/>}
                 {tab === 'delivery' && <div className="grid gap-5">
         <MissionInspectionReportCard
@@ -239,7 +242,7 @@ function MissionDetail() {
             downloadingMediaId={downloading}
             onDownloadMedia={mediaId => void download(mediaId)}
         />
-        {mission.status === 'COMPLETED' && <section className="min-w-0 overflow-hidden rounded-panel border border-border" aria-labelledby="handover-title">
+        {deliveredOrDone && <section className="min-w-0 overflow-hidden rounded-panel border border-border" aria-labelledby="handover-title">
             <header className={panelHeaderClass}><h2 id="handover-title" className={panelTitleClass}>{t('missionDetail.handover')}</h2></header>
             <div className={panelBodyClass}>
                 <dl className="m-0 grid gap-4 [&_dt]:text-xs [&_dt]:text-muted [&_dd]:m-0 [&_dd]:mt-1 [&_dd]:break-words [&_dd]:text-sm [&_dd]:font-semibold [&_dd]:text-foreground">
@@ -258,7 +261,7 @@ function MissionDetail() {
                 </dl>
                 <p className="m-0 mt-4 text-sm leading-relaxed text-muted">{t('missionDetail.completedNote')}</p></div>
         </section>}
-        {mission.status === 'COMPLETED' && (
+        {deliveredOrDone && (
             <MissionHandoverReviewCard
                 key={mission.id}
                 missionId={mission.id}

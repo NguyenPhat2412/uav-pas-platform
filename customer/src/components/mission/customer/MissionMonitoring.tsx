@@ -17,7 +17,7 @@ import {useAirspaceZones} from '@/hooks/airspace/useAirspace';
 import {renderAirspaceZonesLayer} from '@/utils/airspace/map-overlays';
 import {Mission3DReplayAndTerrainCard} from '@/components/mission/Mission3DReplayAndTerrainCard';
 
-const LIVE_STATUSES = ['READY', 'IN_PROGRESS'];
+const LIVE_STATUSES = ['READY', 'IN_FLIGHT', 'IN_PROGRESS'];
 // Leaflet styles vectors through options, so the theme colours are spelled out here.
 const C = {red: '#c43a4a', blue: '#475569', muted: '#94a3b8'};
 
@@ -26,7 +26,9 @@ export function MissionMonitoring({mission}: { mission: Mission }) {
     const {t, formatNumber, formatDate} = useI18n();
     const live = LIVE_STATUSES.includes(mission.status);
     const telemetry = useMissionTelemetry(mission.id, {
-        enabled: mission.uavId != null && mission.status !== 'DRAFT' && mission.status !== 'PENDING_CONFIRMATION',
+        enabled:
+            mission.uavId != null &&
+            !['DRAFT', 'PENDING_DISPATCH', 'PENDING_PROVIDER', 'PENDING_CONFIRMATION'].includes(mission.status),
         live,
     });
     const fix = telemetry.data ?? null;
