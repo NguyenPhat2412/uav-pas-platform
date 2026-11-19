@@ -95,11 +95,20 @@ export function AuthProvider({children}: { children: ReactNode }) {
                 return;
             }
             try {
-                // With HttpOnly cookies, browser sends uav_access_token automatically
-                const current = await authService.getMe();
+                // Fire session check and caller permissions in parallel so guarded pages
+                // avoid a sequential /auth/me -> /permissions/me waterfall on direct load.
+                const [meResult, permResult] = await Promise.allSettled([
+                    authService.getMe(),
+                    apiClient.get<string[]>(API_ROUTES.permissions.me),
+                ]);
+                if (meResult.status === 'rejected') throw meResult.reason;
+                const current = meResult.value;
                 if (active && current) {
                     identity.current = current.id;
                     rememberSessionUser(current.id);
+                    if (permResult.status === 'fulfilled' && Array.isArray(permResult.value)) {
+                        client.setQueryData(['session', current.id, 'permissions'], permResult.value);
+                    }
                     setUser(current);
                     setToken('cookie');
                     setAuthError(null);
@@ -126,7 +135,7 @@ export function AuthProvider({children}: { children: ReactNode }) {
         return () => {
             active = false;
         };
-    }, [bootstrapAttempt]);
+    }, [bootstrapAttempt, client]);
 
     useEffect(() => {
         if (!authError) return;

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import {Button, Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
 import {
+    IllustrativeFooterNote,
     MarketplaceCardListSkeleton,
     MarketplaceEmptyPanel,
     MarketplaceErrorPanel,
@@ -241,6 +242,7 @@ export function AdminMarketplaceProjects() {
                     )}
                 </CardContent>
             </Card>
+            <IllustrativeFooterNote/>
 
             {selectedProject && (
                 <ProjectSubscriptionsDrawer

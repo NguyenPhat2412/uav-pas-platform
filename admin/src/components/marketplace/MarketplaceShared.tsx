@@ -1,7 +1,7 @@
 'use client';
 
 import type {ReactNode} from 'react';
-import {ChevronLeft, ChevronRight, Inbox, RefreshCw, RotateCcw} from 'lucide-react';
+import {ChevronLeft, ChevronRight, Inbox, Info, RefreshCw, RotateCcw} from 'lucide-react';
 import {Alert, Button} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 
@@ -11,6 +11,16 @@ export function IllustrativeTag() {
         <span className="inline-flex shrink-0 items-center rounded-badge border border-slate-200 bg-slate-100 px-1.5 py-0.5 text-xs font-medium whitespace-nowrap text-muted">
             {t('adminCommerce.marketplace.illustrative')}
         </span>
+    );
+}
+
+export function IllustrativeFooterNote() {
+    const {t} = useI18n();
+    return (
+        <p className="m-0 flex items-center justify-center gap-1.5 pt-1 text-center text-xs text-muted">
+            <Info size={13} className="shrink-0 text-slate-400" aria-hidden="true"/>
+            <span>{t('adminCommerce.marketplace.illustrativeFooterNote')}</span>
+        </p>
     );
 }
 

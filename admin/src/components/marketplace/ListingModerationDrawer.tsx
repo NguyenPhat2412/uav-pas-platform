@@ -98,7 +98,7 @@ export function ListingModerationDrawer({
                         t('adminCommerce.marketplace.listings.providerLabel'),
                         <span key="provider" className="inline-flex items-center gap-1.5">
                             <Store size={13} className="text-muted" aria-hidden="true"/>
-                            <span>{listing.providerDisplayName}</span>
+                            <span>{sanitizeMarketplaceText(listing.providerDisplayName)}</span>
                         </span>,
                     ],
                     [

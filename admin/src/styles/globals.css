@@ -254,6 +254,13 @@
     gap: 1rem;
 }
 
+@media (min-width: 1024px) {
+    :root[data-portal] :is(#workspace, #content) {
+        /* Reserve a clean right gutter for the compact bottom-right UnifiedFloatingLauncher (20px + 44px + 12px buffer). */
+        padding-right: 4.75rem;
+    }
+}
+
 /* The course player runs edge to edge under the app header, like a video course site. */
 :root[data-portal] :is(#workspace, #content):has([data-course-player]) {
     padding: 0;

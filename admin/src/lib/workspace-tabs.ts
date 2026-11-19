@@ -9,6 +9,7 @@ export interface WorkspaceTab {
 }
 
 export const WORKSPACE_TAB_LIMIT = 10;
+export const MAX_VISIBLE_WORKSPACE_TABS = 6;
 
 export function readWorkspaceTabs(key: string): WorkspaceTab[] {
     try {
@@ -74,4 +75,31 @@ export function closeWorkspaceTab(tabs: WorkspaceTab[], href: string, activeHref
 /** Keeps the pinned tab and `keep` (when given); everything else closes. */
 export function closeOtherWorkspaceTabs(tabs: WorkspaceTab[], pinned: string, keep?: string): WorkspaceTab[] {
     return tabs.filter(tab => tab.href === pinned || tab.href === keep);
+}
+
+/**
+ * Splits open tabs into at most `maxVisible` (default 6) tabs rendered directly on the bar
+ * and any remaining tabs routed into the "…" overflow menu (UI-REVIEW-9-FIXES #6).
+ * Always keeps the pinned Home tab and the active tab visible in `primary`.
+ */
+export function partitionWorkspaceTabs(
+    tabs: WorkspaceTab[],
+    activeHref: string | undefined,
+    pinned: string,
+    maxVisible = MAX_VISIBLE_WORKSPACE_TABS,
+): { primary: WorkspaceTab[]; overflow: WorkspaceTab[] } {
+    if (tabs.length <= maxVisible) return {primary: tabs, overflow: []};
+    const primary = tabs.slice(0, maxVisible);
+    const overflow = tabs.slice(maxVisible);
+    if (activeHref && !primary.some(item => item.href === activeHref)) {
+        const activeIdx = overflow.findIndex(item => item.href === activeHref);
+        if (activeIdx >= 0) {
+            const [activeTab] = overflow.splice(activeIdx, 1);
+            let swapIdx = primary.length - 1;
+            while (swapIdx > 0 && primary[swapIdx].href === pinned) swapIdx--;
+            const [demoted] = primary.splice(swapIdx, 1, activeTab);
+            overflow.unshift(demoted);
+        }
+    }
+    return {primary, overflow};
 }

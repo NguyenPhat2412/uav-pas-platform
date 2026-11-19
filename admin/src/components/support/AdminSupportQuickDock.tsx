@@ -4,7 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent} from 'react';
 import {ArrowLeft, ArrowUpRight, MessagesSquare, Send, X, Zap} from 'lucide-react';
+import {OPEN_ADMIN_SUPPORT_DOCK_EVENT} from '@/components/shared/UnifiedFloatingLauncher';
 import {SupportMessageStatusRow} from '@/components/support/SupportMessageStatusRow';
+import {sanitizeEntityName} from '@/forms/marketplace/admin-marketplace-form';
 import {
     personalizeQuickReply,
     useAdminSupportRealtime,
@@ -27,7 +29,7 @@ import {
     SUPPORT_STATUS_META,
 } from '@/utils/support/support-format';
 
-export function AdminSupportQuickDock() {
+export function AdminSupportQuickDock({hideLauncher = false}: { hideLauncher?: boolean } = {}) {
     const {user, isAuthenticated, permissionsReady, can} = useAuth();
     const allowed = isAuthenticated && permissionsReady && can('SUPPORT_MANAGE');
 
@@ -68,6 +70,12 @@ export function AdminSupportQuickDock() {
     useEffect(() => {
         listRef.current?.scrollTo({top: listRef.current.scrollHeight, behavior: 'smooth'});
     }, [activeThreadId, messages.length, activeVisitorTyping]);
+
+    useEffect(() => {
+        const onToggleEvent = () => setOpen(prev => !prev);
+        window.addEventListener(OPEN_ADMIN_SUPPORT_DOCK_EVENT, onToggleEvent);
+        return () => window.removeEventListener(OPEN_ADMIN_SUPPORT_DOCK_EVENT, onToggleEvent);
+    }, []);
 
     useEffect(() => () => {
         if (stopTypingRef.current) clearTimeout(stopTypingRef.current);
@@ -115,7 +123,10 @@ export function AdminSupportQuickDock() {
         <>
             {open && (
                 <section role="dialog" aria-label="Hỗ trợ trực tuyến · Trả lời nhanh" onKeyDown={e => e.key === 'Escape' && setOpen(false)}
-                         className="fixed bottom-38 right-5 z-50 flex max-h-[calc(100dvh-11rem)] w-[min(400px,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-overlay border border-rose-200 bg-white shadow-2xl">
+                         className={cn(
+                             'fixed z-50 flex max-h-[calc(100dvh-8rem)] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-overlay border border-rose-200 bg-white shadow-2xl',
+                             hideLauncher ? 'bottom-18 right-4 sm:right-5' : 'bottom-38 right-5',
+                         )}>
                     <header className="flex items-center justify-between gap-2 border-b border-rose-100 bg-rose-50/70 px-3.5 py-2.5">
                         <div className="flex min-w-0 items-center gap-2">
                             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-rose-200 bg-white p-1">
@@ -154,7 +165,7 @@ export function AdminSupportQuickDock() {
                                             item.unreadForAdmin > 0 ? 'bg-rose-50/45 hover:bg-rose-50/80' : 'hover:bg-slate-50',
                                         )}>
                                     <div className="flex items-center justify-between gap-2">
-                                        <strong className="truncate text-xs font-bold text-slate-900">{item.fullName}</strong>
+                                        <strong className="truncate text-xs font-bold text-slate-900">{sanitizeEntityName(item.fullName)}</strong>
                                         <div className="flex shrink-0 items-center gap-1.5">
                                             {item.unreadForAdmin > 0 && (
                                                 <span className="rounded-full bg-primary px-1.5 py-0.2 text-[10px] font-extrabold text-white">
@@ -189,7 +200,7 @@ export function AdminSupportQuickDock() {
                                 </button>
                                 {activeThread && (
                                     <span className="truncate text-xs font-semibold text-slate-800">
-                                        {activeThread.fullName} · <small className="text-slate-400">{activeThread.code}</small>
+                                        {sanitizeEntityName(activeThread.fullName)} · <small className="text-slate-400">{activeThread.code}</small>
                                     </span>
                                 )}
                             </div>
@@ -260,26 +271,28 @@ export function AdminSupportQuickDock() {
                 </section>
             )}
 
-            <div className="fixed bottom-22 right-5 z-40">
-                <button type="button" onClick={() => setOpen(prev => !prev)} aria-expanded={open}
-                        aria-label="Hỗ trợ trực tuyến · Trả lời nhanh" title="Hỗ trợ trực tuyến · Trả lời nhanh"
-                        className={cn(
-                            'relative flex h-13 w-13 items-center justify-center rounded-full border-2 bg-white shadow-xl transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer',
-                            unreadMessages > 0 ? 'border-rose-500 ring-4 ring-rose-500/20' : 'border-rose-200 hover:border-primary',
-                        )}>
-                    {unreadMessages > 0 ? (
-                        <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-full bg-rose-400/50 animate-ping"/>
-                    ) : (
-                        <span aria-hidden="true" className="pointer-events-none absolute -inset-1 rounded-full border border-rose-300/60 animate-pulse"/>
-                    )}
-                    <Image src="/uav-pas-logo.svg" alt="UAV PAS Support" width={30} height={30} className="relative z-10 h-[30px] w-[30px] object-contain"/>
-                    {unreadMessages > 0 && (
-                        <span className="absolute -right-1 -top-1 z-20 inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10.5px] font-extrabold leading-none text-white shadow-sm ring-2 ring-white">
-                            {unreadMessages > 99 ? '99+' : unreadMessages}
-                        </span>
-                    )}
-                </button>
-            </div>
+            {!hideLauncher && (
+                <div className="fixed bottom-22 right-5 z-40">
+                    <button type="button" onClick={() => setOpen(prev => !prev)} aria-expanded={open}
+                            aria-label="Hỗ trợ trực tuyến · Trả lời nhanh" title="Hỗ trợ trực tuyến · Trả lời nhanh"
+                            className={cn(
+                                'relative flex h-13 w-13 items-center justify-center rounded-full border-2 bg-white shadow-xl transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer',
+                                unreadMessages > 0 ? 'border-rose-500 ring-4 ring-rose-500/20' : 'border-rose-200 hover:border-primary',
+                            )}>
+                        {unreadMessages > 0 ? (
+                            <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-full bg-rose-400/50 animate-ping"/>
+                        ) : (
+                            <span aria-hidden="true" className="pointer-events-none absolute -inset-1 rounded-full border border-rose-300/60 animate-pulse"/>
+                        )}
+                        <Image src="/uav-pas-logo.svg" alt="UAV PAS Support" width={30} height={30} className="relative z-10 h-[30px] w-[30px] object-contain"/>
+                        {unreadMessages > 0 && (
+                            <span className="absolute -right-1 -top-1 z-20 inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[10.5px] font-extrabold leading-none text-white shadow-sm ring-2 ring-white">
+                                {unreadMessages > 99 ? '99+' : unreadMessages}
+                            </span>
+                        )}
+                    </button>
+                </div>
+            )}
         </>
     );
 }

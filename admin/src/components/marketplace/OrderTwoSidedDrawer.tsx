@@ -84,18 +84,18 @@ export function OrderTwoSidedDrawer({
                     items={[
                         [
                             t('adminCommerce.marketplace.orders.customerName'),
-                            order.customerName || (order.customerId ? `#${order.customerId}` : '—'),
+                            sanitizeMarketplaceText(order.customerName) || (order.customerId ? `#${order.customerId}` : '—'),
                         ],
                         [
                             t('adminCommerce.marketplace.orders.projectName'),
-                            order.projectName || (order.projectId ? `#${order.projectId}` : '—'),
+                            sanitizeMarketplaceText(order.projectName) || (order.projectId ? `#${order.projectId}` : '—'),
                         ],
                         [
                             t('adminCommerce.marketplace.orders.location'),
                             order.locationName ? (
                                 <span key="loc" className="inline-flex items-center gap-1">
                                     <MapPin size={13} className="shrink-0 text-muted" aria-hidden="true"/>
-                                    <span>{order.locationName}</span>
+                                    <span>{sanitizeMarketplaceText(order.locationName)}</span>
                                 </span>
                             ) : (
                                 '—'
@@ -143,7 +143,7 @@ export function OrderTwoSidedDrawer({
                     items={[
                         [
                             t('adminCommerce.marketplace.orders.providerName'),
-                            order.providerDisplayName || t('adminCommerce.marketplace.orders.unassignedProvider'),
+                            sanitizeMarketplaceText(order.providerDisplayName) || t('adminCommerce.marketplace.orders.unassignedProvider'),
                         ],
                         [
                             t('adminCommerce.marketplace.orders.providerStatus'),

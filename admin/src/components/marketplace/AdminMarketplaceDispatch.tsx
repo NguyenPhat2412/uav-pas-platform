@@ -4,6 +4,7 @@ import {useState} from 'react';
 import {PlaneTakeoff, Radio, RefreshCw} from 'lucide-react';
 import {Alert, Button, Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
 import {
+    IllustrativeFooterNote,
     MarketplaceCardListSkeleton,
     MarketplaceEmptyPanel,
     MarketplaceErrorPanel,
@@ -16,7 +17,11 @@ import {
     useAutoDispatchOrder,
     useManualDispatchOrder,
 } from '@/hooks/marketplace/useAdminMarketplace';
-import {buildAutoDispatchInput, buildManualDispatchInput} from '@/forms/marketplace/admin-marketplace-form';
+import {
+    buildAutoDispatchInput,
+    buildManualDispatchInput,
+    formatAdminConflictError,
+} from '@/forms/marketplace/admin-marketplace-form';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
@@ -119,9 +124,11 @@ export function AdminMarketplaceDispatch() {
                 {(manualDispatch.isError || autoDispatch.isError) && (
                     <div className="px-5 pt-2">
                         <Alert variant="error" role="alert" className="text-xs">
-                            {mutationError instanceof Error
-                                ? mutationError.message
-                                : t('adminCommerce.marketplace.dispatch.assignError')}
+                            {formatAdminConflictError(
+                                mutationError,
+                                t,
+                                'adminCommerce.marketplace.dispatch.assignError',
+                            )}
                         </Alert>
                     </div>
                 )}
@@ -168,6 +175,7 @@ export function AdminMarketplaceDispatch() {
                     />
                 </CardContent>
             </Card>
+            <IllustrativeFooterNote/>
         </div>
     );
 }

@@ -16,7 +16,11 @@ import {
 } from 'lucide-react';
 import {BarList, SegmentBar, seriesColors} from '@/components/dashboard/analytics/AdminCharts';
 import {Button, Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
-import {IllustrativeTag, MarketplaceErrorPanel} from '@/components/marketplace/MarketplaceShared';
+import {
+    IllustrativeFooterNote,
+    IllustrativeTag,
+    MarketplaceErrorPanel,
+} from '@/components/marketplace/MarketplaceShared';
 import {formatMarketplaceVnd} from '@/forms/marketplace/admin-marketplace-form';
 import {useAdminMarketplaceRealtime, useAdminMarketplaceStats} from '@/hooks/marketplace/useAdminMarketplace';
 import {displayLabel} from '@/lib/presentation';
@@ -106,7 +110,6 @@ export function AdminMarketplaceStats() {
                         <CardTitle className="flex flex-wrap items-center gap-2 text-lg font-semibold">
                             <BarChart3 size={20} className="shrink-0 text-primary" aria-hidden="true"/>
                             <span>{t('adminCommerce.marketplace.stats.pageTitle')}</span>
-                            <IllustrativeTag/>
                         </CardTitle>
                         <p className="m-0 mt-1 text-xs text-muted">{t('adminCommerce.marketplace.stats.subtitle')}</p>
                     </div>
@@ -148,7 +151,7 @@ export function AdminMarketplaceStats() {
                                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--uav-color-primary-light)] text-primary">
                                         <Icon size={14} aria-hidden="true"/>
                                     </span>
-                                    <span className="line-clamp-2 break-words leading-tight">{item.label}</span>
+                                    <span className="break-words whitespace-normal leading-tight">{item.label}</span>
                                 </Link>
                             );
                         })}
@@ -177,14 +180,16 @@ export function AdminMarketplaceStats() {
                                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--uav-color-primary-light)] text-primary">
                                             <Icon size={17} aria-hidden="true"/>
                                         </span>
-                                        {kpi.illustrative && <IllustrativeTag/>}
                                     </div>
                                     <span className="line-clamp-2 break-words text-xs leading-snug font-medium text-muted">
                                         {kpi.label}
                                     </span>
-                                    <strong className="block truncate text-lg font-bold text-on-surface tabular-nums">
-                                        {kpi.value}
-                                    </strong>
+                                    <div className="flex flex-wrap items-baseline gap-1.5">
+                                        <strong className="text-lg font-bold text-on-surface tabular-nums">
+                                            {kpi.value}
+                                        </strong>
+                                        {kpi.illustrative && <IllustrativeTag/>}
+                                    </div>
                                 </article>
                             );
                         })}
@@ -212,11 +217,10 @@ export function AdminMarketplaceStats() {
                         </Card>
 
                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between gap-2 px-5 py-4">
+                            <CardHeader className="px-5 py-4">
                                 <CardTitle className="text-sm font-semibold">
                                     {t('adminCommerce.marketplace.stats.revenueChartTitle')}
                                 </CardTitle>
-                                <IllustrativeTag/>
                             </CardHeader>
                             <CardContent className="space-y-5 px-5 pb-5">
                                 <BarList items={revenueBars} format={v => formatMarketplaceVnd(v)} color={seriesColors.blue}/>
@@ -229,6 +233,8 @@ export function AdminMarketplaceStats() {
                             </CardContent>
                         </Card>
                     </div>
+
+                    <IllustrativeFooterNote/>
                 </>
             ) : null}
         </div>

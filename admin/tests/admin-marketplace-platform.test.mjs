@@ -178,8 +178,25 @@ test('Admin customer projects & subscriptions governance wires read-only view, s
     assert.equal(form.canAdminCancelSubscription(null), false);
     assert.equal(
         form.sanitizeMarketplaceText('Tàu bay quang học (' + 'minh hoạ)'),
-        'Tàu bay quang học — minh hoạ',
+        'Tàu bay quang học',
     );
+    assert.equal(
+        form.sanitizeEntityName('Đội bay Miền Nam — minh hoạ'),
+        'Đội bay Miền Nam',
+    );
+    assert.equal(
+        form.sanitizeEntityName('DOI BAY MIEN NAM MINH HOA'),
+        'DOI BAY MIEN NAM',
+    );
+
+    const viCommerce = JSON.parse(read('src/messages/sections/adminCommerce/vi.json'));
+    const lookupVi = key =>
+        key.split('.').reduce((acc, part) => (acc && typeof acc === 'object' ? acc[part] : undefined), viCommerce) ?? key;
+    for (const code of ['UAV_TIME_CONFLICT', 'OPERATOR_TIME_CONFLICT', 'UAV_IN_USE', 'NO_UAV_AVAILABLE']) {
+        const msg = form.formatAdminConflictError({code, message: 'HTTP 409'}, lookupVi);
+        assert.equal(msg, lookupVi(`adminCommerce.marketplace.conflicts.${code}`));
+        assert.ok(msg.length > 10);
+    }
 
     const sidebar = read('src/config/sidebar-routes.ts');
     assert.match(sidebar, /\/admin\/marketplace\/projects/);
@@ -299,5 +316,37 @@ test('Every marketplace component t() lookup resolves in vi/en/ja with matching 
         assert.equal(extractPlaceholders(jaVal), extractPlaceholders(viVal), `Placeholder mismatch in ja for ${key}`);
         assert.equal(viDiacritics.test(enVal), false, `Vietnamese diacritic leaked into en for ${key}: ${enVal}`);
         assert.equal(viDiacritics.test(jaVal), false, `Vietnamese diacritic leaked into ja for ${key}: ${jaVal}`);
+    }
+});
+
+test('S4 admin shell wires unified floating launcher, 6-tab WorkspaceTabs overflow, fast shell skeleton, and single footer note across marketplace pages', () => {
+    const shell = read('src/components/layout/AdminAppShell.tsx');
+    assert.match(shell, /UnifiedFloatingLauncher/);
+    assert.match(shell, /AdminSupportQuickDock\s+hideLauncher/);
+    assert.match(shell, /AssistantWidget\s+portal="ADMIN"\s+hideLauncher/);
+    assert.match(shell, /pb-20/);
+
+    const tabsSrc = read('src/components/layout/WorkspaceTabs.tsx');
+    assert.match(tabsSrc, /MAX_VISIBLE_WORKSPACE_TABS/);
+    assert.match(tabsSrc, /partitionWorkspaceTabs/);
+    assert.match(tabsSrc, /MoreHorizontal/);
+
+    const authSrc = read('src/providers/AuthContext.tsx');
+    assert.match(authSrc, /Promise\.allSettled\(\[\s*authService\.getMe\(\),\s*apiClient\.get<string\[\]>\(API_ROUTES\.permissions\.me\)/);
+
+    const adminPageSrc = read('src/components/layout/AdminPage.tsx');
+    assert.match(adminPageSrc, /AdminShellSkeleton/);
+    assert.doesNotMatch(adminPageSrc, /UavLoader/);
+
+    for (const rel of [
+        'src/components/marketplace/AdminMarketplaceStats.tsx',
+        'src/components/marketplace/AdminMarketplaceOrders.tsx',
+        'src/components/marketplace/AdminMarketplacePayouts.tsx',
+        'src/components/marketplace/AdminMarketplaceProjects.tsx',
+        'src/components/marketplace/AdminMarketplaceListings.tsx',
+        'src/components/marketplace/AdminMarketplaceProviders.tsx',
+        'src/components/marketplace/AdminMarketplaceDispatch.tsx',
+    ]) {
+        assert.match(read(rel), /<IllustrativeFooterNote\/>/, `${rel} must render IllustrativeFooterNote`);
     }
 });

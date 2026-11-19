@@ -55,7 +55,7 @@ export function DispatchQueueCard({
                         {mission.locationName && (
                             <span className="inline-flex items-center gap-1 whitespace-nowrap">
                                 <MapPin size={13} aria-hidden="true"/>
-                                <span className="max-w-52 truncate">{mission.locationName}</span>
+                                <span className="max-w-52 truncate">{sanitizeMarketplaceText(mission.locationName)}</span>
                             </span>
                         )}
                         {mission.requestedDate && (
@@ -137,7 +137,7 @@ export function DispatchQueueCard({
                                                     : t('adminCommerce.marketplace.dispatch.rankLabel', {rank: idx + 1})}
                                             </span>
                                             <strong className="line-clamp-2 text-sm font-semibold text-on-surface">
-                                                {cand.displayName}
+                                                {sanitizeMarketplaceText(cand.displayName)}
                                             </strong>
                                             <span className="rounded-badge border border-slate-200 px-1.5 py-0.5 text-xs font-medium whitespace-nowrap text-muted tabular-nums">
                                                 {t('adminCommerce.marketplace.dispatch.scoreLabel', {

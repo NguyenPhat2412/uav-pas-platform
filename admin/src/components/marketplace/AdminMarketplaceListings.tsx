@@ -4,6 +4,7 @@ import {useState} from 'react';
 import {Boxes, CheckCircle2, Clock, Layers, PauseCircle, Search, XCircle} from 'lucide-react';
 import {Alert, Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
 import {
+    IllustrativeFooterNote,
     MarketplaceCardListSkeleton,
     MarketplaceEmptyPanel,
     MarketplaceErrorPanel,
@@ -171,6 +172,7 @@ export function AdminMarketplaceListings() {
                     />
                 </CardContent>
             </Card>
+            <IllustrativeFooterNote/>
 
             {selectedListing && (
                 <ListingModerationDrawer

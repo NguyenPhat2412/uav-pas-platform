@@ -104,7 +104,7 @@ export function ProviderKycDrawer({
                                 <span key="bank" className="inline-flex flex-wrap items-center gap-1.5 tabular-nums">
                                     <Landmark size={13} aria-hidden="true" className="text-muted"/>
                                     <span>
-                                        {provider.bankName} · {provider.bankAccountNumber} ({provider.bankAccountHolder})
+                                        {provider.bankName} · {provider.bankAccountNumber} ({sanitizeMarketplaceText(provider.bankAccountHolder)})
                                     </span>
                                     <IllustrativeTag/>
                                 </span>
@@ -169,7 +169,7 @@ export function ProviderKycDrawer({
                                             <div className="flex flex-wrap items-center gap-2">
                                                 <FileText size={14} className="shrink-0 text-primary" aria-hidden="true"/>
                                                 <strong className="text-sm font-semibold text-on-surface">
-                                                    {doc.title}
+                                                    {sanitizeMarketplaceText(doc.title)}
                                                 </strong>
                                                 <span className="rounded-badge bg-slate-100 px-2 py-0.5 text-xs font-medium whitespace-nowrap text-on-surface">
                                                     {docTypeLabel(doc.documentType)}

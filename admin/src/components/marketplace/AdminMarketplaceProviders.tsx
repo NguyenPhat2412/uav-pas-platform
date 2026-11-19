@@ -4,6 +4,7 @@ import {useState} from 'react';
 import {BadgeCheck, Clock, Layers, PauseCircle, Search, ShieldCheck, Store, XCircle} from 'lucide-react';
 import {Alert, Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
 import {
+    IllustrativeFooterNote,
     MarketplaceCardListSkeleton,
     MarketplaceEmptyPanel,
     MarketplaceErrorPanel,
@@ -189,6 +190,7 @@ export function AdminMarketplaceProviders() {
                     />
                 </CardContent>
             </Card>
+            <IllustrativeFooterNote/>
 
             {selectedProvider && (
                 <ProviderKycDrawer

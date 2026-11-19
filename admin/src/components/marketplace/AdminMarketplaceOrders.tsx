@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import {Button, Card, CardContent, CardHeader, CardTitle, StatusBadge} from '@/components/ui';
 import {
+    IllustrativeFooterNote,
     IllustrativeTag,
     MarketplaceCardListSkeleton,
     MarketplaceEmptyPanel,
@@ -164,7 +165,7 @@ export function AdminMarketplaceOrders() {
                             <option value="">{t('adminCommerce.marketplace.orders.allProviders')}</option>
                             {verifiedProviders.map(p => (
                                 <option key={p.id} value={String(p.id)}>
-                                    {p.displayName} ({p.province})
+                                    {sanitizeMarketplaceText(p.displayName)} ({p.province})
                                 </option>
                             ))}
                         </select>
@@ -236,7 +237,7 @@ export function AdminMarketplaceOrders() {
                                             {order.locationName && (
                                                 <span className="inline-flex items-center gap-1 whitespace-nowrap">
                                                     <MapPin size={13} aria-hidden="true"/>
-                                                    <span className="max-w-48 truncate">{order.locationName}</span>
+                                                    <span className="max-w-48 truncate">{sanitizeMarketplaceText(order.locationName)}</span>
                                                 </span>
                                             )}
                                             {order.requestedDate && (
@@ -280,7 +281,7 @@ export function AdminMarketplaceOrders() {
                     />
                 </CardContent>
             </Card>
-
+            <IllustrativeFooterNote/>
             {selectedOrder && (
                 <OrderTwoSidedDrawer
                     initialOrder={selectedOrder}

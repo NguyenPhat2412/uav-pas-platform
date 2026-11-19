@@ -4,6 +4,7 @@ import {useState} from 'react';
 import {CheckCircle2, Clock, Landmark, Layers, Wallet, XCircle} from 'lucide-react';
 import {Alert, Button, Card, CardContent, CardHeader, CardTitle, OptionalMark, RequiredMark} from '@/components/ui';
 import {
+    IllustrativeFooterNote,
     IllustrativeTag,
     MarketplaceCardListSkeleton,
     MarketplaceEmptyPanel,
@@ -12,7 +13,11 @@ import {
     MarketplaceStatusTabs,
 } from '@/components/marketplace/MarketplaceShared';
 import {useAdminPayouts, useProcessPayout} from '@/hooks/marketplace/useAdminMarketplace';
-import {formatMarketplaceVnd, validatePayoutProcessInput} from '@/forms/marketplace/admin-marketplace-form';
+import {
+    formatMarketplaceVnd,
+    sanitizeMarketplaceText,
+    validatePayoutProcessInput,
+} from '@/forms/marketplace/admin-marketplace-form';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
@@ -78,7 +83,6 @@ export function AdminMarketplacePayouts() {
                             <CardTitle className="flex items-center gap-2 text-lg font-semibold">
                                 <Wallet size={20} className="shrink-0 text-primary" aria-hidden="true"/>
                                 <span className="truncate">{t('adminCommerce.marketplace.payouts.pageTitle')}</span>
-                                <IllustrativeTag/>
                             </CardTitle>
                             <p className="m-0 mt-1 text-xs text-muted">
                                 {t('adminCommerce.marketplace.payouts.subtitle')}
@@ -155,14 +159,14 @@ export function AdminMarketplacePayouts() {
                                                 </span>
                                             </div>
                                             <p className="m-0 line-clamp-2 text-sm font-semibold text-on-surface">
-                                                {po.providerDisplayName}
+                                                {sanitizeMarketplaceText(po.providerDisplayName)}
                                             </p>
                                             <p className="m-0 flex flex-wrap items-center gap-1.5 text-xs text-muted tabular-nums">
                                                 <Landmark size={13} aria-hidden="true"/>
                                                 <span>
                                                     {t('adminCommerce.marketplace.payouts.bankLabel')}:{' '}
                                                     <strong className="text-on-surface">
-                                                        {po.bankName} · {po.bankAccountNumber} ({po.bankAccountHolder})
+                                                        {po.bankName} · {po.bankAccountNumber} ({sanitizeMarketplaceText(po.bankAccountHolder)})
                                                     </strong>
                                                 </span>
                                             </p>
@@ -260,6 +264,7 @@ export function AdminMarketplacePayouts() {
                     />
                 </CardContent>
             </Card>
+            <IllustrativeFooterNote/>
         </div>
     );
 }
