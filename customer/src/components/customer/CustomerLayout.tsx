@@ -11,6 +11,7 @@ import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {NotificationBell} from '@/components/notification/inbox/NotificationBell';
 import {PortalErrorView} from '@/components/shared/PortalErrorView';
+import {UnifiedFloatingLauncher} from '@/components/shared/UnifiedFloatingLauncher';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import {PublicSupportWidget} from '@/components/support/PublicSupportWidget';
 import {Alert, Button, LanguageSwitcher, PageSkeleton, UavLoader} from '@/components/ui';
@@ -122,8 +123,9 @@ export function AppShell({children}: { children: React.ReactNode }) {
                 <main id="content" className="flex w-full flex-1 flex-col bg-white outline-none" tabIndex={-1}>
                     {children}
                 </main>
-                <PublicSupportWidget mode="portal"/>
-                <AssistantWidget portal="CUSTOMER"/>
+                <PublicSupportWidget mode="portal" hideLauncher/>
+                <AssistantWidget portal="CUSTOMER" hideLauncher/>
+                <UnifiedFloatingLauncher/>
             </div>
         </div>
     );

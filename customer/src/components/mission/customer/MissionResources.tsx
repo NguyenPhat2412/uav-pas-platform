@@ -3,7 +3,7 @@ import type {ReactNode} from 'react';
 import {MapPin, UserCheck} from 'lucide-react';
 import {UavIcon} from '@/components/shared/UavIcon';
 import {UavModelViewer} from '@/components/visuals/UavModelViewer';
-import {sanitizeMarketplaceText} from '@/forms/project/project-form';
+import {sanitizeMarketplaceName} from '@/forms/project/project-form';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 import {useUav} from '@/hooks/uav/useUavs';
@@ -26,7 +26,7 @@ export function MissionResources({mission}: { mission: Mission }) {
         <ul className="m-0 grid list-none grid-cols-1 gap-px bg-slate-200 p-0 md:grid-cols-3">
             <Resource icon={<UavIcon size={20}/>} label={t('resources.uav')}>
                 {mission.uavId == null ? pending : uav.data ? <>
-                    <strong className="text-sm font-semibold text-foreground">{sanitizeMarketplaceText(uav.data.model)}</strong>
+                    <strong className="text-sm font-semibold text-foreground">{sanitizeMarketplaceName(uav.data.model)}</strong>
                     <span className="text-xs text-muted">{uav.data.manufacturer} · {t('publicSite.catalog.verifiedPartner')}</span>
                     <span className="text-xs text-muted">{displayLabel(uav.data.status)}</span>
                 </> : state(uav)}
@@ -46,7 +46,7 @@ export function MissionResources({mission}: { mission: Mission }) {
         </ul>
         {uav.data && (
             <div className="border-t border-border bg-slate-50/40 p-4 md:p-5">
-                <UavModelViewer compact serial="UAV-350-PRO" model={sanitizeMarketplaceText(uav.data.model)} status={uav.data.status}/>
+                <UavModelViewer compact serial="UAV-350-PRO" model={sanitizeMarketplaceName(uav.data.model)} status={uav.data.status}/>
             </div>
         )}
     </section>;

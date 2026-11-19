@@ -41,6 +41,7 @@ export function PublicFooter() {
                     </p>
                     <div className="space-y-1 text-xs text-slate-500">
                         <p>{t('publicFooter.disclaimer')}</p>
+                        <p>{t('marketplaceShop.illustrativeFooterNote')}</p>
                     </div>
                     <div className="flex flex-wrap gap-1.5 pt-1">
                         <span className="rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-bold text-slate-700">

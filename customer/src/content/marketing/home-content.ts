@@ -308,22 +308,22 @@ export const missionPatterns: { kind: MissionKind; slug: string; title: string; 
 
 // Public-domain USGS photos of people working with UAVs.
 export const fieldTeam: (FieldPhoto & { layout: 'tall' | 'wide' | 'normal' })[] = [
-    {layout: 'tall', src: '/images/people/usgs-woods-hole-pilots.jpg', width: 1357, height: 1600,
-        alt: 'Hai người điều khiển UAV đứng trên đồi cát theo dõi chuyến bay, drone đặt trên bãi cất cánh màu cam',
-        caption: 'Đội điều khiển theo dõi chuyến bay khảo sát bãi biển', credit: 'Woods Hole Coastal and Marine Science Center / USGS',
-        source: 'https://www.usgs.gov/media/images/uas-pilots-field'},
-    {layout: 'wide', src: '/images/uav-photos/usgs-yosemite-preflight.webp', width: 1536, height: 1024,
-        alt: 'Người điều khiển kiểm tra UAV trên bãi cất cánh trước chuyến bay',
-        caption: 'Kiểm tra thiết bị trước khi cất cánh', credit: 'USGS',
-        source: 'https://www.usgs.gov/media/images/readying-uas-flight-yosemite-national-park'},
-    {layout: 'normal', src: '/images/uav-photos/usgs-golden-survey.webp', width: 1536, height: 1024,
-        alt: 'UAV và đội khảo sát thu thập dữ liệu trên cánh đồng',
+    {layout: 'tall', src: '/images/services/aerial-inspection-grid.webp', width: 1536, height: 1024,
+        alt: 'UAV gắn camera trên gimbal bay kiểm tra công trình cao',
+        caption: 'Bay kiểm tra và dựng mô hình công trình', credit: 'USGS',
+        source: 'https://www.usgs.gov/media/images/uas-sony-a7r-gremsy-gimbal-manually-flown-supplement-imagery-perry-victory-and'},
+    {layout: 'wide', src: '/images/services/uav-rental-fleet.webp', width: 1536, height: 1024,
+        alt: 'Chuẩn bị các thiết bị UAV trên đường băng trước chuyến bay',
+        caption: 'Kiểm tra thiết bị trước khi cất cánh', credit: 'EROS Center / USGS',
+        source: 'https://www.usgs.gov/media/images/national-uncrewed-systems-office-brings-drones-eros-exercise'},
+    {layout: 'normal', src: '/images/solutions/infra-3d-survey.webp', width: 1536, height: 1024,
+        alt: 'UAV lập bản đồ chuẩn bị bay khảo sát địa hình',
         caption: 'Đội khảo sát thu thập dữ liệu', credit: 'USGS',
-        source: 'https://www.usgs.gov/media/images/collecting-data-using-uncrewed-aircraft-systems-uas'},
-    {layout: 'normal', src: '/images/uav-photos/usgs-plum-island-team.webp', width: 1536, height: 1024,
-        alt: 'Nhóm vận hành cầm bộ điều khiển và theo dõi chuyến bay tại hiện trường ven biển',
-        caption: 'Phối hợp giữa người điều khiển và quan sát viên', credit: 'Sandy Brosnahan / USGS',
-        source: 'https://www.usgs.gov/media/images/uas-imagery-collected-plum-island'},
+        source: 'https://www.usgs.gov/media/images/assessing-road-damage-caused-hurricane-helene'},
+    {layout: 'normal', src: '/images/services/aerial-recording-cinema.webp', width: 1536, height: 1024,
+        alt: 'UAV bay ghi hình trên khu vực đồi rừng lúc hoàng hôn',
+        caption: 'Bay ghi hình theo lộ trình định sẵn', credit: 'National Innovation Center / USGS',
+        source: 'https://www.usgs.gov/media/images/drone-sunset'},
 ];
 
 export const pilotFromAbove: FieldPhoto = {

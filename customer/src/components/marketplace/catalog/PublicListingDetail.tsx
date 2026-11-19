@@ -1,17 +1,21 @@
 'use client';
 
+import {useState} from 'react';
 import Link from 'next/link';
 import {CheckCircle2, Lock, MapPin, ShieldCheck, Star} from 'lucide-react';
 import {ListingBookingCalculator} from '@/components/marketplace/catalog/ListingBookingCalculator';
 import {resolveListingPhoto} from '@/components/marketplace/catalog/MarketplaceListingCard';
+import {ServiceCategoryIcon} from '@/components/marketplace/shop/ServiceCategoryIcon';
 import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplace';
-import {resolveListingBadge, sanitizeMarketplaceText} from '@/forms/project/project-form';
+import {resolveListingBadge, sanitizeMarketplaceName, sanitizeMarketplaceText} from '@/forms/project/project-form';
+import {iconNameForMissionType} from '@/lib/marketplace/service-categories';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 import type {ListingType} from '@/types/marketplace/marketplace.types';
 
 export function PublicListingDetail({slug}: { slug: string }) {
     const {t} = useI18n();
+    const [imgFailed, setImgFailed] = useState(false);
     const query = usePublicListingDetail(slug);
     const listing = query.data?.listing;
     const reviews = query.data?.reviews ?? [];
@@ -72,14 +76,25 @@ export function PublicListingDetail({slug}: { slug: string }) {
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
                     <div className="space-y-6 lg:col-span-8">
                         <section className="overflow-hidden rounded-panel border border-slate-200 bg-card shadow-xs">
-                            <div className="relative aspect-[21/9] w-full overflow-hidden bg-slate-900">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src={photo.src}
-                                    alt={sanitizeMarketplaceText(photo.alt)}
-                                    className="h-full w-full object-cover"
-                                />
-                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent"/>
+                            <div className="relative aspect-[21/9] w-full overflow-hidden bg-uav-red-light">
+                                {!imgFailed && photo?.src ? (
+                                    <>
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src={photo.src}
+                                            alt={photo.alt}
+                                            onError={() => setImgFailed(true)}
+                                            className="h-full w-full object-cover"
+                                        />
+                                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/15 to-transparent"/>
+                                    </>
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center bg-uav-red-light text-primary">
+                                        <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/85 shadow-2xs ring-1 ring-primary/15">
+                                            <ServiceCategoryIcon name={iconNameForMissionType(listing.missionType)} size={34}/>
+                                        </span>
+                                    </div>
+                                )}
                                 <div className="absolute right-5 bottom-4 left-5 flex flex-wrap items-center justify-between gap-2">
                                     <span className="rounded-badge bg-slate-950/75 px-3 py-1 text-xs font-semibold whitespace-nowrap text-white backdrop-blur-xs">
                                         {typeText(listing.listingType)}
@@ -100,7 +115,7 @@ export function PublicListingDetail({slug}: { slug: string }) {
 
                             <div className="p-6 sm:p-8">
                                 <h1 className="m-0 text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-                                    {sanitizeMarketplaceText(listing.title)}
+                                    {sanitizeMarketplaceName(listing.title)}
                                 </h1>
                                 {listing.summary && (
                                     <p className="mt-2 text-sm font-normal leading-relaxed text-muted">

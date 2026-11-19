@@ -256,6 +256,10 @@ function CustomerShopeeHomeBody() {
                     </div>
                 )}
             </section>
+
+            <p className="m-0 pt-1 text-center text-xs text-slate-500">
+                {t('marketplaceShop.illustrativeFooterNote')}
+            </p>
         </div>
     );
 }

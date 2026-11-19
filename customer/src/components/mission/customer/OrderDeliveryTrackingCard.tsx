@@ -11,6 +11,7 @@ import {
     ShieldCheck,
     Star,
 } from 'lucide-react';
+import {OrderTrackingPathMap} from '@/components/mission/customer/OrderTrackingPathMap';
 import {formatTrackingLink} from '@/forms/project/project-form';
 import {useOrderRealtimeSync, useOrderTracking} from '@/hooks/project/useCustomerProjects';
 import {useI18n} from '@/providers/I18nContext';
@@ -25,6 +26,16 @@ function resolveMilestoneIndex(mission: Mission, snapshot?: OrderTrackingSnapsho
     if (['ACCEPTED', 'SCHEDULED', 'CONFIRMED', 'RESOURCE_RESERVED', 'READY'].includes(effectiveStatus)) return 2;
     if (effectiveStatus === 'PENDING_PROVIDER') return 1;
     return 0;
+}
+
+export function isFlightFinishedAwaitingHandover(
+    missionStatus: string,
+    snapshot?: Pick<OrderTrackingSnapshot, 'status' | 'progressPct' | 'activeSimulation'> | null,
+): boolean {
+    const effectiveStatus = snapshot?.status || missionStatus;
+    if (effectiveStatus !== 'IN_PROGRESS' && effectiveStatus !== 'IN_FLIGHT') return false;
+    if (!snapshot) return false;
+    return Number(snapshot.progressPct || 0) >= 100 || snapshot.activeSimulation === false;
 }
 
 export function OrderDeliveryTrackingCard({mission}: { mission: Mission }) {
@@ -44,18 +55,37 @@ export function OrderDeliveryTrackingCard({mission}: { mission: Mission }) {
             ? 55
             : 0;
 
+    const awaitingHandover = isFlightFinishedAwaitingHandover(mission.status, snapshot);
+    const showEta = Boolean(snapshot && !awaitingHandover && (snapshot.etaMinutes ?? 0) > 0);
+    const fallbackCenter: [number, number] | null =
+        mission.latitude != null && mission.longitude != null
+            ? [Number(mission.latitude), Number(mission.longitude)]
+            : null;
+    const hasMapData = Boolean(
+        (snapshot?.waypoints && snapshot.waypoints.length > 0) ||
+            (snapshot?.track && snapshot.track.length > 0) ||
+            snapshot?.position ||
+            fallbackCenter,
+    );
+
     const milestones = [
         {key: 'ordered', label: t('marketplaceShop.milestoneOrdered'), icon: Clock3},
         {key: 'dispatched', label: t('marketplaceShop.milestoneDispatched'), icon: ShieldCheck},
         {key: 'scheduled', label: t('marketplaceShop.milestoneScheduled'), icon: CalendarClock},
-        {key: 'inflight', label: t('marketplaceShop.milestoneInFlight'), icon: Plane},
+        {
+            key: 'inflight',
+            label: awaitingHandover
+                ? t('marketplaceShop.flightCompletedAwaitingHandover')
+                : t('marketplaceShop.milestoneInFlight'),
+            icon: Plane,
+        },
         {key: 'delivered', label: t('marketplaceShop.milestoneDelivered'), icon: PackageCheck},
         {key: 'reviewed', label: t('marketplaceShop.milestoneReviewed'), icon: Star},
     ];
 
     return (
         <section className="grid grid-cols-1 gap-4 rounded-panel border border-slate-200 bg-card p-4 lg:grid-cols-12">
-            {/* Simulated Flight Telemetry Summary */}
+            {/* Simulated Flight Path Map & Telemetry Summary */}
             <div className="space-y-3 lg:col-span-7">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
@@ -64,13 +94,31 @@ export function OrderDeliveryTrackingCard({mission}: { mission: Mission }) {
                         </h3>
                         <p className="m-0 text-xs text-slate-500">{t('marketplaceShop.trackingSubtitle')}</p>
                     </div>
-                    {wsConnected && (
+                    {awaitingHandover ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-badge bg-amber-50 px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-amber-800 ring-1 ring-amber-200">
+                            <PackageCheck size={13} aria-hidden="true"/>
+                            {t('marketplaceShop.flightCompletedAwaitingHandover')}
+                        </span>
+                    ) : wsConnected ? (
                         <span className="inline-flex items-center gap-1.5 rounded-badge bg-uav-red-light px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-primary">
                             <span className="h-2 w-2 animate-pulse rounded-full bg-primary" aria-hidden="true"/>
                             {t('marketplaceShop.trackingLiveBadge')}
                         </span>
-                    )}
+                    ) : null}
                 </div>
+
+                {hasMapData && (
+                    <OrderTrackingPathMap
+                        waypoints={snapshot?.waypoints}
+                        track={snapshot?.track}
+                        position={snapshot?.position}
+                        fallbackCenter={fallbackCenter}
+                        ariaLabel={t('marketplaceShop.trackingMapTitle')}
+                        plannedLabel={t('marketplaceShop.trackingPlannedRoute')}
+                        flownLabel={t('marketplaceShop.trackingFlownTrail')}
+                        uavLabel={t('marketplaceShop.trackingUavPosition')}
+                    />
+                )}
 
                 {/* Progress Bar */}
                 <div className="space-y-1.5 rounded-control border border-slate-200 bg-slate-50 p-3 tabular-nums">
@@ -87,18 +135,18 @@ export function OrderDeliveryTrackingCard({mission}: { mission: Mission }) {
                 </div>
 
                 {snapshot ? (
-                    <dl className="m-0 grid grid-cols-3 gap-2 tabular-nums sm:gap-2.5">
-                        <div className="rounded-control border border-slate-200 bg-white p-2.5">
-                            <dt className="flex items-center gap-1 text-[11px] leading-tight text-slate-500 sm:text-xs">
-                                <Clock3 size={13} className="shrink-0 text-primary" aria-hidden="true"/>
-                                <span className="line-clamp-2">{t('marketplaceShop.trackingEta')}</span>
-                            </dt>
-                            <dd className="m-0 mt-1 text-xs leading-tight font-bold text-slate-900 sm:text-sm">
-                                {snapshot.etaMinutes != null
-                                    ? t('marketplaceShop.trackingMinutes', {value: formatNumber(snapshot.etaMinutes)})
-                                    : '—'}
-                            </dd>
-                        </div>
+                    <dl className={`m-0 grid gap-2 tabular-nums sm:gap-2.5 ${showEta ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                        {showEta && (
+                            <div className="rounded-control border border-slate-200 bg-white p-2.5">
+                                <dt className="flex items-center gap-1 text-[11px] leading-tight text-slate-500 sm:text-xs">
+                                    <Clock3 size={13} className="shrink-0 text-primary" aria-hidden="true"/>
+                                    <span className="line-clamp-2">{t('marketplaceShop.trackingEta')}</span>
+                                </dt>
+                                <dd className="m-0 mt-1 text-xs leading-tight font-bold text-slate-900 sm:text-sm">
+                                    {t('marketplaceShop.trackingMinutes', {value: formatNumber(snapshot.etaMinutes ?? 0)})}
+                                </dd>
+                            </div>
+                        )}
                         <div className="rounded-control border border-slate-200 bg-white p-2.5">
                             <dt className="flex items-center gap-1 text-[11px] leading-tight text-slate-500 sm:text-xs">
                                 <Battery size={13} className="shrink-0 text-slate-700" aria-hidden="true"/>
@@ -125,7 +173,7 @@ export function OrderDeliveryTrackingCard({mission}: { mission: Mission }) {
                 )}
             </div>
 
-            {/* Shopee-style Vertical Delivery Milestone Timeline (Current Milestone in Brand Red) */}
+            {/* Shopee-style Vertical Delivery Milestone Timeline */}
             <div className="border-t border-slate-100 pt-3 lg:col-span-5 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-4">
                 <ol className="m-0 space-y-2.5 list-none p-0">
                     {milestones.map((m, idx) => {

@@ -196,6 +196,15 @@ test('GeoJSON polygon conversion round-trips flight plans and validates project/
         {dedupeKey: '12:CANCELLED:PENDING', tone: 'warning'},
     );
 
+    assert.equal(
+        pf.sanitizeMarketplaceName('Khảo sát địa hình RTK — minh hoạ'),
+        'Khảo sát địa hình GNSS',
+    );
+    assert.equal(
+        pf.sanitizeMarketplaceName('Quay chụp công trình (minh hoạ)'),
+        'Quay chụp công trình',
+    );
+
     const seo = pf.formatListingSeoMeta({
         title: 'Khảo sát địa hình RTK (minh hoạ)',
         summary: 'Bình đồ trực giao độ nét cao',
@@ -206,8 +215,8 @@ test('GeoJSON polygon conversion round-trips flight plans and validates project/
         basePriceVnd: 3_500_000,
         providerDisplayName: 'Đội bay Bí mật',
     });
-    assert.equal(seo.title, 'Khảo sát địa hình GNSS — minh hoạ');
-    assert.doesNotMatch(seo.title, /Đội bay Bí mật|RTK/i);
+    assert.equal(seo.title, 'Khảo sát địa hình GNSS');
+    assert.doesNotMatch(seo.title, /Đội bay Bí mật|RTK|minh hoạ/i);
     assert.doesNotMatch(seo.description, /Đội bay Bí mật|RTK|\(minh hoạ\)/i);
     assert.equal(seo.imageUrl, '/images/services/aerial-inspection-grid.webp');
 
@@ -222,6 +231,11 @@ test('GeoJSON polygon conversion round-trips flight plans and validates project/
     });
     assert.equal(customCoverSeo.imageUrl, 'https://cdn.example.com/uav-cover.webp');
     assert.match(customCoverSeo.description, /Đối tác đã xác minh UAV PAS tại Đà Nẵng/);
+
+    const categoriesSrc = read('src/lib/marketplace/service-categories.ts');
+    assert.doesNotMatch(categoriesSrc, /from\s+['"](?:lucide-react|react)['"]/, 'service-categories.ts must stay pure TS for mobile sync-shared');
+    assert.match(categoriesSrc, /export const SERVICE_CATEGORIES/);
+    assert.match(categoriesSrc, /export const WEB_SERVICE_CATEGORIES/);
 });
 
 test('customerPro marketplaceShop and customer nav catalogs maintain 100% vi/en/ja parity', () => {

@@ -35,12 +35,13 @@ export function ListingBookingCalculator({listing}: { listing: MarketplaceListin
                         <span className="text-xs font-semibold text-muted">
                             {t('marketplaceShop.illustrativePriceNote')}
                         </span>
-                        <div className="mt-1 flex items-baseline gap-1.5 tabular-nums">
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5 tabular-nums">
                             <span className="text-2xl font-bold text-primary">
                                 {formatVndCompact(listing.basePriceVnd)}
                             </span>
-                            <span className="text-xs font-medium text-muted">
-                                / {unitText} · {t('marketplaceShop.illustrative')}
+                            <span className="text-xs font-medium text-muted">/ {unitText}</span>
+                            <span className="rounded-badge bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                                {t('marketplaceShop.illustrative')}
                             </span>
                         </div>
                     </div>
@@ -131,7 +132,7 @@ export function ListingBookingCalculator({listing}: { listing: MarketplaceListin
 
                     {rfqEnabled && (
                         <Link
-                            href="/customer/missions/create?rfq=1"
+                            href="/contact"
                             className="block text-center text-xs font-semibold text-muted hover:text-on-surface hover:underline"
                         >
                             {t('marketplaceShop.pubOpenRfqLink')}

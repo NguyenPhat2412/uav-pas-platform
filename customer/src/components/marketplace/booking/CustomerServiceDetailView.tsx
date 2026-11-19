@@ -6,11 +6,13 @@ import {useSearchParams} from 'next/navigation';
 import {CheckCircle2, ChevronLeft, ChevronRight, Clock3, Layers, MapPin, Navigation, ShieldCheck, Star} from 'lucide-react';
 import {PageGuard} from '@/components/customer/CustomerLayout';
 import {resolveListingPhoto} from '@/components/marketplace/catalog/MarketplaceListingCard';
+import {ServiceCategoryIcon} from '@/components/marketplace/shop/ServiceCategoryIcon';
 import {ProjectSubscriptionWizardDialog} from '@/components/marketplace/booking/ProjectSubscriptionWizardDialog';
 import {Alert, Button} from '@/components/ui';
 import {formatVndCompact, listingTypeLabel, pricingUnitLabel} from '@/forms/marketplace/marketplace-forms';
-import {resolveListingBadge, sanitizeMarketplaceText} from '@/forms/project/project-form';
+import {resolveListingBadge, sanitizeMarketplaceName, sanitizeMarketplaceText} from '@/forms/project/project-form';
 import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplace';
+import {iconNameForMissionType} from '@/lib/marketplace/service-categories';
 import {useI18n} from '@/providers/I18nContext';
 
 export default function CustomerServiceDetailPage({slug}: { slug: string }) {
@@ -33,6 +35,7 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
     const reviews = query.data?.reviews ?? [];
 
     const [slideIdx, setSlideIdx] = useState(0);
+    const [imgFailed, setImgFailed] = useState(false);
     const [wizardOpen, setWizardOpen] = useState<boolean>(initialSubscribe);
 
     if (query.isLoading) {
@@ -41,9 +44,7 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
                 <div className="h-6 w-32 animate-pulse rounded bg-slate-100"/>
                 <div className="aspect-[16/8] w-full animate-pulse rounded-panel bg-slate-100"/>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    {[0, 1, 2, 3].map(i => (
-                        <div key={i} className="h-16 animate-pulse rounded-panel bg-slate-100"/>
-                    ))}
+                    {[0, 1, 2, 3].map(i => <div key={i} className="h-16 animate-pulse rounded-panel bg-slate-100"/>)}
                 </div>
                 <div className="h-40 animate-pulse rounded-panel bg-slate-100"/>
             </div>
@@ -55,9 +56,7 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
             <div className="p-4 sm:p-5">
                 <Alert variant="error" role="alert" className="flex flex-wrap items-center justify-between gap-3">
                     <span>{t('errorPage.detail')}</span>
-                    <Button type="button" variant="outline" size="sm" onClick={() => void query.refetch()}>
-                        {t('common.retry')}
-                    </Button>
+                    <Button type="button" variant="outline" size="sm" onClick={() => void query.refetch()}>{t('common.retry')}</Button>
                 </Alert>
             </div>
         );
@@ -68,23 +67,23 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
             <div className="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center" role="status">
                 <h1 className="m-0 text-xl font-bold text-slate-900">{t('marketplaceShop.notFoundTitle')}</h1>
                 <p className="m-0 max-w-md text-sm text-slate-600">{t('marketplaceShop.notFoundDesc')}</p>
-                <Link
-                    href="/customer/services"
-                    className="inline-flex min-h-10 items-center justify-center rounded-control bg-primary px-4 text-xs font-bold whitespace-nowrap text-primary-foreground"
-                >
+                <Link href="/customer/services" className="inline-flex min-h-10 items-center justify-center rounded-control bg-primary px-4 text-xs font-bold whitespace-nowrap text-primary-foreground">
                     {t('marketplaceShop.backToShop')}
                 </Link>
             </div>
         );
     }
 
+    const cleanTitle = sanitizeMarketplaceName(listing.title);
     const cover = resolveListingPhoto(listing);
-    const slides = [
-        cover,
-        {src: '/images/process/step-02-gis-planning.webp', alt: listing.title},
-        {src: '/images/uav-people/uav-survey-team.webp', alt: listing.title},
-    ];
-    const activeSlide = slides[slideIdx % slides.length] ?? cover;
+    const slides = cover
+        ? [
+              cover,
+              {src: '/images/hero-slides/uav-hero-2.webp', alt: cleanTitle},
+              {src: '/images/process/step-05-data-handover.webp', alt: cleanTitle},
+          ]
+        : [];
+    const activeSlide = slides.length > 0 ? (slides[slideIdx % slides.length] ?? null) : null;
     const badge = resolveListingBadge(listing);
     const unitLabel = pricingUnitLabel(listing.pricingModel);
 
@@ -117,62 +116,81 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
                     </span>
                 </div>
 
-                {/* Slideable Hero Photo Gallery */}
+                {/* Slideable Hero Photo Gallery or Brand-Consistent Category Icon Fallback */}
                 <section
                     tabIndex={0}
-                    aria-roledescription="carousel"
-                    aria-label={sanitizeMarketplaceText(listing.title)}
+                    aria-roledescription={slides.length > 1 ? 'carousel' : undefined}
+                    aria-label={cleanTitle}
                     onKeyDown={e => {
+                        if (slides.length <= 1) return;
                         if (e.key === 'ArrowLeft') setSlideIdx(i => (i - 1 + slides.length) % slides.length);
                         else if (e.key === 'ArrowRight') setSlideIdx(i => (i + 1) % slides.length);
                     }}
                     className="overflow-hidden rounded-panel border border-slate-200 bg-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                     <div className="relative aspect-[16/9] max-h-[360px] w-full overflow-hidden bg-uav-red-light">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={activeSlide.src} alt={sanitizeMarketplaceText(activeSlide.alt)} className="h-full w-full object-cover"/>
-                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent"/>
+                        {!imgFailed && activeSlide?.src ? (
+                            <>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={activeSlide.src}
+                                    alt={activeSlide.alt}
+                                    onError={() => setImgFailed(true)}
+                                    className="h-full w-full object-cover"
+                                />
+                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent"/>
+                            </>
+                        ) : (
+                            <div className="flex h-full w-full items-center justify-center bg-uav-red-light text-primary">
+                                <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/85 shadow-2xs ring-1 ring-primary/15">
+                                    <ServiceCategoryIcon name={iconNameForMissionType(listing.missionType)} size={34}/>
+                                </span>
+                            </div>
+                        )}
                         <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2">
                             <span className="inline-flex items-center gap-1 rounded-control bg-primary px-2.5 py-1 text-xs font-bold whitespace-nowrap text-white">
                                 <ShieldCheck size={13} aria-hidden="true"/>
                                 {t('publicSite.catalog.verifiedPartner')}
                             </span>
-                            <div className="flex items-center gap-1.5">
-                                <button
-                                    type="button"
-                                    onClick={() => setSlideIdx(i => (i - 1 + slides.length) % slides.length)}
-                                    aria-label={t('publicSite.catalog.prevPage')}
-                                    className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-xs hover:bg-white/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                                >
-                                    <ChevronLeft size={18} aria-hidden="true"/>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setSlideIdx(i => (i + 1) % slides.length)}
-                                    aria-label={t('publicSite.catalog.nextPage')}
-                                    className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-xs hover:bg-white/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                                >
-                                    <ChevronRight size={18} aria-hidden="true"/>
-                                </button>
-                            </div>
+                            {slides.length > 1 && !imgFailed && (
+                                <div className="flex items-center gap-1.5">
+                                    <button
+                                        type="button"
+                                        onClick={() => setSlideIdx(i => (i - 1 + slides.length) % slides.length)}
+                                        aria-label={t('publicSite.catalog.prevPage')}
+                                        className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-xs hover:bg-white/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                                    >
+                                        <ChevronLeft size={18} aria-hidden="true"/>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setSlideIdx(i => (i + 1) % slides.length)}
+                                        aria-label={t('publicSite.catalog.nextPage')}
+                                        className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-xs hover:bg-white/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                                    >
+                                        <ChevronRight size={18} aria-hidden="true"/>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     {/* Title, Illustrative Price & Verified Rating */}
                     <div className="space-y-3 p-4 sm:p-5">
                         <h1 className="m-0 line-clamp-2 text-xl font-bold text-slate-900">
-                            {sanitizeMarketplaceText(listing.title)}
+                            {cleanTitle}
                         </h1>
                         {listing.summary && (
                             <p className="m-0 text-sm leading-relaxed text-slate-600">{sanitizeMarketplaceText(listing.summary)}</p>
                         )}
-                        <div className="flex flex-wrap items-baseline justify-between gap-3 border-t border-slate-100 pt-3 tabular-nums">
-                            <div>
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3 tabular-nums">
+                            <div className="flex flex-wrap items-center gap-1.5">
                                 <span className="text-2xl font-bold text-primary">
                                     {formatVndCompact(listing.basePriceVnd)}
                                 </span>
-                                <span className="ml-1.5 text-xs font-medium text-slate-500">
-                                    / {unitLabel} · {t('marketplaceShop.illustrative')}
+                                <span className="text-xs font-medium text-slate-500">/ {unitLabel}</span>
+                                <span className="rounded-badge bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                                    {t('marketplaceShop.illustrative')}
                                 </span>
                             </div>
                             <span className="inline-flex items-center gap-1 rounded-badge bg-amber-50 px-2.5 py-1 text-xs font-bold whitespace-nowrap text-amber-700">
@@ -185,35 +203,23 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
                     </div>
                 </section>
 
-                {/* 4-Icon Spec Row */}
                 <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
                     {[
                         {icon: MapPin, label: t('marketplaceShop.specProvince'), value: listing.province},
                         {icon: Navigation, label: t('marketplaceShop.specRadius'), value: `${listing.serviceRadiusKm} km`},
-                        {
-                            icon: Clock3,
-                            label: t('marketplaceShop.specTurnaround'),
-                            value: listing.deliverySlaHours != null ? `${listing.deliverySlaHours}h` : '—',
-                        },
-                        {
-                            icon: Layers,
-                            label: t('marketplaceShop.specMinUnits'),
-                            value: `${listing.minBookingUnits || 1} ${unitLabel}`,
-                        },
-                    ].map(spec => {
-                        const SpecIcon = spec.icon;
-                        return (
-                            <div key={spec.label} className="flex items-center gap-2.5 rounded-panel border border-slate-200 bg-card p-3">
-                                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-uav-red-light text-primary">
-                                    <SpecIcon size={17} aria-hidden="true"/>
-                                </span>
-                                <div className="min-w-0 tabular-nums">
-                                    <span className="block text-xs leading-tight text-slate-500">{spec.label}</span>
-                                    <strong className="mt-0.5 block line-clamp-2 text-sm leading-tight font-semibold text-slate-900">{spec.value}</strong>
-                                </div>
+                        {icon: Clock3, label: t('marketplaceShop.specTurnaround'), value: listing.deliverySlaHours != null ? `${listing.deliverySlaHours}h` : '—'},
+                        {icon: Layers, label: t('marketplaceShop.specMinUnits'), value: `${listing.minBookingUnits || 1} ${unitLabel}`},
+                    ].map(({icon: SpecIcon, label, value}) => (
+                        <div key={label} className="flex items-center gap-2.5 rounded-panel border border-slate-200 bg-card p-3">
+                            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-uav-red-light text-primary">
+                                <SpecIcon size={17} aria-hidden="true"/>
+                            </span>
+                            <div className="min-w-0 tabular-nums">
+                                <span className="block text-xs leading-tight text-slate-500">{label}</span>
+                                <strong className="mt-0.5 block line-clamp-2 text-sm leading-tight font-semibold text-slate-900">{value}</strong>
                             </div>
-                        );
-                    })}
+                        </div>
+                    ))}
                 </section>
 
                 {/* "What You Get" Checklist */}

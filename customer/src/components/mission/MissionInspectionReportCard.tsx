@@ -3,8 +3,9 @@
 import {useState} from 'react';
 import {Award, CheckCircle2, Clock, Download, FileCheck2, Layers, MapPin, Printer, ShieldCheck, SlidersHorizontal} from 'lucide-react';
 import {Button} from '@/components/ui';
-import {sanitizeMarketplaceText} from '@/forms/project/project-form';
+import {sanitizeMarketplaceName, sanitizeMarketplaceText} from '@/forms/project/project-form';
 import {useMissionInspectionReport} from '@/hooks/mission/useCustomerMissions';
+import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 
 export interface MissionInspectionReportCardProps {
@@ -170,8 +171,8 @@ export function MissionInspectionReportCard({
                     </div>
                     <p className="m-0">
                         {isEn
-                            ? `Mission ${report.missionCode} (${report.missionType}) executed by Verified UAV PAS Partner using ${sanitizeMarketplaceText(report.uavModel) || 'Enterprise GNSS'}. Preflight verification: ${report.preflightPassed ? 'PASSED' : 'RECORDED'}.`
-                            : `Nhiệm vụ ${report.missionCode} (${report.missionType}) thực hiện bởi Đối tác đã xác minh UAV PAS trên thiết bị ${sanitizeMarketplaceText(report.uavModel) || 'Enterprise GNSS'}. Kiểm tra an toàn trước bay: ${report.preflightPassed ? 'ĐẠT CHUẨN' : 'ĐÃ GHI NHẬN'}.`}
+                            ? `Mission ${report.missionCode} (${displayLabel(report.missionType)}) executed by Verified UAV PAS Partner using ${sanitizeMarketplaceName(report.uavModel) || 'Enterprise GNSS'}. Preflight verification: ${report.preflightPassed ? 'PASSED' : 'RECORDED'}.`
+                            : `Nhiệm vụ ${report.missionCode} (${displayLabel(report.missionType)}) thực hiện bởi Đối tác đã xác minh UAV PAS trên thiết bị ${sanitizeMarketplaceName(report.uavModel) || 'Enterprise GNSS'}. Kiểm tra an toàn trước bay: ${report.preflightPassed ? 'ĐẠT CHUẨN' : 'ĐÃ GHI NHẬN'}.`}
                     </p>
                 </div>
 

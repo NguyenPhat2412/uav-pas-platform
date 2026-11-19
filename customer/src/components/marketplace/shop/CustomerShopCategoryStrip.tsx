@@ -1,29 +1,18 @@
 'use client';
 
-import {Camera, Database, MapPinned, Plane, Sparkles, type LucideIcon} from 'lucide-react';
+import {ServiceCategoryIcon} from '@/components/marketplace/shop/ServiceCategoryIcon';
+import {
+    WEB_SERVICE_CATEGORIES,
+    type ServiceCategoryDef,
+} from '@/lib/marketplace/service-categories';
 import {useI18n} from '@/providers/I18nContext';
-import type {MissionType} from '@/types/mission/mission.types';
-
-interface CategoryTile {
-    value: MissionType | '';
-    labelKey: string;
-    icon: LucideIcon;
-}
-
-const CATEGORIES: readonly CategoryTile[] = [
-    {value: '', labelKey: 'marketplaceShop.allCategories', icon: Sparkles},
-    {value: 'AREA_INSPECTION', labelKey: 'marketplaceShop.catInspection', icon: MapPinned},
-    {value: 'AERIAL_RECORDING', labelKey: 'marketplaceShop.catRecording', icon: Camera},
-    {value: 'DATA_COLLECTION', labelKey: 'marketplaceShop.catData', icon: Database},
-    {value: 'UAV_RENTAL', labelKey: 'marketplaceShop.catRental', icon: Plane},
-] as const;
 
 export function CustomerShopCategoryStrip({
-    active,
+    activeKey,
     onSelect,
 }: {
-    active: MissionType | '';
-    onSelect: (next: MissionType | '') => void;
+    activeKey: string;
+    onSelect: (category: ServiceCategoryDef) => void;
 }) {
     const {t} = useI18n();
 
@@ -31,27 +20,26 @@ export function CustomerShopCategoryStrip({
         <div
             role="group"
             aria-label={t('publicSite.catalog.allMissionTypes')}
-            className="grid grid-cols-5 gap-1 rounded-panel border border-slate-200 bg-card p-2 sm:gap-2 sm:p-3"
+            className="grid grid-cols-4 gap-1 rounded-panel border border-slate-200 bg-card p-2 sm:grid-cols-7 sm:gap-2 sm:p-3"
         >
-            {CATEGORIES.map((cat, idx) => {
-                const Icon = cat.icon;
-                const selected = active === cat.value;
+            {WEB_SERVICE_CATEGORIES.map((cat, idx) => {
+                const selected = activeKey === cat.key;
                 const label = t(cat.labelKey);
                 return (
                     <button
-                        key={cat.labelKey}
+                        key={cat.key}
                         type="button"
                         aria-pressed={selected}
                         aria-label={label}
                         title={label}
-                        onClick={() => onSelect(cat.value)}
+                        onClick={() => onSelect(cat)}
                         onKeyDown={e => {
                             const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
                             if (!step) return;
                             e.preventDefault();
-                            const nextIdx = (idx + step + CATEGORIES.length) % CATEGORIES.length;
-                            const nextCat = CATEGORIES[nextIdx];
-                            if (nextCat) onSelect(nextCat.value);
+                            const nextIdx = (idx + step + WEB_SERVICE_CATEGORIES.length) % WEB_SERVICE_CATEGORIES.length;
+                            const nextCat = WEB_SERVICE_CATEGORIES[nextIdx];
+                            if (nextCat) onSelect(nextCat);
                             const buttons = e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('button');
                             buttons?.[nextIdx]?.focus();
                         }}
@@ -64,7 +52,7 @@ export function CustomerShopCategoryStrip({
                                     : 'bg-uav-red-light text-primary group-hover:bg-rose-100'
                             }`}
                         >
-                            <Icon size={20} strokeWidth={1.85} aria-hidden="true"/>
+                            <ServiceCategoryIcon name={cat.icon} size={20}/>
                         </span>
                         <span
                             className={`line-clamp-2 text-center text-[11px] leading-tight sm:text-xs sm:leading-4 ${

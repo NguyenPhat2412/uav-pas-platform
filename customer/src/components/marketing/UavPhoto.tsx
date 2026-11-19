@@ -5,25 +5,25 @@ export type {UavScene};
 
 export const scenes = {
     field: {
-        src: '/images/uav-photos/usgs-yosemite-preflight.webp',
-        alt: 'Phi công USGS kiểm tra UAV trên bãi cất cánh tại Yosemite.',
-        caption: 'Chuẩn bị UAV trước chuyến bay tại Yosemite.',
-        source: 'https://www.usgs.gov/media/images/readying-uas-flight-yosemite-national-park',
-        credit: 'USGS'
+        src: '/images/hero-slides/uav-hero-1.webp',
+        alt: 'Thiết bị bay UAV chuẩn bị cất cánh ngoài hiện trường.',
+        caption: 'Chuẩn bị UAV trước chuyến bay.',
+        source: 'https://www.usgs.gov/media/images/national-uncrewed-systems-office-brings-drones-eros-exercise',
+        credit: 'UAV PAS'
     },
     survey: {
-        src: '/images/uav-photos/usgs-golden-survey.webp',
-        alt: 'UAV và đội khảo sát USGS thu thập dữ liệu trên cánh đồng tại Golden, Colorado.',
-        caption: 'Bay khảo sát, thu thập dữ liệu tại Golden, Colorado.',
-        source: 'https://www.usgs.gov/media/images/collecting-data-using-uncrewed-aircraft-systems-uas',
-        credit: 'USGS'
+        src: '/images/solutions/infra-3d-survey.webp',
+        alt: 'UAV lập bản đồ chuẩn bị bay khảo sát địa hình.',
+        caption: 'Bay khảo sát, thu thập dữ liệu địa hình.',
+        source: 'https://www.usgs.gov/media/images/assessing-road-damage-caused-hurricane-helene',
+        credit: 'Geosciences and Environmental Change Science Center / USGS'
     },
     team: {
-        src: '/images/uav-photos/usgs-plum-island-team.webp',
-        alt: 'Nhóm khảo sát vận hành bộ điều khiển UAV và theo dõi chuyến bay tại Plum Island.',
-        caption: 'Nhóm vận hành trong chuyến khảo sát tại Plum Island.',
-        source: 'https://www.usgs.gov/media/images/uas-imagery-collected-plum-island',
-        credit: 'Sandy Brosnahan / USGS'
+        src: '/images/services/uav-rental-fleet.webp',
+        alt: 'Đội kỹ thuật chuẩn bị các thiết bị UAV trên đường băng thử nghiệm.',
+        caption: 'Chuẩn bị đội hình UAV trước đợt bay khảo sát.',
+        source: 'https://www.usgs.gov/media/images/national-uncrewed-systems-office-brings-drones-eros-exercise',
+        credit: 'EROS Center / USGS'
     },
     pilots: {
         src: '/images/people/usgs-woods-hole-pilots.jpg',
@@ -82,18 +82,18 @@ export const scenes = {
         credit: 'National Innovation Center / USGS'
     },
     dataCorridor: {
-        src: '/images/services/data-collection-corridor.webp',
-        alt: 'Hai người điều khiển đứng dưới mái che bên bờ sông, một người cầm bộ điều khiển hướng ra mặt nước.',
-        caption: 'Bay thu thập dữ liệu đa phổ dọc sông Missouri.',
-        source: 'https://www.usgs.gov/media/images/remote-pilots-conducting-a-hyperspectral-uas-flight-over-missouri-river',
+        src: '/images/solutions/infra-3d-survey.webp',
+        alt: 'UAV lập bản đồ cất cánh thẳng đứng cho đợt bay thu thập dữ liệu địa hình.',
+        caption: 'Bay thu thập dữ liệu địa hình và công trình.',
+        source: 'https://www.usgs.gov/media/images/assessing-road-damage-caused-hurricane-helene',
         credit: 'Geosciences and Environmental Change Science Center / USGS'
     },
     opsCommand: {
-        src: '/images/solutions/managed-ops-command.webp',
-        alt: 'Nhóm sáu người quanh bàn trạm điều khiển mặt đất có laptop và thiết bị thu phát dưới mái che.',
-        caption: 'Tổ bay thống nhất thông số chuyến bay trong ngày tại trạm điều khiển mặt đất.',
-        source: 'https://www.usgs.gov/media/images/usgs-personnel-uas-ground-control-station-discussing-flight-parameters-days-drone',
-        credit: 'Geosciences and Environmental Change Science Center / USGS'
+        src: '/images/hero-slides/uav-hero-2.webp',
+        alt: 'Hệ thống điều phối và giám sát chuyến bay UAV ngoài hiện trường.',
+        caption: 'Điều phối thông số và lộ trình bay trước khi cất cánh.',
+        source: 'https://www.usgs.gov/media/images/national-uncrewed-systems-office-brings-drones-eros-exercise',
+        credit: 'UAV PAS'
     },
     infraSurvey: {
         src: '/images/solutions/infra-3d-survey.webp',
@@ -117,11 +117,11 @@ export const scenes = {
         credit: 'Geosciences and Environmental Change Science Center / USGS'
     },
     stepBriefing: {
-        src: '/images/process/step-01-select-service.webp',
-        alt: 'Hai người điều khiển đội mũ bảo hộ đứng trước UAV cánh cố định tại một điểm ngắm cảnh trên núi.',
-        caption: 'Tổ bay chuẩn bị trước chuyến khảo sát tại Tanbark Ridge.',
-        source: 'https://www.usgs.gov/media/images/uncrewed-aircraft-pilots-tanbark-ridge-overlook',
-        credit: 'Geosciences and Environmental Change Science Center / USGS'
+        src: '/images/hero-slides/uav-hero-1.webp',
+        alt: 'Thiết bị bay UAV chuẩn bị cho chuyến khảo sát.',
+        caption: 'Chuẩn bị trước chuyến bay khảo sát.',
+        source: 'https://www.usgs.gov/media/images/national-uncrewed-systems-office-brings-drones-eros-exercise',
+        credit: 'UAV PAS'
     },
     stepPlanning: {
         src: '/images/process/step-02-gis-planning.webp',

@@ -2,34 +2,33 @@
 
 import {useState} from 'react';
 import Link from 'next/link';
-import {Camera, CheckCircle2, Clock3, Database, MapPin, MapPinned, Plane, Star, type LucideIcon} from 'lucide-react';
-import {scenes} from '@/components/marketing/UavPhoto';
+import {CheckCircle2, Clock3, MapPin, Star} from 'lucide-react';
+import {ServiceCategoryIcon} from '@/components/marketplace/shop/ServiceCategoryIcon';
 import {formatVndCompact} from '@/forms/marketplace/marketplace-forms';
-import {resolveListingBadge, sanitizeMarketplaceText} from '@/forms/project/project-form';
+import {resolveListingBadge, sanitizeMarketplaceName} from '@/forms/project/project-form';
+import {iconNameForMissionType} from '@/lib/marketplace/service-categories';
 import {useI18n} from '@/providers/I18nContext';
 import type {ListingType, MarketplaceListing, PricingModel} from '@/types/marketplace/marketplace.types';
 
-const CATEGORY_FALLBACK_ICONS: Record<string, LucideIcon> = {
-    UAV_RENTAL: Plane,
-    AREA_INSPECTION: MapPinned,
-    AERIAL_RECORDING: Camera,
-    DATA_COLLECTION: Database,
-};
+const BANNED_LOGO_IMAGE_PATTERN =
+    /usgs-plum-island-team|data-collection-corridor|managed-ops-command|step-01-select-service|usgs-yosemite-preflight/i;
 
-const MISSION_FALLBACK_PHOTOS: Record<string, { src: string; alt: string }> = {
-    UAV_RENTAL: scenes.rentalFleet,
-    AREA_INSPECTION: scenes.inspectionGrid,
-    AERIAL_RECORDING: scenes.recordingCinema,
-    DATA_COLLECTION: scenes.dataCorridor,
-    SEARCH_AND_RESCUE: scenes.sarResponse,
-};
-
-export function resolveListingPhoto(listing: Pick<MarketplaceListing, 'coverImageUrl' | 'missionType' | 'title'>) {
+/**
+ * Resolves a listing's cover image when present and free of third-party organization logos.
+ * Returns `null` when missing so callers render the brand-consistent `primaryLight` icon container.
+ */
+export function resolveListingPhoto(
+    listing: Pick<MarketplaceListing, 'coverImageUrl' | 'missionType' | 'title'>,
+): { src: string; alt: string } | null {
     const customUrl = listing.coverImageUrl?.trim();
-    if (customUrl && /^https?:\/\//i.test(customUrl)) {
-        return {src: customUrl, alt: listing.title};
+    if (
+        customUrl &&
+        (/^https?:\/\//i.test(customUrl) || customUrl.startsWith('/')) &&
+        !BANNED_LOGO_IMAGE_PATTERN.test(customUrl)
+    ) {
+        return {src: customUrl, alt: sanitizeMarketplaceName(listing.title)};
     }
-    return MISSION_FALLBACK_PHOTOS[listing.missionType] ?? scenes.rentalFleet;
+    return null;
 }
 
 export function MarketplaceListingCard({
@@ -43,7 +42,7 @@ export function MarketplaceListingCard({
     const [imgFailed, setImgFailed] = useState(false);
     const photo = resolveListingPhoto(item);
     const badge = resolveListingBadge(item);
-    const FallbackIcon = CATEGORY_FALLBACK_ICONS[item.missionType] ?? Plane;
+    const fallbackIconName = iconNameForMissionType(item.missionType);
     const detailHref = mode === 'portal' ? `/customer/services/${item.slug}` : `/services/${item.slug}`;
     const createHref = `/customer/services/${encodeURIComponent(item.slug)}?subscribe=1`;
 
@@ -60,7 +59,7 @@ export function MarketplaceListingCard({
         return t('publicSite.catalog.unitHour');
     };
 
-    const cleanTitle = sanitizeMarketplaceText(item.title);
+    const cleanTitle = sanitizeMarketplaceName(item.title);
 
     return (
         <article className="group flex flex-col justify-between overflow-hidden rounded-panel border border-slate-200 bg-white shadow-2xs transition-shadow duration-200 hover:shadow-md">
@@ -79,11 +78,13 @@ export function MarketplaceListingCard({
                                 onError={() => setImgFailed(true)}
                                 className="h-full w-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105 motion-reduce:transition-none"
                             />
-                            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent"/>
+                            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/5 to-transparent"/>
                         </>
                     ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-uav-red-light text-primary">
-                            <FallbackIcon size={36} strokeWidth={1.75} aria-hidden="true"/>
+                        <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-uav-red-light text-primary">
+                            <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-white/80 shadow-2xs ring-1 ring-primary/15">
+                                <ServiceCategoryIcon name={fallbackIconName} size={28} strokeWidth={1.75}/>
+                            </span>
                         </div>
                     )}
                     <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start">
@@ -113,15 +114,14 @@ export function MarketplaceListingCard({
                         )}
                     </div>
 
-                    <div className="flex items-baseline justify-between gap-2 pt-0.5 tabular-nums">
-                        <div>
-                            <span className="text-base font-bold text-primary">
-                                {formatVndCompact(item.basePriceVnd)}
-                            </span>
-                            <span className="ml-1 text-[11px] text-slate-500">
-                                / {unitText(item.pricingModel)} · {t('marketplaceShop.illustrative')}
-                            </span>
-                        </div>
+                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5 tabular-nums">
+                        <span className="text-base font-bold text-primary">
+                            {formatVndCompact(item.basePriceVnd)}
+                        </span>
+                        <span className="text-[11px] text-slate-500">/ {unitText(item.pricingModel)}</span>
+                        <span className="rounded-badge bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                            {t('marketplaceShop.illustrative')}
+                        </span>
                     </div>
 
                     <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs text-slate-600 tabular-nums">

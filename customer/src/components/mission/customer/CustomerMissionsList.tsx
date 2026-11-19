@@ -149,7 +149,7 @@ function Missions() {
                     <LoadingRows/>
                 ) : items.length === 0 ? (
                     <IllustratedEmptyState
-                        imageSrc="/images/process/step-01-select-service.webp"
+                        imageSrc="/images/hero-slides/uav-hero-1.webp"
                         imageAlt={t('marketplaceShop.emptyOrdersTitle')}
                         icon={PackageSearch}
                         title={filtered ? t('missions.emptyFiltered') : t('marketplaceShop.emptyOrdersTitle')}

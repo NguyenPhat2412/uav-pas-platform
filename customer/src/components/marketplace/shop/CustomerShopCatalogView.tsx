@@ -1,21 +1,33 @@
 'use client';
 
 import {useEffect, useState} from 'react';
+import {useSearchParams} from 'next/navigation';
 import {ArrowUpDown, MapPin, PackageSearch, RotateCcw, Search} from 'lucide-react';
 import {MarketplaceListingCard} from '@/components/marketplace/catalog/MarketplaceListingCard';
 import {CustomerShopCategoryStrip} from '@/components/marketplace/shop/CustomerShopCategoryStrip';
 import {CustomerShopHeroBanner} from '@/components/marketplace/shop/CustomerShopHeroBanner';
 import {Alert, Button} from '@/components/ui';
 import {usePublicListings} from '@/hooks/marketplace/useMarketplace';
+import {WEB_SERVICE_CATEGORIES, type ServiceCategoryDef} from '@/lib/marketplace/service-categories';
 import {useI18n} from '@/providers/I18nContext';
-import type {ListingSortOption} from '@/types/marketplace/marketplace.types';
+import type {ListingSortOption, ListingType} from '@/types/marketplace/marketplace.types';
 import type {MissionType} from '@/types/mission/mission.types';
 
 export function CustomerShopCatalogView() {
     const {t} = useI18n();
-    const [searchInput, setSearchInput] = useState('');
-    const [debouncedQuery, setDebouncedQuery] = useState('');
-    const [missionType, setMissionType] = useState<MissionType | ''>('');
+    const searchParams = useSearchParams();
+    const initialQ = searchParams.get('q')?.trim() ?? '';
+    const initialCat = searchParams.get('category')?.trim() ?? '';
+    const initialListingType = searchParams.get('listingType')?.trim() ?? '';
+    const initialCategory = WEB_SERVICE_CATEGORIES.find(
+        c => (initialCat && c.missionType === initialCat) || (initialListingType && c.listingType === initialListingType),
+    );
+
+    const [searchInput, setSearchInput] = useState(initialQ);
+    const [debouncedQuery, setDebouncedQuery] = useState(initialQ);
+    const [activeCategoryKey, setActiveCategoryKey] = useState(initialCategory?.key ?? 'all');
+    const [missionType, setMissionType] = useState<MissionType | ''>(initialCategory?.missionType ?? '');
+    const [listingType, setListingType] = useState<ListingType | ''>(initialCategory?.listingType ?? '');
     const [province, setProvince] = useState('');
     const [sortBy, setSortBy] = useState<ListingSortOption>('featured');
     const [page, setPage] = useState(0);
@@ -32,6 +44,7 @@ export function CustomerShopCatalogView() {
         keyword: debouncedQuery,
         q: debouncedQuery,
         missionType,
+        listingType,
         category: missionType || undefined,
         province: province.trim() || undefined,
         sortBy,
@@ -42,12 +55,21 @@ export function CustomerShopCatalogView() {
     const listings = query.data?.content ?? [];
     const totalElements = query.data?.totalElements ?? 0;
     const totalPages = query.data?.totalPages ?? 0;
-    const hasFilters = Boolean(searchInput.trim() || missionType || province.trim() || sortBy !== 'featured');
+    const hasFilters = Boolean(searchInput.trim() || missionType || listingType || province.trim() || sortBy !== 'featured');
+
+    const handleSelectCategory = (cat: ServiceCategoryDef) => {
+        setActiveCategoryKey(cat.key);
+        setMissionType(cat.missionType ?? '');
+        setListingType(cat.listingType ?? '');
+        setPage(0);
+    };
 
     const resetAll = () => {
         setSearchInput('');
         setDebouncedQuery('');
+        setActiveCategoryKey('all');
         setMissionType('');
+        setListingType('');
         setProvince('');
         setSortBy('featured');
         setPage(0);
@@ -114,13 +136,7 @@ export function CustomerShopCatalogView() {
 
             <CustomerShopHeroBanner/>
 
-            <CustomerShopCategoryStrip
-                active={missionType}
-                onSelect={val => {
-                    setMissionType(val);
-                    setPage(0);
-                }}
-            />
+            <CustomerShopCategoryStrip activeKey={activeCategoryKey} onSelect={handleSelectCategory}/>
 
             {/* Section Header */}
             <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
@@ -225,6 +241,10 @@ export function CustomerShopCatalogView() {
                     </Button>
                 </nav>
             )}
+
+            <p className="m-0 pt-2 text-center text-xs text-slate-500">
+                {t('marketplaceShop.illustrativeFooterNote')}
+            </p>
         </div>
     );
 }
