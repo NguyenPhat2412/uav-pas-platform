@@ -120,7 +120,7 @@
     "operationsPulse": "Điều hành & Hỗ trợ",
     "airspaceWeather": "Bản đồ & Không phận",
     "catalogPlans": "Danh mục & Gói cước",
-    "marketplace3p": "Sàn đối tác 3P",
+    "marketplace3p": "Sàn dịch vụ UAV",
     "billingLedger": "Đối soát & Sổ cái",
     "rbacGovernance": "Phân quyền & Vai trò",
     "runtimeOps": "Máy chủ & Triển khai",
@@ -398,7 +398,7 @@
     "customerPortal": "Khách hàng",
     "customerPortalUser": "Cổng Khách hàng ({username})",
     "register": "Đăng ký",
-    "digitalTwin": "Digital Twin"
+    "digitalTwin": "Mô phỏng bay"
   },
   "publicFooter": {
     "university": "Điều phối & Vận hành Bay",
@@ -408,7 +408,7 @@
     "services": "Dịch vụ bay UAV",
     "solutions": "Giải pháp",
     "pricing": "Bảng giá & Gói cước",
-    "howItWorks": "Quy trình 5 bước",
+    "howItWorks": "Cách hoạt động",
     "portalsHeading": "Hệ sinh thái & Đào tạo",
     "customerPortal": "Cổng Khách hàng",
     "operationsPortal": "Trung tâm Điều hành",

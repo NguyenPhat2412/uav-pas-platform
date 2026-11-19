@@ -31,6 +31,7 @@ import {
     type ResolvedMessageReceipt,
 } from '@/shared/utils/support/message-status';
 import {formatSupportTime, formatSupportTopic, SUPPORT_TOPIC_OPTIONS} from '@/shared/utils/support/support-format';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 const TOPIC_CHIPS = SUPPORT_TOPIC_OPTIONS.map(option => ({value: option.value, label: option.label}));
@@ -107,7 +108,7 @@ export function PublicSupportSheetScreen() {
     const [draft, setDraft] = useState('');
     const [replyError, setReplyError] = useState<string | null>(null);
 
-    const fullName = fullNameInput ?? (user?.fullName || user?.username || '');
+    const fullName = fullNameInput ?? cleanEntityName(user?.fullName || user?.username || '');
     const contactInfo = contactInput ?? (user?.email || user?.phoneNumber || '');
 
     const handleStartInquiry = () => {

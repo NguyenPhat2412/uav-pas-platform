@@ -4,125 +4,82 @@ import {useRouter} from 'expo-router';
 import {
     Award,
     Camera,
-    FolderKanban,
-    GraduationCap,
     Map,
     Package,
-    Sprout,
+    Plane,
+    Sparkles,
     Zap,
     type LucideIcon,
 } from 'lucide-react-native';
 import {AppText, Card} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
+import {
+    SERVICE_CATEGORIES,
+    type ServiceCategoryDef,
+    type ServiceCategoryIconName,
+} from '@/shared/lib/marketplace/service-categories';
 import {colors, font, spacing} from '@/styles/tokens';
 
-interface CategoryItem {
-    key: string;
-    label: string;
-    icon: LucideIcon;
-    onPress: () => void;
-}
+const CATEGORY_ICONS: Record<ServiceCategoryIconName, LucideIcon> = {
+    Sparkles,
+    Map,
+    Zap,
+    Camera,
+    Plane,
+    Award,
+    Package,
+};
 
 /**
- * Shopee-style 4x2 Circular Category Icon Grid (UI-GUIDE §3.1):
- * circular `primaryLight` icon containers + single-line 1-2 word labels (`numberOfLines={1}`).
+ * Shopee-style Circular Category Icon Grid (UI-GUIDE §3.1 & UI-REVIEW-9-FIXES #8):
+ * reads directly from the shared `SERVICE_CATEGORIES` taxonomy synced from web
+ * (`@/shared/lib/marketplace/service-categories`) so Web and Mobile stay 100% unified.
  */
 export function ServiceCategoryShowcase() {
     const {t} = useI18n();
     const router = useRouter();
 
-    const items: CategoryItem[] = [
-        {
-            key: 'survey',
-            label: t('mobile.overnight.shortCatSurvey'),
-            icon: Map,
-            onPress: () =>
-                router.navigate({
-                    pathname: '/customer/services',
-                    params: {q: t('mobile.shop.catSurveyKeyword')},
-                }),
-        },
-        {
-            key: 'infra',
-            label: t('mobile.overnight.shortCatInfra'),
-            icon: Zap,
-            onPress: () =>
-                router.navigate({
-                    pathname: '/customer/services',
-                    params: {q: t('mobile.shop.catInfraKeyword')},
-                }),
-        },
-        {
-            key: 'agri',
-            label: t('mobile.overnight.shortCatAgri'),
-            icon: Sprout,
-            onPress: () =>
-                router.navigate({
-                    pathname: '/customer/services',
-                    params: {q: t('mobile.shop.catAgriKeyword')},
-                }),
-        },
-        {
-            key: 'media',
-            label: t('mobile.overnight.shortCatMedia'),
-            icon: Camera,
-            onPress: () =>
-                router.navigate({
-                    pathname: '/customer/services',
-                    params: {q: t('mobile.shop.catMediaKeyword')},
-                }),
-        },
-        {
-            key: 'wet',
-            label: t('mobile.overnight.shortCatWet'),
-            icon: Award,
-            onPress: () =>
-                router.navigate({
-                    pathname: '/customer/services',
-                    params: {type: 'WET_LEASE'},
-                }),
-        },
-        {
-            key: 'dry',
-            label: t('mobile.overnight.shortCatDry'),
-            icon: Package,
-            onPress: () =>
-                router.navigate({
-                    pathname: '/customer/services',
-                    params: {type: 'DRY_LEASE'},
-                }),
-        },
-        {
-            key: 'projects',
-            label: t('mobile.overnight.shortCatProjects'),
-            icon: FolderKanban,
-            onPress: () => router.navigate('/customer/missions'),
-        },
-        {
-            key: 'academy',
-            label: t('mobile.overnight.shortCatAcademy'),
-            icon: GraduationCap,
-            onPress: () => router.push('/customer/training'),
-        },
-    ];
+    const handleOpenCategory = (cat: ServiceCategoryDef) => {
+        if (cat.missionType) {
+            router.navigate({
+                pathname: '/customer/services',
+                params: {category: cat.missionType, type: 'ALL'},
+            });
+            return;
+        }
+        if (cat.listingType) {
+            router.navigate({
+                pathname: '/customer/services',
+                params: {type: cat.listingType, category: ''},
+            });
+            return;
+        }
+        router.navigate('/customer/services');
+    };
 
     return (
         <Card style={styles.card}>
             <View style={styles.grid}>
-                {items.map(item => {
-                    const Icon = item.icon;
+                {SERVICE_CATEGORIES.map(cat => {
+                    const Icon = CATEGORY_ICONS[cat.icon] ?? Package;
+                    const label = t(cat.labelKey);
                     return (
                         <Pressable
-                            key={item.key}
+                            key={cat.key}
                             accessibilityRole="button"
-                            accessibilityLabel={item.label}
-                            onPress={item.onPress}
+                            accessibilityLabel={label}
+                            onPress={() => handleOpenCategory(cat)}
                             style={({pressed}) => [styles.cell, pressed && styles.pressed]}>
                             <View style={styles.iconCircle}>
                                 <Icon size={21} color={colors.primary} strokeWidth={1.85}/>
                             </View>
-                            <AppText variant="caption" style={styles.label} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.72}>
-                                {item.label}
+                            <AppText
+                                variant="caption"
+                                style={styles.label}
+                                numberOfLines={1}
+                                adjustsFontSizeToFit
+                                minimumFontScale={0.78}>
+                                {label}
                             </AppText>
                         </Pressable>
                     );
@@ -135,7 +92,7 @@ export function ServiceCategoryShowcase() {
 const styles = StyleSheet.create({
     card: {paddingVertical: spacing.md, paddingHorizontal: spacing.xs},
     grid: {flexDirection: 'row', flexWrap: 'wrap', rowGap: spacing.md},
-    cell: {width: '25%', alignItems: 'center', gap: 6, paddingHorizontal: 2},
+    cell: {width: '33.33%', alignItems: 'center', gap: 6, paddingHorizontal: 4},
     iconCircle: {
         width: 46,
         height: 46,

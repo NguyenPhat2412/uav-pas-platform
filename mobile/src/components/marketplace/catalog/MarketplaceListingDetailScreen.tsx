@@ -2,24 +2,26 @@ import React, {useState} from 'react';
 import {Image, Pressable, StyleSheet, View} from 'react-native';
 import {useLocalSearchParams, useRouter} from 'expo-router';
 import {
-    Award,
     CheckCircle2,
     Clock3,
     MapPin,
-    Megaphone,
-    Package,
-    Plane,
     ShieldCheck,
     Star,
-    type LucideIcon,
 } from 'lucide-react-native';
-import {resolveListingCoverSource} from '@/components/marketplace/catalog/listing-cover';
+import {
+    LISTING_CATEGORY_ICONS,
+    resolveListingCategoryIconName,
+    resolveListingCoverSource,
+} from '@/components/marketplace/catalog/listing-cover';
 import {ListingSpecsAndReviews} from '@/components/marketplace/catalog/ListingSpecsAndReviews';
 import {ListingStickyActionBar} from '@/components/marketplace/catalog/ListingStickyActionBar';
 import {
+    IllustrativeBadge,
+    IllustrativeFooterNote,
+} from '@/components/shared/IllustrativeDisclaimer';
+import {
     AppText,
     Badge,
-    Button,
     Card,
     ErrorState,
     LoadingState,
@@ -29,7 +31,6 @@ import {
     TextField,
 } from '@/components/ui';
 import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplaceCatalog';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
@@ -40,14 +41,8 @@ import {
     pricingUnitLabel,
 } from '@/shared/forms/marketplace/marketplace-forms';
 import {displayLabel} from '@/shared/lib/presentation';
-import type {ListingType} from '@/shared/types/marketplace/marketplace.types';
+import {cleanDescriptionText, cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, font, radius, spacing} from '@/styles/tokens';
-
-const TYPE_ICONS: Record<ListingType, LucideIcon> = {
-    FLIGHT_SERVICE: Plane,
-    WET_LEASE: Award,
-    DRY_LEASE: Package,
-};
 
 export function MarketplaceListingDetailScreen() {
     const {t} = useI18n();
@@ -55,7 +50,6 @@ export function MarketplaceListingDetailScreen() {
     const toast = useToast();
     const router = useRouter();
     const {slug} = useLocalSearchParams<{ slug: string }>();
-    const {rfqEnabled} = useSiteInfo();
     const query = usePublicListingDetail(slug);
     const [unitsInput, setUnitsInput] = useState('');
 
@@ -90,7 +84,7 @@ export function MarketplaceListingDetailScreen() {
     const unitLabel = pricingUnitLabel(listing.pricingModel);
     const canBook = status !== 'signed-in' || can('MISSION_CREATE');
     const coverSource = resolveListingCoverSource(listing);
-    const CategoryIcon = TYPE_ICONS[listing.listingType] ?? Plane;
+    const CategoryIcon = LISTING_CATEGORY_ICONS[resolveListingCategoryIconName(listing)];
     const presets = Array.from(
         new Set([
             minUnits,
@@ -112,14 +106,7 @@ export function MarketplaceListingDetailScreen() {
         });
     };
 
-    const handleCustomRfq = () => {
-        if (status !== 'signed-in') {
-            toast.show(t('mobile.shop.loginToBookToast'), 'info');
-            router.push('/login');
-            return;
-        }
-        router.push({pathname: '/customer/mission/create', params: {rfq: '1'}});
-    };
+    const cleanTitle = cleanEntityName(listing.title);
 
     return (
         <View style={styles.root}>
@@ -134,7 +121,7 @@ export function MarketplaceListingDetailScreen() {
                                 source={coverSource}
                                 style={styles.coverImg}
                                 resizeMode="cover"
-                                accessibilityLabel={listing.title}
+                                accessibilityLabel={cleanTitle}
                             />
                         ) : (
                             <View style={styles.coverFallback}>
@@ -171,15 +158,15 @@ export function MarketplaceListingDetailScreen() {
                                 minimumFontScale={0.8}>
                                 {formatVndCompact(listing.basePriceVnd)} / {unitLabel}
                             </AppText>
-                            <AppText variant="caption" numberOfLines={1}>
-                                {t('mobile.shop.illustrativePrice')}
-                            </AppText>
+                            <IllustrativeBadge/>
                         </View>
 
                         <AppText variant="heading" numberOfLines={2}>
-                            {listing.title}
+                            {cleanTitle}
                         </AppText>
-                        {listing.summary ? <AppText variant="small">{listing.summary}</AppText> : null}
+                        {listing.summary ? (
+                            <AppText variant="small">{cleanDescriptionText(listing.summary)}</AppText>
+                        ) : null}
 
                         <View style={styles.metaRow}>
                             <View style={styles.metaItem}>
@@ -250,26 +237,20 @@ export function MarketplaceListingDetailScreen() {
                     <View style={styles.totalBox}>
                         <View style={styles.totalRow}>
                             <AppText variant="small" numberOfLines={1}>
-                                {t('mobile.shop.escrowMicroHint')}
+                                {t('mobile.marketplace.estimatedEscrow')}
                             </AppText>
-                            <AppText variant="title" style={styles.priceText} numberOfLines={1}>
-                                {formatVndCompact(subtotal)}
-                            </AppText>
+                            <View style={styles.subtotalInline}>
+                                <AppText variant="title" style={styles.priceText} numberOfLines={1}>
+                                    {formatVndCompact(subtotal)}
+                                </AppText>
+                                <IllustrativeBadge/>
+                            </View>
                         </View>
                     </View>
-
-                    {rfqEnabled && canBook ? (
-                        <Button
-                            tone="secondary"
-                            size="sm"
-                            icon={Megaphone}
-                            label={t('mobile.marketplace.needCustomQuote')}
-                            onPress={handleCustomRfq}
-                        />
-                    ) : null}
                 </Card>
 
                 <ListingSpecsAndReviews listing={listing} reviews={reviews}/>
+                <IllustrativeFooterNote/>
             </Screen>
 
             <ListingStickyActionBar
@@ -304,5 +285,6 @@ const styles = StyleSheet.create({
     presetTextActive: {color: colors.white},
     totalBox: {backgroundColor: colors.slateLight, borderRadius: radius.control, padding: spacing.md, gap: 4, borderWidth: 1, borderColor: colors.border},
     totalRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.xs},
+    subtotalInline: {flexDirection: 'row', alignItems: 'center', gap: 6},
     pressed: {opacity: 0.75},
 });

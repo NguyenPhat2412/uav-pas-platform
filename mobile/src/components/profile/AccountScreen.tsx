@@ -16,6 +16,7 @@ import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {displayLabel} from '@/shared/lib/presentation';
 import {canUsePortal} from '@/shared/utils/auth/portal';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export function AccountRow({icon: Icon, label, onPress, danger = false, right}: {
@@ -26,7 +27,7 @@ export function AccountRow({icon: Icon, label, onPress, danger = false, right}: 
     right?: React.ReactNode;
 }) {
     return (
-        <Pressable onPress={onPress} accessibilityRole="button" style={({pressed}) => [styles.row, pressed && styles.pressed]}>
+        <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={label} style={({pressed}) => [styles.row, pressed && styles.pressed]}>
             <View style={[styles.rowIcon, danger && styles.rowIconDanger]}>
                 <Icon size={18} color={danger ? colors.danger : colors.slateDark}/>
             </View>
@@ -151,7 +152,7 @@ export function AccountScreen() {
         );
     }
 
-    const name = user?.fullName || user?.username || '';
+    const name = cleanEntityName(user?.fullName || user?.username || '');
     const canSwitchToOps = canUsePortal(user?.role, 'operations');
 
     const enterOperationsPortal = async () => {

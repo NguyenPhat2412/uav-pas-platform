@@ -15,6 +15,10 @@ import {
     type LucideIcon,
 } from 'lucide-react-native';
 import {
+    IllustrativeBadge,
+    IllustrativeFooterNote,
+} from '@/components/shared/IllustrativeDisclaimer';
+import {
     AppText,
     Badge,
     Card,
@@ -29,7 +33,6 @@ import {
     useMyProviderPilots,
     useMyProviderProfile,
     useMyProviderWallet,
-    useOpenRfqs,
     useProviderOrders,
 } from '@/hooks/marketplace/useProviderStudio';
 import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
@@ -38,6 +41,7 @@ import {
     formatVndCompact,
     verificationStatusLabel,
 } from '@/shared/forms/marketplace/marketplace-forms';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 function StudioNavRow({
@@ -89,7 +93,6 @@ export function ProviderHubScreen() {
     const fleetQuery = useMyProviderFleet();
     const pilotsQuery = useMyProviderPilots();
     const ordersQuery = useProviderOrders();
-    const rfqsQuery = useOpenRfqs();
     const walletQuery = useMyProviderWallet();
 
     const profile = profileQuery.data;
@@ -97,7 +100,6 @@ export function ProviderHubScreen() {
     const uavCount = (fleetQuery.data?.uavs.length ?? 0) + (fleetQuery.data?.equipment.length ?? 0);
     const pilotCount = pilotsQuery.data?.length ?? 0;
     const orders = ordersQuery.data ?? [];
-    const rfqs = rfqsQuery.data ?? [];
     const wallet = walletQuery.data;
 
     const pendingOrders = orders.filter(
@@ -114,7 +116,6 @@ export function ProviderHubScreen() {
         void listingsQuery.refetch();
         void fleetQuery.refetch();
         void ordersQuery.refetch();
-        void rfqsQuery.refetch();
         void walletQuery.refetch();
     };
 
@@ -139,7 +140,7 @@ export function ProviderHubScreen() {
                     </View>
                     <View style={styles.flex}>
                         <AppText variant="heading">
-                            {profile?.displayName || t('mobile.provider.welcomeTitle')}
+                            {cleanEntityName(profile?.displayName) || t('mobile.provider.welcomeTitle')}
                         </AppText>
                         <Badge
                             icon={
@@ -200,9 +201,7 @@ export function ProviderHubScreen() {
                         <AppText variant="title" style={styles.price} numberOfLines={1}>
                             {formatVndCompact(wallet?.availableBalanceVnd ?? 0)}
                         </AppText>
-                        <AppText variant="caption" numberOfLines={1}>
-                            {t('mobile.shop.illustrativePrice')}
-                        </AppText>
+                        <IllustrativeBadge/>
                     </View>
                 </Card>
                 <Card style={styles.kpiCard} onPress={() => router.push('/customer/provider/wallet')}>
@@ -217,9 +216,7 @@ export function ProviderHubScreen() {
                         <AppText variant="title" numberOfLines={1}>
                             {formatVndCompact(wallet?.escrowHeldVnd ?? 0)}
                         </AppText>
-                        <AppText variant="caption" numberOfLines={1}>
-                            {t('mobile.shop.illustrativePrice')}
-                        </AppText>
+                        <IllustrativeBadge/>
                     </View>
                 </Card>
             </View>
@@ -236,11 +233,7 @@ export function ProviderHubScreen() {
                 icon={ClipboardList}
                 title={t('mobile.provider.menuOrders')}
                 subtitle={t('mobile.provider.menuOrdersDesc')}
-                badge={
-                    pendingOrders + rfqs.length > 0
-                        ? `${pendingOrders + rfqs.length}`
-                        : undefined
-                }
+                badge={pendingOrders > 0 ? `${pendingOrders}` : undefined}
                 onPress={() => router.push('/customer/provider/orders')}
             />
             <StudioNavRow
@@ -270,6 +263,7 @@ export function ProviderHubScreen() {
                 subtitle={t('mobile.provider.menuWalletDesc')}
                 onPress={() => router.push('/customer/provider/wallet')}
             />
+            <IllustrativeFooterNote/>
         </Screen>
     );
 }

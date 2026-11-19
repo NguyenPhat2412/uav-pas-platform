@@ -1,17 +1,9 @@
 import React, {useMemo, useState} from 'react';
 import {RefreshControl, ScrollView, StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Bell, Cpu, History, Radio, Wrench} from 'lucide-react-native';
-import {
-    AppText,
-    Card,
-    ChipGroup,
-    CONTENT_WIDTH,
-    EmptyState,
-    ErrorState,
-    LoadingState,
-    SectionTitle,
-} from '@/components/ui';
+import {AppText, Card, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState, SectionTitle} from '@/components/ui';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {FleetStationCard, FleetUavCard, RepairOrderCard} from '@/components/uav/FleetAssetCards';
@@ -37,6 +29,7 @@ export function FleetMaintenanceScreen() {
     const {can} = useAuth();
     const toast = useToast();
     const router = useRouter();
+    const insets = useSafeAreaInsets();
     const {unreadCount} = useNotifications();
 
     const [tab, setTab] = useState<FleetTab>('uavs');
@@ -110,11 +103,12 @@ export function FleetMaintenanceScreen() {
             />
 
             <ScrollView
-                contentInsetAdjustmentBehavior="never"
+                contentInsetAdjustmentBehavior="automatic"
+                automaticallyAdjustsScrollIndicatorInsets
                 directionalLockEnabled
                 alwaysBounceHorizontal={false}
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.content}
+                contentContainerStyle={[styles.content, {paddingBottom: insets.bottom + spacing.xl}]}
                 keyboardShouldPersistTaps="handled"
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void handleRefresh()} tintColor={colors.primary}/>}>
                 <ChipGroup<FleetTab>

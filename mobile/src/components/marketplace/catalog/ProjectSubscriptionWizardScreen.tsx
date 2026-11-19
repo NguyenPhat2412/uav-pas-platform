@@ -28,6 +28,7 @@ import {useToast} from '@/providers/ToastContext';
 import {extractActionableError} from '@/shared/forms/marketplace/marketplace-forms';
 import {validateProjectInput, validateSubscriptionBooking} from '@/shared/forms/project/project-form';
 import type {CustomerProject, ProjectScheduleType} from '@/shared/types/project/project.types';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 /**
@@ -202,14 +203,14 @@ export function ProjectSubscriptionWizardScreen() {
                                     <Pressable
                                         key={proj.id}
                                         accessibilityRole="radio"
-                                        accessibilityLabel={`${proj.name}, ${proj.province}`}
+                                        accessibilityLabel={`${cleanEntityName(proj.name)}, ${proj.province}`}
                                         accessibilityState={{checked: chosen}}
                                         onPress={() => handleSelectProject(proj)}
                                         style={[styles.projectOption, chosen && styles.projectOptionChosen]}>
                                         <FolderKanban size={20} color={chosen ? colors.primary : colors.slate}/>
                                         <View style={styles.flex}>
                                             <AppText variant="title" numberOfLines={1}>
-                                                {proj.name}
+                                                {cleanEntityName(proj.name)}
                                             </AppText>
                                             <View style={styles.metaRow}>
                                                 <MapPin size={12} color={colors.slate}/>

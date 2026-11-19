@@ -23,6 +23,7 @@ import {
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {extractActionableError} from '@/shared/forms/marketplace/marketplace-forms';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, spacing} from '@/styles/tokens';
 
 function pilotBadgeColors(status: ProviderPilotStatus) {
@@ -190,9 +191,19 @@ export function ProviderPilotsScreen() {
                         <Card key={pilot.id}>
                             <View style={styles.rowBetween}>
                                 <AppText variant="title" style={styles.flex} numberOfLines={1}>
-                                    {pilot.fullName}
+                                    {cleanEntityName(pilot.fullName)}
                                 </AppText>
-                                <Badge label={pilot.status} background={tone.bg} color={tone.fg}/>
+                                <Badge
+                                    label={
+                                        pilot.status === 'AVAILABLE' || String(pilot.status) === 'ACTIVE'
+                                            ? t('mobile.overnight.uavStatusAvailable')
+                                            : pilot.status === 'IN_FLIGHT'
+                                              ? t('mobile.overnight.uavStatusInUse')
+                                              : t('mobile.overnight.uavStatusMaintenance')
+                                    }
+                                    background={tone.bg}
+                                    color={tone.fg}
+                                />
                             </View>
                             {pilot.licenseNumber ? (
                                 <View style={styles.metaRow}>
@@ -207,7 +218,7 @@ export function ProviderPilotsScreen() {
                                 <View style={styles.metaRow}>
                                     <Plane size={14} color={colors.slate}/>
                                     <AppText variant="caption" numberOfLines={1}>
-                                        {pilot.assignedUavModel}
+                                        {cleanEntityName(pilot.assignedUavModel)}
                                     </AppText>
                                 </View>
                             ) : null}

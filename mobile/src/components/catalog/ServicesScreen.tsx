@@ -3,72 +3,105 @@ import {Pressable, StyleSheet, View} from 'react-native';
 import {Stack, useLocalSearchParams, useRouter} from 'expo-router';
 import {AssistantMascot} from '@/components/assistant/AssistantMascot';
 import {
-    ArrowUpDown,
-    Award,
-    Camera,
-    Layers,
-    Megaphone,
-    Package,
-    Plane,
-    Plus,
-    ShieldCheck,
-    SlidersHorizontal,
-    Sparkles,
-    Star,
+    ArrowUpDown, Award, Camera, Layers, Package, Plane, Plus, ShieldCheck, SlidersHorizontal, Sparkles, Star,
 } from 'lucide-react-native';
+import {IllustrativeFooterNote} from '@/components/shared/IllustrativeDisclaimer';
 import {
-    AppText,
-    Badge,
-    Button,
-    Card,
-    ChipGroup,
-    EmptyState,
-    ErrorState,
-    GlassSurface,
-    LoadingState,
-    Screen,
-    SectionTitle,
-    TextField,
+    AppText, Badge, Button, Card, ChipGroup, EmptyState, ErrorState, GlassSurface, LoadingState, Screen, SectionTitle, TextField,
 } from '@/components/ui';
 import {GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
 import {MarketplaceListingGrid} from '@/components/marketplace/catalog/MarketplaceListingGrid';
 import {usePublicListings} from '@/hooks/marketplace/useMarketplaceCatalog';
 import {useServices} from '@/hooks/mission/useCustomerMissions';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {useToast} from '@/providers/ToastContext';
+import {
+    SERVICE_CATEGORIES,
+    WEB_SERVICE_CATEGORIES,
+} from '@/shared/lib/marketplace/service-categories';
 import {displayLabel, serviceName} from '@/shared/lib/presentation';
 import type {ListingSortOption, ListingType} from '@/shared/types/marketplace/marketplace.types';
+import type {MissionType} from '@/shared/types/mission/mission.types';
 import {colors, radius, spacing} from '@/styles/tokens';
+import {cleanDescriptionText, cleanEntityName} from '@/utils/marketplace/clean-text';
 
 type LeaseFilter = ListingType | 'ALL';
 const VALID_LEASE_FILTERS: readonly LeaseFilter[] = ['ALL', 'FLIGHT_SERVICE', 'WET_LEASE', 'DRY_LEASE'];
+const VALID_MISSION_TYPES: readonly MissionType[] = [
+    'AREA_INSPECTION',
+    'DATA_COLLECTION',
+    'AERIAL_RECORDING',
+    'UAV_RENTAL',
+];
 
 export function ServicesScreen() {
     const {t, formatNumber} = useI18n();
     const {status, can} = useAuth();
-    const toast = useToast();
     const router = useRouter();
-    const params = useLocalSearchParams<{ q?: string; type?: string }>();
-    const {rfqEnabled} = useSiteInfo();
+    const params = useLocalSearchParams<{ q?: string; type?: string; category?: string }>();
 
     const requestedQ = typeof params.q === 'string' ? params.q : '';
     const requestedType: LeaseFilter = VALID_LEASE_FILTERS.includes(params.type as LeaseFilter)
         ? (params.type as LeaseFilter)
         : 'ALL';
-    const [chosenQ, setChosenQ] = useState<{ from: string | undefined; value: string }>({
-        from: params.q,
-        value: requestedQ,
+    const requestedMission: MissionType | '' = VALID_MISSION_TYPES.includes(params.category as MissionType)
+        ? (params.category as MissionType)
+        : '';
+    const paramSignature = `${requestedQ}|${requestedType}|${requestedMission}`;
+
+    const [filterState, setFilterState] = useState<{
+        sig: string;
+        keyword: string;
+        leaseFilter: LeaseFilter;
+        missionFilter: MissionType | '';
+    }>({
+        sig: paramSignature,
+        keyword: requestedQ,
+        leaseFilter: requestedType,
+        missionFilter: requestedMission,
     });
-    const [chosenType, setChosenType] = useState<{ from: string | undefined; value: LeaseFilter }>({
-        from: params.type,
-        value: requestedType,
-    });
-    const keyword = chosenQ.from === params.q ? chosenQ.value : requestedQ;
-    const leaseFilter = chosenType.from === params.type ? chosenType.value : requestedType;
-    const setKeyword = (value: string) => setChosenQ({from: params.q, value});
-    const setLeaseFilter = (value: LeaseFilter) => setChosenType({from: params.type, value});
+
+    const active =
+        filterState.sig === paramSignature
+            ? filterState
+            : {
+                  sig: paramSignature,
+                  keyword: requestedQ,
+                  leaseFilter: requestedType,
+                  missionFilter: requestedMission,
+              };
+
+    const setKeyword = (keyword: string) =>
+        setFilterState({...active, sig: paramSignature, keyword});
+    const setLeaseFilter = (leaseFilter: LeaseFilter) =>
+        setFilterState({
+            ...active,
+            sig: paramSignature,
+            leaseFilter,
+            missionFilter: leaseFilter === 'WET_LEASE' || leaseFilter === 'DRY_LEASE' ? '' : active.missionFilter,
+        });
+    const handleSelectCategoryKey = (key: string) => {
+        if (key === 'all') {
+            setFilterState({...active, sig: paramSignature, leaseFilter: 'ALL', missionFilter: ''});
+            return;
+        }
+        const cat = SERVICE_CATEGORIES.find(item => item.key === key);
+        if (!cat) return;
+        setFilterState({
+            ...active,
+            sig: paramSignature,
+            leaseFilter: cat.listingType ?? 'ALL',
+            missionFilter: cat.missionType ?? '',
+        });
+    };
+
+    const {keyword, leaseFilter, missionFilter} = active;
+    const activeCategoryKey = missionFilter
+        ? missionFilter
+        : leaseFilter === 'WET_LEASE' || leaseFilter === 'DRY_LEASE'
+          ? leaseFilter
+          : 'all';
+
     const [sortBy, setSortBy] = useState<ListingSortOption>('featured');
     const [filtersExpanded, setFiltersExpanded] = useState(false);
     const [showStandard, setShowStandard] = useState(false);
@@ -76,6 +109,7 @@ export function ServicesScreen() {
     const listingsQuery = usePublicListings({
         keyword: keyword.trim() || undefined,
         listingType: leaseFilter === 'ALL' ? '' : leaseFilter,
+        missionType: missionFilter || '',
         sortBy,
         size: 20,
     });
@@ -95,23 +129,16 @@ export function ServicesScreen() {
         {value: 'price_desc', label: t('mobile.marketplace.sortPriceDesc'), icon: ArrowUpDown},
     ];
 
-    const quickLeaseChips = leaseOptions.map(opt => ({value: opt.value, label: opt.label}));
+    const categoryChips = WEB_SERVICE_CATEGORIES.map(cat => ({
+        value: cat.key,
+        label: t(cat.labelKey),
+    }));
     const listings = listingsQuery.data?.content ?? [];
     const activeStandard = (services.data ?? []).filter(service => service.active);
-    const canBook = status !== 'signed-in' || can('MISSION_CREATE');
 
     const handleRefresh = () => {
         void listingsQuery.refetch();
         if (status === 'signed-in') void services.refetch();
-    };
-
-    const handleOpenRfq = () => {
-        if (status !== 'signed-in') {
-            toast.show(t('mobile.shop.loginToBookToast'), 'info');
-            router.push('/login');
-            return;
-        }
-        router.push({pathname: '/customer/mission/create', params: {rfq: '1'}});
     };
 
     return (
@@ -173,9 +200,9 @@ export function ServicesScreen() {
                 </View>
 
                 <ChipGroup
-                    options={quickLeaseChips}
-                    value={leaseFilter}
-                    onChange={setLeaseFilter}
+                    options={categoryChips}
+                    value={activeCategoryKey}
+                    onChange={handleSelectCategoryKey}
                 />
 
                 {filtersExpanded && (
@@ -194,33 +221,15 @@ export function ServicesScreen() {
                             options={sortOptions}
                             onChange={setSortBy}
                         />
-                        {rfqEnabled && canBook ? (
-                            <Button
-                                size="sm"
-                                tone="secondary"
-                                icon={Megaphone}
-                                label={t('mobile.marketplace.postRfq')}
-                                onPress={handleOpenRfq}
-                            />
-                        ) : null}
                     </Card>
                 )}
 
-                <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={t('mobile.shop.escrowMicroHint')}
-                    onPress={rfqEnabled && canBook ? handleOpenRfq : undefined}
-                    style={({pressed}) => [styles.escrowBar, pressed && styles.pressed]}>
+                <View style={styles.escrowBar}>
                     <ShieldCheck size={15} color={colors.primary}/>
                     <AppText variant="caption" style={styles.escrowText} numberOfLines={1}>
                         {t('mobile.shop.escrowMicroHint')}
                     </AppText>
-                    {rfqEnabled && canBook ? (
-                        <AppText variant="caption" style={styles.rfqInlineLink}>
-                            RFQ
-                        </AppText>
-                    ) : null}
-                </Pressable>
+                </View>
             </View>
 
             <SectionTitle
@@ -242,15 +251,19 @@ export function ServicesScreen() {
                     icon={Layers}
                     message={t('mobile.marketplace.emptyListings')}
                     action={
-                        keyword.trim() || leaseFilter !== 'ALL' ? (
+                        keyword.trim() || leaseFilter !== 'ALL' || Boolean(missionFilter) ? (
                             <Button
                                 size="sm"
                                 tone="secondary"
                                 label={t('mobile.marketplace.filterAll')}
-                                onPress={() => {
-                                    setKeyword('');
-                                    setLeaseFilter('ALL');
-                                }}
+                                onPress={() =>
+                                    setFilterState({
+                                        sig: paramSignature,
+                                        keyword: '',
+                                        leaseFilter: 'ALL',
+                                        missionFilter: '',
+                                    })
+                                }
                             />
                         ) : undefined
                     }
@@ -281,9 +294,9 @@ export function ServicesScreen() {
                             background={colors.slateLight}
                             color={colors.slateDark}
                         />
-                        <AppText variant="title">{serviceName(service)}</AppText>
+                        <AppText variant="title">{cleanEntityName(serviceName(service))}</AppText>
                         <AppText variant="small">
-                            {service.description || t('services.defaultDescription')}
+                            {cleanDescriptionText(service.description || t('services.defaultDescription'))}
                         </AppText>
                         {can('MISSION_CREATE') ? (
                             <Button
@@ -301,6 +314,7 @@ export function ServicesScreen() {
                         ) : null}
                     </Card>
                 ))}
+            <IllustrativeFooterNote/>
         </Screen>
     );
 }
@@ -319,10 +333,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: colors.inputBorder,
     },
-    filterBtnActive: {
-        backgroundColor: colors.slate900,
-        borderColor: colors.slate900,
-    },
+    filterBtnActive: {backgroundColor: colors.slate900, borderColor: colors.slate900},
     filterBtnText: {color: colors.slateDark, fontWeight: '600'},
     filterBtnTextActive: {color: colors.white},
     filterDrawer: {gap: spacing.sm, padding: spacing.md},
@@ -338,7 +349,6 @@ const styles = StyleSheet.create({
         borderColor: colors.primarySoftBorder,
     },
     escrowText: {flex: 1, color: colors.slateDark, fontWeight: '600'},
-    rfqInlineLink: {color: colors.primary, fontWeight: '700'},
     assistantBtn: {width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center'},
     assistantBtnFallback: {
         backgroundColor: colors.surface,

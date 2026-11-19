@@ -17,6 +17,11 @@ import {
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {MissionRow} from '@/components/mission/MissionBits';
 import {
+    IllustrativeBadge,
+    IllustrativeFooterNote,
+} from '@/components/shared/IllustrativeDisclaimer';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
+import {
     AppText,
     Badge,
     Button,
@@ -130,7 +135,7 @@ export function ProjectDetailScreen() {
             refreshing={detail.isRefetching || subsQuery.isRefetching}>
             <Stack.Screen
                 options={{
-                    title: project.name,
+                    title: cleanEntityName(project.name),
                     headerRight: () => (
                         <HeaderIconButton
                             icon={Edit3}
@@ -151,7 +156,7 @@ export function ProjectDetailScreen() {
                     <FolderKanban size={22} color={colors.primary}/>
                     <View style={styles.flex}>
                         <AppText variant="heading" numberOfLines={2}>
-                            {project.name}
+                            {cleanEntityName(project.name)}
                         </AppText>
                         <View style={styles.metaRow}>
                             <MapPin size={14} color={colors.slate}/>
@@ -214,7 +219,7 @@ export function ProjectDetailScreen() {
                                 <Badge label={tone.label} background={tone.bg} color={tone.fg}/>
                             </View>
                             <AppText variant="title" numberOfLines={2}>
-                                {sub.listingTitle || `#${sub.listingId}`}
+                                {cleanEntityName(sub.listingTitle) || `#${sub.listingId}`}
                             </AppText>
                             <View style={styles.metaRow}>
                                 <CalendarClock size={13} color={colors.slate}/>
@@ -227,9 +232,7 @@ export function ProjectDetailScreen() {
                                     <AppText variant="title" style={styles.price} numberOfLines={1}>
                                         {formatVndCompact(sub.estimatedTotalVnd)}
                                     </AppText>
-                                    <AppText variant="caption" numberOfLines={1}>
-                                        {t('mobile.shop.illustrativePrice')}
-                                    </AppText>
+                                    <IllustrativeBadge/>
                                 </View>
                             ) : null}
                             {sub.status !== 'ENDED' ? (
@@ -320,6 +323,7 @@ export function ProjectDetailScreen() {
                     />
                 ))
             )}
+            <IllustrativeFooterNote/>
         </Screen>
     );
 }

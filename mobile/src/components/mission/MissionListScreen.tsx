@@ -81,7 +81,7 @@ export function MissionListScreen() {
                     directionalLockEnabled
                     alwaysBounceHorizontal={false}
                     showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={[styles.list, {paddingBottom: insets.bottom + 116}]}
+                    contentContainerStyle={[styles.list, {paddingBottom: insets.bottom + spacing.xl}]}
                     ListHeaderComponent={filters}
                     renderItem={({item}) => (
                         <MissionRow

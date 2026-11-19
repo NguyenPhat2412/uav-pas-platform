@@ -2,6 +2,10 @@ import React, {useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {ArrowDownToLine, Receipt, Wallet} from 'lucide-react-native';
 import {
+    IllustrativeBadge,
+    IllustrativeFooterNote,
+} from '@/components/shared/IllustrativeDisclaimer';
+import {
     AppText,
     Badge,
     Button,
@@ -102,9 +106,12 @@ export function ProviderWalletScreen() {
             onRefresh={() => void walletQuery.refetch()}
             refreshing={walletQuery.isRefetching}>
             <GlassSurface style={styles.heroGlass} fallback={styles.heroFallback}>
-                <AppText variant="caption" numberOfLines={1}>
-                    {t('mobile.provider.availableBalance')} · {t('mobile.shop.illustrativePrice')}
-                </AppText>
+                <View style={styles.rowBetween}>
+                    <AppText variant="caption" numberOfLines={1}>
+                        {t('mobile.provider.availableBalance')}
+                    </AppText>
+                    <IllustrativeBadge/>
+                </View>
                 <AppText variant="display" style={styles.price} numberOfLines={1} adjustsFontSizeToFit>
                     {formatVndCompact(available)}
                 </AppText>
@@ -244,6 +251,7 @@ export function ProviderWalletScreen() {
                     </Card>
                 ))
             )}
+            <IllustrativeFooterNote/>
         </Screen>
     );
 }

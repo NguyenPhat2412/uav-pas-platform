@@ -18,6 +18,7 @@ import {
 import {useProjectList} from '@/hooks/project/useProjects';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 /**
@@ -99,14 +100,14 @@ export function ProjectListScreen() {
                                 params: {id: String(project.id)},
                             })
                         }
-                        accessibilityLabel={project.name}>
+                        accessibilityLabel={cleanEntityName(project.name)}>
                         <View style={styles.row}>
                             <View style={styles.iconBox}>
                                 <FolderKanban size={20} color={colors.primary}/>
                             </View>
                             <View style={styles.flex}>
                                 <AppText variant="title" numberOfLines={2}>
-                                    {project.name}
+                                    {cleanEntityName(project.name)}
                                 </AppText>
                                 <View style={styles.metaRow}>
                                     <MapPin size={13} color={colors.slate}/>

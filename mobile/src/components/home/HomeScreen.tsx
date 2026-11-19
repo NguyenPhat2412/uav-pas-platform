@@ -10,6 +10,8 @@ import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {MarketplaceListingGrid} from '@/components/marketplace/catalog/MarketplaceListingGrid';
 import {UserAvatar} from '@/components/profile/UserAvatar';
 import {AppLogo} from '@/components/shared/BrandMark';
+import {IllustrativeFooterNote} from '@/components/shared/IllustrativeDisclaimer';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {
     AppText,
     Button,
@@ -53,7 +55,7 @@ function MarketplaceHomeHeader() {
                     {formatDate(new Date(), {weekday: 'short', day: 'numeric', month: 'numeric'})}
                 </AppText>
                 <AppText variant="title" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}>
-                    {user?.fullName || user?.username || ''}
+                    {cleanEntityName(user?.fullName || user?.username || '')}
                 </AppText>
             </View>
         </View>
@@ -173,6 +175,7 @@ export function HomeScreen() {
                         label={t('mobile.shop.exploreMoreBtn')}
                         onPress={() => router.navigate('/customer/services')}
                     />
+                    <IllustrativeFooterNote/>
                 </>
             )}
         </Screen>

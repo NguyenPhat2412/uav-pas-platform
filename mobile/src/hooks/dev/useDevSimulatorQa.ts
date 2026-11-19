@@ -1,20 +1,23 @@
 import {useEffect, useRef} from 'react';
-import {Linking} from 'react-native';
-import {useGlobalSearchParams} from 'expo-router';
+import {Linking, LogBox} from 'react-native';
+import {useGlobalSearchParams, usePathname} from 'expo-router';
 import {setDevApiBaseUrl} from '@/config/env';
 import {setDevSimulatedOffline} from '@/hooks/network/useNetworkStatus';
 import {useAuth} from '@/providers/AuthContext';
 import {TEXT_SIZES, useTextSize, type TextSize} from '@/providers/TextSizeContext';
+import type {AuthResponse} from '@/shared/types/auth/auth.types';
 
 interface DevQaPayload {
     id?: string;
     api?: string;
     user?: string;
     pass?: string;
+    auth?: AuthResponse;
     logout?: boolean;
     textSize?: TextSize;
     offline?: 'banner' | 'modal' | 'off';
     maxWidth?: number | null;
+    scrollToEnd?: boolean;
 }
 
 function decodeHexJson(hex: string): DevQaPayload | null {
@@ -38,15 +41,18 @@ function decodeHexJson(hex: string): DevQaPayload | null {
 export function useDevSimulatorQa(): void {
     const auth = useAuth();
     const {setSize} = useTextSize();
+    const pathname = usePathname();
     const globalParams = useGlobalSearchParams<{ __devQa?: string }>();
     const authRef = useRef(auth);
     const sizeRef = useRef(setSize);
+    const pathRef = useRef(pathname);
     const handledRef = useRef<string>('');
 
     useEffect(() => {
         authRef.current = auth;
         sizeRef.current = setSize;
-    }, [auth, setSize]);
+        pathRef.current = pathname;
+    }, [auth, pathname, setSize]);
 
     useEffect(() => {
         if (typeof __DEV__ === 'undefined' || !__DEV__) return;
@@ -56,6 +62,7 @@ export function useDevSimulatorQa(): void {
             const cmd = decodeHexJson(hex);
             if (!cmd) return;
             handledRef.current = hex;
+            LogBox.ignoreAllLogs(true);
 
             if (cmd.api) {
                 setDevApiBaseUrl(cmd.api);
@@ -76,12 +83,37 @@ export function useDevSimulatorQa(): void {
             if (cmd.logout) {
                 await authRef.current.logout();
             }
-            if (cmd.user && cmd.pass) {
-                if (authRef.current.status === 'signed-in' && authRef.current.user?.username !== cmd.user) {
-                    await authRef.current.logout();
+            if (cmd.auth) {
+                try {
+                    await authRef.current.completeAuth(cmd.auth);
+                    await authRef.current.switchPortal('customer');
+                } catch {}
+            } else if (cmd.user && cmd.pass) {
+                try {
+                    if (authRef.current.status === 'signed-in' && authRef.current.user?.username !== cmd.user) {
+                        await authRef.current.logout();
+                    }
+                    if (authRef.current.status !== 'signed-in') {
+                        await authRef.current.login(cmd.user, cmd.pass);
+                    }
+                    await authRef.current.switchPortal('customer');
+                } catch {}
+            }
+            if ('scrollToEnd' in cmd) {
+                const g = globalThis as {
+                    __uavScrollBottom?: boolean;
+                    __uavScrollRefs?: Record<string, { current?: { scrollToEnd?: (opts?: { animated?: boolean }) => void } | null }>;
+                };
+                g.__uavScrollBottom = Boolean(cmd.scrollToEnd);
+                if (cmd.scrollToEnd) {
+                    const triggerScroll = () => {
+                        for (const ref of Object.values(g.__uavScrollRefs ?? {})) {
+                            ref?.current?.scrollToEnd?.({animated: false});
+                        }
+                    };
+                    setTimeout(triggerScroll, 200);
+                    setTimeout(triggerScroll, 800);
                 }
-                await authRef.current.login(cmd.user, cmd.pass);
-                await authRef.current.switchPortal('customer');
             }
         };
 

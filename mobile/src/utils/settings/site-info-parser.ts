@@ -52,7 +52,7 @@ export function parseSiteInfo(info: PublicSiteInfo | null | undefined): ParsedSi
             5,
             2000,
         ),
-        rfqEnabled: parseBoolSetting(settings['marketplace.rfq_enabled'], true),
+        rfqEnabled: parseBoolSetting(settings['marketplace.rfq_enabled'], false),
         requireEscrowBeforeStart: parseBoolSetting(
             settings['marketplace.require_escrow_before_start'],
             false,

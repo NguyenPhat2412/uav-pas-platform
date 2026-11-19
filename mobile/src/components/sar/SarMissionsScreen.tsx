@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Bell, ChevronRight, Compass, Cpu, Crosshair, Radio, Users} from 'lucide-react-native';
 import {AppText, Badge, Card, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState} from '@/components/ui';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
@@ -104,6 +105,7 @@ function SarMissionCard({item, onPress}: { item: SarCockpitMission; onPress: () 
 export function SarMissionsScreen() {
     const {t} = useI18n();
     const router = useRouter();
+    const insets = useSafeAreaInsets();
     const {unreadCount} = useNotifications();
     const [mode, setMode] = useState<SarFilterMode>('active');
     const [refreshing, setRefreshing] = useState(false);
@@ -152,11 +154,12 @@ export function SarMissionsScreen() {
                 <FlatList
                     data={items}
                     keyExtractor={item => String(item.sarId)}
-                    contentInsetAdjustmentBehavior="never"
+                    contentInsetAdjustmentBehavior="automatic"
+                    automaticallyAdjustsScrollIndicatorInsets
                     directionalLockEnabled
                     alwaysBounceHorizontal={false}
                     showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.list}
+                    contentContainerStyle={[styles.list, {paddingBottom: insets.bottom + spacing.xl}]}
                     ListHeaderComponent={
                         <ChipGroup<SarFilterMode>
                             value={mode}

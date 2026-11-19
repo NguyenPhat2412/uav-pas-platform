@@ -1,40 +1,22 @@
-import React from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useLocalSearchParams} from 'expo-router';
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import {
-    BatteryCharging,
-    CalendarCheck2,
-    CheckCircle2,
-    Clock3,
-    Gauge,
-    Hourglass,
-    PackageCheck,
-    Plane,
-    Star,
-    Wifi,
-    type LucideIcon,
+    BatteryCharging, CalendarCheck2, CheckCircle2, Clock3, Gauge,
+    Hourglass, Navigation2, PackageCheck, Plane, Star, Wifi, type LucideIcon,
 } from 'lucide-react-native';
 import {
-    AppText,
-    Badge,
-    Card,
-    ErrorState,
-    LoadingState,
-    ScaledText,
-    Screen,
-    SectionTitle,
+    AppText, Badge, Card, ErrorState, LoadingState, ScaledText, Screen, SectionTitle,
 } from '@/components/ui';
 import {useMissionDetail} from '@/hooks/mission/useCustomerMissions';
 import {useOrderTracking} from '@/hooks/order/useOrders';
 import {useI18n} from '@/providers/I18nContext';
 import type {OrderStatusGroup} from '@/shared/types/project/project.types';
-import {
-    formatTrackingLink,
-    ORDER_STATUS_GROUPS,
-    resolveOrderStatusGroup,
-} from '@/utils/mission/order-groups';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
+import {formatTrackingLink, ORDER_STATUS_GROUPS, resolveOrderStatusGroup} from '@/utils/mission/order-groups';
 import {isFinitePoint} from '@/utils/operations/map-shapes';
+import {computeFitRegion, toLatLngList, type LatLng} from '@/utils/order/tracking-geometry';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 const MILESTONE_ICONS: Record<OrderStatusGroup, LucideIcon> = {
@@ -45,19 +27,12 @@ const MILESTONE_ICONS: Record<OrderStatusGroup, LucideIcon> = {
     TO_REVIEW: Star,
 };
 
-function toLatLngList(pairs?: number[][] | null): { latitude: number; longitude: number }[] {
-    if (!Array.isArray(pairs)) return [];
-    return pairs
-        .filter(p => Array.isArray(p) && p.length >= 2 && isFinitePoint(p[0], p[1]))
-        .map(p => ({latitude: p[0], longitude: p[1]}));
-}
-
 /**
  * Simulated UAV Flight & Delivery Tracking Screen (`GET /api/v1/orders/{id}/tracking`,
- * S1-mobile.md #5 & UI-GUIDE §3.6):
- * - Live Apple Map with simulated UAV position + planned waypoints + flown track
- * - 4 compact 1-line telemetry tiles (Progress, Battery, Link, ETA)
- * - Vertical Shopee-style milestone timeline with current milestone highlighted in brand red
+ * UI-REVIEW-9-FIXES #4 & UI-GUIDE §3.6):
+ * - Draws planned `waypoints` (dashed muted polyline) and flown `track` (solid primary polyline)
+ * - Rotates UAV marker at `position` by `headingDeg` and auto-fits bounds to the flight path
+ * - Displays "Đã bay xong · Chờ bàn giao" and hides "Còn lại 0 phút" once simulation completes
  */
 export function OrderTrackingScreen() {
     const {t, formatDate} = useI18n();
@@ -65,9 +40,39 @@ export function OrderTrackingScreen() {
     const orderId = Number(id);
     const trackingQuery = useOrderTracking(orderId);
     const {detail} = useMissionDetail(orderId);
+    const mapRef = useRef<MapView | null>(null);
 
     const tracking = trackingQuery.data;
     const mission = detail.data;
+
+    const uavLat = tracking?.position?.latitude ?? mission?.latitude ?? 21.0285;
+    const uavLng = tracking?.position?.longitude ?? mission?.longitude ?? 105.8542;
+    const headingDeg = Number.isFinite(tracking?.position?.headingDeg)
+        ? Number(tracking?.position?.headingDeg)
+        : 0;
+    const hasCoords = isFinitePoint(uavLat, uavLng);
+    const waypoints = useMemo(() => toLatLngList(tracking?.waypoints), [tracking?.waypoints]);
+    const track = useMemo(() => toLatLngList(tracking?.track), [tracking?.track]);
+
+    const fitPoints = useMemo(() => {
+        const pts: LatLng[] = [...waypoints, ...track];
+        if (hasCoords) pts.push({latitude: uavLat, longitude: uavLng});
+        return pts;
+    }, [hasCoords, track, uavLat, uavLng, waypoints]);
+
+    const fitFlightBounds = () => {
+        if (fitPoints.length >= 2) {
+            mapRef.current?.fitToCoordinates(fitPoints, {
+                edgePadding: {top: 40, right: 40, bottom: 40, left: 40},
+                animated: false,
+            });
+        }
+    };
+
+    useEffect(() => {
+        fitFlightBounds();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [waypoints.length, track.length]);
 
     const handleRefresh = () => {
         void trackingQuery.refetch();
@@ -94,11 +99,11 @@ export function OrderTrackingScreen() {
         );
     }
 
-    const uavLat = tracking?.position?.latitude ?? mission?.latitude ?? 21.0285;
-    const uavLng = tracking?.position?.longitude ?? mission?.longitude ?? 105.8542;
-    const hasCoords = isFinitePoint(uavLat, uavLng);
-    const waypoints = toLatLngList(tracking?.waypoints);
-    const track = toLatLngList(tracking?.track);
+    const rawStatus = String(tracking?.status ?? mission?.status ?? '');
+    const progressVal = Number(tracking?.progressPct ?? 0);
+    const isFlightDoneAwaitingHandover =
+        (rawStatus === 'IN_PROGRESS' || rawStatus === 'IN_FLIGHT') &&
+        (progressVal >= 100 || tracking?.activeSimulation === false);
 
     const activeGroup: OrderStatusGroup =
         (ORDER_STATUS_GROUPS.includes(tracking?.statusGroup as OrderStatusGroup)
@@ -111,10 +116,17 @@ export function OrderTrackingScreen() {
     const milestoneLabels: Record<OrderStatusGroup, string> = {
         PENDING: t('mobile.overnight.orderPending'),
         SCHEDULED: t('mobile.overnight.orderScheduled'),
-        IN_FLIGHT: t('mobile.overnight.orderInFlight'),
+        IN_FLIGHT: isFlightDoneAwaitingHandover
+            ? t('mobile.overnight.flightDoneAwaitingHandover')
+            : t('mobile.overnight.orderInFlight'),
         DELIVERED: t('mobile.overnight.orderDelivered'),
         TO_REVIEW: t('mobile.overnight.orderToReview'),
     };
+
+    const showEtaTile =
+        !isFlightDoneAwaitingHandover &&
+        tracking?.etaMinutes != null &&
+        Math.round(tracking.etaMinutes) > 0;
 
     return (
         <Screen
@@ -126,46 +138,58 @@ export function OrderTrackingScreen() {
                         {tracking?.missionCode || mission?.code || `#${orderId}`}
                     </AppText>
                     <Badge
-                        icon={Plane}
+                        icon={isFlightDoneAwaitingHandover ? CheckCircle2 : Plane}
                         label={milestoneLabels[activeGroup]}
-                        background={colors.primaryLight}
-                        color={colors.primary}
+                        background={isFlightDoneAwaitingHandover ? colors.slateLight : colors.primaryLight}
+                        color={isFlightDoneAwaitingHandover ? colors.slateDark : colors.primary}
                     />
                 </View>
                 {mission?.title ? (
                     <AppText variant="title" numberOfLines={2}>
-                        {mission.title}
+                        {cleanEntityName(mission.title)}
                     </AppText>
                 ) : null}
 
                 {hasCoords ? (
                     <View style={styles.mapFrame}>
                         <MapView
+                            ref={mapRef}
                             style={styles.map}
-                            initialRegion={{
-                                latitude: uavLat,
-                                longitude: uavLng,
-                                latitudeDelta: 0.018,
-                                longitudeDelta: 0.018,
-                            }}>
+                            initialRegion={computeFitRegion(fitPoints, uavLat, uavLng)}
+                            onMapReady={fitFlightBounds}>
                             {waypoints.length >= 2 ? (
                                 <Polyline
                                     coordinates={waypoints}
-                                    strokeColor={colors.slate}
-                                    strokeWidth={2}
+                                    strokeColor={colors.muted}
+                                    strokeWidth={2.5}
+                                    lineDashPattern={[6, 5]}
                                 />
                             ) : null}
                             {track.length >= 2 ? (
                                 <Polyline
                                     coordinates={track}
                                     strokeColor={colors.primary}
-                                    strokeWidth={3}
+                                    strokeWidth={3.5}
                                 />
+                            ) : null}
+                            {waypoints.length >= 2 ? (
+                                <Marker
+                                    coordinate={waypoints[0]}
+                                    anchor={{x: 0.5, y: 0.5}}
+                                    tracksViewChanges={false}>
+                                    <View style={styles.waypointStartDot}/>
+                                </Marker>
                             ) : null}
                             <Marker
                                 coordinate={{latitude: uavLat, longitude: uavLng}}
-                                pinColor={colors.primary}
-                            />
+                                anchor={{x: 0.5, y: 0.5}}
+                                flat>
+                                <View style={styles.uavMarkerOuter}>
+                                    <View style={{transform: [{rotate: `${headingDeg}deg`}]}}>
+                                        <Navigation2 size={14} color={colors.white} fill={colors.white}/>
+                                    </View>
+                                </View>
+                            </Marker>
                         </MapView>
                     </View>
                 ) : null}
@@ -185,7 +209,7 @@ export function OrderTrackingScreen() {
                             {t('mobile.overnight.trackingProgress')}
                         </AppText>
                         <ScaledText style={styles.kpiVal} numberOfLines={1}>
-                            {Math.round(tracking.progressPct ?? 0)}%
+                            {Math.round(progressVal)}%
                         </ScaledText>
                     </Card>
                     <Card style={styles.kpiTile}>
@@ -206,19 +230,19 @@ export function OrderTrackingScreen() {
                             {formatTrackingLink(tracking.link)}
                         </ScaledText>
                     </Card>
-                    <Card style={styles.kpiTile}>
-                        <Clock3 size={18} color={colors.primary}/>
-                        <AppText variant="caption" numberOfLines={1}>
-                            {t('mobile.overnight.trackingEta')}
-                        </AppText>
-                        <ScaledText style={styles.kpiVal} numberOfLines={1}>
-                            {tracking.etaMinutes != null
-                                ? t('mobile.overnight.trackingMinutes', {
-                                      min: Math.max(0, Math.round(tracking.etaMinutes)),
-                                  })
-                                : '—'}
-                        </ScaledText>
-                    </Card>
+                    {showEtaTile ? (
+                        <Card style={styles.kpiTile}>
+                            <Clock3 size={18} color={colors.primary}/>
+                            <AppText variant="caption" numberOfLines={1}>
+                                {t('mobile.overnight.trackingEta')}
+                            </AppText>
+                            <ScaledText style={styles.kpiVal} numberOfLines={1}>
+                                {t('mobile.overnight.trackingMinutes', {
+                                    min: Math.max(1, Math.round(tracking.etaMinutes ?? 0)),
+                                })}
+                            </ScaledText>
+                        </Card>
+                    ) : null}
                 </View>
             ) : null}
 
@@ -256,6 +280,8 @@ export function OrderTrackingScreen() {
                                 <AppText
                                     variant="title"
                                     numberOfLines={1}
+                                    adjustsFontSizeToFit
+                                    minimumFontScale={0.82}
                                     style={[
                                         styles.stepTitle,
                                         isCurrent && styles.stepTitleCurrent,
@@ -281,30 +307,28 @@ export function OrderTrackingScreen() {
 
 const styles = StyleSheet.create({
     headerRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.xs},
-    code: {fontWeight: '700', color: colors.slateDark},
+    code: {fontWeight: '700', color: colors.slateDark, flexShrink: 1},
     mapFrame: {
-        height: 220,
-        borderRadius: radius.card,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: colors.border,
-        backgroundColor: colors.slateLight,
+        height: 224, borderRadius: radius.card, overflow: 'hidden',
+        borderWidth: 1, borderColor: colors.border, backgroundColor: colors.slateLight,
     },
     map: {flex: 1},
+    waypointStartDot: {
+        width: 10, height: 10, borderRadius: 5,
+        backgroundColor: colors.surface, borderWidth: 2.5, borderColor: colors.slateDark,
+    },
+    uavMarkerOuter: {
+        width: 28, height: 28, borderRadius: 14, backgroundColor: colors.primary,
+        borderWidth: 2, borderColor: colors.white, alignItems: 'center', justifyContent: 'center',
+    },
     kpiGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs},
-    kpiTile: {flex: 1, minWidth: '46%', alignItems: 'center', gap: 4, paddingVertical: spacing.sm},
+    kpiTile: {flex: 1, minWidth: '30%', alignItems: 'center', gap: 4, paddingVertical: spacing.sm},
     kpiVal: {fontSize: font.title, fontWeight: '700', color: colors.text},
     stepRow: {flexDirection: 'row', alignItems: 'stretch', gap: spacing.sm},
     railCol: {alignItems: 'center', width: 28},
     dotCircle: {
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        backgroundColor: colors.slateLight,
-        borderWidth: 1,
-        borderColor: colors.border,
-        alignItems: 'center',
-        justifyContent: 'center',
+        width: 28, height: 28, borderRadius: 14, backgroundColor: colors.slateLight,
+        borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center',
     },
     dotCurrent: {backgroundColor: colors.primary, borderColor: colors.primary},
     dotDone: {backgroundColor: colors.slateLight, borderColor: colors.slate},

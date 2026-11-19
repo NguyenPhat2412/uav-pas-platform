@@ -3,6 +3,11 @@ import {StyleSheet, View} from 'react-native';
 import {Award, Layers, Package, Pause, Plane, Play, Plus, Send, Tag, Trash2, X} from 'lucide-react-native';
 import {ProviderTemplateQuickCard} from '@/components/marketplace/provider/ProviderTemplateQuickCard';
 import {
+    IllustrativeBadge,
+    IllustrativeFooterNote,
+} from '@/components/shared/IllustrativeDisclaimer';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
+import {
     AppText,
     Badge,
     Button,
@@ -278,15 +283,13 @@ export function ProviderListingsScreen() {
                             />
                         </View>
                         <AppText variant="title" numberOfLines={2}>
-                            {item.title}
+                            {cleanEntityName(item.title)}
                         </AppText>
                         <View style={styles.priceRow}>
                             <AppText variant="title" style={styles.price} numberOfLines={1}>
                                 {formatVndCompact(item.basePriceVnd)} / {pricingUnitLabel(item.pricingModel)}
                             </AppText>
-                            <AppText variant="caption" numberOfLines={1}>
-                                {t('mobile.shop.illustrativePrice')}
-                            </AppText>
+                            <IllustrativeBadge/>
                         </View>
                         {item.moderationNote ? (
                             <AppText variant="caption" style={styles.danger}>
@@ -323,6 +326,7 @@ export function ProviderListingsScreen() {
                     </Card>
                 ))
             )}
+            <IllustrativeFooterNote/>
         </Screen>
     );
 }

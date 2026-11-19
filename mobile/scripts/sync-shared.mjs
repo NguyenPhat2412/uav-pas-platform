@@ -57,6 +57,7 @@ export const ROOTS = [
     'forms/project/project-form.ts',
     'lib/api/routes.ts',
     'lib/api/messages.ts',
+    'lib/marketplace/service-categories.ts',
     'lib/format.ts',
     'lib/query',
     'hooks/airspace/query-keys.ts',

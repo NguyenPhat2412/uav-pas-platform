@@ -262,6 +262,19 @@ export function sanitizeMarketplaceText(raw?: string | null): string {
         .replace(/\bRTK\b/gi, 'GNSS');
 }
 
+/**
+ * Cleans entity titles/names (listings, projects, orders, UAV models) so illustrative markers
+ * are never repeated inside names (UI-REVIEW-9-FIXES #1).
+ */
+export function sanitizeMarketplaceName(raw?: string | null): string {
+    if (!raw) return '';
+    return raw
+        .replace(/\s*(?:[—–\-·|]\s*|\(\s*)(minh hoạ|minh họa|mô phỏng|giả lập|illustrative|simulated)\s*\)?/gi, '')
+        .replace(/\bRTK\b/gi, 'GNSS')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+}
+
 /** Classifies an `ORDER_UPDATED` realtime frame into a deduplication key and toast tone with icon. */
 export function describeOrderRealtimeToast(frame: {
     missionId: number;
@@ -286,7 +299,7 @@ const SEO_FALLBACK_IMAGES: Record<string, string> = {
     UAV_RENTAL: '/images/services/uav-rental-fleet.webp',
     AREA_INSPECTION: '/images/services/aerial-inspection-grid.webp',
     AERIAL_RECORDING: '/images/services/aerial-recording-cinema.webp',
-    DATA_COLLECTION: '/images/services/data-collection-corridor.webp',
+    DATA_COLLECTION: '/images/solutions/infra-3d-survey.webp',
 };
 
 /** Builds fleet-anonymous `<title>`, `description`, and Open Graph cover image for a public service listing. */
@@ -296,7 +309,7 @@ export function formatListingSeoMeta(
         'title' | 'summary' | 'description' | 'province' | 'missionType' | 'coverImageUrl' | 'basePriceVnd'
     >,
 ): { title: string; description: string; imageUrl: string } {
-    const cleanTitle = sanitizeMarketplaceText(listing.title).trim();
+    const cleanTitle = sanitizeMarketplaceName(listing.title);
     const title = cleanTitle || 'Chi tiết dịch vụ UAV';
     const rawDesc = sanitizeMarketplaceText(listing.summary || listing.description || '').trim();
     const priceVnd = Number(listing.basePriceVnd || 0);
@@ -306,7 +319,7 @@ export function formatListingSeoMeta(
             : 'Đơn giá minh hoạ';
     const locationPart = listing.province ? ` tại ${listing.province}` : '';
     const baseDesc = rawDesc || `Dịch vụ bay chuyên dụng từ Đối tác đã xác minh UAV PAS${locationPart}.`;
-    const combined = `${baseDesc} (${priceSuffix})`.replace(/\(\s*([^)]*minh hoạ[^)]*)\s*\)/gi, '— $1');
+    const combined = `${baseDesc} — ${priceSuffix}`;
     const description = combined.length > 165 ? `${combined.slice(0, 162).trim()}…` : combined;
     const customCover = listing.coverImageUrl?.trim();
     const imageUrl =

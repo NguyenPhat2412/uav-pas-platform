@@ -187,3 +187,63 @@ test('S1 VoiceOver a11y & ORDER_UPDATED realtime sync across Home, Projects, and
     const missionsHook = read('hooks/mission/useCustomerMissions.ts');
     assert.match(missionsHook, /useOrderRealtimeSync/);
 });
+
+test('UI-REVIEW-9-FIXES S1: clean entity names, USGS-free cover fallback, NativeTabs automatic inset, flight path tracking, RFQ hidden, shared categories & 409 conflicts', async () => {
+    const {cleanEntityName, cleanDescriptionText, formatProviderConflictError} = await import('../src/utils/marketplace/clean-text.ts');
+    const {computeFitRegion, toLatLngList} = await import('../src/utils/order/tracking-geometry.ts');
+    const {SERVICE_CATEGORIES, WEB_SERVICE_CATEGORIES} = await import('../src/shared/lib/marketplace/service-categories.ts');
+
+    // #1: Never attach "— minh hoạ" / "(minh hoạ)" to service, UAV, pilot, fleet, or project names
+    assert.equal(cleanEntityName('Khảo sát bản đồ 2D/3D định kỳ — minh hoạ'), 'Khảo sát bản đồ 2D/3D định kỳ');
+    assert.equal(cleanEntityName('Đội bay Miền Bắc (minh hoạ)'), 'Đội bay Miền Bắc');
+    assert.equal(cleanEntityName('DJI Mavic 3 RTK — giá minh hoạ'), 'DJI Mavic 3 GNSS');
+    assert.equal(cleanDescriptionText('Gói chụp ảnh nhiệt pin mặt trời — giá minh hoạ.'), 'Gói chụp ảnh nhiệt pin mặt trời.');
+
+    // #2: Cover resolver never falls back to shared photos when null and blocks USGS logo assets
+    const coverSrc = read('components/marketplace/catalog/listing-cover.ts');
+    assert.match(coverSrc, /if \(!raw \|\| BLOCKED_LOGO_COVER_RE\.test\(raw\)\)/);
+    assert.match(coverSrc, /usgs\|plum-island\|yosemite\|data-collection-corridor/);
+    assert.equal(existsSync(new URL('../assets/services/data-collection-corridor.webp', import.meta.url).pathname), false);
+
+    // #3: NativeTabs / ScrollView automatic bottom clearance (no magic 120/128 numbers)
+    const uiSrc = read('components/ui/index.tsx');
+    assert.match(uiSrc, /contentInsetAdjustmentBehavior=\{isTabRoot \? 'automatic' : 'never'\}/);
+    assert.doesNotMatch(uiSrc, /isTabRoot \? 128/);
+    const tabStackSrc = read('components/layout/TabStack.tsx');
+    assert.match(tabStackSrc, /bottom:\s*'automatic'/);
+
+    // #4: OrderTrackingScreen draws waypoints (dashed) + track (solid), rotates UAV marker, fits bounds, and handles flight complete
+    const trackingPts = toLatLngList([[21.0285, 105.8542], [21.0301, 105.8562]]);
+    assert.equal(trackingPts.length, 2);
+    const region = computeFitRegion(trackingPts, 21.0285, 105.8542);
+    assert.ok(region.latitudeDelta >= 0.0022 && region.latitudeDelta < 0.01);
+    const trackingScreen = read('components/order/OrderTrackingScreen.tsx');
+    assert.match(trackingScreen, /lineDashPattern=\{\[6,\s*5\]\}/);
+    assert.match(trackingScreen, /headingDeg/);
+    assert.match(trackingScreen, /fitToCoordinates/);
+    assert.match(trackingScreen, /flightDoneAwaitingHandover/);
+
+    // #5: RFQ UI entry points hidden while API client functions stay intact
+    const providerOrders = read('components/marketplace/provider/ProviderOrdersScreen.tsx');
+    assert.doesNotMatch(providerOrders, /tabOpenRfq/);
+    assert.doesNotMatch(providerOrders, /ProviderRfqBidForm/);
+    const detailScreen = read('components/marketplace/catalog/MarketplaceListingDetailScreen.tsx');
+    assert.doesNotMatch(detailScreen, /needCustomQuote/);
+    const apiSrc = read('api/marketplace/marketplace.api.ts');
+    assert.match(apiSrc, /listOpenRfqs:/);
+
+    // #8: Shared service categories synced from customer/src/lib/marketplace/service-categories.ts
+    assert.equal(SERVICE_CATEGORIES.length, 6);
+    assert.equal(WEB_SERVICE_CATEGORIES.length, 7);
+    const showcaseSrc = read('components/home/ServiceCategoryShowcase.tsx');
+    assert.match(showcaseSrc, /@\/shared\/lib\/marketplace\/service-categories/);
+    const servicesSrc = read('components/catalog/ServicesScreen.tsx');
+    assert.match(servicesSrc, /WEB_SERVICE_CATEGORIES/);
+
+    // S0 409 conflict codes mapped cleanly
+    const mockT = key => key;
+    assert.equal(formatProviderConflictError({status: 409, code: 'UAV_TIME_CONFLICT'}, mockT), 'mobile.overnight.conflictUavTime');
+    assert.equal(formatProviderConflictError({status: 409, code: 'OPERATOR_TIME_CONFLICT'}, mockT), 'mobile.overnight.conflictOperatorTime');
+    assert.equal(formatProviderConflictError({status: 409, code: 'UAV_IN_USE'}, mockT), 'mobile.overnight.conflictUavInUse');
+    assert.equal(formatProviderConflictError({status: 409, code: 'NO_UAV_AVAILABLE'}, mockT), 'mobile.overnight.conflictNoUavAvailable');
+});

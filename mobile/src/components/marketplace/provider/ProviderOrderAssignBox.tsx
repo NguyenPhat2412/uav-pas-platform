@@ -7,15 +7,20 @@ import {type ProviderPilot} from '@/hooks/marketplace/useProviderStudio';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import type {ProviderUav} from '@/shared/types/marketplace/marketplace.types';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {spacing} from '@/styles/tokens';
 
 /**
  * Pilot + UAV assignment & simulated flight start box on accepted Partner Studio orders
  * (`POST /api/v1/marketplace/provider/orders/{missionId}/assign` + `/start`, CONTRACT.md §3).
+ * Displays UAV serial bold on line 1 + model caption on line 2, and disables "Lưu phân công"
+ * until selection changes so "Bắt đầu bay thực hiện" stays the single primary CTA.
  */
 export function ProviderOrderAssignBox({
     uavs,
     pilots,
+    currentUavId,
+    currentPilotUserId,
     assigning,
     starting,
     onAssign,
@@ -23,6 +28,8 @@ export function ProviderOrderAssignBox({
 }: {
     uavs: ProviderUav[];
     pilots: ProviderPilot[];
+    currentUavId?: number | null;
+    currentPilotUserId?: number | null;
     assigning: boolean;
     starting: boolean;
     onAssign: (payload: { pilotId?: number; uavId: number }) => void;
@@ -30,23 +37,36 @@ export function ProviderOrderAssignBox({
 }) {
     const {t} = useI18n();
     const toast = useToast();
-    const [pilotId, setPilotId] = useState('');
-    const [uavId, setUavId] = useState('');
+    const initialPilot =
+        pilots.find(
+            p =>
+                currentPilotUserId != null &&
+                (p.pilotUserId === currentPilotUserId || p.id === currentPilotUserId),
+        )?.id ?? '';
+    const initialUav = currentUavId != null ? String(currentUavId) : String(uavs[0]?.id ?? '');
+
+    const [pilotId, setPilotId] = useState(initialPilot ? String(initialPilot) : '');
+    const [uavId, setUavId] = useState(initialUav);
+
+    const dirty =
+        pilotId !== (initialPilot ? String(initialPilot) : '') ||
+        uavId !== initialUav ||
+        currentUavId == null;
 
     const pilotOptions: GlassOption<string>[] = [
         {value: '', label: t('mobile.overnight.assignPilotPlaceholder'), icon: UserCheck},
         ...pilots.map(p => ({
             value: String(p.id),
-            label: p.fullName,
-            description: p.licenseNumber || p.status,
+            label: cleanEntityName(p.fullName),
+            description: p.licenseNumber || p.specialization || undefined,
             icon: UserCheck,
         })),
     ];
 
     const uavOptions: GlassOption<string>[] = uavs.map(u => ({
         value: String(u.id),
-        label: u.model,
-        description: `SN: ${u.serialNumber}`,
+        label: u.serialNumber,
+        description: cleanEntityName(u.model),
         icon: Plane,
     }));
 
@@ -72,6 +92,7 @@ export function ProviderOrderAssignBox({
                     value={pilotId}
                     options={pilotOptions}
                     onChange={setPilotId}
+                    showTriggerDescription
                 />
             ) : null}
             {uavOptions.length > 0 ? (
@@ -82,6 +103,7 @@ export function ProviderOrderAssignBox({
                     value={uavId || String(uavs[0]?.id ?? '')}
                     options={uavOptions}
                     onChange={setUavId}
+                    showTriggerDescription
                 />
             ) : null}
             <View style={styles.row}>
@@ -90,6 +112,7 @@ export function ProviderOrderAssignBox({
                         size="sm"
                         tone="secondary"
                         icon={UserCheck}
+                        disabled={!dirty}
                         loading={assigning}
                         label={t('mobile.overnight.assignOrderBtn')}
                         onPress={handleAssign}

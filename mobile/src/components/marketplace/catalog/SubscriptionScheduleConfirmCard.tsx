@@ -1,6 +1,10 @@
 import React from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {CalendarClock, CheckCircle2, FolderKanban, Repeat} from 'lucide-react-native';
+import {
+    IllustrativeBadge,
+    IllustrativeFooterNote,
+} from '@/components/shared/IllustrativeDisclaimer';
 import {AppText, Card, ScaledText, SectionTitle, TextField} from '@/components/ui';
 import {GlassSelectCards, type GlassOption} from '@/components/ui/GlassSelect';
 import {useI18n} from '@/providers/I18nContext';
@@ -11,6 +15,7 @@ import {
 } from '@/shared/forms/marketplace/marketplace-forms';
 import type {MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
 import type {ProjectScheduleType} from '@/shared/types/project/project.types';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 export type WizardStep = 1 | 2 | 3;
@@ -172,21 +177,20 @@ export function SubscriptionScheduleConfirmCard({
                 <View style={styles.summaryRow}>
                     <FolderKanban size={16} color={colors.primary}/>
                     <AppText variant="title" style={styles.flex} numberOfLines={1}>
-                        {projectName}
+                        {cleanEntityName(projectName)}
                     </AppText>
                 </View>
                 <AppText variant="small" numberOfLines={2}>
-                    {listing.title}
+                    {cleanEntityName(listing.title)}
                 </AppText>
                 <View style={styles.totalRow}>
-                    <AppText variant="caption" numberOfLines={1}>
-                        {t('mobile.shop.illustrativePrice')}
-                    </AppText>
+                    <IllustrativeBadge/>
                     <AppText variant="heading" style={styles.price} numberOfLines={1}>
                         {formatVndCompact(subtotal)}
                     </AppText>
                 </View>
             </Card>
+            <IllustrativeFooterNote/>
         </>
     );
 }

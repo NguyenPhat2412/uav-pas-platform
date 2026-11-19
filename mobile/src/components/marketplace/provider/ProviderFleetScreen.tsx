@@ -26,6 +26,7 @@ import {
     initialUavForm,
 } from '@/shared/forms/marketplace/marketplace-forms';
 import type {ProviderEquipmentCategory} from '@/shared/types/marketplace/marketplace.types';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, spacing} from '@/styles/tokens';
 
 type FleetTab = 'UAV' | 'EQUIPMENT';
@@ -175,7 +176,7 @@ export function ProviderFleetScreen() {
                             <Card key={item.id}>
                                 <View style={styles.rowBetween}>
                                     <AppText variant="title" numberOfLines={1} style={styles.flex}>
-                                        {item.model.replace(/\s*\(minh hoạ\)/gi, ' — minh hoạ')}
+                                        {cleanEntityName(item.model)}
                                     </AppText>
                                     <Badge
                                         label={formatUavStatus(item.status)}

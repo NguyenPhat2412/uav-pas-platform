@@ -2,22 +2,8 @@ import {SkeletonList} from './Skeleton';
 import {FieldLabel} from './FieldLabel';
 import React, {type ComponentType, createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {
-    ActivityIndicator,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    RefreshControl,
-    ScrollView,
-    StyleProp,
-    StyleSheet,
-    Text,
-    TextInput,
-    TextInputProps,
-    TextProps,
-    TextStyle,
-    View,
-    ViewStyle,
+    ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Pressable, RefreshControl,
+    ScrollView, StyleProp, StyleSheet, Text, TextInput, TextInputProps, TextProps, TextStyle, View, ViewStyle,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets, type Edge} from 'react-native-safe-area-context';
 import {usePathname} from 'expo-router';
@@ -94,7 +80,7 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
     const scrolled = useRef(0);
     const insets = useSafeAreaInsets();
     const pathname = usePathname();
-    const isTabRoot = /^\/(customer|operations)\/(home|missions|services|support|account|sar|fleet|weather)$/.test(pathname);
+    const isTabRoot = /^\/(customer|operations)\/(?:\(tabs\)\/)?(home|missions|services|support|account|sar|fleet|weather)\/?$/.test(pathname);
     const top = edges.includes('top') ? insets.top : 0;
     const reveal = useCallback(() => {
         requestAnimationFrame(() => {
@@ -115,7 +101,14 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
         return () => shown.remove();
     }, [reveal]);
     const keyboardReveal = useMemo(() => ({reveal, anchor}), [reveal]);
-    const bottomPad = insets.bottom + (isTabRoot ? 128 : spacing.xl);
+    const bottomPad = insets.bottom + spacing.xl;
+    useEffect(() => {
+        if (typeof __DEV__ !== 'undefined' && __DEV__) {
+            const g = globalThis as { __uavScrollRefs?: Record<string, typeof scrollRef>; __uavScrollBottom?: boolean };
+            (g.__uavScrollRefs ??= {})[pathname] = scrollRef;
+            if (g.__uavScrollBottom) setTimeout(() => scrollRef.current?.scrollToEnd({animated: false}), 250);
+        }
+    });
     const effectiveMaxWidth = (typeof __DEV__ !== 'undefined' && __DEV__ && (globalThis as { __uavDevMaxWidth?: number | null }).__uavDevMaxWidth) || maxWidth;
     const column = (
         <View style={[styles.column, {maxWidth: effectiveMaxWidth}, contentStyle]}>
@@ -130,9 +123,15 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
                 {scroll ? (
                     <ScrollView
                         ref={scrollRef}
+                        onContentSizeChange={() => {
+                            if (typeof __DEV__ !== 'undefined' && __DEV__ && (globalThis as { __uavScrollBottom?: boolean }).__uavScrollBottom) {
+                                scrollRef.current?.scrollToEnd({animated: false});
+                            }
+                        }}
                         onScroll={event => { scrolled.current = event.nativeEvent.contentOffset.y; }}
                         scrollEventThrottle={16}
-                        contentInsetAdjustmentBehavior="never"
+                        contentInsetAdjustmentBehavior={isTabRoot ? 'automatic' : 'never'}
+                        automaticallyAdjustsScrollIndicatorInsets={isTabRoot}
                         directionalLockEnabled
                         alwaysBounceHorizontal={false}
                         showsHorizontalScrollIndicator={false}

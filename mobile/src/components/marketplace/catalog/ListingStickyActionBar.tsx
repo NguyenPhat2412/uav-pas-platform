@@ -75,7 +75,7 @@ export function ListingStickyActionBar({
                             numberOfLines={1}
                             adjustsFontSizeToFit
                             minimumFontScale={0.85}>
-                            {priceLabel} · {t('mobile.shop.illustrativePrice')}
+                            {priceLabel}
                         </ScaledText>
                     </View>
                 </Pressable>

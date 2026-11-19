@@ -59,7 +59,7 @@ test('mobile marketplace: dynamic site-info parser and all Seller Studio + Escro
     assert.equal(defaults.platformFeeRate, 0.1);
     assert.equal(defaults.minPayoutVnd, 100_000);
     assert.equal(defaults.defaultServiceRadiusKm, 100);
-    assert.equal(defaults.rfqEnabled, true);
+    assert.equal(defaults.rfqEnabled, false);
     assert.equal(defaults.invoiceDueDays, 7);
     const parsed = parseSiteInfo({
         settings: {
@@ -84,7 +84,8 @@ test('mobile marketplace: dynamic site-info parser and all Seller Studio + Escro
 test('mobile ios-design-review: HIG touch targets, NativeTabs clearance, Vietnamese glyph safety, and Bento glass layout', () => {
     const uiIndex = read('components/ui/index.tsx');
     assert.match(uiIndex, /const isTabRoot =/);
-    assert.match(uiIndex, /isTabRoot \? 128 : spacing\.xl/);
+    assert.match(uiIndex, /contentInsetAdjustmentBehavior=\{isTabRoot \? 'automatic' : 'never'\}/);
+    assert.doesNotMatch(uiIndex, /isTabRoot \? 128/);
     assert.doesNotMatch(uiIndex, /badgeText:\s*\{[^}]*flexShrink:\s*1/);
 
     const launcher = read('components/assistant/AssistantLauncher.tsx');
@@ -101,7 +102,7 @@ test('mobile ios-design-review: HIG touch targets, NativeTabs clearance, Vietnam
 
     const missionList = read('components/mission/MissionListScreen.tsx');
     assert.match(missionList, /HeaderIconButton/);
-    assert.match(missionList, /insets\.bottom \+ 116/);
+    assert.match(missionList, /insets\.bottom \+ spacing\.xl/);
 
     const providerListings = read('components/marketplace/provider/ProviderListingsScreen.tsx');
     assert.match(providerListings, /showCreate \? X : Plus/);

@@ -2,30 +2,26 @@ import React from 'react';
 import {Image, StyleSheet, View} from 'react-native';
 import {useRouter} from 'expo-router';
 import {
-    Award,
     CheckCircle2,
     Clock3,
     MapPin,
-    Package,
-    Plane,
     Star,
-    type LucideIcon,
 } from 'lucide-react-native';
-import {resolveListingCoverSource} from '@/components/marketplace/catalog/listing-cover';
+import {
+    LISTING_CATEGORY_ICONS,
+    resolveListingCategoryIconName,
+    resolveListingCoverSource,
+} from '@/components/marketplace/catalog/listing-cover';
+import {IllustrativeBadge} from '@/components/shared/IllustrativeDisclaimer';
 import {AppText, Card, ScaledText} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 import {
     formatVndCompact,
     pricingUnitLabel,
 } from '@/shared/forms/marketplace/marketplace-forms';
-import type {ListingType, MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
+import type {MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, font, spacing} from '@/styles/tokens';
-
-const TYPE_ICONS: Record<ListingType, LucideIcon> = {
-    FLIGHT_SERVICE: Plane,
-    WET_LEASE: Award,
-    DRY_LEASE: Package,
-};
 
 /**
  * Shopee-style Flight Service Card (UI-GUIDE §3.2):
@@ -44,11 +40,12 @@ export function MarketplaceListingCard({
     const {t} = useI18n();
     const router = useRouter();
     const unit = pricingUnitLabel(item.pricingModel);
-    const CategoryIcon = TYPE_ICONS[item.listingType] ?? Plane;
+    const CategoryIcon = LISTING_CATEGORY_ICONS[resolveListingCategoryIconName(item)];
     const coverSource = resolveListingCoverSource(item);
     const ratingAvg = Number(item.providerBadge?.ratingAvg ?? item.ratingAvg ?? 0);
     const reviewCount = Number(item.providerBadge?.reviewCount ?? item.reviewCount ?? 0);
     const deliveryHours = item.deliverySlaHours ?? 48;
+    const cleanTitle = cleanEntityName(item.title);
 
     return (
         <Card
@@ -59,14 +56,14 @@ export function MarketplaceListingCard({
                     params: {slug: item.slug},
                 })
             }
-            accessibilityLabel={`${item.title} ${formatVndCompact(item.basePriceVnd)}`}>
+            accessibilityLabel={`${cleanTitle} ${formatVndCompact(item.basePriceVnd)}`}>
             <View style={styles.coverWrap}>
                 {coverSource ? (
                     <Image
                         source={coverSource}
                         style={styles.coverImg}
                         resizeMode="cover"
-                        accessibilityLabel={item.title}
+                        accessibilityLabel={cleanTitle}
                     />
                 ) : (
                     <View style={styles.coverFallback}>
@@ -77,7 +74,7 @@ export function MarketplaceListingCard({
 
             <View style={[styles.body, compact && styles.bodyCompact]}>
                 <AppText variant="title" style={compact ? styles.titleCompact : undefined} numberOfLines={2}>
-                    {item.title}
+                    {cleanTitle}
                 </AppText>
 
                 <View style={styles.metaRow}>
@@ -103,9 +100,7 @@ export function MarketplaceListingCard({
                         minimumFontScale={0.82}>
                         {formatVndCompact(item.basePriceVnd)}/{unit}
                     </ScaledText>
-                    <AppText variant="caption" numberOfLines={1}>
-                        {t('mobile.shop.illustrativePrice')}
-                    </AppText>
+                    <IllustrativeBadge/>
                 </View>
 
                 <View style={styles.verifiedRow}>

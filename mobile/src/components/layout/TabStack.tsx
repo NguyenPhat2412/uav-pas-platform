@@ -20,11 +20,23 @@ export const detailHeader = {
     contentStyle: {backgroundColor: colors.canvas},
 } as const;
 
+export const tabHeader = {
+    header: AppHeader,
+    headerTransparent: false,
+    scrollEdgeEffects: {
+        top: 'hidden',
+        bottom: 'automatic',
+        left: 'hidden',
+        right: 'hidden',
+    },
+    contentStyle: {backgroundColor: colors.canvas},
+} as const;
+
 /** One tab: a stack whose root screen shows a bold, left-aligned title and no back button. */
 export function TabStack({titleKey}: { titleKey: string }) {
     const {t} = useI18n();
     return (
-        <Stack screenOptions={detailHeader}>
+        <Stack screenOptions={tabHeader}>
             <Stack.Screen name="index" options={{title: t(titleKey), headerBackVisible: false, headerTitleAlign: 'left'}}/>
         </Stack>
     );

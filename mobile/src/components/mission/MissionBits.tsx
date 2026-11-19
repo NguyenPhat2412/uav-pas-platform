@@ -5,6 +5,7 @@ import {AppText, Badge, Card} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 import {displayLabel} from '@/shared/lib/presentation';
 import type {Mission, MissionStatus} from '@/shared/types/mission/mission.types';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {statusTone, type StatusTone} from '@/utils/mission/status';
 import {colors, spacing} from '@/styles/tokens';
 
@@ -24,24 +25,26 @@ export function MissionStatusBadge({status}: { status: MissionStatus }) {
 /** One mission in a list: code and status, title, then time and place as icon lines. */
 export function MissionRow({mission, onPress}: { mission: Pick<Mission, 'code' | 'title' | 'status' | 'startTime' | 'locationName'>; onPress: () => void }) {
     const {formatDate} = useI18n();
+    const cleanTitle = cleanEntityName(mission.title);
+    const cleanLoc = cleanEntityName(mission.locationName);
     return (
-        <Card onPress={onPress} accessibilityLabel={`${mission.code} ${mission.title}`}>
+        <Card onPress={onPress} accessibilityLabel={`${mission.code} ${cleanTitle}`}>
             <View style={styles.top}>
                 <AppText variant="caption" style={styles.code}>{mission.code}</AppText>
                 <MissionStatusBadge status={mission.status}/>
             </View>
             <View style={styles.titleRow}>
-                <AppText variant="title" numberOfLines={2} style={styles.title}>{mission.title}</AppText>
+                <AppText variant="title" numberOfLines={2} style={styles.title}>{cleanTitle}</AppText>
                 <ChevronRight size={18} color={colors.muted}/>
             </View>
             <View style={styles.meta}>
                 <CalendarClock size={14} color={colors.muted}/>
                 <AppText variant="small">{formatDate(mission.startTime, {hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric'})}</AppText>
             </View>
-            {mission.locationName ? (
+            {cleanLoc ? (
                 <View style={styles.meta}>
                     <MapPin size={14} color={colors.muted}/>
-                    <AppText variant="small" numberOfLines={1} style={styles.flex}>{mission.locationName}</AppText>
+                    <AppText variant="small" numberOfLines={1} style={styles.flex}>{cleanLoc}</AppText>
                 </View>
             ) : null}
         </Card>

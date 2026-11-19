@@ -4,6 +4,7 @@ import {CheckCircle2, Star} from 'lucide-react-native';
 import {AppText, Badge, Card, EmptyState, SectionTitle} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 import type {MarketplaceListing, MarketplaceReview} from '@/shared/types/marketplace/marketplace.types';
+import {cleanDescriptionText, cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, spacing} from '@/styles/tokens';
 
 /**
@@ -19,7 +20,7 @@ export function ListingSpecsAndReviews({
 }) {
     const {t, formatDate} = useI18n();
     const checklistItems = [
-        listing.deliverablesSummary || t('mobile.overnight.deliverableItem1'),
+        cleanDescriptionText(listing.deliverablesSummary) || t('mobile.overnight.deliverableItem1'),
         t('mobile.overnight.deliverableItem2'),
         t('mobile.overnight.deliverableItem3'),
     ];
@@ -45,14 +46,14 @@ export function ListingSpecsAndReviews({
                         <AppText variant="small" style={styles.bold}>
                             {t('mobile.marketplace.scopeTitle')}
                         </AppText>
-                        <AppText variant="small">{listing.description}</AppText>
+                        <AppText variant="small">{cleanDescriptionText(listing.description)}</AppText>
                     </View>
                 ) : null}
                 <AppText variant="small" style={styles.bold}>
                     {t('mobile.marketplace.equipmentLabel')}
                 </AppText>
                 <AppText variant="small">
-                    {listing.equipmentSpecs || t('mobile.marketplace.defaultEquipment')}
+                    {cleanDescriptionText(listing.equipmentSpecs) || t('mobile.marketplace.defaultEquipment')}
                 </AppText>
             </Card>
 
@@ -64,7 +65,7 @@ export function ListingSpecsAndReviews({
                     <Card key={rev.id}>
                         <View style={styles.badgeRow}>
                             <AppText variant="small" style={[styles.bold, styles.flex]} numberOfLines={1}>
-                                {rev.customerName} · {rev.missionTitle}
+                                {cleanEntityName(rev.customerName)} · {cleanEntityName(rev.missionTitle)}
                             </AppText>
                             <Badge
                                 icon={Star}
