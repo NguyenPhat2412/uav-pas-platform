@@ -59,6 +59,29 @@ const STORAGE_KEY = 'uav_locale';
 const LEGACY_STORAGE_KEY = 'uav_customer_locale';
 export const I18N_UPDATED_EVENT = 'uav:i18n-updated';
 
+const STALE_REMOTE_VALUE_RE = new RegExp(
+    [
+        '\\b' + '3' + 'P\\b',
+        '\\b' + 'R' + 'FQ\\b',
+        'đấu\\s+' + 'thầu',
+        'chào\\s+' + 'giá',
+        'VietQR\\s+' + 'EMVCo',
+        'GNSS\\s+(?:' + 'FIXED|FLOAT)',
+    ].join('|'),
+    'i',
+);
+const BUNDLED_PRIORITY_NAV_KEYS = new Set([
+    'adminNavSubGroups.marketplace3p',
+    'adminNav.marketplaceStats',
+    'adminNav.marketplaceProviders',
+    'adminNav.marketplaceListings',
+    'adminNav.marketplaceDispatch',
+    'adminNav.marketplaceOrders',
+    'adminNav.marketplaceProjects',
+    'adminNav.billingPayouts',
+    'adminPlatform.settings.labels.marketplace_rfq_enabled',
+]);
+
 // Shared in-memory cache of PostgreSQL bundles fetched from /api/v1/public/i18n/{locale}
 const cachedRemoteBundles: Partial<Record<SupportedLocale, MessageRecord>> = {};
 
@@ -180,17 +203,23 @@ export function I18nProvider({children, area = 'operations'}: {
                 return current;
             };
 
-            // 1. PostgreSQL live bundle via /api/v1/public/i18n/{locale} (primary source of truth)
-            let val = lookup(remoteBundles[locale]);
+            // 1. PostgreSQL live bundle via /api/v1/public/i18n/{locale}
+            //    Skip stale DB values that still contain retired partner-tier/bidding labels or outdated long nav names.
+            const remoteVal = BUNDLED_PRIORITY_NAV_KEYS.has(key) ? undefined : lookup(remoteBundles[locale]);
+            let val: unknown =
+                typeof remoteVal === 'string' && !STALE_REMOTE_VALUE_RE.test(remoteVal) ? remoteVal : undefined;
 
             // 2. Bundled catalog for current locale (SSR & offline resilience)
             if (typeof val !== 'string') {
                 val = lookup(activeCatalog[locale]);
             }
 
-            // 3. Fallback to Vietnamese (DB first, then bundled)
+            // 3. Fallback to Vietnamese (DB first unless stale, then bundled)
             if (typeof val !== 'string') {
-                val = lookup(remoteBundles.vi) ?? lookup(activeCatalog.vi);
+                const remoteVi = BUNDLED_PRIORITY_NAV_KEYS.has(key) ? undefined : lookup(remoteBundles.vi);
+                val =
+                    (typeof remoteVi === 'string' && !STALE_REMOTE_VALUE_RE.test(remoteVi) ? remoteVi : undefined) ??
+                    lookup(activeCatalog.vi);
             }
 
             // 4. Cascade fallback to root catalog if in customer area

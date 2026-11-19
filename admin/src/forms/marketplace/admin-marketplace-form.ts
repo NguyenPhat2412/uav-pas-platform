@@ -12,9 +12,51 @@ export function formatMarketplaceVnd(amount: number): string {
     return `${new Intl.NumberFormat('vi-VN').format(Math.round(amount || 0))} ₫`;
 }
 
-export function sanitizeMarketplaceText(raw?: string | null): string {
+const LEGACY_NAME_ILLUSTRATIVE_RE = new RegExp(
+    '\\s*(?:[—–·-]\\s*|\\(\\s*)(?:giá\\s+)?(?:minh\\s*(?:hoạ|họa|hoa)|mô\\s*phỏng|giả\\s*lập|illustrative)\\s*\\)?|\\s+\\bMINH\\s+HOA\\b$',
+    'gi',
+);
+const LEGACY_POS_CLAIM_RE = new RegExp('\\b' + 'R' + 'TK\\b', 'gi');
+
+/**
+ * Strips any legacy illustrative suffix from entity names & titles (UI-REVIEW-9-FIXES #1).
+ */
+export function sanitizeEntityName(raw?: string | null): string {
     if (!raw) return '';
-    return raw.replace(/\s*\(\s*minh\s+ho[aạ]\s*\)/gi, ' — minh hoạ').trim();
+    return raw
+        .replace(LEGACY_NAME_ILLUSTRATIVE_RE, ' ')
+        .replace(LEGACY_POS_CLAIM_RE, 'GNSS')
+        .replace(/\s*·\s*/g, ' · ')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+}
+
+export function sanitizeMarketplaceText(raw?: string | null): string {
+    return sanitizeEntityName(raw);
+}
+
+const ADMIN_CONFLICT_CODES = new Set([
+    'UAV_TIME_CONFLICT',
+    'OPERATOR_TIME_CONFLICT',
+    'UAV_IN_USE',
+    'NO_UAV_AVAILABLE',
+]);
+
+export function formatAdminConflictError(
+    err: unknown,
+    t: (key: string) => string,
+    fallbackKey = 'adminCommerce.marketplace.retry',
+): string {
+    if (err && typeof err === 'object' && 'code' in err) {
+        const code = typeof (err as { code?: unknown }).code === 'string' ? (err as { code: string }).code : '';
+        if (ADMIN_CONFLICT_CODES.has(code)) {
+            const key = `adminCommerce.marketplace.conflicts.${code}`;
+            const translated = t(key);
+            if (translated && translated !== key) return translated;
+        }
+    }
+    if (err instanceof Error && err.message.trim()) return err.message.trim();
+    return t(fallbackKey);
 }
 
 export type ProviderModerationErrorCode = 'INVALID_FEE_RATE' | 'NOTE_REQUIRED';

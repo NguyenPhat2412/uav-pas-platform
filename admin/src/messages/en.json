@@ -76,7 +76,13 @@
       "discardConfirm": "This page has unsaved changes. Leave and discard them?",
       "scrollLeft": "Show tabs on the left",
       "scrollRight": "Show tabs on the right",
-      "all": "All open tabs"
+      "all": "All open tabs",
+      "moreTabs": "Show {count} more open tabs"
+    },
+    "fab": {
+      "menuLabel": "Support & AI Assistant",
+      "aiAssistant": "AI Assistant",
+      "liveSupport": "Live Support"
     }
   },
   "operationsNavGroups": {
@@ -119,7 +125,7 @@
     "operationsPulse": "Operations & Support",
     "airspaceWeather": "Map & Airspace",
     "catalogPlans": "Catalog & Plans",
-    "marketplace3p": "3P Partner Marketplace",
+    "marketplace3p": "Fleet Partners",
     "billingLedger": "Reconciliation & Ledger",
     "rbacGovernance": "Roles & Permissions",
     "runtimeOps": "Runtime & Deployment",
@@ -146,9 +152,9 @@
     "fleetMap": "Fleet Map",
     "uavs": "UAV Fleet",
     "services": "Service Catalog",
-    "marketplaceProviders": "Partner KYC Review",
-    "marketplaceListings": "Listing Moderation",
-    "billingPayouts": "Partner Payouts",
+    "marketplaceProviders": "Partner KYC",
+    "marketplaceListings": "Listings",
+    "billingPayouts": "Payouts",
     "systemHealth": "System Health",
     "aiRouter": "AI Router Console",
     "aiConversations": "AI Chat Audit",
@@ -173,10 +179,10 @@
     "weather": "Flight weather",
     "airspace": "Airspace zones",
     "notificationModules": "Notification modules",
-    "marketplaceDispatch": "Order Dispatch",
-    "marketplaceOrders": "Marketplace Orders",
-    "marketplaceProjects": "Customer Projects",
-    "marketplaceStats": "Marketplace Stats"
+    "marketplaceDispatch": "Dispatch",
+    "marketplaceOrders": "Orders",
+    "marketplaceProjects": "Projects",
+    "marketplaceStats": "Analytics"
   },
   "sidebar": {
     "title": "UAV PAS",

@@ -125,7 +125,7 @@ export const ADMIN_SIDEBAR_SUBGROUPS: readonly SidebarSubGroupMeta<AdminNavGroup
         key: 'marketplace3p',
         group: 'commerce',
         icon: Store,
-        defaultLabel: 'Sàn đối tác 3P',
+        defaultLabel: 'Đối tác đội bay',
     },
     {
         key: 'billingLedger',
@@ -256,7 +256,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
     {
         href: '/admin/marketplace/stats',
         key: 'marketplaceStats',
-        defaultLabel: 'Thống kê sàn',
+        defaultLabel: 'Thống kê',
         group: 'commerce',
         subGroup: 'marketplace3p',
         icon: BarChart3,
@@ -265,7 +265,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
     {
         href: '/admin/marketplace/providers',
         key: 'marketplaceProviders',
-        defaultLabel: 'Duyệt đối tác KYC',
+        defaultLabel: 'Duyệt đối tác',
         group: 'commerce',
         subGroup: 'marketplace3p',
         icon: Store,
@@ -274,7 +274,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
     {
         href: '/admin/marketplace/listings',
         key: 'marketplaceListings',
-        defaultLabel: 'Kiểm duyệt tin đăng',
+        defaultLabel: 'Duyệt dịch vụ',
         group: 'commerce',
         subGroup: 'marketplace3p',
         icon: Boxes,
@@ -283,7 +283,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
     {
         href: '/admin/marketplace/dispatch',
         key: 'marketplaceDispatch',
-        defaultLabel: 'Điều phối giao đơn',
+        defaultLabel: 'Giao đơn',
         group: 'commerce',
         subGroup: 'marketplace3p',
         icon: PlaneTakeoff,
@@ -292,7 +292,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
     {
         href: '/admin/marketplace/orders',
         key: 'marketplaceOrders',
-        defaultLabel: 'Toàn cảnh đơn hàng',
+        defaultLabel: 'Đơn hàng',
         group: 'commerce',
         subGroup: 'marketplace3p',
         icon: ClipboardList,
@@ -301,7 +301,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
     {
         href: '/admin/marketplace/projects',
         key: 'marketplaceProjects',
-        defaultLabel: 'Dự án & Gói đăng ký',
+        defaultLabel: 'Dự án',
         group: 'commerce',
         subGroup: 'marketplace3p',
         icon: FolderKanban,
@@ -310,7 +310,7 @@ export const ADMIN_SIDEBAR_ROUTES: SidebarRouteItem<AdminNavGroup, AdminNavSubGr
     {
         href: '/admin/billing/payouts',
         key: 'billingPayouts',
-        defaultLabel: 'Giải ngân đối tác',
+        defaultLabel: 'Giải ngân',
         group: 'commerce',
         subGroup: 'marketplace3p',
         icon: Wallet,

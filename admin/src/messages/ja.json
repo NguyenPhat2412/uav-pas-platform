@@ -76,7 +76,13 @@
       "discardConfirm": "このページには未保存の変更があります。変更を破棄して移動しますか？",
       "scrollLeft": "左のタブを表示",
       "scrollRight": "右のタブを表示",
-      "all": "開いているすべてのタブ"
+      "all": "開いているすべてのタブ",
+      "moreTabs": "他 {count} 件のタブを表示"
+    },
+    "fab": {
+      "menuLabel": "サポート・AIアシスタント",
+      "aiAssistant": "AIアシスタント",
+      "liveSupport": "オンラインサポート"
     }
   },
   "operationsNavGroups": {
@@ -119,7 +125,7 @@
     "operationsPulse": "運航・サポート",
     "airspaceWeather": "マップ・空域",
     "catalogPlans": "カタログ・プラン",
-    "marketplace3p": "3Pマーケットプレイス",
+    "marketplace3p": "機隊パートナー",
     "billingLedger": "請求照合・台帳",
     "rbacGovernance": "ロール・権限設計",
     "runtimeOps": "サーバー・デプロイ",
@@ -146,9 +152,9 @@
     "fleetMap": "UAV機体マップ",
     "uavs": "UAV機体",
     "services": "サービスカタログ",
-    "marketplaceProviders": "パートナーKYC審査",
-    "marketplaceListings": "出品サービス審査",
-    "billingPayouts": "パートナー出金精算",
+    "marketplaceProviders": "パートナー審査",
+    "marketplaceListings": "出品審査",
+    "billingPayouts": "出金精算",
     "systemHealth": "システム状態",
     "aiRouter": "AIルーター制御",
     "aiConversations": "AIチャット監査ログ",
@@ -173,10 +179,10 @@
     "weather": "飛行気象",
     "airspace": "空域ゾーン",
     "notificationModules": "通知モジュール管理",
-    "marketplaceDispatch": "注文ディスパッチ",
-    "marketplaceOrders": "全注文モニタリング",
-    "marketplaceProjects": "顧客プロジェクト",
-    "marketplaceStats": "マーケット統計"
+    "marketplaceDispatch": "配車割当",
+    "marketplaceOrders": "注文一覧",
+    "marketplaceProjects": "プロジェクト",
+    "marketplaceStats": "統計"
   },
   "sidebar": {
     "title": "UAV PAS",

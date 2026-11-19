@@ -76,7 +76,13 @@
       "discardConfirm": "Trang này có thay đổi chưa lưu. Rời trang và bỏ các thay đổi?",
       "scrollLeft": "Xem các tab bên trái",
       "scrollRight": "Xem các tab bên phải",
-      "all": "Tất cả tab đang mở"
+      "all": "Tất cả tab đang mở",
+      "moreTabs": "Xem thêm {count} tab đang mở"
+    },
+    "fab": {
+      "menuLabel": "Hỗ trợ và Trợ lý AI",
+      "aiAssistant": "Trợ lý AI",
+      "liveSupport": "Hỗ trợ trực tuyến"
     }
   },
   "operationsNavGroups": {
@@ -119,7 +125,7 @@
     "operationsPulse": "Điều hành & Hỗ trợ",
     "airspaceWeather": "Bản đồ & Không phận",
     "catalogPlans": "Danh mục & Gói cước",
-    "marketplace3p": "Sàn đối tác 3P",
+    "marketplace3p": "Đối tác đội bay",
     "billingLedger": "Đối soát & Sổ cái",
     "rbacGovernance": "Phân quyền & Vai trò",
     "runtimeOps": "Máy chủ & Triển khai",
@@ -146,9 +152,9 @@
     "fleetMap": "Bản đồ đội bay",
     "uavs": "Đội UAV",
     "services": "Danh mục dịch vụ",
-    "marketplaceProviders": "Duyệt đối tác KYC",
-    "marketplaceListings": "Kiểm duyệt tin đăng",
-    "billingPayouts": "Giải ngân đối tác",
+    "marketplaceProviders": "Duyệt đối tác",
+    "marketplaceListings": "Duyệt dịch vụ",
+    "billingPayouts": "Giải ngân",
     "systemHealth": "Sức khỏe hệ thống",
     "aiRouter": "AI Router",
     "aiConversations": "Nhật ký hội thoại AI",
@@ -173,10 +179,10 @@
     "weather": "Thời tiết bay",
     "airspace": "Vùng không phận",
     "notificationModules": "Modules thông báo",
-    "marketplaceDispatch": "Điều phối giao đơn",
-    "marketplaceOrders": "Toàn cảnh đơn hàng",
-    "marketplaceProjects": "Dự án & Gói đăng ký",
-    "marketplaceStats": "Thống kê sàn"
+    "marketplaceDispatch": "Giao đơn",
+    "marketplaceOrders": "Đơn hàng",
+    "marketplaceProjects": "Dự án",
+    "marketplaceStats": "Thống kê"
   },
   "sidebar": {
     "title": "UAV PAS",

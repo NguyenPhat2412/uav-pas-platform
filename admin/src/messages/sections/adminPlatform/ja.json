@@ -70,7 +70,7 @@
         "marketplace_min_payout_vnd": "パートナー最低出金額（VND）",
         "marketplace_max_payout_vnd": "パートナー1回あたり最大出金額（VND）",
         "marketplace_default_service_radius_km": "パートナー標準対応半径（km）",
-        "marketplace_rfq_enabled": "公開見積依頼（Open RFQ）を有効化",
+        "marketplace_rfq_enabled": "公開依頼モード（卒業研究の対象外）",
         "marketplace_require_escrow_before_start": "パートナー運航開始前にエスクロー入金を必須化",
         "contact_dispatch_hotline": "運航手配ホットライン",
         "contact_zalo_phone": "オンラインサポート Zalo",

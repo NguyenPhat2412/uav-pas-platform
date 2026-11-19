@@ -196,7 +196,14 @@
       "definitions": "Collected: invoices paid in the period. Collection rate: share of invoices issued in the period already paid (cancelled excluded). Outstanding and aging are measured now."
     },
     "marketplace": {
-      "illustrative": "Illustrative",
+      "illustrative": "illustrative",
+      "illustrativeFooterNote": "Prices and transactions on this platform are illustrative for this academic project.",
+      "conflicts": {
+        "UAV_TIME_CONFLICT": "This UAV is already assigned to another order during an overlapping time slot.",
+        "OPERATOR_TIME_CONFLICT": "This control engineer is already assigned to another order during an overlapping time slot.",
+        "UAV_IN_USE": "This UAV is currently executing another flight.",
+        "NO_UAV_AVAILABLE": "No available UAV is ready in this fleet for the order."
+      },
       "retry": "Retry",
       "clearFilter": "Clear filters",
       "refresh": "Refresh",

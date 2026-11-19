@@ -53,6 +53,11 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         PROVIDER_PROFILE: 'Partner KYC profile', MARKETPLACE_LISTING: 'Service listing', MISSION_DISPATCH: 'Order dispatch',
         PROVIDER_PAYOUT: 'Partner payout', PROJECT: 'Customer project', PROJECT_SUBSCRIPTION: 'Project subscription',
         PROVIDER_PILOT: 'Fleet pilot', PROVIDER_UAV: 'Fleet UAV', USER_PERMISSION: 'User permission', ROLE_TEMPLATE: 'Role template',
+        ESCROW_HOLD: 'Escrow hold', ESCROW_RELEASE: 'Escrow release', ESCROW_REFUND: 'Escrow refund',
+        PAYOUT_REQUEST: 'Payout request', PAYOUT_COMPLETED: 'Payout completed', PAYOUT_REJECTED: 'Payout rejected',
+        FLIGHT_SERVICE: 'Flight service', WET_LEASE: 'Wet lease', DRY_LEASE: 'Equipment lease',
+        PER_HOUR: 'Per hour', PER_HECTARE: 'Per hectare', PER_DAY: 'Per day', PER_PACKAGE: 'Per package',
+        ARCHIVED: 'Archived', ENDED: 'Ended', ONE_TIME: 'One-time', WEEKLY: 'Weekly',
     },
     ja: {
         DRAFT: '下書き', PENDING_CONFIRMATION: '確認待ち', CONFIRMED: '確認済み', RESOURCE_RESERVED: 'リソース手配済み',
@@ -89,6 +94,11 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         PROVIDER_PROFILE: 'パートナーKYC', MARKETPLACE_LISTING: '出品サービス', MISSION_DISPATCH: '注文ディスパッチ',
         PROVIDER_PAYOUT: 'パートナー出金', PROJECT: '顧客プロジェクト', PROJECT_SUBSCRIPTION: '定期サービス契約',
         PROVIDER_PILOT: 'チーム操縦士', PROVIDER_UAV: 'チーム機体', USER_PERMISSION: '個別権限', ROLE_TEMPLATE: 'ロールテンプレート',
+        ESCROW_HOLD: 'エスクロー仮押さえ', ESCROW_RELEASE: 'エスクロー確定', ESCROW_REFUND: 'エスクロー返金',
+        PAYOUT_REQUEST: '出金申請', PAYOUT_COMPLETED: '出金完了', PAYOUT_REJECTED: '出金却下',
+        FLIGHT_SERVICE: '飛行サービス', WET_LEASE: '操縦士付き', DRY_LEASE: '機体レンタル',
+        PER_HOUR: '時間単位', PER_HECTARE: 'ha単位', PER_DAY: '日単位', PER_PACKAGE: 'パッケージ',
+        ARCHIVED: 'アーカイブ済み', ENDED: '終了', ONE_TIME: '単発', WEEKLY: '毎週',
     },
 };
 
@@ -225,6 +235,23 @@ const labels: Record<string, string> = {
     PROVIDER_UAV: 'UAV đội bay',
     USER_PERMISSION: 'Quyền người dùng',
     ROLE_TEMPLATE: 'Mẫu vai trò',
+    ESCROW_HOLD: 'Tạm giữ ký quỹ',
+    ESCROW_RELEASE: 'Giải phóng đối soát',
+    ESCROW_REFUND: 'Hoàn ký quỹ',
+    PAYOUT_REQUEST: 'Yêu cầu giải ngân',
+    PAYOUT_COMPLETED: 'Đã giải ngân',
+    PAYOUT_REJECTED: 'Từ chối giải ngân',
+    FLIGHT_SERVICE: 'Dịch vụ bay',
+    WET_LEASE: 'Thuê kèm kỹ sư',
+    DRY_LEASE: 'Thuê thiết bị',
+    PER_HOUR: 'Theo giờ',
+    PER_HECTARE: 'Theo ha',
+    PER_DAY: 'Theo ngày',
+    PER_PACKAGE: 'Trọn gói',
+    ARCHIVED: 'Đã lưu trữ',
+    ENDED: 'Đã kết thúc',
+    ONE_TIME: 'Một lần',
+    WEEKLY: 'Hàng tuần',
 };
 
 export function displayLabel(value?: string | null): string {

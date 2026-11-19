@@ -196,7 +196,14 @@
       "definitions": "回収額: 期間内に支払われた請求書。回収率: 期間内に発行された請求書のうち支払済みの割合（取消は除く）。未収金と年齢は現時点で計算。"
     },
     "marketplace": {
-      "illustrative": "参考値",
+      "illustrative": "参考表示",
+      "illustrativeFooterNote": "本プラットフォーム上の価格・取引は卒業研究用の参考表示です。",
+      "conflicts": {
+        "UAV_TIME_CONFLICT": "この機体は同じ時間帯の別の注文に割り当てられています。",
+        "OPERATOR_TIME_CONFLICT": "この操縦エンジニアは同じ時間帯の別の注文に割り当てられています。",
+        "UAV_IN_USE": "この機体は現在別のフライトを実行中です。",
+        "NO_UAV_AVAILABLE": "この機隊には利用可能な待機機がありません。"
+      },
       "retry": "再試行",
       "clearFilter": "条件クリア",
       "refresh": "更新",

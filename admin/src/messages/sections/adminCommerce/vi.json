@@ -121,7 +121,7 @@
       "empty": "Khách hàng chưa khai báo hồ sơ thanh toán.",
       "organizationName": "Tên tổ chức",
       "taxCode": "Mã số thuế",
-      "billingEmail": "Email nhận hóa đơn VAT",
+      "billingEmail": "Email nhận hóa đơn",
       "billingAddress": "Địa chỉ xuất hóa đơn",
       "emergencyContactName": "Người liên hệ khẩn cấp",
       "emergencyContactPhone": "SĐT liên hệ khẩn cấp",
@@ -197,6 +197,13 @@
     },
     "marketplace": {
       "illustrative": "minh hoạ",
+      "illustrativeFooterNote": "Giá và giao dịch trên nền tảng là minh hoạ phục vụ đồ án.",
+      "conflicts": {
+        "UAV_TIME_CONFLICT": "Thiết bị bay đã được phân công cho đơn khác trùng khung giờ.",
+        "OPERATOR_TIME_CONFLICT": "Kỹ sư đã được phân công cho đơn khác trùng khung giờ.",
+        "UAV_IN_USE": "Thiết bị bay hiện đang thực hiện một chuyến bay khác.",
+        "NO_UAV_AVAILABLE": "Đội bay chưa có thiết bị bay rảnh để thực hiện đơn này."
+      },
       "retry": "Thử lại",
       "clearFilter": "Xoá bộ lọc",
       "refresh": "Làm mới",
