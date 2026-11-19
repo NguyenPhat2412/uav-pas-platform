@@ -70,7 +70,7 @@
         "marketplace_min_payout_vnd": "Hạn mức rút tiền tối thiểu của đối tác (VNĐ)",
         "marketplace_max_payout_vnd": "Hạn mức rút tiền tối đa mỗi lệnh (VNĐ)",
         "marketplace_default_service_radius_km": "Bán kính phục vụ mặc định của đối tác (km)",
-        "marketplace_rfq_enabled": "Cho phép khách mở đấu thầu báo giá (Open RFQ)",
+        "marketplace_rfq_enabled": "Cấu hình yêu cầu mở — ngoài phạm vi đồ án",
         "marketplace_require_escrow_before_start": "Bắt buộc nạp Ký quỹ Escrow trước khi đối tác bay",
         "contact_dispatch_hotline": "Đường dây nóng điều phối",
         "contact_zalo_phone": "Zalo hỗ trợ trực tuyến",

@@ -1,7 +1,6 @@
 /**
- * UAV PAS - VietQR EMVCo Payload Specification Generator
- * Thuật toán sinh chuỗi thanh toán QR chuẩn NAPAS / Ngân hàng Nhà nước Việt Nam
- * Tiêu chuẩn kỹ thuật EMVCo QR Code Specification for Payment Systems (Merchant-Presented QR)
+ * UAV PAS - VietQR Payload Generator
+ * Thuật toán sinh chuỗi thanh toán QR chuẩn NAPAS / Ngân hàng Nhà nước Việt Nam.
  */
 
 import type {VietQrOptions} from '@/types/billing/billing.types';

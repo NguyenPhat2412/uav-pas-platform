@@ -104,9 +104,9 @@
         "heading": "Hướng:",
         "age": "Cập nhật {seconds} giây trước",
         "rtk": {
-          "FIXED": "GNSS FIX",
-          "FLOAT": "GNSS FLOAT",
-          "SINGLE": "GNSS đơn",
+          "FIXED": "Định vị ổn định",
+          "FLOAT": "Định vị cơ bản",
+          "SINGLE": "Định vị đơn",
           "NONE": "Mất định vị"
         }
       },

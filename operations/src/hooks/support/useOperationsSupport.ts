@@ -21,7 +21,7 @@ const opsSupportKeys = {
 const TOPIC_LABELS: Record<string, string> = {
     GENERAL_SUPPORT: 'Hỗ trợ trực tuyến chung',
     SURVEY_SERVICE: 'Khảo sát GIS / Quay chụp',
-    PRICING_PLAN: 'Gói cước & Báo giá',
+    PRICING_PLAN: 'Gói cước & Phí đối soát',
     FLIGHT_PERMIT_NFZ: 'Xin phép bay & NFZ',
     ACCOUNT_DISPATCH: 'Tài khoản & Điều phối',
     SAR_AI_RND: 'AI & Buồng lái SAR',

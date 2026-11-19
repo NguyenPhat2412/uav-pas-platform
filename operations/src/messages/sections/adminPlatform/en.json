@@ -70,7 +70,7 @@
         "marketplace_min_payout_vnd": "Minimum partner payout amount (VND)",
         "marketplace_max_payout_vnd": "Maximum partner payout per request (VND)",
         "marketplace_default_service_radius_km": "Default partner service radius (km)",
-        "marketplace_rfq_enabled": "Enable open Request for Quote (RFQ) bidding",
+        "marketplace_rfq_enabled": "Legacy custom request toggle — out of project scope",
         "marketplace_require_escrow_before_start": "Require funded Escrow before partner flight start",
         "contact_dispatch_hotline": "Dispatch hotline",
         "contact_zalo_phone": "Direct support Zalo",

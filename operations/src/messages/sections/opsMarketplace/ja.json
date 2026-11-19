@@ -2,6 +2,10 @@
   "opsMarketplace": {
     "common": {
       "illustrationBadge": "参考表示",
+      "illustrativeFooterNote": "本プラットフォームの料金および取引は学術演習向けの参考表示です。",
+      "fabMenuLabel": "AIアシスタント・サポート",
+      "fabAiAssistant": "AIアシスタント",
+      "fabLiveSupport": "顧客チャット対応",
       "retry": "再試行",
       "loading": "読み込み中…",
       "save": "保存",
@@ -189,7 +193,7 @@
         "summary": "概要",
         "listingType": "提供形態",
         "pricingModel": "課金単位",
-        "basePriceVnd": "参考単価 (VND)",
+        "basePriceVnd": "基本単価 (VND)",
         "minBookingUnits": "最小数量",
         "province": "主要エリア",
         "serviceRadiusKm": "対応半径 (km)",
@@ -220,6 +224,15 @@
         "DELIVERED": "納品済み"
       },
       "empty": "該当する案件はありません。",
+      "sourcePlatformFleet": "担当機隊: {name}",
+      "sourcePlatformPending": "機隊手配待ち",
+      "sourceInternal": "直轄運航チーム",
+      "conflicts": {
+        "UAV_TIME_CONFLICT": "この機体は同じ時間帯の別案件に既に割り当てられています。",
+        "OPERATOR_TIME_CONFLICT": "この操縦エンジニアは同じ時間帯の別案件に既に割り当てられています。",
+        "UAV_IN_USE": "この機体は現在別のフライトを実施中です。",
+        "NO_UAV_AVAILABLE": "この時間帯に利用可能な空き機体がありません。"
+      },
       "card": {
         "code": "案件 #{code}",
         "schedule": "予定日時",
@@ -273,14 +286,14 @@
         "updateLink": "パートナー登録で更新"
       },
       "transactions": {
-        "title": "参考取引履歴",
+        "title": "取引履歴",
         "empty": "取引履歴はありません。",
         "gross": "総額",
         "fee": "手数料",
         "net": "純額"
       },
       "payouts": {
-        "title": "参考精算履歴",
+        "title": "精算履歴",
         "empty": "精算履歴はありません。",
         "status": {
           "PENDING": "処理待ち",
@@ -295,7 +308,12 @@
       "inFlightOrders": "飛行中",
       "pendingAccept": "受諾待ち",
       "shortcutsTitle": "クイックメニュー",
-      "viewDetails": "詳細を見る"
+      "viewDetails": "詳細を見る",
+      "liveFlights": "接続中のフライト",
+      "batteryLabel": "電池",
+      "signalStable": "通信良好",
+      "signalChecking": "通信確認中",
+      "noActiveFlight": "現在実行中の模擬フライトはありません。"
     },
     "pilotToday": {
       "badge": "操縦エンジニア",

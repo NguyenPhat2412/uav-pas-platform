@@ -1,7 +1,11 @@
 {
   "opsMarketplace": {
     "common": {
-      "illustrationBadge": "Minh hoạ",
+      "illustrationBadge": "minh hoạ",
+      "illustrativeFooterNote": "Giá và giao dịch trên nền tảng là minh hoạ phục vụ đồ án.",
+      "fabMenuLabel": "Trợ lý và Hỗ trợ",
+      "fabAiAssistant": "Trợ lý AI",
+      "fabLiveSupport": "Tin nhắn khách hàng",
       "retry": "Thử lại",
       "loading": "Đang tải dữ liệu…",
       "save": "Lưu",
@@ -189,7 +193,7 @@
         "summary": "Mô tả ngắn",
         "listingType": "Loại dịch vụ",
         "pricingModel": "Đơn vị tính",
-        "basePriceVnd": "Đơn giá minh hoạ (VNĐ)",
+        "basePriceVnd": "Đơn giá (VNĐ)",
         "minBookingUnits": "Số lượng tối thiểu",
         "province": "Khu vực chính",
         "serviceRadiusKm": "Bán kính (km)",
@@ -220,6 +224,15 @@
         "DELIVERED": "Đã bàn giao"
       },
       "empty": "Không có đơn nào trong mục này.",
+      "sourcePlatformFleet": "Đội bay đối tác: {name}",
+      "sourcePlatformPending": "Chờ điều phối đội bay",
+      "sourceInternal": "Đội bay điều phối",
+      "conflicts": {
+        "UAV_TIME_CONFLICT": "Thiết bị bay đã được phân công cho đơn khác trùng khung giờ.",
+        "OPERATOR_TIME_CONFLICT": "Kỹ sư đã được phân công cho đơn khác trùng khung giờ.",
+        "UAV_IN_USE": "Thiết bị bay hiện đang thực hiện một chuyến bay khác.",
+        "NO_UAV_AVAILABLE": "Không còn thiết bị bay trống trong khung giờ này."
+      },
       "card": {
         "code": "Mã đơn #{code}",
         "schedule": "Lịch bay",
@@ -273,14 +286,14 @@
         "updateLink": "Cập nhật tại Hồ sơ đối tác"
       },
       "transactions": {
-        "title": "Biến động số dư minh hoạ",
+        "title": "Biến động số dư",
         "empty": "Chưa có giao dịch đối soát nào.",
         "gross": "Tổng",
         "fee": "Phí sàn",
         "net": "Thực nhận"
       },
       "payouts": {
-        "title": "Lịch sử đợt giải ngân minh hoạ",
+        "title": "Lịch sử giải ngân",
         "empty": "Chưa có đợt giải ngân nào.",
         "status": {
           "PENDING": "Chờ duyệt",
@@ -295,7 +308,12 @@
       "inFlightOrders": "Đang bay",
       "pendingAccept": "Chờ nhận",
       "shortcutsTitle": "Thao tác đội bay",
-      "viewDetails": "Xem chi tiết"
+      "viewDetails": "Xem chi tiết",
+      "liveFlights": "Chuyến đang kết nối",
+      "batteryLabel": "Pin",
+      "signalStable": "Tín hiệu ổn định",
+      "signalChecking": "Đang kiểm tra tín hiệu",
+      "noActiveFlight": "Hiện không có chuyến bay mô phỏng đang chạy."
     },
     "pilotToday": {
       "badge": "Kỹ sư điều khiển",

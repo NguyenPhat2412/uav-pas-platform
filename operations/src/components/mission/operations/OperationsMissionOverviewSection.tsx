@@ -6,6 +6,7 @@ import {ArrowLeft, CheckCircle2, Play, Radio} from 'lucide-react';
 import {MissionMonitoring} from '@/components/mission/customer/MissionMonitoring';
 import {MissionRequestDetails} from '@/components/mission/MissionRequestDetails';
 import {Alert, Button, Card, CardContent, CardFooter, CardHeader, CardTitle, StatusBadge} from '@/components/ui';
+import {sanitizeEntityName} from '@/forms/marketplace/marketplace-forms';
 import type {useMissionWorkflow} from '@/hooks/mission/useMissionWorkflow';
 import {displayLabel, formatDate, missionHint} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
@@ -81,15 +82,15 @@ export function OperationsMissionOverviewSection({
                                 <p className="m-0 text-xs font-bold tracking-wider text-primary">{mission.code}</p>
                                 {mission.providerDisplayName ? (
                                     <span className="rounded-full border border-slate-300 bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold text-slate-800">
-                                        Đơn vị cung ứng Sàn: {mission.providerDisplayName}
+                                        {t('opsMarketplace.orders.sourcePlatformFleet', {name: sanitizeEntityName(mission.providerDisplayName)})}
                                     </span>
-                                ) : mission.providerResponseStatus === 'OPEN_RFQ' ? (
+                                ) : mission.providerResponseStatus && mission.providerResponseStatus !== 'NOT_APPLICABLE' ? (
                                     <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold text-amber-800">
-                                        Đấu thầu mở (Open RFQ)
+                                        {t('opsMarketplace.orders.sourcePlatformPending')}
                                     </span>
                                 ) : (
                                     <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
-                                        1P Đội bay nội bộ
+                                        {t('opsMarketplace.orders.sourceInternal')}
                                     </span>
                                 )}
                             </div>
@@ -97,9 +98,9 @@ export function OperationsMissionOverviewSection({
                                 id="mission-title"
                                 className="my-2 break-words text-2xl font-extrabold leading-tight tracking-tight text-foreground md:text-3xl"
                             >
-                                {mission.title}
+                                {sanitizeEntityName(mission.title)}
                             </h1>
-                            <p className="m-0 text-sm leading-relaxed text-muted">{mission.locationName}</p>
+                            <p className="m-0 text-sm leading-relaxed text-muted">{sanitizeEntityName(mission.locationName)}</p>
                         </div>
                         <StatusBadge status={mission.status} />
                     </div>

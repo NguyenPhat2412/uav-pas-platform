@@ -1,7 +1,11 @@
 {
   "opsMarketplace": {
     "common": {
-      "illustrationBadge": "Illustrative",
+      "illustrationBadge": "illustrative",
+      "illustrativeFooterNote": "Prices and transactions on this platform are illustrative for academic demonstration.",
+      "fabMenuLabel": "Assistant & Support",
+      "fabAiAssistant": "AI Assistant",
+      "fabLiveSupport": "Customer Inbox",
       "retry": "Retry",
       "loading": "Loading data…",
       "save": "Save",
@@ -189,7 +193,7 @@
         "summary": "Short Summary",
         "listingType": "Service Type",
         "pricingModel": "Pricing Unit",
-        "basePriceVnd": "Illustrative Price (VND)",
+        "basePriceVnd": "Unit Price (VND)",
         "minBookingUnits": "Min Units",
         "province": "Primary Province",
         "serviceRadiusKm": "Radius (km)",
@@ -220,6 +224,15 @@
         "DELIVERED": "Delivered"
       },
       "empty": "No orders in this tab.",
+      "sourcePlatformFleet": "Fleet partner: {name}",
+      "sourcePlatformPending": "Awaiting fleet dispatch",
+      "sourceInternal": "Managed fleet",
+      "conflicts": {
+        "UAV_TIME_CONFLICT": "This UAV is already assigned to another order in the overlapping time window.",
+        "OPERATOR_TIME_CONFLICT": "This control engineer is already assigned to another overlapping order.",
+        "UAV_IN_USE": "This UAV is currently executing another flight.",
+        "NO_UAV_AVAILABLE": "No available UAVs remain for this time window."
+      },
       "card": {
         "code": "Order #{code}",
         "schedule": "Schedule",
@@ -273,14 +286,14 @@
         "updateLink": "Update in Partner Profile"
       },
       "transactions": {
-        "title": "Illustrative Ledger Entries",
+        "title": "Ledger Entries",
         "empty": "No settlement ledger entries yet.",
         "gross": "Gross",
         "fee": "Platform Fee",
         "net": "Net"
       },
       "payouts": {
-        "title": "Illustrative Payout History",
+        "title": "Payout History",
         "empty": "No payout records yet.",
         "status": {
           "PENDING": "Pending",
@@ -295,7 +308,12 @@
       "inFlightOrders": "In Flight",
       "pendingAccept": "To Accept",
       "shortcutsTitle": "Fleet Shortcuts",
-      "viewDetails": "View details"
+      "viewDetails": "View details",
+      "liveFlights": "Connected flights",
+      "batteryLabel": "Battery",
+      "signalStable": "Signal stable",
+      "signalChecking": "Checking signal",
+      "noActiveFlight": "No simulated flight is currently running."
     },
     "pilotToday": {
       "badge": "Control Engineer",

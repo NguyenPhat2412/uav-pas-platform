@@ -83,7 +83,7 @@ export function useSiteInfo() {
         minPayoutVnd: parseNumberSetting(settings['marketplace.min_payout_vnd'], 100_000, 10_000),
         maxPayoutVnd: parseNumberSetting(settings['marketplace.max_payout_vnd'], 500_000_000, 50_000),
         defaultServiceRadiusKm: parseNumberSetting(settings['marketplace.default_service_radius_km'], 100, 5, 2000),
-        rfqEnabled: parseBoolSetting(settings['marketplace.rfq_enabled'], true),
+        rfqEnabled: parseBoolSetting(settings['marketplace.rfq_enabled'], false),
         requireEscrowBeforeStart: parseBoolSetting(settings['marketplace.require_escrow_before_start'], false),
         invoiceDueDays: parseNumberSetting(settings['billing.invoice_due_days'], 7, 1, 90),
         loaded: info !== undefined,

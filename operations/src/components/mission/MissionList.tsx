@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {RefreshCw} from 'lucide-react';
 import {Button, Spinner, StatusBadge} from '@/components/ui';
 import {DataTable, options, type TableColumn} from '@/components/data/DataTable';
+import {sanitizeEntityName} from '@/forms/marketplace/marketplace-forms';
 import {displayLabel} from "@/lib/presentation";
 import {Mission} from "@/types/mission/mission.types";
 import {toMissionSlug} from "@/lib/url-slugs";
@@ -32,19 +33,19 @@ export function MissionList({missions, loading, error, onRefresh, label, showCus
             cell: ({row}) => (
                 <div className="min-w-[200px] space-y-1">
                     <Link href={`/operations/missions/${toMissionSlug(row.original)}`}
-                          className="font-semibold text-slate-900 hover:text-primary">{row.original.title}</Link>
+                          className="font-semibold text-slate-900 hover:text-primary">{sanitizeEntityName(row.original.title)}</Link>
                     <div>
-                        {row.original.providerResponseStatus === 'OPEN_RFQ' ? (
-                            <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[10.5px] font-bold text-amber-800">
-                                Sàn RFQ · Chờ chọn đối tác
-                            </span>
-                        ) : row.original.providerDisplayName ? (
+                        {row.original.providerDisplayName ? (
                             <span className="inline-block rounded-full border border-slate-300 bg-slate-100 px-2 py-0.5 text-[10.5px] font-bold text-slate-800">
-                                Đơn Sàn: {row.original.providerDisplayName}
+                                {t('opsMarketplace.orders.sourcePlatformFleet', {name: sanitizeEntityName(row.original.providerDisplayName)})}
+                            </span>
+                        ) : row.original.providerResponseStatus && row.original.providerResponseStatus !== 'NOT_APPLICABLE' ? (
+                            <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[10.5px] font-bold text-amber-800">
+                                {t('opsMarketplace.orders.sourcePlatformPending')}
                             </span>
                         ) : (
                             <span className="inline-block rounded-full bg-slate-100 px-2 py-0.5 text-[10.5px] font-semibold text-slate-600">
-                                1P Đội bay nội bộ
+                                {t('opsMarketplace.orders.sourceInternal')}
                             </span>
                         )}
                     </div>
