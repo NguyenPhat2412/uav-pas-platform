@@ -9037,7 +9037,7 @@
             "description": "### Thêm kỹ sư điều khiển vào đội (Create Provider Pilot)\n\nThêm kỹ sư điều khiển mới và liên kết tài khoản vận hành.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/pilots`",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"pilotUserId\": 1,\n  \"fullName\": \"Kỹ sư Nguyễn Văn Minh — minh hoạ\",\n  \"email\": \"admin@uav-platform.com\",\n  \"phone\": \"0987654321\",\n  \"licenseNumber\": \"CC-UAV-2026-19\",\n  \"specialization\": \"Khảo sát bản đồ & kiểm tra nhiệt\",\n  \"status\": \"AVAILABLE\",\n  \"assignedUavId\": 1\n}",
+              "raw": "{\n  \"pilotUserId\": 1,\n  \"fullName\": \"Kỹ sư Nguyễn Văn Minh\",\n  \"email\": \"admin@uav-platform.com\",\n  \"phone\": \"0987654321\",\n  \"licenseNumber\": \"CC-UAV-2026-19\",\n  \"specialization\": \"Khảo sát bản đồ & kiểm tra nhiệt\",\n  \"status\": \"AVAILABLE\",\n  \"assignedUavId\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -9092,7 +9092,7 @@
             "description": "### Đăng ký hồ sơ đối tác đội bay (Create Provider Profile)\n\nGửi hồ sơ đăng ký trở thành đối tác vận hành bay trên nền tảng.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/me`",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"displayName\": \"Đội bay Khảo sát Đông Nam Bộ — minh hoạ\",\n  \"providerType\": \"COMPANY\",\n  \"taxOrIdNumber\": \"0319008899\",\n  \"flightLicenseNumber\": \"GP-BAY-2026-88\",\n  \"bio\": \"Đội bay khảo sát bản đồ và hạ tầng khu công nghiệp\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"serviceRadiusKm\": 1,\n  \"contactPhone\": \"0987654321\",\n  \"bankName\": \"Vietcombank\",\n  \"bankAccountNumber\": \"0071000889900\",\n  \"bankAccountHolder\": \"DOI BAY DONG NAM BO\"\n}",
+              "raw": "{\n  \"displayName\": \"Đội bay Khảo sát Đông Nam Bộ\",\n  \"providerType\": \"COMPANY\",\n  \"taxOrIdNumber\": \"0319008899\",\n  \"flightLicenseNumber\": \"GP-BAY-2026-88\",\n  \"bio\": \"Đội bay khảo sát bản đồ và hạ tầng khu công nghiệp\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"serviceRadiusKm\": 1,\n  \"contactPhone\": \"0987654321\",\n  \"bankName\": \"Vietcombank\",\n  \"bankAccountNumber\": \"0071000889900\",\n  \"bankAccountHolder\": \"DOI BAY DONG NAM BO\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -9147,7 +9147,7 @@
             "description": "### Cập nhật hồ sơ đội bay (Update Provider Profile)\n\nChỉnh sửa thông tin liên hệ, bán kính phục vụ và tài khoản đối soát.\n\n* **Phương thức:** `PATCH`\n* **Endpoint:** `/api/v1/marketplace/provider/me`",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"displayName\": \"Đội bay Khảo sát Đông Nam Bộ — minh hoạ\",\n  \"providerType\": \"COMPANY\",\n  \"taxOrIdNumber\": \"0319008899\",\n  \"flightLicenseNumber\": \"GP-BAY-2026-88\",\n  \"bio\": \"Đội bay khảo sát bản đồ và hạ tầng khu công nghiệp\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"serviceRadiusKm\": 1,\n  \"contactPhone\": \"0987654321\",\n  \"bankName\": \"Vietcombank\",\n  \"bankAccountNumber\": \"0071000889900\",\n  \"bankAccountHolder\": \"DOI BAY DONG NAM BO\"\n}",
+              "raw": "{\n  \"displayName\": \"Đội bay Khảo sát Đông Nam Bộ\",\n  \"providerType\": \"COMPANY\",\n  \"taxOrIdNumber\": \"0319008899\",\n  \"flightLicenseNumber\": \"GP-BAY-2026-88\",\n  \"bio\": \"Đội bay khảo sát bản đồ và hạ tầng khu công nghiệp\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"serviceRadiusKm\": 1,\n  \"contactPhone\": \"0987654321\",\n  \"bankName\": \"Vietcombank\",\n  \"bankAccountNumber\": \"0071000889900\",\n  \"bankAccountHolder\": \"DOI BAY DONG NAM BO\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -9209,7 +9209,7 @@
             "description": "### Cập nhật kỹ sư điều khiển (Update Provider Pilot)\n\nĐổi trạng thái làm việc, chứng chỉ hoặc UAV gán cho kỹ sư.\n\n* **Phương thức:** `PATCH`\n* **Endpoint:** `/api/v1/marketplace/provider/pilots/{id}`",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"fullName\": \"Kỹ sư Nguyễn Văn Minh — minh hoạ\",\n  \"phone\": \"0987654321\",\n  \"specialization\": \"Khảo sát bản đồ & mô hình 3D\",\n  \"status\": \"AVAILABLE\",\n  \"assignedUavId\": 1\n}",
+              "raw": "{\n  \"fullName\": \"Kỹ sư Nguyễn Văn Minh\",\n  \"phone\": \"0987654321\",\n  \"specialization\": \"Khảo sát bản đồ & mô hình 3D\",\n  \"status\": \"AVAILABLE\",\n  \"assignedUavId\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -9847,7 +9847,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Dự án Kiểm thử Tự động Postman — minh hoạ\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"areaGeoJson\": \"{\\\"type\\\":\\\"Polygon\\\",\\\"coordinates\\\":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}\",\n  \"note\": \"Khởi tạo từ chuỗi Luồng đặt hàng Postman\"\n}",
+              "raw": "{\n  \"name\": \"Dự án Kiểm thử Tự động Postman\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"areaGeoJson\": \"{\\\"type\\\":\\\"Polygon\\\",\\\"coordinates\\\":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}\",\n  \"note\": \"Khởi tạo từ chuỗi Luồng đặt hàng Postman\"\n}",
               "options": {
                 "raw": {
                   "language": "json"

@@ -488,15 +488,28 @@ class ProjectSubscriptionIntegrationTest {
                 users.findByUsername(DevSeedDataInitializer.DEMO_ADMIN_USERNAME).orElseThrow();
         assertTrue(passwordEncoder.matches("TestOnlySeedPass!2026", customer.getPasswordHash()));
         assertEquals(UserRole.ROLE_ADMIN, admin.getRole());
+        assertFalse(customer.getFullName().toLowerCase().contains("minh ho"));
+        assertFalse(fleet.getFullName().toLowerCase().contains("minh ho"));
+        assertFalse(admin.getFullName().toLowerCase().contains("minh ho"));
 
         var fleetProfile = providerProfiles.findByUserId(fleet.getId()).orElseThrow();
-        assertEquals(10, uavs.findByProviderIdOrderByIdDesc(fleetProfile.getId()).size());
+        assertFalse(fleetProfile.getDisplayName().toLowerCase().contains("minh ho"));
+        var seededUavs = uavs.findByProviderIdOrderByIdDesc(fleetProfile.getId());
+        assertEquals(10, seededUavs.size());
         assertTrue(
-                providerPilots
-                                .findByProviderIdAndDeletedFalseOrderByCreatedAtDesc(
-                                        fleetProfile.getId())
-                                .size()
-                        >= 2);
+                seededUavs.stream().noneMatch(u -> u.getModel().toLowerCase().contains("minh ho")));
+        var seededPilots =
+                providerPilots.findByProviderIdAndDeletedFalseOrderByCreatedAtDesc(
+                        fleetProfile.getId());
+        assertTrue(seededPilots.size() >= 2);
+        assertTrue(
+                seededPilots.stream()
+                        .noneMatch(p -> p.getFullName().toLowerCase().contains("minh ho")));
+        var seededListing =
+                marketplaceListings.findBySlug("khao-sat-ban-do-2d-du-an-minh-hoa").orElseThrow();
+        assertFalse(seededListing.getTitle().toLowerCase().contains("minh ho"));
+        assertEquals(
+                "/images/process/step-05-data-handover.webp", seededListing.getCoverImageUrl());
 
         // Regression test: GET /api/v1/missions & /api/v1/projects without optional filters for
         // both customer and admin (must never pass null Specification into .and / allOf)

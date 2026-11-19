@@ -702,7 +702,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     public List<MissionResponse> listOpenRfqs(String username) {
         AppUser actor = requireUser(username);
         if (!SystemConfigurationOperations.boolOrDefault(
-                systemConfig, "marketplace.rfq_enabled", true)) {
+                systemConfig, "marketplace.rfq_enabled", false)) {
             return List.of();
         }
         return missions.findOpenRfqMissions(OPEN_RFQ_STATUSES).stream()
@@ -718,7 +718,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     public MissionBidResponse submitRfqBid(
             Long missionId, MissionBidCreateRequest request, String username) {
         if (!SystemConfigurationOperations.boolOrDefault(
-                systemConfig, "marketplace.rfq_enabled", true)) {
+                systemConfig, "marketplace.rfq_enabled", false)) {
             throw SystemException.conflict(
                     "Tính năng đấu thầu báo giá mở (RFQ) hiện đang tạm đóng theo cấu hình hệ thống.",
                     "RFQ_DISABLED");

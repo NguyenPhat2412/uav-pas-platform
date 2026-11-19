@@ -72,12 +72,12 @@ public class SystemSettingsDataInitializer implements ApplicationRunner {
                 "Bán kính phục vụ mặc định khi tạo hồ sơ hoặc tin đăng dịch vụ (km)");
         seed(
                 "marketplace.rfq_enabled",
-                "true",
+                "false",
                 "MARKETPLACE",
                 SettingValueType.BOOLEAN,
                 null,
                 null,
-                "Cho phép đăng yêu cầu báo giá mở (Open RFQ) và đối tác chào thầu");
+                "Cho phép mở yêu cầu báo giá mở (ngoài phạm vi đồ án, mặc định tắt)");
         seed(
                 "marketplace.require_escrow_before_start",
                 "false",

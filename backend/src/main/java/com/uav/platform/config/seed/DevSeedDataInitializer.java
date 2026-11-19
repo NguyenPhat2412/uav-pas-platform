@@ -84,28 +84,28 @@ public class DevSeedDataInitializer implements ApplicationRunner {
                 upsertAccount(
                         DEMO_ADMIN_USERNAME,
                         "demo.admin@uav.local",
-                        "Quản trị viên Demo — minh hoạ",
+                        "Quản trị viên Demo",
                         UserRole.ROLE_ADMIN,
                         encoded);
         AppUser customer =
                 upsertAccount(
                         DEMO_CUSTOMER_USERNAME,
                         "demo.customer@uav.local",
-                        "Khách hàng Dự án — minh hoạ",
+                        "Khách hàng Dự án",
                         UserRole.ROLE_PILOT,
                         encoded);
         AppUser fleetOwner =
                 upsertAccount(
                         DEMO_FLEET_USERNAME,
                         "demo.fleet@uav.local",
-                        "Chủ đội bay Miền Nam — minh hoạ",
+                        "Chủ đội bay Miền Nam",
                         UserRole.ROLE_PILOT,
                         encoded);
         AppUser fleetPilot =
                 upsertAccount(
                         DEMO_PILOT_USERNAME,
                         "demo.pilot@uav.local",
-                        "Kỹ sư Trần Minh Quân — minh hoạ",
+                        "Kỹ sư Trần Minh Quân",
                         UserRole.ROLE_OPERATOR,
                         encoded);
 
@@ -150,7 +150,7 @@ public class DevSeedDataInitializer implements ApplicationRunner {
             Project p = new Project();
             p.setCustomer(customer);
             p.setCode("PRJ-2026-DEMO01");
-            p.setName("Dự án Khu Đô Thị Sinh Thái Nam Sài Gòn — minh hoạ");
+            p.setName("Dự án Khu Đô Thị Sinh Thái Nam Sài Gòn");
             p.setProvince("TP. Hồ Chí Minh");
             p.setAreaGeoJson(
                     "{\"type\":\"Polygon\",\"coordinates\":[[[106.7010,10.7280],[106.7120,10.7280],[106.7120,10.7360],[106.7010,10.7360],[106.7010,10.7280]]]}");
@@ -172,7 +172,7 @@ public class DevSeedDataInitializer implements ApplicationRunner {
                                     created.setSlug("doi-bay-mien-nam-minh-hoa");
                                     return created;
                                 });
-        profile.setDisplayName("Đội bay Khảo sát Miền Nam — minh hoạ");
+        profile.setDisplayName("Đội bay Khảo sát Miền Nam");
         profile.setProviderType(ProviderType.COMPANY);
         profile.setProvince("TP. Hồ Chí Minh");
         profile.setServiceRadiusKm(300);
@@ -199,13 +199,7 @@ public class DevSeedDataInitializer implements ApplicationRunner {
         for (int i = 1; i <= 10; i++) {
             String sn = String.format("DEMO-SGN-UAV-%02d", i);
             if (!uavs.existsBySerialNumber(sn)) {
-                Uav uav =
-                        new Uav(
-                                i <= 4
-                                        ? "Matrice 350 Survey — minh hoạ"
-                                        : "Mavic 3 Enterprise — minh hoạ",
-                                sn,
-                                "DJI");
+                Uav uav = new Uav(i <= 4 ? "Matrice 350 Survey" : "Mavic 3 Enterprise", sn, "DJI");
                 uav.setProvider(fleet);
                 uav.setStatus(UavStatus.AVAILABLE);
                 uavs.save(uav);
@@ -230,7 +224,7 @@ public class DevSeedDataInitializer implements ApplicationRunner {
             ProviderPilot p1 = new ProviderPilot();
             p1.setProvider(fleet);
             p1.setPilotUser(fleetPilot);
-            p1.setFullName("Kỹ sư Trần Minh Quân — minh hoạ");
+            p1.setFullName("Kỹ sư Trần Minh Quân");
             p1.setPhone("0909300101");
             p1.setLicenseNumber("CC-BAY-DEMO-101");
             p1.setSpecialization("Khảo sát bản đồ & mô hình 3D");
@@ -240,7 +234,7 @@ public class DevSeedDataInitializer implements ApplicationRunner {
         ProviderPilot p2 = new ProviderPilot();
         p2.setProvider(fleet);
         p2.setPilotUser(fleetOwner);
-        p2.setFullName("Kỹ sư Lê Hoàng Hải — minh hoạ");
+        p2.setFullName("Kỹ sư Lê Hoàng Hải");
         p2.setPhone("0909300102");
         p2.setLicenseNumber("CC-BAY-DEMO-102");
         p2.setSpecialization("Kiểm tra nhiệt hạ tầng & điện mặt trời");
@@ -254,7 +248,7 @@ public class DevSeedDataInitializer implements ApplicationRunner {
             MarketplaceListing l = new MarketplaceListing();
             l.setProvider(fleet);
             l.setSlug(slug);
-            l.setTitle("Khảo sát bản đồ trực giao 2D khu đất dự án — minh hoạ");
+            l.setTitle("Khảo sát bản đồ trực giao 2D khu đất dự án");
             l.setSummary("Chụp ảnh lập thể và ghép bình đồ tiến độ theo dự án — giá minh hoạ.");
             l.setDescription("Dịch vụ khảo sát khu đất xây dựng theo lịch dự án — minh hoạ.");
             l.setListingType(ListingType.FLIGHT_SERVICE);
@@ -264,6 +258,7 @@ public class DevSeedDataInitializer implements ApplicationRunner {
             l.setMinBookingUnits(new BigDecimal("5"));
             l.setProvince("TP. Hồ Chí Minh");
             l.setServiceRadiusKm(250);
+            l.setCoverImageUrl("/images/process/step-05-data-handover.webp");
             l.setModerationStatus(ListingModerationStatus.PUBLISHED);
             l.setFeatured(true);
             listings.save(l);

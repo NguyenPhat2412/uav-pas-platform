@@ -123,9 +123,7 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
                                                 .at("serviceOfferingId"));
 
         String title =
-                trimOrNull(request.title()) != null
-                        ? request.title().trim()
-                        : template.getName() + " — minh hoạ";
+                trimOrNull(request.title()) != null ? request.title().trim() : template.getName();
         MissionType missionType = mapMissionType(template.getCode());
         PricingModel pricingModel =
                 request.pricingModel() != null

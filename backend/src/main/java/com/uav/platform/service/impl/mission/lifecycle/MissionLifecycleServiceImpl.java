@@ -338,7 +338,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
             marketplaceListings.save(listing);
         } else if (Boolean.TRUE.equals(request.openRfq())) {
             if (!com.uav.platform.service.impl.settings.SystemConfigurationOperations.boolOrDefault(
-                    systemConfig, "marketplace.rfq_enabled", true)) {
+                    systemConfig, "marketplace.rfq_enabled", false)) {
                 throw SystemException.conflict(
                         "Tính năng đấu thầu báo giá mở (RFQ) hiện đang tạm đóng theo cấu hình hệ thống.",
                         "RFQ_DISABLED");

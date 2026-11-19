@@ -10542,7 +10542,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "Dự án Khu Đô Thị Nam Sài Gòn — minh hoạ"
+            "example": "Dự án Khu Đô Thị Nam Sài Gòn"
           },
           "province": {
             "type": "string",
@@ -10911,7 +10911,7 @@
         "properties": {
           "displayName": {
             "type": "string",
-            "example": "Đội bay Khảo sát Đông Nam Bộ — minh hoạ"
+            "example": "Đội bay Khảo sát Đông Nam Bộ"
           },
           "providerType": {
             "type": "string",
@@ -10971,7 +10971,7 @@
           },
           "title": {
             "type": "string",
-            "example": "Khảo sát bản đồ 2D khu công nghiệp — minh hoạ"
+            "example": "Khảo sát bản đồ 2D khu công nghiệp"
           },
           "province": {
             "type": "string",
@@ -11021,7 +11021,7 @@
         "properties": {
           "model": {
             "type": "string",
-            "example": "Matrice 350 Survey — minh hoạ"
+            "example": "Matrice 350 Survey"
           },
           "serialNumber": {
             "type": "string",
@@ -11038,7 +11038,7 @@
         "properties": {
           "model": {
             "type": "string",
-            "example": "Matrice 350 Survey — minh hoạ"
+            "example": "Matrice 350 Survey"
           },
           "serialNumber": {
             "type": "string",
@@ -11071,7 +11071,7 @@
           },
           "fullName": {
             "type": "string",
-            "example": "Kỹ sư Nguyễn Văn Minh — minh hoạ"
+            "example": "Kỹ sư Nguyễn Văn Minh"
           },
           "email": {
             "type": "string",
@@ -11109,7 +11109,7 @@
         "properties": {
           "fullName": {
             "type": "string",
-            "example": "Kỹ sư Nguyễn Văn Minh — minh hoạ"
+            "example": "Kỹ sư Nguyễn Văn Minh"
           },
           "phone": {
             "type": "string",

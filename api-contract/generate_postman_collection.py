@@ -926,7 +926,7 @@ order_flow_folder = {
             '/api/v1/projects',
             token_var='customerToken',
             body={
-                'name': 'Dự án Kiểm thử Tự động Postman — minh hoạ',
+                'name': 'Dự án Kiểm thử Tự động Postman',
                 'province': 'TP. Hồ Chí Minh',
                 'areaGeoJson': '{"type":"Polygon","coordinates":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}',
                 'note': 'Khởi tạo từ chuỗi Luồng đặt hàng Postman'
