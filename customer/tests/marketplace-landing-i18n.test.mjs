@@ -34,13 +34,18 @@ test('publicSite trilingual catalogs (vi, en, ja) have 100% key parity and non-e
     }
 });
 
-test('original visual landing architecture is preserved with refined wording and formal dossier documents', () => {
+test('redesigned 6-block landing architecture enforces palette, live API listings, and dynamic pricing config', () => {
     const homeLanding = read('src/components/marketing/HomeLanding.tsx');
-    assert.match(homeLanding, /HomeLandingHeroSection/);
-    assert.match(homeLanding, /HomeLandingCapabilitiesSection/);
-    assert.match(homeLanding, /HomeLandingPortalsSection/);
-    assert.match(homeLanding, /HomeLandingContactSection/);
-    assert.match(homeLanding, /HomeLandingShowcaseSection/);
+    assert.match(homeLanding, /HomeHeroSection/);
+    assert.match(homeLanding, /HomeCategoryGridSection/);
+    assert.match(homeLanding, /HomeFeaturedServicesSection/);
+    assert.match(homeLanding, /HomeHowItWorksSection/);
+    assert.match(homeLanding, /HomeSimulationHighlightSection/);
+    assert.match(homeLanding, /HomePartnerCtaSection/);
+
+    const planCards = read('src/components/marketing/PlanCards.tsx');
+    assert.match(planCards, /useSiteInfo/, 'PlanCards reads platform fee rates dynamically from /api/v1/public/site-info');
+    assert.match(planCards, /platformFeeRate/);
 
     const marketingFiles = readdirSync(atRoot('src/components/marketing')).filter((f) => f.endsWith('.tsx'));
     const catalogFiles = readdirSync(atRoot('src/components/marketplace/catalog')).filter((f) => f.endsWith('.tsx'));

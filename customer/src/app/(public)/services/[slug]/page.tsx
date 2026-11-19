@@ -82,8 +82,8 @@ export default async function ServiceDetail({params}: { params: Promise<{ slug: 
                     </div>
 
                     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
-                        <h2 className="text-lg font-bold text-slate-900">Đầu ra bàn giao tiêu chuẩn (Deliverables)</h2>
-                        <p className="mt-1 text-xs text-slate-500">Tất cả tệp kết quả được lưu trữ bảo mật trên cổng khách hàng qua Signed-URL.</p>
+                        <h2 className="text-lg font-bold text-slate-900">Đầu ra bàn giao tiêu chuẩn</h2>
+                        <p className="mt-1 text-xs text-slate-500">Tất cả tệp kết quả được lưu trữ bảo mật và tải trực tiếp trên cổng khách hàng.</p>
                         <ul className="mt-4 space-y-2.5">
                             {detail.deliverables.map((item) => (
                                 <li key={item} className="flex items-start gap-2.5 rounded-xl border border-slate-100 bg-slate-50/70 p-3 text-xs font-medium text-slate-700">

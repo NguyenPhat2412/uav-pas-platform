@@ -120,7 +120,7 @@
     "operationsPulse": "Operations & Support",
     "airspaceWeather": "Map & Airspace",
     "catalogPlans": "Catalog & Plans",
-    "marketplace3p": "3P Partner Marketplace",
+    "marketplace3p": "UAV Service Marketplace",
     "billingLedger": "Reconciliation & Ledger",
     "rbacGovernance": "Roles & Permissions",
     "runtimeOps": "Runtime & Deployment",
@@ -398,7 +398,7 @@
     "customerPortal": "Customer",
     "customerPortalUser": "Customer Portal ({username})",
     "register": "Sign up",
-    "digitalTwin": "Digital Twin"
+    "digitalTwin": "Flight Simulation"
   },
   "publicFooter": {
     "university": "Flight Operations Platform",
@@ -408,7 +408,7 @@
     "services": "UAV Flight Services",
     "solutions": "Solutions",
     "pricing": "Pricing & Plans",
-    "howItWorks": "5-Step Workflow",
+    "howItWorks": "How it works",
     "portalsHeading": "Portals & Academy",
     "customerPortal": "Customer Portal",
     "operationsPortal": "Operations Center",

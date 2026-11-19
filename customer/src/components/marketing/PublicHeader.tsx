@@ -16,13 +16,13 @@ import {canUsePortal, portalForRole, portalHome} from '@/utils/auth/portal';
 
 const primaryNavLinks = [
     ['/services', 'publicHeader.services'],
-    ['/solutions', 'publicHeader.solutions'],
+    ['/how-it-works', 'publicHeader.howItWorks'],
     ['/digital-twin', 'publicHeader.digitalTwin'],
     ['/pricing', 'publicHeader.pricing'],
 ] as const;
 
 const secondaryNavLinks = [
-    ['/how-it-works', 'publicHeader.howItWorks'],
+    ['/solutions', 'publicHeader.solutions'],
     ['/about', 'publicHeader.about'],
     ['/contact', 'publicHeader.contact'],
 ] as const;
@@ -243,20 +243,7 @@ export function PublicHeader() {
                         </Link>
                     ))}
 
-                    {secondaryNavLinks.map(([href, labelKey]) => (
-                        <Link
-                            key={href}
-                            href={href}
-                            aria-current={isActive(href) ? 'page' : undefined}
-                            className={`hidden shrink-0 whitespace-nowrap text-xs transition-colors hover:text-primary 2xl:inline-flex ${
-                                isActive(href) ? 'font-bold text-primary' : 'font-medium text-slate-600'
-                            }`}
-                        >
-                            {t(labelKey)}
-                        </Link>
-                    ))}
-
-                    <div ref={moreRef} className="relative 2xl:hidden">
+                    <div ref={moreRef} className="relative">
                         <button
                             type="button"
                             aria-expanded={moreOpen}

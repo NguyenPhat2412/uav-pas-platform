@@ -82,8 +82,8 @@ export default function ProviderOrdersView() {
 
     return (
         <ProviderStudioShell
-            title="Điều phối Đơn đặt thuê & Sàn Đấu thầu RFQ"
-            subtitle="Xác nhận đơn đặt từ khách hàng, thực hiện chuyến bay bàn giao dữ liệu và gửi báo giá cho các yêu cầu mở."
+            title="Đơn điều phối từ nền tảng UAV PAS"
+            subtitle="Xác nhận đơn được giao, phân công kỹ sư & UAV, thực hiện bay mô phỏng và bàn giao dữ liệu."
         >
             {!profileQuery.isLoading && !profile ? (
                 <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-6 text-center" role="status">
@@ -118,7 +118,7 @@ export default function ProviderOrdersView() {
                                 activeTab === 'rfq' ? 'bg-primary text-primary-foreground' : 'border border-slate-200 bg-white text-slate-700'
                             }`}
                         >
-                            Yêu cầu mở chờ báo giá — Open RFQ ({rfqs.length})
+                            Yêu cầu chờ điều phối ({rfqs.length})
                         </button>
                     </div>
 

@@ -26,7 +26,7 @@ export type {
 export const projectHighlights = [
     {label: 'Kiến trúc điều hành', value: '3 Phân hệ', detail: 'Khách hàng · Điều phối Vận hành · Quản trị Hệ thống'},
     {label: 'Giám sát bay', value: 'Trực tuyến', detail: 'Theo dõi tọa độ GNSS, độ cao AGL, dung lượng pin và ranh giới Geofence'},
-    {label: 'AI biên', value: 'Thử nghiệm', detail: 'Hướng nghiên cứu YOLOv8s trên Kria KV260 tại mặt đất'},
+    {label: 'AI biên', value: 'Thử nghiệm', detail: 'Hướng nghiên cứu nhận diện đối tượng tại mặt đất'},
     {label: 'Vòng đời nhiệm vụ', value: '7 Trạng thái', detail: 'Kiểm soát chặt từ bản nháp đến bàn giao dữ liệu'},
 ] as const;
 
@@ -108,15 +108,15 @@ export const uavPlatformFeatures: UavPlatformFeature[] = [
     },
     {
         id: 'media-billing-webhooks',
-        badge: 'Dữ liệu & Tích hợp',
-        title: 'Bàn giao Signed-URL, VietQR & Webhooks',
-        subtitle: 'Lưu trữ kết quả nhiệm vụ an toàn, tự động hoá gói cước và kết nối API.',
+        badge: 'Dữ liệu & Đối soát',
+        title: 'Bàn giao dữ liệu & đối soát minh hoạ',
+        subtitle: 'Lưu trữ kết quả nhiệm vụ an toàn, tự động hoá gói cước và thông báo trạng thái.',
         description:
-            'Tải ảnh Geotagged, video 4K và báo cáo qua liên kết bảo mật, tích hợp thanh toán VietQR EMVCo và cổng Webhook.',
+            'Tải ảnh gắn tọa độ, video và báo cáo qua liên kết bảo mật trên nền tảng kèm đối soát minh hoạ.',
         specs: [
-            'Tải dữ liệu khảo sát bảo mật qua Signed URL',
-            'Thanh toán VietQR EMVCo tự động đối soát',
-            'Phân quyền RBAC động & Webhook ký số HMAC',
+            'Tải dữ liệu khảo sát bảo mật trên cổng khách hàng',
+            'Đối soát thanh toán minh hoạ theo từng đơn',
+            'Phân quyền theo vai trò & thông báo sự kiện',
         ],
         portal: 'Khách hàng & Quản trị',
         scene: 'survey',
@@ -139,8 +139,8 @@ export const portalEcosystem: PlatformPortalOverview[] = [
         href: '/customer/dashboard',
         cta: 'Mở Cổng Khách hàng',
         scene: 'survey',
-        imageSrc: '/images/uav-people/uav-survey-team.webp',
-        imageAlt: 'Đội khảo sát và khách hàng kiểm tra dữ liệu bản đồ bay ngoài thực địa',
+        imageSrc: '/images/hero-slides/uav-hero-3.webp',
+        imageAlt: 'Thiết bị bay UAV phục vụ khảo sát dự án',
     },
     {
         id: 'operations',
@@ -194,9 +194,9 @@ export const publicPricingPlans: PublicPricingPlan[] = [
         targetAudience: 'Phù hợp cho nhu cầu khảo sát định kỳ và quay chụp công trình với một UAV.',
         highlights: [
             '20 giờ bay/tháng trên 4 nhóm dịch vụ UAV cơ bản',
-            'Công cụ vẽ vùng bay GIS, tuỳ chỉnh AGL & GSD',
-            'Tải ảnh Geotagged, video 4K qua Signed URL',
-            'Thanh toán nhanh qua mã VietQR EMVCo tự động',
+            'Công cụ vẽ vùng bay GIS, tuỳ chỉnh độ cao và cảm biến',
+            'Tải ảnh, video và báo cáo bảo mật trên nền tảng',
+            'Theo dõi đối soát và ví minh hoạ theo từng đơn',
         ],
     },
     {
@@ -213,9 +213,9 @@ export const publicPricingPlans: PublicPricingPlan[] = [
         targetAudience: 'Phù hợp cho đơn vị khảo sát hạ tầng kỹ thuật cần vận hành nhiều UAV đồng thời.',
         highlights: [
             '80 giờ bay/tháng & ưu tiên xếp lịch điều phối',
-            'Mở khoá mô-đun AI thử nghiệm (YOLOv8s)',
+            'Mở khoá mô-đun AI thử nghiệm tại mặt đất',
             'Đầy đủ 4 cảm biến: RGB 4K, Nhiệt, LiDAR, Đa phổ',
-            'Báo cáo phân tích hiệu suất nhiệm vụ thời gian thực',
+            'Báo cáo phân tích hiệu suất nhiệm vụ trực quan',
         ],
     },
     {
@@ -231,8 +231,8 @@ export const publicPricingPlans: PublicPricingPlan[] = [
         targetAudience: 'Phù hợp cho tổ chức vận hành đội bay quy mô lớn và ứng phó tìm kiếm cứu nạn.',
         highlights: [
             '300 giờ bay/tháng, điều phối đồng thời tới 10 UAV',
-            'Buồng lái SAR & sinh đường bay theo mẫu IAMSAR',
-            'Tích hợp Webhook sự kiện thời gian thực (SAR, RTH)',
+            'Buồng lái hỗ trợ tìm kiếm cứu nạn và đường bay mô phỏng',
+            'Tích hợp thông báo sự kiện và API hệ thống',
             'Ưu tiên phân bổ nguồn lực điều phối & trạm mặt đất'
         ],
     },
@@ -242,12 +242,12 @@ export const pricingComparisonRows: PricingComparisonRow[] = [
     {feature: 'Mức cước thuê bao hàng tháng', basic: '5.000.000 ₫ / tháng', pro: '15.000.000 ₫ / tháng', enterprise: '45.000.000 ₫ / tháng'},
     {feature: 'Hạn mức giờ bay định kỳ', basic: '20 giờ / tháng', pro: '80 giờ / tháng', enterprise: '300 giờ / tháng'},
     {feature: 'Số lượng UAV hoạt động đồng thời tối đa', basic: '01 UAV', pro: '03 UAV', enterprise: '10 UAV'},
-    {feature: 'Công cụ lập vùng bay GIS & cấu hình AGL / GSD / Overlap', basic: 'Có đầy đủ', pro: 'Có đầy đủ', enterprise: 'Có đầy đủ'},
+    {feature: 'Công cụ lập vùng bay GIS & cấu hình thông số bay', basic: 'Có đầy đủ', pro: 'Có đầy đủ', enterprise: 'Có đầy đủ'},
     {feature: 'Tải trọng cảm biến hỗ trợ', basic: 'RGB 4K tiêu chuẩn', pro: 'RGB 4K · Nhiệt · LiDAR · Đa phổ', enterprise: 'Toàn bộ cảm biến + cấu hình đặc thù'},
-    {feature: 'Mô-đun AI thử nghiệm (YOLOv8s)', basic: 'Không bao gồm', pro: 'Đã bao gồm', enterprise: 'Đã bao gồm'},
-    {feature: 'Buồng lái Tìm kiếm Cứu nạn (SAR) & đường bay IAMSAR', basic: 'Không bao gồm', pro: 'Hỗ trợ theo yêu cầu', enterprise: 'Có'},
-    {feature: 'Tích hợp Webhook sự kiện thời gian thực & API', basic: 'Thông báo trên cổng', pro: 'Thông báo + Báo cáo nâng cao', enterprise: 'Webhook HMAC đầy đủ'},
-    {feature: 'Phương thức thanh toán & kích hoạt hạn mức', basic: 'Chuyển khoản VietQR', pro: 'Chuyển khoản VietQR', enterprise: 'Chuyển khoản VietQR'},
+    {feature: 'Mô-đun AI thử nghiệm tại mặt đất', basic: 'Không bao gồm', pro: 'Đã bao gồm', enterprise: 'Đã bao gồm'},
+    {feature: 'Buồng lái hỗ trợ tìm kiếm cứu nạn', basic: 'Không bao gồm', pro: 'Hỗ trợ theo yêu cầu', enterprise: 'Có'},
+    {feature: 'Tích hợp thông báo sự kiện & API', basic: 'Thông báo trên cổng', pro: 'Thông báo + Báo cáo nâng cao', enterprise: 'API & Webhook đầy đủ'},
+    {feature: 'Đối soát & ví minh hoạ', basic: 'Theo đơn', pro: 'Theo đơn', enterprise: 'Theo đơn'},
 ];
 
 export const eras: Era[] = [

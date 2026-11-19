@@ -5,9 +5,9 @@ export type {SolutionDetailEntry};
 export const solutionDetails: Record<string, SolutionDetailEntry> = {
     'managed-uav-operations': {
         useCase: 'Tổ chức chiến dịch bay UAV trọn gói có điều phối tập trung: từ khâu lập vùng bay GIS, kiểm tra điều kiện thời tiết, phân bổ UAV – trạm mặt đất – phi công cho đến khi bàn giao dữ liệu.',
-        workflow: 'Khách hàng khởi tạo bản nháp nhiệm vụ với vùng bay đa giác/bán kính và thông số kỹ thuật (AGL, GSD, Overlap, Cảm biến). Trung tâm điều phối xác nhận nguồn lực, giữ chỗ thiết bị, phi công nhận lệnh và thực thi chuyến bay dưới sự giám sát telemetry thời gian thực.',
-        limitation: 'Mọi nhiệm vụ bay thực địa đều tuân thủ kiểm tra an toàn tiền bay (Pre-flight Checklist), giới hạn sức gió của từng dòng UAV và quy định cấp phép không phận hiện hành.',
-        techStack: ['Bản đồ lập kế hoạch GIS', 'Quản lý vòng đời nhiệm vụ 7 bước', 'Định vị GNSS đa vệ tinh', 'Kho lưu trữ Signed-URL'],
+        workflow: 'Khách hàng khởi tạo bản nháp nhiệm vụ với vùng bay đa giác/bán kính và thông số kỹ thuật. Trung tâm điều phối xác nhận nguồn lực, giữ chỗ thiết bị, kỹ sư nhận lệnh và thực thi chuyến bay mô phỏng với telemetry cập nhật trực tuyến.',
+        limitation: 'Mọi nhiệm vụ bay đều tuân thủ kiểm tra an toàn tiền bay (Pre-flight Checklist), giới hạn sức gió của từng dòng UAV và quy định cấp phép không phận hiện hành.',
+        techStack: ['Bản đồ lập kế hoạch GIS', 'Quản lý vòng đời đơn bay', 'Định vị GNSS đa vệ tinh', 'Kho lưu trữ dữ liệu bảo mật'],
         algorithms: ['Kiểm tra vùng cấm bay Ray-Casting Geofence', 'Tính toán khoảng cách địa trắc Haversine', 'Đánh giá an toàn pin quay về (Battery RTH Feasibility)'],
         deliverables: ['Nhật ký chuyến bay & Telemetry', 'Bộ ảnh/video gắn tọa độ địa lý', 'Biên bản hoàn thành nhiệm vụ trên cổng'],
     },
@@ -21,9 +21,9 @@ export const solutionDetails: Record<string, SolutionDetailEntry> = {
     },
     'uav-rental': {
         useCase: 'Tổ chức chiến dịch bay UAV trọn gói có điều phối tập trung: từ khâu lập vùng bay GIS, kiểm tra điều kiện thời tiết, phân bổ UAV – trạm mặt đất – phi công cho đến khi bàn giao dữ liệu.',
-        workflow: 'Khách hàng khởi tạo bản nháp nhiệm vụ với vùng bay đa giác/bán kính và thông số kỹ thuật (AGL, GSD, Overlap, Cảm biến). Trung tâm điều phối xác nhận nguồn lực, giữ chỗ thiết bị, phi công nhận lệnh và thực thi chuyến bay dưới sự giám sát telemetry thời gian thực.',
-        limitation: 'Mọi nhiệm vụ bay thực địa đều tuân thủ kiểm tra an toàn tiền bay (Pre-flight Checklist), giới hạn sức gió của từng dòng UAV và quy định cấp phép không phận hiện hành.',
-        techStack: ['Bản đồ lập kế hoạch GIS', 'Quản lý vòng đời nhiệm vụ 7 bước', 'Định vị GNSS đa vệ tinh', 'Kho lưu trữ Signed-URL'],
+        workflow: 'Khách hàng khởi tạo bản nháp nhiệm vụ với vùng bay đa giác/bán kính và thông số kỹ thuật. Trung tâm điều phối xác nhận nguồn lực, giữ chỗ thiết bị, kỹ sư nhận lệnh và thực thi chuyến bay mô phỏng với telemetry cập nhật trực tuyến.',
+        limitation: 'Mọi nhiệm vụ bay đều tuân thủ kiểm tra an toàn tiền bay (Pre-flight Checklist), giới hạn sức gió của từng dòng UAV và quy định cấp phép không phận hiện hành.',
+        techStack: ['Bản đồ lập kế hoạch GIS', 'Quản lý vòng đời đơn bay', 'Định vị GNSS đa vệ tinh', 'Kho lưu trữ dữ liệu bảo mật'],
         algorithms: ['Kiểm tra vùng cấm bay Ray-Casting Geofence', 'Tính toán khoảng cách địa trắc Haversine', 'Đánh giá an toàn pin quay về (Battery RTH Feasibility)'],
         deliverables: ['Nhật ký chuyến bay & Telemetry', 'Bộ ảnh/video gắn tọa độ địa lý', 'Biên bản hoàn thành nhiệm vụ trên cổng'],
     },
@@ -37,9 +37,9 @@ export const solutionDetails: Record<string, SolutionDetailEntry> = {
     },
     'ai-detection': {
         useCase: 'Hỗ trợ đội vận hành và chỉ huy nhận diện nhanh đối tượng (người, phương tiện, dấu hiệu bất thường) trên luồng hình ảnh thu từ UAV (mô-đun thử nghiệm, chưa vận hành trên UAV thật).',
-        workflow: 'Hướng thử nghiệm: bo mạch Kria KV260 đặt tại mặt đất chạy mô hình YOLOv8s trên ảnh/video mẫu và gửi các khung phát hiện (Bounding Boxes kèm điểm tin cậy) cùng thông số DPU, FPS, nhiệt độ SoC về Buồng lái AI Viewfinder để con người kiểm duyệt và xác minh (Human-in-the-loop).',
+        workflow: 'Hướng thử nghiệm: bo mạch biên đặt tại mặt đất chạy mô hình thị giác máy tính trên ảnh/video mẫu và gửi các khung phát hiện (Bounding Boxes kèm điểm tin cậy) về màn hình duyệt để con người kiểm tra và xác minh.',
         limitation: 'Mọi phát hiện từ mô hình AI đều đóng vai trò gợi ý kỹ thuật và bắt buộc phải được điều phối viên hoặc chỉ huy xác minh trước khi đưa ra quyết định điều hành.',
-        techStack: ['Bo mạch Kria KV260 (thử nghiệm tại mặt đất)', 'Mô hình thị giác máy tính YOLOv8s', 'Khung ngắm AI Viewfinder & Giám sát DPU/FPS/SoC'],
+        techStack: ['Phần cứng biên (thử nghiệm tại mặt đất)', 'Mô hình thị giác máy tính thử nghiệm', 'Khung duyệt AI có con người xác minh'],
         algorithms: ['Lọc ngưỡng độ tin cậy động (Confidence Thresholding)', 'Ánh xạ tọa độ phát hiện lên bản đồ điều hành', 'Cơ chế xác minh mục tiêu hai chiều (Human-Verified AI)'],
         deliverables: ['Danh sách phát hiện AI đã xác minh kèm nhãn thời gian', 'Tọa độ mục tiêu trên bản đồ điều hành', 'Thống kê hiệu năng suy luận phần cứng biên KV260'],
     },

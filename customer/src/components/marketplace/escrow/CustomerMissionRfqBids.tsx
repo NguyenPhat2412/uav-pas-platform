@@ -30,26 +30,26 @@ export function CustomerMissionRfqBids({
             <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="m-0 flex items-center gap-1.5 text-sm font-extrabold text-slate-900">
                     <Gavel size={15} className="text-primary" aria-hidden="true"/>
-                    Báo giá chào thầu từ các Đối tác UAV ({bids.length})
+                    Phương án điều phối từ Đối tác đã xác minh ({bids.length})
                 </h2>
                 {isRfq && (
                     <span className="text-xs text-slate-500">
-                        Chọn 1 báo giá phù hợp nhất để chốt đối tác và phát hành hóa đơn ký quỹ.
+                        UAV PAS điều phối đội bay đã xác minh và ghi nhận ký quỹ minh hoạ cho đơn của bạn.
                     </span>
                 )}
             </div>
 
             {Boolean(acceptError) && (
                 <p className="m-0 mt-2 rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-danger" role="alert">
-                    {extractActionableError(acceptError, 'Không thể chọn báo giá này. Vui lòng tải lại trang và thử lại.')}
+                    {extractActionableError(acceptError, 'Không thể xác nhận phương án này. Vui lòng tải lại trang và thử lại.')}
                 </p>
             )}
 
             {isLoading ? (
-                <p className="m-0 mt-3 text-xs text-slate-500" role="status">Đang tải danh sách báo giá...</p>
+                <p className="m-0 mt-3 text-xs text-slate-500" role="status">Đang tải thông tin điều phối...</p>
             ) : bids.length === 0 ? (
                 <p className="m-0 mt-3 text-xs text-slate-500">
-                    Yêu cầu đang mở trên sàn RFQ. Các đối tác UAV đã xác minh sẽ gửi báo giá tại đây.
+                    Đơn đang được UAV PAS kiểm tra và điều phối tới đội bay đã xác minh phù hợp.
                 </p>
             ) : (
                 <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -107,7 +107,7 @@ export function CustomerMissionRfqBids({
                                         disabled={isAccepting}
                                         onClick={() => onAcceptBid(bid.id)}
                                     >
-                                        {isAccepting ? 'Đang chốt...' : 'Chọn báo giá & Giao việc'}
+                                        {isAccepting ? 'Đang xác nhận...' : 'Xác nhận điều phối'}
                                     </Button>
                                 ) : (
                                     <span className="text-xs text-slate-400">{bid.status}</span>

@@ -65,8 +65,8 @@ export default function ProviderFleetView() {
 
     return (
         <ProviderStudioShell
-            title="Đội bay UAV & Thiết bị chuyên dụng của Đối tác (3P Fleet)"
-            subtitle="Khai báo máy bay UAV và cảm biến thuộc sở hữu của bạn để gán trực tiếp khi nhận đơn hàng trên sàn."
+            title="Đội bay UAV & Thiết bị chuyên dụng của Đối tác"
+            subtitle="Khai báo máy bay UAV và cảm biến thuộc sở hữu của bạn để phân công khi nhận đơn điều phối."
         >
             {!profileQuery.isLoading && !profile ? (
                 <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-6 text-center" role="status">

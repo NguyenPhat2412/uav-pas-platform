@@ -52,8 +52,8 @@ export function MissionReviewSummaryList({
             )}
             {effectiveOpenRfq && (
                 <div>
-                    <dt>Hình thức giao dịch</dt>
-                    <dd>Đấu thầu mở (Open RFQ)</dd>
+                    <dt>Hình thức điều phối</dt>
+                    <dd>UAV PAS điều phối đội bay đã xác minh</dd>
                 </div>
             )}
             <div>

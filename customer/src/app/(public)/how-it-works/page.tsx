@@ -1,153 +1,106 @@
-import Image from 'next/image';
-import {keepVietnamesePhrases} from "@/lib/typography";
-import {pageMetadata} from "@/content/marketing/metadata";
-import {steps} from "@/content/marketing/site-content";
-import {CustomerCta} from "@/components/marketing/PublicPage";
-import {ProcessRoute} from "@/components/marketing/HomeProcessRoute";
-import {scenes, type UavScene} from "@/components/marketing/UavPhoto";
+import {MapPin, PackageCheck, Search, ShieldCheck} from 'lucide-react';
+import {keepVietnamesePhrases} from '@/lib/typography';
+import {pageMetadata} from '@/content/marketing/metadata';
+import {CustomerCta} from '@/components/marketing/PublicPage';
+import {HomeSimulationHighlightSection} from '@/components/marketing/HomeSimulationHighlightSection';
 
 export const metadata = pageMetadata(
-    "Quy trình thực hiện nhiệm vụ UAV",
-    "Khám phá quy trình 5 bước triển khai nhiệm vụ UAV và vòng đời 7 trạng thái điều phối tự động giữa Khách hàng, Trung tâm Điều hành và Phi công thực địa.",
-    "/how-it-works",
-    true
+    'Cách hoạt động — Quy trình 4 bước UAV PAS',
+    'Quy trình 4 bước đặt dịch vụ bay UAV: chọn dịch vụ, vẽ vùng bay và chọn lịch, UAV PAS điều phối đội bay đã xác minh, theo dõi chuyến bay mô phỏng và nhận kết quả.',
+    '/how-it-works',
+    true,
 );
 
-const timelineStages: {
-    number: string;
-    role: string;
-    title: string;
-    short: string;
-    scene: UavScene;
-}[] = [
+const steps = [
     {
         number: '01',
-        role: 'Cổng Khách hàng',
-        title: 'Chọn dịch vụ & gói giờ bay',
-        short: 'Chọn 1 trong 4 dịch vụ chuẩn và kích hoạt hạn mức qua VietQR.',
-        scene: 'stepBriefing',
+        role: 'Khách hàng',
+        icon: Search,
+        title: 'Chọn dịch vụ bay phù hợp',
+        short: 'Tìm dịch vụ khảo sát, quay chụp, thu thập dữ liệu hoặc thuê UAV theo khu vực. Đơn giá hiển thị ở chế độ minh hoạ.',
     },
     {
         number: '02',
-        role: 'GIS Flight Planner',
-        title: 'Khoanh vùng đa giác trên bản đồ số',
-        short: 'Vẽ khu vực bay, chọn độ cao AGL (30–120m), GSD và cảm biến.',
-        scene: 'stepPlanning',
+        role: 'Không gian Dự án',
+        icon: MapPin,
+        title: 'Vẽ vùng bay & chọn lịch',
+        short: 'Tạo dự án, khoanh đa giác khu vực bay trên bản đồ số và chọn lịch bay một lần, hàng tuần hoặc hàng tháng.',
     },
     {
         number: '03',
-        role: 'Trung tâm Điều hành',
-        title: 'Thẩm định & giữ chỗ UAV – Phi công',
-        short: 'Kiểm tra vùng trời Geofence, thời tiết và phân công tổ bay.',
-        scene: 'stepPrep',
+        role: 'Điều phối UAV PAS',
+        icon: ShieldCheck,
+        title: 'UAV PAS giao đội bay đã xác minh',
+        short: 'Nền tảng thẩm định đơn và điều phối cho đối tác đội bay phù hợp. Đội bay phân công kỹ sư và UAV sẵn sàng.',
     },
     {
         number: '04',
-        role: 'Tổ bay Thực địa',
-        title: 'Thực hiện bay & theo dõi telemetry',
-        short: 'Hoàn tất kiểm tra tiền bay SOP và giám sát thông số chuyến bay trực tuyến.',
-        scene: 'stepRtk',
+        role: 'Theo dõi & Nghiệm thu',
+        icon: PackageCheck,
+        title: 'Theo dõi chuyến bay mô phỏng & nhận kết quả',
+        short: 'Xem đường bay mô phỏng, các mốc trạng thái giao hàng, tải tệp bàn giao và đánh giá sao sau khi hoàn tất.',
     },
-    {
-        number: '05',
-        role: 'Lưu trữ Đám mây',
-        title: 'Bàn giao dữ liệu qua Signed-URL',
-        short: 'Tải ảnh Geotagged, bình đồ 2D/3D và video 4K bảo mật một lần.',
-        scene: 'stepOrthomosaic',
-    },
-];
+] as const;
 
-const metroNodes = [
-    {step: '01', code: 'DRAFT', name: 'Bản nháp'},
-    {step: '02', code: 'PENDING', name: 'Chờ duyệt'},
-    {step: '03', code: 'CONFIRMED', name: 'Đã duyệt'},
-    {step: '04', code: 'RESERVED', name: 'Giữ UAV'},
-    {step: '05', code: 'READY', name: 'Sẵn sàng'},
-    {step: '06', code: 'IN_PROGRESS', name: 'Đang bay'},
-    {step: '07', code: 'COMPLETED', name: 'Hoàn tất'},
-];
+const orderStages = [
+    {step: '1', name: 'Chờ xác nhận'},
+    {step: '2', name: 'Chờ bay'},
+    {step: '3', name: 'Đang bay mô phỏng'},
+    {step: '4', name: 'Đã bàn giao'},
+    {step: '5', name: 'Đánh giá sao'},
+] as const;
 
 export default function HowItWorksPage() {
     return (
         <div className="bg-card text-foreground">
-            {/* Top Interactive Flight Route Header */}
-            <section className="border-b border-border bg-slate-50/70 py-12 sm:py-16">
-                <div className="mx-auto w-full max-w-[1380px] space-y-8 px-5 sm:px-8 lg:px-12">
+            <section className="border-b border-border bg-slate-50/70 py-10 sm:py-14">
+                <div className="mx-auto w-full max-w-[1280px] space-y-6 px-4 sm:px-6 lg:px-8">
                     <div className="max-w-2xl space-y-2">
-                        <p className="text-xs font-extrabold uppercase tracking-widest text-primary">
-                            Quy trình thực hiện • 5 Bước khép kín
+                        <p className="m-0 text-xs font-extrabold uppercase tracking-widest text-primary">
+                            Quy trình thực hiện · 4 bước rõ ràng
                         </p>
-                        <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">
-                            {keepVietnamesePhrases('Từ vùng vẽ GIS đến chuyến bay ngoài thực địa.')}
+                        <h1 className="m-0 text-2xl font-black tracking-tight text-foreground sm:text-4xl">
+                            {keepVietnamesePhrases('Đặt dịch vụ, UAV PAS điều phối đội bay đã xác minh.')}
                         </h1>
+                        <p className="m-0 text-sm leading-relaxed text-slate-600">
+                            Khách chọn dịch vụ theo dự án, nền tảng đứng giữa điều phối đội bay, theo dõi hành trình mô phỏng và bàn giao kết quả.
+                        </p>
                     </div>
-                    <ProcessRoute steps={steps.slice(0, 4)}/>
+
+                    <ol className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
+                        {steps.map(({number, role, icon: Icon, title, short}) => (
+                            <li key={number} className="flex flex-col gap-3 rounded-panel border border-slate-200 bg-white p-5 shadow-2xs">
+                                <div className="flex items-center justify-between">
+                                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-uav-red-light text-primary">
+                                        <Icon size={19} aria-hidden="true"/>
+                                    </span>
+                                    <span className="font-mono text-xs font-extrabold text-slate-400">
+                                        {number} · {role}
+                                    </span>
+                                </div>
+                                <h2 className="m-0 text-base font-bold text-slate-900">{keepVietnamesePhrases(title)}</h2>
+                                <p className="m-0 text-xs leading-relaxed text-slate-600">{short}</p>
+                            </li>
+                        ))}
+                    </ol>
                 </div>
             </section>
 
-            {/* Center-Line Vertical Alternating Timeline */}
-            <section className="py-16 sm:py-20">
-                <div className="mx-auto w-full max-w-5xl px-4 sm:px-6">
-                    <div className="relative space-y-12 before:hidden md:before:block before:absolute before:top-6 before:bottom-6 before:left-1/2 before:-translate-x-1/2 before:w-0.5 before:bg-slate-200">
-                        {timelineStages.map((stage, idx) => {
-                            const photo = scenes[stage.scene];
-                            const isEven = idx % 2 === 1;
-                            return (
-                                <div key={stage.number} className="relative grid grid-cols-1 items-center gap-6 md:grid-cols-12 md:gap-10">
-                                    {/* Image Side */}
-                                    <div className={`md:col-span-5 ${isEven ? 'md:col-start-8 md:order-2' : 'md:col-start-1 md:order-1'}`}>
-                                        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-slate-100 shadow-sm">
-                                            <Image
-                                                src={photo.src}
-                                                alt={photo.alt}
-                                                fill
-                                                sizes="(max-width: 768px) 100vw, 420px"
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                    </div>
+            <HomeSimulationHighlightSection/>
 
-                                    {/* Center Node Badge */}
-                                    <div className="hidden md:flex md:col-span-2 md:col-start-6 md:order-2 items-center justify-center">
-                                        <span className="z-10 flex h-12 w-12 items-center justify-center rounded-full border-4 border-white bg-primary font-mono text-sm font-black text-white shadow-md">
-                                            {stage.number}
-                                        </span>
-                                    </div>
-
-                                    {/* Concise Text Side */}
-                                    <div className={`md:col-span-5 ${isEven ? 'md:col-start-1 md:order-1 md:text-right' : 'md:col-start-8 md:order-3'}`}>
-                                        <div className="rounded-2xl border border-border bg-slate-50/70 p-6 space-y-2">
-                                            <p className="text-[11px] font-extrabold uppercase tracking-wider text-primary">
-                                                Bước {stage.number} · {stage.role}
-                                            </p>
-                                            <h2 className="text-xl font-black text-foreground">
-                                                {keepVietnamesePhrases(stage.title)}
-                                            </h2>
-                                            <p className="text-xs leading-relaxed text-slate-600">{stage.short}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    {/* Horizontal 7-Node Status Track (No outer box wrapper) */}
-                    <div className="mt-20 border-t border-border pt-14 space-y-6">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                            <h2 className="text-xl font-black tracking-tight text-foreground sm:text-2xl">
-                                Chuỗi 7 trạng thái đồng bộ thời gian thực
-                            </h2>
-                            <span className="text-xs font-bold text-primary">Khách hàng ↔ Điều hành ↔ Trạm mặt đất</span>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-                            {metroNodes.map((node, i) => (
-                                <div key={node.code} className="flex flex-col items-center rounded-2xl border border-border bg-slate-50/70 p-3.5 text-center">
-                                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary font-mono text-xs font-black text-white">
-                                        {i + 1}
+            <section className="py-10 sm:py-14">
+                <div className="mx-auto w-full max-w-[1280px] space-y-8 px-4 sm:px-6 lg:px-8">
+                    <div className="space-y-4">
+                        <h2 className="m-0 text-xl font-black tracking-tight text-foreground sm:text-2xl">
+                            5 mốc theo dõi đơn hàng trực quan
+                        </h2>
+                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+                            {orderStages.map(stage => (
+                                <div key={stage.step} className="flex flex-col items-center rounded-panel border border-border bg-slate-50/70 p-4 text-center">
+                                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary font-mono text-xs font-black text-white">
+                                        {stage.step}
                                     </span>
-                                    <span className="mt-2 font-mono text-[10px] font-bold text-primary">{node.code}</span>
-                                    <span className="mt-0.5 text-xs font-bold text-foreground">{node.name}</span>
+                                    <span className="mt-2 text-xs font-bold text-foreground">{stage.name}</span>
                                 </div>
                             ))}
                         </div>

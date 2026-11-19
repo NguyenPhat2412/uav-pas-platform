@@ -17,11 +17,11 @@ import {useMyProviderProfile} from '@/hooks/marketplace/useMarketplace';
 import {verificationStatusLabel} from '@/forms/marketplace/marketplace-forms';
 
 const STUDIO_TABS = [
-    {href: '/customer/provider/onboarding', label: 'Hồ sơ & KYC Đối tác', icon: Building2},
-    {href: '/customer/provider/listings', label: 'Tin đăng Dịch vụ & Thuê', icon: Package},
-    {href: '/customer/provider/fleet', label: 'Đội bay & Thiết bị 3P', icon: Plane},
-    {href: '/customer/provider/orders', label: 'Đơn đặt & Đấu thầu RFQ', icon: FileSpreadsheet},
-    {href: '/customer/provider/wallet', label: 'Ví Ký quỹ & Rút tiền', icon: Wallet},
+    {href: '/customer/provider/onboarding', label: 'Hồ sơ Đối tác', icon: Building2},
+    {href: '/customer/provider/listings', label: 'Dịch vụ niêm yết', icon: Package},
+    {href: '/customer/provider/fleet', label: 'Đội bay & Thiết bị', icon: Plane},
+    {href: '/customer/provider/orders', label: 'Đơn điều phối', icon: FileSpreadsheet},
+    {href: '/customer/provider/wallet', label: 'Ví đối soát minh hoạ', icon: Wallet},
 ] as const;
 
 export function ProviderStudioShell({

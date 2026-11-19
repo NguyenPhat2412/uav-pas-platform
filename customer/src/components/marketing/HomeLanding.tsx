@@ -1,28 +1,36 @@
 import {pageMetadata} from '@/content/marketing/metadata';
-import {HomeLandingHeroSection} from '@/components/marketing/HomeLandingHeroSection';
-import {HomeLandingCapabilitiesSection} from '@/components/marketing/HomeLandingCapabilitiesSection';
-import {HomeLandingPortalsSection} from '@/components/marketing/HomeLandingPortalsSection';
-import {HomeLandingContactSection} from '@/components/marketing/HomeLandingContactSection';
-import {HomeLandingShowcaseSection} from '@/components/marketing/HomeLandingShowcaseSection';
+import {HomeHeroSection} from '@/components/marketing/HomeHeroSection';
+import {HomeCategoryGridSection} from '@/components/marketing/HomeCategoryGridSection';
+import {HomeFeaturedServicesSection} from '@/components/marketing/HomeFeaturedServicesSection';
+import {HomeHowItWorksSection} from '@/components/marketing/HomeHowItWorksSection';
+import {HomeSimulationHighlightSection} from '@/components/marketing/HomeSimulationHighlightSection';
+import {HomePartnerCtaSection} from '@/components/marketing/HomePartnerCtaSection';
 
 export const metadata = pageMetadata(
-    'UAV PAS | Nền tảng Phần mềm Điều phối & Kết nối Dịch vụ UAV',
-    'Nền tảng phần mềm kết nối dịch vụ UAV, lập kế hoạch bay GIS, giám sát telemetry trực tuyến và bàn giao dữ liệu bảo mật.',
+    'UAV PAS | Đặt dịch vụ bay UAV cho dự án của bạn',
+    'Nền tảng điều phối dịch vụ bay UAV: chọn dịch vụ, vẽ vùng bay và chọn lịch. UAV PAS điều phối đội bay đã xác minh, theo dõi chuyến bay mô phỏng và nhận kết quả.',
     '/',
     true,
 );
 
 /**
- * Public home landing composition for UAV PAS (visual editorial & product imagery layout).
+ * Compact 6-block Shopee-inspired homepage for UAV PAS:
+ * 1. Hero + service search bar
+ * 2. Shared service category icon grid
+ * 3. Live featured service listings (fleet-anonymous)
+ * 4. 4-step workflow
+ * 5. Flight simulation highlight
+ * 6. Partner strip + final CTA
  */
 export default function Page() {
     return (
         <div className="overflow-x-hidden bg-card text-foreground">
-            <HomeLandingHeroSection />
-            <HomeLandingCapabilitiesSection />
-            <HomeLandingPortalsSection />
-            <HomeLandingContactSection />
-            <HomeLandingShowcaseSection />
+            <HomeHeroSection/>
+            <HomeCategoryGridSection/>
+            <HomeFeaturedServicesSection/>
+            <HomeHowItWorksSection/>
+            <HomeSimulationHighlightSection/>
+            <HomePartnerCtaSection/>
         </div>
     );
 }

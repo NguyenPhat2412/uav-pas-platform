@@ -2,50 +2,48 @@
 
 import {useEffect, useState} from 'react';
 import Link from 'next/link';
+import {useSearchParams} from 'next/navigation';
 import {CheckCircle2, Lock, ShieldCheck, Sparkles} from 'lucide-react';
 import {MarketplaceFilterBar} from '@/components/marketplace/catalog/MarketplaceFilterBar';
 import {MarketplaceListingCard} from '@/components/marketplace/catalog/MarketplaceListingCard';
+import {CustomerShopCategoryStrip} from '@/components/marketplace/shop/CustomerShopCategoryStrip';
 import {usePublicListings} from '@/hooks/marketplace/useMarketplace';
 import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+import {WEB_SERVICE_CATEGORIES, type ServiceCategoryDef} from '@/lib/marketplace/service-categories';
 import {useI18n} from '@/providers/I18nContext';
 import type {ListingSortOption, ListingType, PricingModel} from '@/types/marketplace/marketplace.types';
 import type {MissionType} from '@/types/mission/mission.types';
 
 export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 'portal' }) {
     const {t} = useI18n();
-    const {rfqEnabled, invoiceDueDays} = useSiteInfo();
-    const [keyword, setKeyword] = useState('');
-    const [listingType, setListingType] = useState<ListingType | ''>('');
-    const [missionType, setMissionType] = useState<MissionType | ''>('');
-    const [pricingModel, setPricingModel] = useState<PricingModel | ''>('');
-    const [province, setProvince] = useState('');
-    const [sortBy, setSortBy] = useState<ListingSortOption>('featured');
-    const [page, setPage] = useState(0);
+    const searchParams = useSearchParams();
+    const {invoiceDueDays} = useSiteInfo();
 
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-        const params = new URLSearchParams(window.location.search);
-        const q = params.get('q');
-        const type = params.get('type') as ListingType | null;
-        const mission = params.get('mission') as MissionType | null;
-        const pricing = params.get('pricing') as PricingModel | null;
-        const prov = params.get('province');
-        const sort = params.get('sort') as ListingSortOption | null;
-        if (q) setKeyword(q);
-        if (type) setListingType(type);
-        if (mission) setMissionType(mission);
-        if (pricing) setPricingModel(pricing);
-        if (prov) setProvince(prov);
-        if (sort) setSortBy(sort);
-    }, []);
+    const initialQ = searchParams.get('q')?.trim() ?? '';
+    const initialCatParam = searchParams.get('category')?.trim() || searchParams.get('mission')?.trim() || '';
+    const initialTypeParam = searchParams.get('listingType')?.trim() || searchParams.get('type')?.trim() || '';
+    const matchedCat = WEB_SERVICE_CATEGORIES.find(
+        c => (initialCatParam && c.missionType === initialCatParam) || (initialTypeParam && c.listingType === initialTypeParam),
+    );
+
+    const [keyword, setKeyword] = useState(initialQ);
+    const [activeCategoryKey, setActiveCategoryKey] = useState(matchedCat?.key ?? 'all');
+    const [listingType, setListingType] = useState<ListingType | ''>((matchedCat?.listingType ?? (initialTypeParam as ListingType | '')) || '');
+    const [missionType, setMissionType] = useState<MissionType | ''>((matchedCat?.missionType ?? (initialCatParam as MissionType | '')) || '');
+    const [pricingModel, setPricingModel] = useState<PricingModel | ''>((searchParams.get('pricing') as PricingModel | null) ?? '');
+    const [province, setProvince] = useState(searchParams.get('province')?.trim() ?? '');
+    const [sortBy, setSortBy] = useState<ListingSortOption>((searchParams.get('sort') as ListingSortOption | null) ?? 'featured');
+    const [page, setPage] = useState(0);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
         const params = new URLSearchParams(window.location.search);
         const sync = (k: string, v: string) => (v ? params.set(k, v) : params.delete(k));
         sync('q', keyword);
-        sync('type', listingType);
-        sync('mission', missionType);
+        sync('listingType', listingType);
+        sync('category', missionType);
+        params.delete('type');
+        params.delete('mission');
         sync('pricing', pricingModel);
         sync('province', province);
         sync('sort', sortBy === 'featured' ? '' : sortBy);
@@ -53,14 +51,33 @@ export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 
         window.history.replaceState(null, '', qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
     }, [keyword, listingType, missionType, pricingModel, province, sortBy]);
 
-    const query = usePublicListings({keyword, listingType, missionType, pricingModel, province, sortBy, page, size: 12});
+    const query = usePublicListings({
+        keyword,
+        q: keyword || undefined,
+        listingType,
+        missionType,
+        category: missionType || undefined,
+        pricingModel,
+        province,
+        sortBy,
+        page,
+        size: 12,
+    });
     const listings = query.data?.content ?? [];
     const totalElements = query.data?.totalElements ?? 0;
     const totalPages = query.data?.totalPages ?? 0;
     const hasFilters = Boolean(keyword || listingType || missionType || pricingModel || province || sortBy !== 'featured');
 
+    const handleSelectCategory = (cat: ServiceCategoryDef) => {
+        setActiveCategoryKey(cat.key);
+        setMissionType(cat.missionType ?? '');
+        setListingType(cat.listingType ?? '');
+        setPage(0);
+    };
+
     const resetFilters = () => {
         setKeyword('');
+        setActiveCategoryKey('all');
         setListingType('');
         setMissionType('');
         setPricingModel('');
@@ -70,8 +87,8 @@ export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 
     };
 
     return (
-        <section className={mode === 'public' ? 'border-b border-slate-200 bg-white py-14 sm:py-18' : 'border-b border-slate-200 bg-white p-4 sm:p-5'}>
-            <div className={mode === 'public' ? 'mx-auto w-full max-w-[1380px] space-y-6 px-5 sm:px-8 lg:px-12' : 'space-y-5'}>
+        <section className={mode === 'public' ? 'border-b border-slate-200 bg-white py-10 sm:py-12' : 'border-b border-slate-200 bg-white p-4 sm:p-5'}>
+            <div className={mode === 'public' ? 'mx-auto w-full max-w-[1380px] space-y-5 px-4 sm:px-6 lg:px-8' : 'space-y-5'}>
                 <div className="flex flex-wrap items-end justify-between gap-4">
                     <div className="max-w-3xl space-y-1.5">
                         <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-primary">
@@ -86,14 +103,6 @@ export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2.5">
-                        {rfqEnabled && (
-                            <Link
-                                href="/customer/missions/create?rfq=1"
-                                className="inline-flex min-h-10 items-center justify-center rounded-control border border-slate-300 bg-white px-4 text-xs font-bold whitespace-nowrap text-slate-800 transition-colors hover:bg-slate-50"
-                            >
-                                {t('publicSite.catalog.rfqButton')}
-                            </Link>
-                        )}
                         <Link
                             href="/customer/provider/onboarding"
                             className="inline-flex min-h-10 items-center justify-center rounded-control bg-slate-900 px-4 text-xs font-bold whitespace-nowrap text-white transition-colors hover:bg-slate-800"
@@ -102,6 +111,8 @@ export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 
                         </Link>
                     </div>
                 </div>
+
+                <CustomerShopCategoryStrip activeKey={activeCategoryKey} onSelect={handleSelectCategory}/>
 
                 <div className="uav-bezel">
                     <div className="uav-bezel-core grid grid-cols-1 gap-2.5 px-4 py-3 text-xs text-slate-800 tabular-nums sm:grid-cols-3">
@@ -129,8 +140,16 @@ export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 
                     province={province}
                     sortBy={sortBy}
                     onKeywordChange={val => { setKeyword(val); setPage(0); }}
-                    onListingTypeChange={val => { setListingType(val); setPage(0); }}
-                    onMissionTypeChange={val => { setMissionType(val); setPage(0); }}
+                    onListingTypeChange={val => {
+                        setListingType(val);
+                        setActiveCategoryKey(val || missionType || 'all');
+                        setPage(0);
+                    }}
+                    onMissionTypeChange={val => {
+                        setMissionType(val);
+                        setActiveCategoryKey(val || listingType || 'all');
+                        setPage(0);
+                    }}
                     onPricingModelChange={val => { setPricingModel(val); setPage(0); }}
                     onProvinceChange={val => { setProvince(val); setPage(0); }}
                     onSortByChange={val => { setSortBy(val); setPage(0); }}
@@ -148,8 +167,8 @@ export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 
                 </div>
 
                 {query.isLoading ? (
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" role="status" aria-label={t('common.loading')}>
-                        {[0, 1, 2].map(idx => (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" role="status" aria-label={t('common.loading')}>
+                        {[0, 1, 2, 3].map(idx => (
                             <div key={idx} className="h-80 animate-pulse rounded-panel border border-slate-200 bg-slate-100/70"/>
                         ))}
                     </div>
@@ -169,7 +188,7 @@ export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         {listings.map(item => <MarketplaceListingCard key={item.id} item={item} mode={mode}/>)}
                     </div>
                 )}

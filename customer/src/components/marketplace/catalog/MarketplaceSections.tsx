@@ -88,14 +88,14 @@ export function MarketplaceDiptychCta() {
                     </div>
                     <div className="flex flex-wrap items-center gap-3 pt-2">
                         <Link
-                            href="/customer/missions/create"
+                            href="/customer/services"
                             className="group inline-flex min-h-11 items-center gap-2.5 rounded-control bg-primary px-5 py-2 text-xs font-bold whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary-hover"
                         >
                             <span>{t('publicSite.diptych.buyerPrimary')}</span>
                             <ArrowUpRight size={14} aria-hidden="true"/>
                         </Link>
                         <Link
-                            href="/customer/missions/create?rfq=1"
+                            href="/contact"
                             className="inline-flex min-h-11 items-center justify-center rounded-control border border-slate-300 bg-white px-5 text-xs font-bold whitespace-nowrap text-slate-800 transition-colors hover:bg-slate-50"
                         >
                             {t('publicSite.diptych.buyerSecondary')}

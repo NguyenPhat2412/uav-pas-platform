@@ -87,7 +87,7 @@ export function ProviderDirectOrderCard({
                             onChange={e => onSelectUav(Number(e.target.value))}
                             className="h-9 rounded-control border border-slate-300 bg-white px-2.5 text-xs font-semibold"
                         >
-                            <option value="">-- Chọn tàu bay 3P (tuỳ chọn) --</option>
+                            <option value="">-- Chọn thiết bị UAV (tuỳ chọn) --</option>
                             {myUavs.map(u => (
                                 <option key={u.id} value={u.id}>
                                     {u.model} ({u.serialNumber})

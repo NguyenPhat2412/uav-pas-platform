@@ -120,7 +120,7 @@
     "operationsPulse": "運航・サポート",
     "airspaceWeather": "マップ・空域",
     "catalogPlans": "カタログ・プラン",
-    "marketplace3p": "3Pマーケットプレイス",
+    "marketplace3p": "UAVサービス市場",
     "billingLedger": "請求照合・台帳",
     "rbacGovernance": "ロール・権限設計",
     "runtimeOps": "サーバー・デプロイ",
@@ -398,7 +398,7 @@
     "customerPortal": "顧客",
     "customerPortalUser": "顧客ポータル ({username})",
     "register": "新規登録",
-    "digitalTwin": "デジタルツイン"
+    "digitalTwin": "飛行シミュレーション"
   },
   "publicFooter": {
     "university": "ドローン運航管理基盤",
@@ -408,7 +408,7 @@
     "services": "UAV飛行サービス",
     "solutions": "ソリューション",
     "pricing": "料金プラン",
-    "howItWorks": "5段階の運用フロー",
+    "howItWorks": "ご利用の流れ",
     "portalsHeading": "ポータル・研修",
     "customerPortal": "顧客ポータル",
     "operationsPortal": "運用センター",
