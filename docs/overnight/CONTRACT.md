@@ -42,10 +42,15 @@ Thanh trạng thái kiểu Shopee phía khách gộp lại 5 nhóm: Chờ xác n
 | ✅ CRUD | `/api/v1/marketplace/provider/fleet/uavs`, `/fleet/equipment` | `GET / POST / PATCH / DELETE` cho UAV đội bay (`/{id}` chặn xoá khi UAV đang thuộc đơn chưa kết thúc) và `POST / DELETE` cho thiết bị phụ trợ. |
 | ✅ CRUD | `/api/v1/marketplace/provider/pilots` + `/{id}` | Kỹ sư điều khiển của đội (`id, userId, pilotUserId, fullName, email, phone, licenseNumber, specialization, status: AVAILABLE|IN_FLIGHT|OFF_DUTY, assignedUavId, assignedUavModel, completedMissionsCount`). |
 | ✅ GET | `/api/v1/marketplace/provider/orders` + `/{missionId}` | Đơn được giao cho đội bay. |
-| ✅ POST | `/api/v1/marketplace/provider/orders/{missionId}/respond` | `{ accept: bool, reason?, responseNote? }`. Từ chối (`accept: false`) đưa đơn quay về hàng đợi `PENDING_DISPATCH`. |
-| ✅ POST | `/api/v1/marketplace/provider/orders/{missionId}/assign` | `{ pilotId?, pilotUserId?, uavId, note? }` phân công kỹ sư + UAV thuộc đội bay, chuyển đơn sang `READY` (`SCHEDULED`). |
-| ✅ POST | `/api/v1/marketplace/provider/orders/{missionId}/start` | Khởi động **phiên mô phỏng** gắn với đơn qua `SimulationService`, đánh dấu UAV `IN_USE`, chuyển đơn sang `IN_PROGRESS` (`IN_FLIGHT`). |
+| ✅ POST | `/api/v1/marketplace/provider/orders/{missionId}/respond` | `{ accept: bool, uavId?, reason?, responseNote? }`. Từ chối (`accept: false`) đưa đơn quay về hàng đợi `PENDING_DISPATCH`. Nếu kèm `uavId` bị trùng khung giờ → `409 UAV_TIME_CONFLICT`. |
+| ✅ POST | `/api/v1/marketplace/provider/orders/{missionId}/assign` | `{ pilotId?, pilotUserId?, uavId, note? }` khoá thứ tự **đơn → UAV → kỹ sư** (`SELECT … FOR UPDATE`), phân công kỹ sư + UAV thuộc đội bay và chuyển đơn sang `READY` (`SCHEDULED`). Khoảng giờ chạm mép (đơn A kết thúc 10:00, đơn B bắt đầu 10:00) được phép; đơn `CANCELLED`/`COMPLETED`/`FAILED`/`REJECTED` không chặn. Mã lỗi xung đột `409`: `UAV_TIME_CONFLICT` (`"Thiết bị bay đã được phân công cho đơn khác trùng khung giờ."`), `OPERATOR_TIME_CONFLICT` (`"Kỹ sư đã được phân công cho đơn khác trùng khung giờ."`). |
+| ✅ POST | `/api/v1/marketplace/provider/orders/{missionId}/start` | Khoá **đơn → UAV**, kiểm tra không có đơn khác của cùng UAV đang `IN_PROGRESS` (nếu có → `409 UAV_IN_USE`: `"Thiết bị bay hiện đang thực hiện một chuyến bay khác."`), rồi khởi động **phiên mô phỏng** gắn với đơn qua `SimulationService`, đánh dấu UAV `IN_USE`, chuyển đơn sang `IN_PROGRESS` (`IN_FLIGHT`). |
 | ✅ POST | `/api/v1/marketplace/provider/orders/{missionId}/complete` | Hoàn tất chuyến bay & mở khóa nghiệm thu bàn giao (`DELIVERED`), trả UAV về `AVAILABLE`. |
+
+**Mã lỗi tranh chấp tài nguyên đội bay (HTTP `409 Conflict`, trả `ErrorResponse` có `code` & `message` tiếng Việt):**
+- `UAV_TIME_CONFLICT` — `"Thiết bị bay đã được phân công cho đơn khác trùng khung giờ."`
+- `OPERATOR_TIME_CONFLICT` — `"Kỹ sư đã được phân công cho đơn khác trùng khung giờ."`
+- `UAV_IN_USE` — `"Thiết bị bay hiện đang thực hiện một chuyến bay khác."`
 
 ## 4. Nền tảng (Admin — quyền `MARKETPLACE_MODERATE`)
 

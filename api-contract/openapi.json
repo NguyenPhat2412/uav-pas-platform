@@ -5805,6 +5805,28 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "409": {
+            "description": "Xung đột tài nguyên UAV khi nhận đơn kèm uavId (UAV_TIME_CONFLICT)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UAV_TIME_CONFLICT"
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Thiết bị bay đã được phân công cho đơn khác trùng khung giờ."
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -5839,6 +5861,44 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "409": {
+            "description": "Trùng khung giờ UAV hoặc kỹ sư điều khiển (UAV_TIME_CONFLICT | OPERATOR_TIME_CONFLICT)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UAV_TIME_CONFLICT",
+                        "OPERATOR_TIME_CONFLICT"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "uavTimeConflict": {
+                    "summary": "UAV trùng khung giờ",
+                    "value": {
+                      "code": "UAV_TIME_CONFLICT",
+                      "message": "Thiết bị bay đã được phân công cho đơn khác trùng khung giờ."
+                    }
+                  },
+                  "operatorTimeConflict": {
+                    "summary": "Kỹ sư trùng khung giờ",
+                    "value": {
+                      "code": "OPERATOR_TIME_CONFLICT",
+                      "message": "Kỹ sư đã được phân công cho đơn khác trùng khung giờ."
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -5863,6 +5923,28 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "409": {
+            "description": "UAV đang thực hiện chuyến bay khác ở trạng thái IN_PROGRESS (UAV_IN_USE)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UAV_IN_USE"
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Thiết bị bay hiện đang thực hiện một chuyến bay khác."
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

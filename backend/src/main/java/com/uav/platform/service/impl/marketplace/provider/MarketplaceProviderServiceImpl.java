@@ -70,8 +70,10 @@ import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.settings.SystemConfigurationOperations;
 import com.uav.platform.service.marketplace.escrow.MarketplaceEscrowService;
 import com.uav.platform.service.marketplace.provider.MarketplaceProviderService;
+import com.uav.platform.service.mission.dispatch.MissionResourceService;
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.settings.SystemConfigService;
+import com.uav.platform.specification.mission.lifecycle.MissionSpecifications;
 
 import lombok.RequiredArgsConstructor;
 
@@ -114,6 +116,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     private final MissionEventRepository missionEvents;
     private final InvoiceRepository invoices;
     private final MissionAccessService missionAccess;
+    private final MissionResourceService resources;
     private final MarketplaceEscrowService escrowService;
     private final SystemConfigService systemConfig;
     private final AuditLogService audit;
@@ -455,7 +458,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
 
         if (request.accept()) {
             if (request.uavId() != null) {
-                Uav uav =
+                Uav candidateUav =
                         uavs.findById(request.uavId())
                                 .filter(
                                         u ->
@@ -468,6 +471,25 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                                                 SystemException.forbidden(
                                                         "Chỉ được gán UAV thuộc quyền sở hữu của đối tác.",
                                                         "PROVIDER_UAV_MISMATCH"));
+                Uav uav = resources.lockUav(candidateUav.getId());
+                if (uav.getStatus() == UavStatus.MAINTENANCE
+                        || uav.getStatus() == UavStatus.INACTIVE) {
+                    throw SystemException.conflict(
+                            "Thiết bị bay đang bảo trì hoặc ngừng khai thác.", "UAV_NOT_AVAILABLE");
+                }
+                if (missions.exists(
+                        MissionSpecifications.overlappingUav(
+                                        uav.getId(),
+                                        resources.excludedStatuses(),
+                                        mission.getStartTime(),
+                                        mission.getExpectedEndTime())
+                                .and(
+                                        (root, query, cb) ->
+                                                cb.notEqual(root.get("id"), mission.getId())))) {
+                    throw SystemException.conflict(
+                            "Thiết bị bay đã được phân công cho đơn khác trùng khung giờ.",
+                            "UAV_TIME_CONFLICT");
+                }
                 mission.setUav(uav);
             }
             if (mission.getOperator() == null) {
@@ -557,9 +579,15 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                     .ifPresent(mission::setUav);
         }
         if (mission.getUav() != null) {
-            Uav uav = mission.getUav();
+            Uav uav = resources.lockUav(mission.getUav().getId());
+            if (missions.existsByUavIdAndIdNotAndStatus(
+                    uav.getId(), mission.getId(), MissionStatus.IN_PROGRESS)) {
+                throw SystemException.conflict(
+                        "Thiết bị bay hiện đang thực hiện một chuyến bay khác.", "UAV_IN_USE");
+            }
             uav.setStatus(UavStatus.IN_USE);
             uavs.save(uav);
+            mission.setUav(uav);
         }
         if (pilots != null && mission.getOperator() != null) {
             for (var p : pilots.findByPilotUserIdAndDeletedFalse(mission.getOperator().getId())) {

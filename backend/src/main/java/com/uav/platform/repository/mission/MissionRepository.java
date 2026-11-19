@@ -50,6 +50,8 @@ public interface MissionRepository
     boolean existsByUavIdAndIdNotAndStatusNotIn(
             Long uavId, Long missionId, Collection<MissionStatus> terminalStatuses);
 
+    boolean existsByUavIdAndIdNotAndStatus(Long uavId, Long missionId, MissionStatus status);
+
     @EntityGraph(attributePaths = {"uav", "operator", "station"})
     @Query("select m from Mission m where m.status not in :excludedStatuses")
     List<Mission> findActiveWithResourcesNotIn(

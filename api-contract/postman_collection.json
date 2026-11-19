@@ -10196,6 +10196,7 @@
                   "    if (!err && res.code === 200) {",
                   "        var list = res.json().content || [];",
                   "        if (list.length > 0) {",
+                  "            pm.collectionVariables.set(\"flowProviderId\", String(list[0].id));",
                   "            pm.request.body.raw = JSON.stringify({ providerId: list[0].id, note: \"Giao đội bay miền Nam — minh hoạ\" });",
                   "        }",
                   "    }",
@@ -10351,7 +10352,8 @@
                 "exec": [
                   "pm.test(\"Fleet pilots 200\", function () { pm.response.to.have.status(200); });",
                   "var pilots = pm.response.json() || [];",
-                  "if (pilots.length > 0) pm.collectionVariables.set(\"flowPilotId\", String(pilots[0].id));"
+                  "if (pilots.length > 0) pm.collectionVariables.set(\"flowPilotId\", String(pilots[0].id));",
+                  "if (pilots.length > 1) pm.collectionVariables.set(\"flowSecondPilotId\", String(pilots[1].id));"
                 ]
               }
             }
@@ -10480,6 +10482,279 @@
                   "    pm.response.to.have.status(200);",
                   "    pm.expect(pm.response.json().statusGroup).to.eql(\"SCHEDULED\");",
                   "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "14a. Khách tạo đơn thứ hai trùng khung giờ để kiểm thử tranh chấp UAV",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/{{flowProjectId}}/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                "{{flowProjectId}}",
+                "subscriptions"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listingId\": \"{{flowListingId}}\",\n  \"scheduleType\": \"ONCE\",\n  \"startDate\": \"{{flowStartDate}}\",\n  \"units\": 5,\n  \"note\": \"Đơn trùng khung giờ kiểm thử chặn gán trùng UAV\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var lid = Number(pm.variables.get(\"flowListingId\"));",
+                  "var sdate = pm.variables.get(\"flowStartDate\");",
+                  "pm.request.body.raw = JSON.stringify({",
+                  "    listingId: lid,",
+                  "    scheduleType: \"ONCE\",",
+                  "    startDate: sdate,",
+                  "    units: 5,",
+                  "    note: \"Đơn trùng khung giờ kiểm thử chặn gán trùng UAV — minh hoạ\"",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Overlapping second order created 201\", function () { pm.response.to.have.status(201); });",
+                  "var sub2 = pm.response.json();",
+                  "pm.collectionVariables.set(\"flowConflictSubId\", String(sub2.id));",
+                  "pm.collectionVariables.set(\"flowConflictMissionId\", String(sub2.firstMissionId));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "14b. Admin giao đơn trùng giờ cho cùng Đội bay demo_fleet",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/dispatch/{{flowConflictMissionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "dispatch",
+                "{{flowConflictMissionId}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"providerId\": 1,\n  \"note\": \"Giao đơn trùng giờ kiểm thử tranh chấp UAV\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var pid = Number(pm.variables.get(\"flowProviderId\"));",
+                  "if (pid) {",
+                  "    pm.request.body.raw = JSON.stringify({ providerId: pid, note: \"Giao đơn trùng giờ kiểm thử tranh chấp UAV — minh hoạ\" });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Overlapping order dispatched to same fleet 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().providerResponseStatus).to.eql(\"PENDING_PROVIDER\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "14c. Đội bay phân cùng UAV cho đơn trùng giờ → chặn 409 UAV_TIME_CONFLICT",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleetToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/{{flowConflictMissionId}}/assign",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                "{{flowConflictMissionId}}",
+                "assign"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pilotId\": 2,\n  \"uavId\": 1,\n  \"note\": \"Thử phân cùng UAV trùng giờ\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var uid = Number(pm.variables.get(\"flowUavId\"));",
+                  "var pid2 = Number(pm.variables.get(\"flowSecondPilotId\")) || Number(pm.variables.get(\"flowPilotId\"));",
+                  "pm.request.body.raw = JSON.stringify({ pilotId: pid2 || null, uavId: uid, note: \"Thử phân cùng UAV trùng khung giờ — minh hoạ\" });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Double-booked UAV rejected with 409 UAV_TIME_CONFLICT\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "    var err = pm.response.json();",
+                  "    pm.expect(err.code).to.eql(\"UAV_TIME_CONFLICT\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "14d. Khách huỷ đơn trùng giờ để dọn sạch dự án kiểm thử",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/missions/{{flowConflictMissionId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "missions",
+                "{{flowConflictMissionId}}",
+                "cancel"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Huỷ đơn phụ sau khi xác minh 409 UAV_TIME_CONFLICT\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Overlapping test order cancelled 200\", function () { pm.response.to.have.status(200); });"
                 ]
               }
             }

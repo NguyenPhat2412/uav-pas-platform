@@ -1029,6 +1029,7 @@ order_flow_folder = {
                 '    if (!err && res.code === 200) {',
                 '        var list = res.json().content || [];',
                 '        if (list.length > 0) {',
+                '            pm.collectionVariables.set("flowProviderId", String(list[0].id));',
                 '            pm.request.body.raw = JSON.stringify({ providerId: list[0].id, note: "Giao đội bay miền Nam — minh hoạ" });',
                 '        }',
                 '    }',
@@ -1073,7 +1074,8 @@ order_flow_folder = {
             test_lines=[
                 'pm.test("Fleet pilots 200", function () { pm.response.to.have.status(200); });',
                 'var pilots = pm.response.json() || [];',
-                'if (pilots.length > 0) pm.collectionVariables.set("flowPilotId", String(pilots[0].id));'
+                'if (pilots.length > 0) pm.collectionVariables.set("flowPilotId", String(pilots[0].id));',
+                'if (pilots.length > 1) pm.collectionVariables.set("flowSecondPilotId", String(pilots[1].id));'
             ]
         ),
         make_flow_item(
@@ -1102,6 +1104,84 @@ order_flow_folder = {
                 '    pm.response.to.have.status(200);',
                 '    pm.expect(pm.response.json().statusGroup).to.eql("SCHEDULED");',
                 '});'
+            ]
+        ),
+        make_flow_item(
+            '14a. Khách tạo đơn thứ hai trùng khung giờ để kiểm thử tranh chấp UAV',
+            'POST',
+            '/api/v1/projects/{{flowProjectId}}/subscriptions',
+            token_var='customerToken',
+            body={
+                'listingId': '{{flowListingId}}',
+                'scheduleType': 'ONCE',
+                'startDate': '{{flowStartDate}}',
+                'units': 5,
+                'note': 'Đơn trùng khung giờ kiểm thử chặn gán trùng UAV'
+            },
+            prereq_lines=[
+                'var lid = Number(pm.variables.get("flowListingId"));',
+                'var sdate = pm.variables.get("flowStartDate");',
+                'pm.request.body.raw = JSON.stringify({',
+                '    listingId: lid,',
+                '    scheduleType: "ONCE",',
+                '    startDate: sdate,',
+                '    units: 5,',
+                '    note: "Đơn trùng khung giờ kiểm thử chặn gán trùng UAV — minh hoạ"',
+                '});'
+            ],
+            test_lines=[
+                'pm.test("Overlapping second order created 201", function () { pm.response.to.have.status(201); });',
+                'var sub2 = pm.response.json();',
+                'pm.collectionVariables.set("flowConflictSubId", String(sub2.id));',
+                'pm.collectionVariables.set("flowConflictMissionId", String(sub2.firstMissionId));'
+            ]
+        ),
+        make_flow_item(
+            '14b. Admin giao đơn trùng giờ cho cùng Đội bay demo_fleet',
+            'POST',
+            '/api/v1/admin/marketplace/dispatch/{{flowConflictMissionId}}',
+            token_var='adminToken',
+            body={'providerId': 1, 'note': 'Giao đơn trùng giờ kiểm thử tranh chấp UAV'},
+            prereq_lines=[
+                'var pid = Number(pm.variables.get("flowProviderId"));',
+                'if (pid) {',
+                '    pm.request.body.raw = JSON.stringify({ providerId: pid, note: "Giao đơn trùng giờ kiểm thử tranh chấp UAV — minh hoạ" });',
+                '}'
+            ],
+            test_lines=[
+                'pm.test("Overlapping order dispatched to same fleet 200", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().providerResponseStatus).to.eql("PENDING_PROVIDER");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '14c. Đội bay phân cùng UAV cho đơn trùng giờ → chặn 409 UAV_TIME_CONFLICT',
+            'POST',
+            '/api/v1/marketplace/provider/orders/{{flowConflictMissionId}}/assign',
+            token_var='fleetToken',
+            body={'pilotId': 2, 'uavId': 1, 'note': 'Thử phân cùng UAV trùng giờ'},
+            prereq_lines=[
+                'var uid = Number(pm.variables.get("flowUavId"));',
+                'var pid2 = Number(pm.variables.get("flowSecondPilotId")) || Number(pm.variables.get("flowPilotId"));',
+                'pm.request.body.raw = JSON.stringify({ pilotId: pid2 || null, uavId: uid, note: "Thử phân cùng UAV trùng khung giờ — minh hoạ" });'
+            ],
+            test_lines=[
+                'pm.test("Double-booked UAV rejected with 409 UAV_TIME_CONFLICT", function () {',
+                '    pm.response.to.have.status(409);',
+                '    var err = pm.response.json();',
+                '    pm.expect(err.code).to.eql("UAV_TIME_CONFLICT");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '14d. Khách huỷ đơn trùng giờ để dọn sạch dự án kiểm thử',
+            'POST',
+            '/api/v1/missions/{{flowConflictMissionId}}/cancel',
+            token_var='customerToken',
+            body={'reason': 'Huỷ đơn phụ sau khi xác minh 409 UAV_TIME_CONFLICT'},
+            test_lines=[
+                'pm.test("Overlapping test order cancelled 200", function () { pm.response.to.have.status(200); });'
             ]
         ),
         make_flow_item(

@@ -50,6 +50,7 @@ import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.marketplace.provider.MarketplaceProviderFleetService;
+import com.uav.platform.service.mission.dispatch.MissionResourceService;
 import com.uav.platform.specification.mission.lifecycle.MissionSpecifications;
 import com.uav.platform.transport.websocket.RealtimeEventBroadcaster;
 
@@ -85,6 +86,7 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
     private final UserRepository users;
     private final PasswordEncoder passwordEncoder;
     private final AuditLogService audit;
+    private final MissionResourceService resources;
     private final MarketplaceMapper mapper;
     private final MissionMapper missionMapper;
 
@@ -461,6 +463,10 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
     @Override
     public MissionResponse assignOrder(
             Long missionId, ProviderOrderAssignRequest request, String username) {
+        if (resolveProfile(username).isEmpty()) {
+            throw SystemException.forbidden(
+                    "Tài khoản không thuộc đội bay nào.", "PROVIDER_PROFILE_REQUIRED");
+        }
         ProviderProfile provider = requireVerifiedProfile(username);
         Mission mission =
                 missions.findByIdForUpdate(missionId)
@@ -483,13 +489,42 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
                     "ORDER_CANNOT_ASSIGN");
         }
 
-        Uav uav = requireOwnedUav(request.uavId(), provider);
+        requireOwnedUav(request.uavId(), provider);
+        Uav uav = resources.lockUav(request.uavId());
+        if (uav.getProvider() == null
+                || !Objects.equals(uav.getProvider().getId(), provider.getId())) {
+            throw SystemException.forbidden(
+                    "Chỉ được thao tác trên UAV thuộc đội bay của bạn.", "PROVIDER_UAV_MISMATCH");
+        }
         if (uav.getStatus() == UavStatus.MAINTENANCE || uav.getStatus() == UavStatus.INACTIVE) {
             throw SystemException.conflict(
                     "Thiết bị bay đang bảo trì hoặc ngừng khai thác.", "UAV_NOT_AVAILABLE");
         }
+        if (missions.exists(
+                MissionSpecifications.overlappingUav(
+                                uav.getId(),
+                                resources.excludedStatuses(),
+                                mission.getStartTime(),
+                                mission.getExpectedEndTime())
+                        .and((root, query, cb) -> cb.notEqual(root.get("id"), mission.getId())))) {
+            throw SystemException.conflict(
+                    "Thiết bị bay đã được phân công cho đơn khác trùng khung giờ.",
+                    "UAV_TIME_CONFLICT");
+        }
 
-        AppUser assignedOperator = resolveAssignedOperator(provider, request);
+        AppUser candidateOperator = resolveAssignedOperator(provider, request);
+        AppUser assignedOperator = resources.lockOperator(candidateOperator.getId());
+        if (missions.exists(
+                MissionSpecifications.overlappingOperator(
+                                assignedOperator.getId(),
+                                resources.excludedStatuses(),
+                                mission.getStartTime(),
+                                mission.getExpectedEndTime())
+                        .and((root, query, cb) -> cb.notEqual(root.get("id"), mission.getId())))) {
+            throw SystemException.conflict(
+                    "Kỹ sư đã được phân công cho đơn khác trùng khung giờ.",
+                    "OPERATOR_TIME_CONFLICT");
+        }
         MissionStatus previous = mission.getStatus();
         mission.setUav(uav);
         mission.setOperator(assignedOperator);
