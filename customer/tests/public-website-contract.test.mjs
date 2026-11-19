@@ -50,4 +50,29 @@ test('redesigned homepage composes 6 compact blocks with search, shared categori
     const layout = read('src/app/(public)/layout.tsx');
     assert.match(layout, /application\/ld\+json/);
     assert.doesNotMatch(layout, /ScrollEngagementPopup/, 'ScrollEngagementPopup removed from public layout');
+
+    for (const deadPath of [
+        'src/components/marketing/HomeLandingCapabilitiesSection.tsx',
+        'src/components/marketing/HomeLandingShowcaseSection.tsx',
+        'src/components/marketing/ScrollEngagementPopup.tsx',
+        'src/components/digital-twin/DigitalTwinShowcase.tsx',
+        'src/components/digital-twin/DigitalTwinViewer.tsx',
+        'src/utils/digital-twin/campus-model.ts',
+        'src/content/marketing/home-content.ts',
+    ]) {
+        assert.equal(existsSync(atRoot(deadPath)), false, `dead file must stay removed: ${deadPath}`);
+    }
+
+    for (const [pageFile, viewFile] of [
+        ['src/app/(public)/about/page.tsx', 'src/components/marketing/AboutPageView.tsx'],
+        ['src/app/(public)/faq/page.tsx', 'src/components/marketing/FaqPageView.tsx'],
+        ['src/app/(public)/how-it-works/page.tsx', 'src/components/marketing/HowItWorksPageView.tsx'],
+        ['src/app/(public)/digital-twin/page.tsx', 'src/components/marketing/FlightSimulationPageView.tsx'],
+    ]) {
+        assert.equal(existsSync(atRoot(viewFile)), true, `missing localized view ${viewFile}`);
+        assert.match(read(pageFile), new RegExp(viewFile.split('/').pop().replace('.tsx', '')));
+        assert.match(read(viewFile), /useI18n/, `${viewFile} must translate strings via useI18n`);
+    }
+
+    assert.doesNotMatch(read('src/components/marketing/UavPhoto.tsx'), /\/images\/people\/usgs-|usgs-plum-island-team/);
 });
