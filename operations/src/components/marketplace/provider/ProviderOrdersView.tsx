@@ -20,7 +20,12 @@ import {
     XCircle,
 } from 'lucide-react';
 import {Button, OptionalMark, RequiredMark} from '@/components/ui';
+import {
+    IllustrativeBadge,
+    IllustrativeFooterNote,
+} from '@/components/marketplace/provider/IllustrativeDisclaimer';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
+import {ProviderUavSelectField} from '@/components/marketplace/provider/ProviderUavSelectField';
 import {
     useMyProviderFleet,
     useMyProviderProfile,
@@ -32,7 +37,9 @@ import {
 import {
     classifySellerOrderTab,
     extractActionableError,
+    formatProviderConflictError,
     formatVndCompact,
+    sanitizeEntityName,
     sanitizeMarketplaceText,
     type SellerOrderTab,
 } from '@/forms/marketplace/marketplace-forms';
@@ -62,8 +69,8 @@ export function ProviderOrdersView() {
     const {uploadDeliverable} = usePilotTodayActions();
 
     const [pickedTab, setActiveTab] = useState<SellerOrderTab | null>(null);
-    const [selectedUavByMission, setSelectedUavByMission] = useState<Record<number, number>>({});
-    const [selectedPilotByMission, setSelectedPilotByMission] = useState<Record<number, number>>({});
+    const [selectedUavByMission, setSelectedUavByMission] = useState<Record<number, number | ''>>({});
+    const [selectedPilotByMission, setSelectedPilotByMission] = useState<Record<number, number | ''>>({});
     const [rejectingMissionId, setRejectingMissionId] = useState<number | null>(null);
     const [rejectReasonByMission, setRejectReasonByMission] = useState<Record<number, string>>({});
     const [handoverNoteByMission, setHandoverNoteByMission] = useState<Record<number, string>>({});
@@ -97,15 +104,22 @@ export function ProviderOrdersView() {
 
     const handleRespond = async (mission: Mission, accept: boolean) => {
         setErrorMsg('');
-        const chosenUavId = selectedUavByMission[mission.id] ?? mission.uavId ?? uavs[0]?.id;
+        const rawChosenUav =
+            mission.id in selectedUavByMission
+                ? selectedUavByMission[mission.id]
+                : (mission.uavId ?? uavs[0]?.id ?? '');
+        const chosenUavId = typeof rawChosenUav === 'number' ? rawChosenUav : undefined;
         const matchedAssignedPilot = pilots.find(
             p =>
                 p.id === mission.operatorId ||
                 p.userId === mission.operatorId ||
                 p.pilotUserId === mission.operatorId,
         );
-        const chosenPilotId =
-            selectedPilotByMission[mission.id] ?? matchedAssignedPilot?.id ?? pilots[0]?.id;
+        const rawChosenPilot =
+            mission.id in selectedPilotByMission
+                ? selectedPilotByMission[mission.id]
+                : (matchedAssignedPilot?.id ?? pilots[0]?.id ?? '');
+        const chosenPilotId = typeof rawChosenPilot === 'number' ? rawChosenPilot : undefined;
         const matchedPilot = pilots.find(
             p => p.id === chosenPilotId || p.userId === chosenPilotId || p.pilotUserId === chosenPilotId,
         );
@@ -143,22 +157,28 @@ export function ProviderOrdersView() {
             setRejectingMissionId(null);
             if (accept) setActiveTab('WAITING_FLIGHT');
         } catch (err) {
-            setErrorMsg(extractActionableError(err, t('opsMarketplace.common.retry')));
+            setErrorMsg(formatProviderConflictError(err, t));
         }
     };
 
     const handleAssign = async (mission: Mission) => {
         setErrorMsg('');
-        const uavId = selectedUavByMission[mission.id] ?? mission.uavId ?? uavs[0]?.id;
+        const rawUavId =
+            mission.id in selectedUavByMission
+                ? selectedUavByMission[mission.id]
+                : (mission.uavId ?? '');
+        if (typeof rawUavId !== 'number') return;
         const matchedAssignedPilot = pilots.find(
             p =>
                 p.id === mission.operatorId ||
                 p.userId === mission.operatorId ||
                 p.pilotUserId === mission.operatorId,
         );
-        const pilotId =
-            selectedPilotByMission[mission.id] ?? matchedAssignedPilot?.id ?? pilots[0]?.id;
-        if (!uavId) return;
+        const rawPilotId =
+            mission.id in selectedPilotByMission
+                ? selectedPilotByMission[mission.id]
+                : (matchedAssignedPilot?.id ?? '');
+        const pilotId = typeof rawPilotId === 'number' ? rawPilotId : undefined;
         const matchedPilot = pilots.find(
             p => p.id === pilotId || p.userId === pilotId || p.pilotUserId === pilotId,
         );
@@ -166,19 +186,33 @@ export function ProviderOrdersView() {
             await assignOrder.mutateAsync({
                 missionId: mission.id,
                 payload: {
-                    uavId,
+                    uavId: rawUavId,
                     pilotId: matchedPilot?.id ?? pilotId,
                     pilotUserId: matchedPilot?.pilotUserId ?? matchedPilot?.userId ?? pilotId,
                 },
             });
+            setSelectedUavByMission(prev => {
+                const next = {...prev};
+                delete next[mission.id];
+                return next;
+            });
+            setSelectedPilotByMission(prev => {
+                const next = {...prev};
+                delete next[mission.id];
+                return next;
+            });
         } catch (err) {
-            setErrorMsg(extractActionableError(err, t('opsMarketplace.common.retry')));
+            setErrorMsg(formatProviderConflictError(err, t));
         }
     };
 
     const handleStartSimulation = async (mission: Mission) => {
         setErrorMsg('');
-        const uavId = selectedUavByMission[mission.id] ?? mission.uavId ?? uavs[0]?.id;
+        const rawUavId =
+            mission.id in selectedUavByMission
+                ? selectedUavByMission[mission.id]
+                : (mission.uavId ?? uavs[0]?.id ?? '');
+        const uavId = typeof rawUavId === 'number' ? rawUavId : undefined;
         try {
             const started = await startOrder.mutateAsync(mission.id);
             const targetUavId = started?.uavId ?? uavId;
@@ -187,7 +221,7 @@ export function ProviderOrdersView() {
                 `/operations/simulation?missionId=${mission.id}${targetUavId ? `&uavId=${targetUavId}` : ''}`,
             );
         } catch (err) {
-            setErrorMsg(extractActionableError(err, t('opsMarketplace.common.retry')));
+            setErrorMsg(formatProviderConflictError(err, t));
         }
     };
 
@@ -323,19 +357,28 @@ export function ProviderOrdersView() {
                         <div className="space-y-4">
                             {filteredOrders.map(mission => {
                                 const tab = classifySellerOrderTab(mission);
-                                const selectedUavId =
-                                    selectedUavByMission[mission.id] ?? mission.uavId ?? uavs[0]?.id ?? '';
                                 const matchedAssignedPilot = pilots.find(
                                     p =>
                                         p.id === mission.operatorId ||
                                         p.userId === mission.operatorId ||
                                         p.pilotUserId === mission.operatorId,
                                 );
-                                const selectedPilotId =
-                                    selectedPilotByMission[mission.id] ??
-                                    matchedAssignedPilot?.id ??
-                                    pilots[0]?.id ??
-                                    '';
+                                const initialUavId: number | '' = mission.uavId ?? '';
+                                const initialPilotId: number | '' = matchedAssignedPilot?.id ?? '';
+                                const selectedUavId: number | '' =
+                                    mission.id in selectedUavByMission
+                                        ? selectedUavByMission[mission.id]
+                                        : tab === 'PENDING_ACCEPT'
+                                          ? (mission.uavId ?? uavs[0]?.id ?? '')
+                                          : initialUavId;
+                                const selectedPilotId: number | '' =
+                                    mission.id in selectedPilotByMission
+                                        ? selectedPilotByMission[mission.id]
+                                        : tab === 'PENDING_ACCEPT'
+                                          ? (matchedAssignedPilot?.id ?? pilots[0]?.id ?? '')
+                                          : initialPilotId;
+                                const hasAssignmentChanged =
+                                    selectedUavId !== initialUavId || selectedPilotId !== initialPilotId;
 
                                 return (
                                     <article
@@ -374,9 +417,7 @@ export function ProviderOrdersView() {
                                                     <strong className="text-base font-bold text-primary tabular-nums">
                                                         {formatVndCompact(mission.quotedSubtotalVnd)}
                                                     </strong>
-                                                    <span className="rounded bg-uav-red-light px-1.5 py-0.5 text-[11px] font-semibold whitespace-nowrap text-primary">
-                                                        {t('opsMarketplace.common.illustrationBadge')}
-                                                    </span>
+                                                    <IllustrativeBadge/>
                                                 </div>
                                                 <Link
                                                     href={`/operations/missions/${mission.id}`}
@@ -388,34 +429,27 @@ export function ProviderOrdersView() {
                                             </div>
                                         </div>
 
-                                        {/* Khu vực Chọn Kỹ sư + UAV (cho tab Chờ nhận & Chờ bay) */}
+                                        {/* Khu vực Chọn UAV 2 dòng + Kỹ sư (cho tab Chờ nhận & Chờ bay) */}
                                         {(tab === 'PENDING_ACCEPT' || tab === 'WAITING_FLIGHT') && (
-                                            <div className="mt-4 grid grid-cols-1 items-end gap-3 rounded-xl bg-slate-50 p-3.5 sm:grid-cols-3">
-                                                <label className="grid gap-1 text-xs font-semibold text-slate-700">
+                                            <div className="mt-4 grid grid-cols-1 items-start gap-3 rounded-xl bg-slate-50 p-3.5 sm:grid-cols-2">
+                                                <div className="grid gap-1 text-xs font-semibold text-slate-700">
                                                     <span>
                                                         {t('opsMarketplace.orders.card.selectUav')}
                                                         <RequiredMark/>
                                                     </span>
-                                                    <select
-                                                        className={INPUT_CLASS}
+                                                    <ProviderUavSelectField
+                                                        uavs={uavs}
                                                         value={selectedUavId}
-                                                        onChange={e =>
+                                                        onChange={nextUavId =>
                                                             setSelectedUavByMission(s => ({
                                                                 ...s,
-                                                                [mission.id]: Number(e.target.value),
+                                                                [mission.id]: nextUavId,
                                                             }))
                                                         }
-                                                    >
-                                                        <option value="">
-                                                            {t('opsMarketplace.orders.card.unassigned')}
-                                                        </option>
-                                                        {uavs.map(u => (
-                                                            <option key={u.id} value={u.id}>
-                                                                {u.model} · {u.serialNumber}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </label>
+                                                        unassignedLabel={t('opsMarketplace.orders.card.unassigned')}
+                                                        ariaLabel={t('opsMarketplace.orders.card.selectUav')}
+                                                    />
+                                                </div>
 
                                                 <label className="grid gap-1 text-xs font-semibold text-slate-700">
                                                     <span>
@@ -428,7 +462,7 @@ export function ProviderOrdersView() {
                                                         onChange={e =>
                                                             setSelectedPilotByMission(s => ({
                                                                 ...s,
-                                                                [mission.id]: Number(e.target.value),
+                                                                [mission.id]: e.target.value ? Number(e.target.value) : '',
                                                             }))
                                                         }
                                                     >
@@ -437,50 +471,40 @@ export function ProviderOrdersView() {
                                                         </option>
                                                         {pilots.map(p => (
                                                             <option key={p.id} value={p.id}>
-                                                                {p.fullName}
+                                                                {sanitizeEntityName(p.fullName)}
                                                             </option>
                                                         ))}
                                                     </select>
                                                 </label>
+                                            </div>
+                                        )}
 
-                                                {tab === 'WAITING_FLIGHT' ? (
-                                                    <Button
-                                                        type="button"
-                                                        variant="secondary"
-                                                        disabled={assignOrder.isPending}
-                                                        onClick={() => void handleAssign(mission)}
-                                                        className="min-h-10 whitespace-nowrap"
-                                                    >
-                                                        <UserCheck size={14} className="mr-1.5 inline" aria-hidden="true"/>
-                                                        {t('opsMarketplace.orders.card.assign')}
-                                                    </Button>
-                                                ) : (
-                                                    <div className="flex flex-wrap justify-end gap-2">
-                                                        <Button
-                                                            type="button"
-                                                            variant="secondary"
-                                                            disabled={respondToOrder.isPending}
-                                                            onClick={() =>
-                                                                setRejectingMissionId(
-                                                                    rejectingMissionId === mission.id ? null : mission.id,
-                                                                )
-                                                            }
-                                                            className="min-h-10 whitespace-nowrap"
-                                                        >
-                                                            <XCircle size={14} className="mr-1 inline" aria-hidden="true"/>
-                                                            {t('opsMarketplace.orders.card.reject')}
-                                                        </Button>
-                                                        <Button
-                                                            type="button"
-                                                            disabled={respondToOrder.isPending}
-                                                            onClick={() => void handleRespond(mission, true)}
-                                                            className="min-h-10 whitespace-nowrap"
-                                                        >
-                                                            <CheckCircle2 size={14} className="mr-1 inline" aria-hidden="true"/>
-                                                            {t('opsMarketplace.orders.card.accept')}
-                                                        </Button>
-                                                    </div>
-                                                )}
+                                        {/* Hành động ở tab Chờ nhận */}
+                                        {tab === 'PENDING_ACCEPT' && (
+                                            <div className="mt-4 flex flex-wrap items-center justify-end gap-2.5">
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    disabled={respondToOrder.isPending}
+                                                    onClick={() =>
+                                                        setRejectingMissionId(
+                                                            rejectingMissionId === mission.id ? null : mission.id,
+                                                        )
+                                                    }
+                                                    className="min-h-10 border-slate-300 bg-white text-xs whitespace-nowrap text-slate-800 hover:border-primary hover:text-primary"
+                                                >
+                                                    <XCircle size={14} className="mr-1 inline" aria-hidden="true"/>
+                                                    {t('opsMarketplace.orders.card.reject')}
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    disabled={respondToOrder.isPending}
+                                                    onClick={() => void handleRespond(mission, true)}
+                                                    className="min-h-10 text-xs whitespace-nowrap"
+                                                >
+                                                    <CheckCircle2 size={14} className="mr-1 inline" aria-hidden="true"/>
+                                                    {t('opsMarketplace.orders.card.accept')}
+                                                </Button>
                                             </div>
                                         )}
 
@@ -509,25 +533,37 @@ export function ProviderOrdersView() {
                                             </div>
                                         )}
 
-                                        {/* Hành động Bắt đầu bay mô phỏng ở tab Chờ bay */}
+                                        {/* Hành động Lưu phân công (outline, disabled khi chưa đổi) + Bắt đầu bay mô phỏng (1 nút chính duy nhất) */}
                                         {tab === 'WAITING_FLIGHT' && (
                                             <div className="mt-4 flex flex-wrap items-center justify-between gap-2.5">
                                                 <Link
                                                     href={`/operations/simulation?missionId=${mission.id}${selectedUavId ? `&uavId=${selectedUavId}` : ''}`}
-                                                    className="inline-flex min-h-10 items-center gap-1.5 rounded-control border border-slate-200 px-3.5 text-xs font-semibold whitespace-nowrap text-slate-700 hover:border-primary hover:text-primary"
+                                                    className="inline-flex min-h-10 items-center gap-1.5 text-xs font-semibold whitespace-nowrap text-slate-600 hover:text-primary"
                                                 >
                                                     <Gamepad2 size={15} aria-hidden="true"/>
                                                     {t('opsMarketplace.orders.card.openSimulation')}
                                                 </Link>
-                                                <Button
-                                                    type="button"
-                                                    disabled={startOrder.isPending}
-                                                    onClick={() => void handleStartSimulation(mission)}
-                                                    className="min-h-11 whitespace-nowrap"
-                                                >
-                                                    <PlaneTakeoff size={15} className="mr-1.5 inline" aria-hidden="true"/>
-                                                    {t('opsMarketplace.orders.card.startSimulation')}
-                                                </Button>
+                                                <div className="flex flex-wrap items-center justify-end gap-2.5">
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        disabled={!hasAssignmentChanged || !selectedUavId || assignOrder.isPending}
+                                                        onClick={() => void handleAssign(mission)}
+                                                        className="min-h-11 border-slate-300 bg-white text-xs whitespace-nowrap text-slate-800 hover:border-primary hover:text-primary"
+                                                    >
+                                                        <UserCheck size={14} className="mr-1.5 inline" aria-hidden="true"/>
+                                                        {t('opsMarketplace.orders.card.assign')}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        disabled={startOrder.isPending}
+                                                        onClick={() => void handleStartSimulation(mission)}
+                                                        className="min-h-11 text-xs whitespace-nowrap"
+                                                    >
+                                                        <PlaneTakeoff size={15} className="mr-1.5 inline" aria-hidden="true"/>
+                                                        {t('opsMarketplace.orders.card.startSimulation')}
+                                                    </Button>
+                                                </div>
                                             </div>
                                         )}
 
@@ -647,6 +683,8 @@ export function ProviderOrdersView() {
                             })}
                         </div>
                     )}
+
+                    <IllustrativeFooterNote/>
                 </div>
             )}
         </ProviderStudioShell>

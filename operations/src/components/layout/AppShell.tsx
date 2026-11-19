@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import {useSidebarController} from '@/hooks/useSidebarController';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
+import {UnifiedFloatingLauncher} from '@/components/shared/UnifiedFloatingLauncher';
 import {AssistantWidget} from '@/components/assistant/widget/AssistantWidget';
 import {OperationsSupportQuickDock} from '@/components/support/OperationsSupportQuickDock';
 import React from 'react';
@@ -251,11 +252,12 @@ function OperationsShell({children, activeResource}: { children: React.ReactNode
                     </div>
                 </header>
                 <WelcomeBack/>
-                <main id="workspace" className="flex w-full flex-1 flex-col bg-white outline-none" tabIndex={-1}>
+                <main id="workspace" className="flex w-full flex-1 flex-col bg-white pb-20 outline-none" tabIndex={-1}>
                     {children}
                 </main>
-                <OperationsSupportQuickDock/>
-                <AssistantWidget portal="OPERATIONS"/>
+                <OperationsSupportQuickDock hideLauncher/>
+                <AssistantWidget portal="OPERATIONS" hideLauncher/>
+                <UnifiedFloatingLauncher/>
             </div>
         </div>
     );

@@ -16,7 +16,9 @@ import {
     Wrench,
 } from 'lucide-react';
 import {Button, OptionalMark, RequiredMark} from '@/components/ui';
+import {IllustrativeFooterNote} from '@/components/marketplace/provider/IllustrativeDisclaimer';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
+import {ProviderUavSelectField} from '@/components/marketplace/provider/ProviderUavSelectField';
 import {
     useMyProviderFleet,
     useMyProviderProfile,
@@ -28,6 +30,7 @@ import {
     initialPilotForm,
     normalizeUavStatusCardKey,
     PILOT_STATUS_CODES,
+    sanitizeEntityName,
     sanitizeMarketplaceText,
 } from '@/forms/marketplace/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
@@ -85,11 +88,11 @@ export function ProviderPilotsView() {
                   ? 'MAINTENANCE'
                   : 'AVAILABLE';
         setPilotForm({
-            fullName: pilot.fullName,
+            fullName: sanitizeEntityName(pilot.fullName),
             phone: pilot.phone ?? '',
             email: pilot.email ?? '',
             licenseNumber: pilot.licenseNumber ?? '',
-            specialization: pilot.specialization ?? '',
+            specialization: sanitizeEntityName(pilot.specialization),
             status: mappedStatus,
             assignedUavId: pilot.assignedUavId ?? null,
         });
@@ -190,7 +193,7 @@ export function ProviderPilotsView() {
             ) : (
                 <div className="mx-auto max-w-6xl space-y-5">
                     {/* Thanh lọc thẻ icon trạng thái Kỹ sư */}
-                    <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div className="grid flex-1 grid-cols-2 gap-2.5 sm:grid-cols-4" role="tablist">
                             {([
                                 {key: 'ALL' as const, icon: Users},
@@ -303,29 +306,24 @@ export function ProviderPilotsView() {
                                     />
                                 </label>
 
-                                <label className="grid gap-1 text-xs font-semibold text-slate-700">
+                                <div className="grid gap-1 text-xs font-semibold text-slate-700">
                                     <span>
                                         {t('opsMarketplace.fleet.pilots.assignedUav')}
                                         <OptionalMark/>
                                     </span>
-                                    <select
-                                        className={INPUT_CLASS}
+                                    <ProviderUavSelectField
+                                        uavs={uavs}
                                         value={pilotForm.assignedUavId ?? ''}
-                                        onChange={e =>
+                                        onChange={nextUavId =>
                                             setPilotForm(s => ({
                                                 ...s,
-                                                assignedUavId: e.target.value ? Number(e.target.value) : null,
+                                                assignedUavId: typeof nextUavId === 'number' ? nextUavId : null,
                                             }))
                                         }
-                                    >
-                                        <option value="">{t('opsMarketplace.fleet.pilots.noUav')}</option>
-                                        {uavs.map(u => (
-                                            <option key={u.id} value={u.id}>
-                                                {u.model} · {u.serialNumber}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </label>
+                                        unassignedLabel={t('opsMarketplace.fleet.pilots.noUav')}
+                                        ariaLabel={t('opsMarketplace.fleet.pilots.assignedUav')}
+                                    />
+                                </div>
 
                                 <label className="grid gap-1 text-xs font-semibold text-slate-700">
                                     <span>
@@ -442,7 +440,7 @@ export function ProviderPilotsView() {
                                                 {pilot.assignedUavModel && (
                                                     <span className="inline-flex items-center gap-1 rounded-md bg-uav-red-light px-2 py-0.5 font-semibold whitespace-nowrap text-primary">
                                                         <PlaneTakeoff size={12} aria-hidden="true"/>
-                                                        {pilot.assignedUavModel}
+                                                        {sanitizeEntityName(pilot.assignedUavModel)}
                                                     </span>
                                                 )}
                                             </div>
@@ -494,6 +492,8 @@ export function ProviderPilotsView() {
                             })}
                         </div>
                     )}
+
+                    <IllustrativeFooterNote/>
                 </div>
             )}
         </ProviderStudioShell>

@@ -14,6 +14,7 @@ import {
     Wrench,
 } from 'lucide-react';
 import {Button, OptionalMark, RequiredMark} from '@/components/ui';
+import {IllustrativeFooterNote} from '@/components/marketplace/provider/IllustrativeDisclaimer';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
 import {
     useMyProviderFleet,
@@ -24,6 +25,7 @@ import {
     extractActionableError,
     initialUavForm,
     normalizeUavStatusCardKey,
+    sanitizeEntityName,
     sanitizeMarketplaceText,
     UAV_STATUS_CODES,
 } from '@/forms/marketplace/marketplace-forms';
@@ -79,9 +81,9 @@ export function ProviderFleetView() {
                   ? 'MAINTENANCE'
                   : 'AVAILABLE';
         setUavForm({
-            model: uav.model,
-            serialNumber: uav.serialNumber,
-            manufacturer: uav.manufacturer,
+            model: sanitizeEntityName(uav.model),
+            serialNumber: sanitizeEntityName(uav.serialNumber),
+            manufacturer: sanitizeEntityName(uav.manufacturer),
             status: mappedStatus,
         });
         setShowForm(true);
@@ -178,7 +180,7 @@ export function ProviderFleetView() {
             ) : (
                 <div className="mx-auto max-w-6xl space-y-5">
                     {/* Thanh lọc thẻ icon trạng thái kiểu Shopee */}
-                    <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div className="grid flex-1 grid-cols-2 gap-2.5 sm:grid-cols-4" role="tablist">
                             {([
                                 {key: 'ALL' as const, icon: Plane},
@@ -426,6 +428,8 @@ export function ProviderFleetView() {
                             })}
                         </div>
                     )}
+
+                    <IllustrativeFooterNote/>
                 </div>
             )}
         </ProviderStudioShell>

@@ -18,7 +18,11 @@ import {
 } from 'lucide-react';
 import {MissionPreflightCard} from '@/components/mission/operations/MissionPreflightCard';
 import {Button, OptionalMark, RequiredMark} from '@/components/ui';
-import {extractActionableError, sanitizeMarketplaceText} from '@/forms/marketplace/marketplace-forms';
+import {
+    extractActionableError,
+    formatProviderConflictError,
+    sanitizeMarketplaceText,
+} from '@/forms/marketplace/marketplace-forms';
 import {usePilotTodayActions} from '@/hooks/marketplace/useMarketplace';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
@@ -98,7 +102,7 @@ export function PilotTodayWorkspace({
                 `/operations/simulation?missionId=${mission.id}${mission.uavId ? `&uavId=${mission.uavId}` : ''}`,
             );
         } catch (err) {
-            setErrorMsg(extractActionableError(err, t('opsMarketplace.common.retry')));
+            setErrorMsg(formatProviderConflictError(err, t));
         } finally {
             setBusyMissionId(null);
         }
@@ -141,7 +145,7 @@ export function PilotTodayWorkspace({
             setActiveTab('COMPLETED');
             onRefresh();
         } catch (err) {
-            setErrorMsg(extractActionableError(err, t('opsMarketplace.common.retry')));
+            setErrorMsg(formatProviderConflictError(err, t));
         } finally {
             setBusyMissionId(null);
         }

@@ -61,7 +61,7 @@ export function PortalHomeHero<G extends string>({
     const recentItems = recentRoutes.map(toItem);
 
     return (
-        <div className="space-y-8 pb-2">
+        <div className="space-y-8 px-4 pb-2 sm:px-6">
             <section className="mx-auto flex w-full max-w-3xl flex-col items-center gap-5 pt-4 text-center sm:pt-8">
                 <h1 className="m-0 text-[26px] font-semibold tracking-tight text-foreground sm:text-[32px]">{question}</h1>
                 <div className="w-full text-left">

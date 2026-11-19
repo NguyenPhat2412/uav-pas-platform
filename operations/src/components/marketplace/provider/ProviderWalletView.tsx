@@ -13,9 +13,18 @@ import {
     Wallet,
 } from 'lucide-react';
 import {Button} from '@/components/ui';
+import {
+    IllustrativeBadge,
+    IllustrativeFooterNote,
+} from '@/components/marketplace/provider/IllustrativeDisclaimer';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
 import {useMyProviderProfile, useMyProviderWallet} from '@/hooks/marketplace/useMarketplace';
-import {extractActionableError, formatVndCompact} from '@/forms/marketplace/marketplace-forms';
+import {
+    extractActionableError,
+    formatVndCompact,
+    sanitizeEntityName,
+} from '@/forms/marketplace/marketplace-forms';
+import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 
 export function ProviderWalletView() {
@@ -94,15 +103,12 @@ export function ProviderWalletView() {
                 </div>
             ) : (
                 <div className="mx-auto max-w-6xl space-y-5">
-                    {/* Nhãn thông báo chỉ hiển thị & Minh hoạ */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-700">
-                        <span className="font-medium">{t('opsMarketplace.wallet.readOnlyNotice')}</span>
-                        <span className="rounded-full bg-uav-red-light px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-primary">
-                            {t('opsMarketplace.common.illustrationBadge')}
-                        </span>
+                    {/* Nhãn thông báo chỉ hiển thị */}
+                    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-medium text-slate-600">
+                        {t('opsMarketplace.wallet.readOnlyNotice')}
                     </div>
 
-                    {/* 4 thẻ số dư Icon + Số + Nhãn Minh hoạ */}
+                    {/* 4 thẻ số dư Icon + Số + 1 nhãn phụ nhỏ cạnh số tiền */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         {balanceCards.map(card => {
                             const Icon = card.icon;
@@ -115,17 +121,17 @@ export function ProviderWalletView() {
                                         <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-uav-red-light text-primary">
                                             <Icon size={18} aria-hidden="true"/>
                                         </span>
-                                        <span className="rounded bg-uav-red-light px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-primary">
-                                            {t('opsMarketplace.common.illustrationBadge')}
-                                        </span>
                                     </div>
                                     <div className="mt-3">
                                         <span className="block line-clamp-2 break-words text-xs font-medium leading-snug text-slate-500">
                                             {card.label}
                                         </span>
-                                        <strong className="mt-0.5 block text-xl font-bold text-primary tabular-nums">
-                                            {formatVndCompact(card.amount)}
-                                        </strong>
+                                        <div className="mt-0.5 flex flex-wrap items-baseline gap-1.5">
+                                            <strong className="text-xl font-bold text-primary tabular-nums">
+                                                {formatVndCompact(card.amount)}
+                                            </strong>
+                                            <IllustrativeBadge/>
+                                        </div>
                                     </div>
                                 </div>
                             );
@@ -144,7 +150,7 @@ export function ProviderWalletView() {
                                 </h2>
                                 <p className="m-0 mt-0.5 text-xs text-slate-600 tabular-nums">
                                     {wallet.bankName && wallet.bankAccountNumber
-                                        ? `${wallet.bankName} · ${wallet.bankAccountNumber} · ${wallet.bankAccountHolder ?? ''}`
+                                        ? `${wallet.bankName} · ${wallet.bankAccountNumber} · ${sanitizeEntityName(wallet.bankAccountHolder)}`
                                         : t('opsMarketplace.wallet.bankSection.empty')}
                                 </p>
                             </div>
@@ -159,15 +165,12 @@ export function ProviderWalletView() {
                     </section>
 
                     <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-                        {/* Lịch sử giao dịch minh hoạ */}
+                        {/* Lịch sử giao dịch */}
                         <section className="rounded-2xl border border-slate-200 bg-white p-5">
                             <div className="mb-3 flex items-center justify-between gap-2">
                                 <h2 className="m-0 text-base font-semibold text-slate-900">
                                     {t('opsMarketplace.wallet.transactions.title')}
                                 </h2>
-                                <span className="rounded bg-uav-red-light px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-primary">
-                                    {t('opsMarketplace.common.illustrationBadge')}
-                                </span>
                             </div>
 
                             {wallet.recentTransactions.length === 0 ? (
@@ -179,8 +182,10 @@ export function ProviderWalletView() {
                                     {wallet.recentTransactions.map(tx => (
                                         <li key={tx.id} className="flex items-center justify-between gap-3 py-3 text-xs">
                                             <div className="min-w-0">
-                                                <strong className="block truncate font-semibold text-slate-900">
-                                                    {tx.description || tx.transactionType}
+                                                <strong className="block line-clamp-2 font-semibold text-slate-900">
+                                                    {tx.description
+                                                        ? sanitizeEntityName(tx.description)
+                                                        : displayLabel(tx.transactionType)}
                                                 </strong>
                                                 {tx.createdAt && (
                                                     <span className="text-slate-400">
@@ -188,13 +193,11 @@ export function ProviderWalletView() {
                                                     </span>
                                                 )}
                                             </div>
-                                            <div className="text-right tabular-nums">
-                                                <strong className="block font-bold text-primary">
+                                            <div className="flex shrink-0 items-center gap-1.5 text-right tabular-nums">
+                                                <strong className="font-bold text-primary whitespace-nowrap">
                                                     {formatVndCompact(tx.netAmountVnd)}
                                                 </strong>
-                                                <span className="text-[11px] text-slate-400">
-                                                    {t('opsMarketplace.common.illustrationBadge')}
-                                                </span>
+                                                <IllustrativeBadge/>
                                             </div>
                                         </li>
                                     ))}
@@ -202,15 +205,12 @@ export function ProviderWalletView() {
                             )}
                         </section>
 
-                        {/* Lịch sử giải ngân minh hoạ */}
+                        {/* Lịch sử giải ngân */}
                         <section className="rounded-2xl border border-slate-200 bg-white p-5">
                             <div className="mb-3 flex items-center justify-between gap-2">
                                 <h2 className="m-0 text-base font-semibold text-slate-900">
                                     {t('opsMarketplace.wallet.payouts.title')}
                                 </h2>
-                                <span className="rounded bg-uav-red-light px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap text-primary">
-                                    {t('opsMarketplace.common.illustrationBadge')}
-                                </span>
                             </div>
 
                             {wallet.payouts.length === 0 ? (
@@ -229,10 +229,11 @@ export function ProviderWalletView() {
                                                     {payout.bankName} · {payout.bankAccountNumber}
                                                 </span>
                                             </div>
-                                            <div className="flex items-center gap-2.5 tabular-nums">
+                                            <div className="flex items-center gap-2 tabular-nums">
                                                 <strong className="font-bold text-primary whitespace-nowrap">
                                                     {formatVndCompact(payout.amountVnd)}
                                                 </strong>
+                                                <IllustrativeBadge/>
                                                 <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap text-slate-700">
                                                     {t(`opsMarketplace.wallet.payouts.status.${payout.status}`)}
                                                 </span>
@@ -243,6 +244,8 @@ export function ProviderWalletView() {
                             )}
                         </section>
                     </div>
+
+                    <IllustrativeFooterNote/>
                 </div>
             )}
         </ProviderStudioShell>

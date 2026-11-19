@@ -16,6 +16,10 @@ import {
     Trash2,
 } from 'lucide-react';
 import {Button, OptionalMark, RequiredMark} from '@/components/ui';
+import {
+    IllustrativeBadge,
+    IllustrativeFooterNote,
+} from '@/components/marketplace/provider/IllustrativeDisclaimer';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
 import {
     useMyProviderListings,
@@ -31,6 +35,7 @@ import {
     LISTING_TYPE_CODES,
     listingFormFromTemplate,
     PRICING_MODEL_CODES,
+    sanitizeEntityName,
     sanitizeMarketplaceText,
 } from '@/forms/marketplace/marketplace-forms';
 import {displayLabel, serviceName} from '@/lib/presentation';
@@ -75,7 +80,7 @@ export function ProviderListingsView() {
                 profile?.province || 'Hà Nội',
                 profile?.serviceRadiusKm ?? defaultServiceRadiusKm,
             ),
-            title: serviceName(tpl),
+            title: sanitizeEntityName(serviceName(tpl)),
         });
         setEditingId('template');
     };
@@ -97,7 +102,7 @@ export function ProviderListingsView() {
         setSelectedTemplateId(item.categoryServiceId ?? null);
         setForm({
             categoryServiceId: item.categoryServiceId ?? undefined,
-            title: item.title,
+            title: sanitizeEntityName(item.title),
             summary: item.summary ?? '',
             description: item.description ?? '',
             listingType: item.listingType,
@@ -257,7 +262,7 @@ export function ProviderListingsView() {
                                                 </span>
                                             </div>
                                             <h3 className="m-0 line-clamp-2 text-sm font-semibold text-slate-900">
-                                                {serviceName(tpl)}
+                                                {sanitizeEntityName(serviceName(tpl))}
                                             </h3>
                                             {tpl.description && (
                                                 <p className="m-0 line-clamp-1 text-xs text-slate-500">
@@ -307,9 +312,7 @@ export function ProviderListingsView() {
                                           ? t('opsMarketplace.listings.customCreate')
                                           : t('opsMarketplace.listings.actions.edit')}
                                 </h2>
-                                <span className="rounded-full bg-uav-red-light px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-primary">
-                                    {t('opsMarketplace.common.illustrationBadge')}
-                                </span>
+                                <IllustrativeBadge/>
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -577,16 +580,14 @@ export function ProviderListingsView() {
                                         </div>
 
                                         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
-                                            <div className="flex items-center gap-1.5">
+                                            <div className="flex flex-wrap items-center gap-1.5">
                                                 <strong className="text-base font-bold text-primary tabular-nums">
                                                     {formatVndCompact(item.basePriceVnd)}
                                                 </strong>
                                                 <span className="text-xs text-slate-500">
                                                     / {t(`opsMarketplace.listings.pricing.${item.pricingModel}`)}
                                                 </span>
-                                                <span className="rounded bg-uav-red-light px-1.5 py-0.5 text-[11px] font-semibold whitespace-nowrap text-primary">
-                                                    {t('opsMarketplace.common.illustrationBadge')}
-                                                </span>
+                                                <IllustrativeBadge/>
                                             </div>
 
                                             <div className="flex flex-wrap items-center gap-1.5">
@@ -633,6 +634,8 @@ export function ProviderListingsView() {
                             </div>
                         )}
                     </section>
+
+                    <IllustrativeFooterNote/>
                 </div>
             )}
         </ProviderStudioShell>

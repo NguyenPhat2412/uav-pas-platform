@@ -211,7 +211,7 @@ export default function HomePage() {
                     </div>
                 </section>
 
-                {/* Khối tóm tắt Telemetry trực tiếp gọn nhẹ + liên kết sang trang chi tiết */}
+                {/* Khối tóm tắt trạng thái bay gọn nhẹ + liên kết sang trang chi tiết */}
                 <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5">
                     <div className="flex items-center gap-3">
                         <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-uav-red-light text-primary">
@@ -219,15 +219,19 @@ export default function HomePage() {
                         </span>
                         <div>
                             <h3 className="m-0 text-sm font-semibold text-slate-900">
-                                {t('opsMissions.overview.hud.liveCount')}:{' '}
+                                {t('opsMarketplace.home.liveFlights')}:{' '}
                                 <span className="tabular-nums text-primary">
                                     {formatNumber(fixes.filter(f => !f.stale).length)}
                                 </span>
                             </h3>
                             <p className="m-0 mt-0.5 text-xs text-slate-500">
                                 {activeFix
-                                    ? `${t('opsMissions.overview.hud.battery')}: ${activeFix.batteryPct ?? '—'}% · ${t('opsMissions.overview.hud.gnss')}: ${activeFix.rtkStatus ?? '—'}`
-                                    : t('opsMissions.overview.hud.noTelemetry')}
+                                    ? `${t('opsMarketplace.home.batteryLabel')}: ${activeFix.batteryPct ?? '—'}% · ${
+                                          activeFix.stale
+                                              ? t('opsMarketplace.home.signalChecking')
+                                              : t('opsMarketplace.home.signalStable')
+                                      }`
+                                    : t('opsMarketplace.home.noActiveFlight')}
                             </p>
                         </div>
                     </div>

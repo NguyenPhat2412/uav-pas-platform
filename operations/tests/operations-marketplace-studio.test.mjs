@@ -46,9 +46,10 @@ test('S3 marketplace API boundary uses CONTRACT.md provider endpoints through sh
     assert.doesNotMatch(api, /\bfetch\s*\(/);
 });
 
-test('S3 wallet view is read-only and displays illustrative badges without withdrawal mutations', () => {
+test('S3 wallet view is read-only and displays illustrative badges + footer note without withdrawal mutations', () => {
     const walletView = read('src/components/marketplace/provider/ProviderWalletView.tsx');
-    assert.match(walletView, /opsMarketplace\.common\.illustrationBadge/);
+    assert.match(walletView, /IllustrativeBadge/);
+    assert.match(walletView, /IllustrativeFooterNote/);
     assert.match(walletView, /opsMarketplace\.wallet\.readOnlyNotice/);
     assert.doesNotMatch(walletView, /useRequestPayout|requestPayout/);
 });
@@ -98,15 +99,40 @@ test('S3 marketplace form helpers classify order tabs, UAV/pilot status cards, a
         normalizeUavStatusCardKey,
         formatVndCompact,
         extractActionableError,
+        formatProviderConflictError,
         inferMissionTypeFromServiceCode,
         listingFormFromTemplate,
+        sanitizeEntityName,
         sanitizeMarketplaceText,
     } = await import('../src/forms/marketplace/marketplace-forms.ts');
 
     assert.equal(
         sanitizeMarketplaceText('Khảo sát RTK (minh hoạ)'),
-        'Khảo sát GNSS — minh hoạ',
+        'Khảo sát GNSS',
     );
+    assert.equal(
+        sanitizeEntityName('Ghi hình trên không 4K — minh hoạ'),
+        'Ghi hình trên không 4K',
+    );
+    assert.equal(
+        sanitizeEntityName('Đội bay Miền Bắc – minh họa'),
+        'Đội bay Miền Bắc',
+    );
+
+    const mockVi = JSON.parse(read('src/messages/sections/opsMarketplace/vi.json'));
+    const lookupVi = key =>
+        key.split('.').reduce((acc, part) => (acc && typeof acc === 'object' ? acc[part] : undefined), mockVi) ?? key;
+
+    for (const code of [
+        'UAV_TIME_CONFLICT',
+        'OPERATOR_TIME_CONFLICT',
+        'UAV_IN_USE',
+        'NO_UAV_AVAILABLE',
+    ]) {
+        const msg = formatProviderConflictError({code, message: 'HTTP 409'}, lookupVi);
+        assert.equal(msg, lookupVi(`opsMarketplace.orders.conflicts.${code}`));
+        assert.ok(msg.length > 10);
+    }
 
     assert.equal(
         classifySellerOrderTab({id: 1, status: 'CONFIRMED', providerResponseStatus: 'PENDING_PROVIDER'}),
@@ -189,6 +215,8 @@ test('S3 every static opsMarketplace.* translation key used in components exists
         path.split('.').reduce((acc, part) => (acc && typeof acc === 'object' ? acc[part] : undefined), obj);
 
     const componentFiles = [
+        'src/components/marketplace/provider/IllustrativeDisclaimer.tsx',
+        'src/components/marketplace/provider/ProviderUavSelectField.tsx',
         'src/components/marketplace/provider/ProviderStudioShell.tsx',
         'src/components/marketplace/provider/ProviderOnboardingView.tsx',
         'src/components/marketplace/provider/ProviderFleetView.tsx',
@@ -199,6 +227,7 @@ test('S3 every static opsMarketplace.* translation key used in components exists
         'src/components/mission/operations/PilotTodayWorkspace.tsx',
         'src/components/dashboard/OperationsOverviewPanel.tsx',
         'src/components/simulation/SimulationConsole.tsx',
+        'src/components/shared/UnifiedFloatingLauncher.tsx',
     ];
 
     for (const file of componentFiles) {
@@ -228,6 +257,31 @@ test('S3 responsive toast, notification popup, table headers, and localized temp
 
     const dataTableSrc = read('src/components/data/DataTable.tsx');
     assert.match(dataTableSrc, /px-4 py-3 whitespace-nowrap/);
+});
+
+test('S3 unified floating launcher, 2-line UAV combobox, outline disabled-when-unchanged save assignment, and single footer note are wired', () => {
+    const shellSrc = read('src/components/layout/AppShell.tsx');
+    assert.match(shellSrc, /UnifiedFloatingLauncher/);
+    assert.match(shellSrc, /OperationsSupportQuickDock\s+hideLauncher/);
+    assert.match(shellSrc, /AssistantWidget\s+portal="OPERATIONS"\s+hideLauncher/);
+    assert.match(shellSrc, /pb-20/);
+
+    const ordersSrc = read('src/components/marketplace/provider/ProviderOrdersView.tsx');
+    assert.match(ordersSrc, /ProviderUavSelectField/);
+    assert.match(ordersSrc, /variant="outline"/);
+    assert.match(ordersSrc, /disabled=\{!hasAssignmentChanged\s*\|\|\s*!selectedUavId/);
+    assert.match(ordersSrc, /formatProviderConflictError/);
+    assert.match(ordersSrc, /<IllustrativeBadge\/>/);
+    assert.match(ordersSrc, /<IllustrativeFooterNote\/>/);
+
+    for (const rel of [
+        'src/components/marketplace/provider/ProviderFleetView.tsx',
+        'src/components/marketplace/provider/ProviderPilotsView.tsx',
+        'src/components/marketplace/provider/ProviderListingsView.tsx',
+        'src/components/marketplace/provider/ProviderWalletView.tsx',
+    ]) {
+        assert.match(read(rel), /<IllustrativeFooterNote\/>/, `${rel} must render IllustrativeFooterNote`);
+    }
 });
 
 

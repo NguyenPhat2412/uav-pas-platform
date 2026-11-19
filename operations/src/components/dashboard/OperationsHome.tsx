@@ -3,6 +3,7 @@
 import {MapPinned, PlaneTakeoff} from 'lucide-react';
 import {PortalHomeColumn, PortalHomeHero, PortalHomeRow} from '@/components/layout/PortalHomeHero';
 import {OPERATIONS_SIDEBAR_ROUTES} from '@/config/sidebar-routes';
+import {sanitizeEntityName} from '@/forms/marketplace/marketplace-forms';
 import {OPERATIONS_RECENT_PAGES_KEY} from '@/lib/recent-pages';
 import {displayLabel} from '@/lib/presentation';
 import {useAuth} from '@/providers/AuthContext';
@@ -43,8 +44,17 @@ export function OperationsHome() {
                     <PortalHomeRow
                         key={uav.id}
                         href={`/operations/uavs?uav=${toUavSlug(uav)}`}
-                        icon={<PlaneTakeoff size={16} className="text-uav-blue"/>}
-                        label={`${uav.model} · ${uav.serialNumber}`}
+                        icon={<PlaneTakeoff size={16} className="text-primary"/>}
+                        label={
+                            <span className="flex flex-col leading-snug">
+                                <strong className="font-mono text-xs font-bold whitespace-nowrap text-slate-900">
+                                    {sanitizeEntityName(uav.serialNumber)}
+                                </strong>
+                                <span className="truncate text-xs text-slate-500">
+                                    {sanitizeEntityName(uav.model)}
+                                </span>
+                            </span>
+                        }
                         meta={displayLabel(uav.status)}
                     />
                 ))}
@@ -61,7 +71,7 @@ export function OperationsHome() {
                         key={station.id}
                         href={`/operations/stations?station=${toStationSlug(station)}`}
                         icon={<MapPinned size={16} className="text-primary"/>}
-                        label={`${station.code} · ${station.name}`}
+                        label={`${station.code} · ${sanitizeEntityName(station.name)}`}
                         meta={displayLabel(station.status)}
                     />
                 ))}
