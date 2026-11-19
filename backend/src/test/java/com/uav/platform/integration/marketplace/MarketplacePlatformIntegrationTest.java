@@ -480,6 +480,9 @@ class MarketplacePlatformIntegrationTest {
                     new ProviderModerationRequest(
                             ProviderVerificationStatus.VERIFIED, "OK", new BigDecimal("0.1000")),
                     admin.getUsername());
+            providerService.registerProviderUav(
+                    new ProviderUavCreateRequest("ESCROW-UAV-01", "Matrice 300", "DJI"),
+                    seller.getUsername());
 
             SystemException xssListingErr =
                     assertThrows(

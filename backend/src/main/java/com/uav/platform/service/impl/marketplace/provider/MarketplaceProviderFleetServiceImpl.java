@@ -463,10 +463,6 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
     @Override
     public MissionResponse assignOrder(
             Long missionId, ProviderOrderAssignRequest request, String username) {
-        if (resolveProfile(username).isEmpty()) {
-            throw SystemException.forbidden(
-                    "Tài khoản không thuộc đội bay nào.", "PROVIDER_PROFILE_REQUIRED");
-        }
         ProviderProfile provider = requireVerifiedProfile(username);
         Mission mission =
                 missions.findByIdForUpdate(missionId)
@@ -489,7 +485,6 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
                     "ORDER_CANNOT_ASSIGN");
         }
 
-        requireOwnedUav(request.uavId(), provider);
         Uav uav = resources.lockUav(request.uavId());
         if (uav.getProvider() == null
                 || !Objects.equals(uav.getProvider().getId(), provider.getId())) {
@@ -500,31 +495,11 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
             throw SystemException.conflict(
                     "Thiết bị bay đang bảo trì hoặc ngừng khai thác.", "UAV_NOT_AVAILABLE");
         }
-        if (missions.exists(
-                MissionSpecifications.overlappingUav(
-                                uav.getId(),
-                                resources.excludedStatuses(),
-                                mission.getStartTime(),
-                                mission.getExpectedEndTime())
-                        .and((root, query, cb) -> cb.notEqual(root.get("id"), mission.getId())))) {
-            throw SystemException.conflict(
-                    "Thiết bị bay đã được phân công cho đơn khác trùng khung giờ.",
-                    "UAV_TIME_CONFLICT");
-        }
+        resources.requireUavFreeFor(uav, mission);
 
         AppUser candidateOperator = resolveAssignedOperator(provider, request);
         AppUser assignedOperator = resources.lockOperator(candidateOperator.getId());
-        if (missions.exists(
-                MissionSpecifications.overlappingOperator(
-                                assignedOperator.getId(),
-                                resources.excludedStatuses(),
-                                mission.getStartTime(),
-                                mission.getExpectedEndTime())
-                        .and((root, query, cb) -> cb.notEqual(root.get("id"), mission.getId())))) {
-            throw SystemException.conflict(
-                    "Kỹ sư đã được phân công cho đơn khác trùng khung giờ.",
-                    "OPERATOR_TIME_CONFLICT");
-        }
+        resources.requireOperatorFreeFor(assignedOperator, mission);
         MissionStatus previous = mission.getStatus();
         mission.setUav(uav);
         mission.setOperator(assignedOperator);
@@ -680,8 +655,8 @@ public class MarketplaceProviderFleetServiceImpl implements MarketplaceProviderF
                 resolveProfile(username)
                         .orElseThrow(
                                 () ->
-                                        SystemException.conflict(
-                                                "Vui lòng khởi tạo Hồ sơ Đối tác trước khi thực hiện thao tác này.",
+                                        SystemException.forbidden(
+                                                "Tài khoản không thuộc đội bay nào.",
                                                 "PROVIDER_PROFILE_REQUIRED"));
         if (!isFleetOwner(profile, username)) {
             throw SystemException.forbidden(

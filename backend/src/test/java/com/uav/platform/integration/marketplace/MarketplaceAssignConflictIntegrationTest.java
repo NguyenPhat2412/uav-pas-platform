@@ -270,6 +270,60 @@ class MarketplaceAssignConflictIntegrationTest {
                                                         pilot1.id()))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("READY"));
+
+        // 8. Order D (10:00-12:00, no UAV assigned) auto-picks free uav2 instead of uav1 booked by
+        // B
+        Mission orderD = createProviderOrder(10, 12, MissionStatus.CONFIRMED);
+        mvc.perform(
+                        post("/api/v1/marketplace/provider/orders/" + orderD.getId() + "/start")
+                                .with(authentication(fleetAuth))
+                                .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("IN_PROGRESS"))
+                .andExpect(jsonPath("$.assignedUavId").value(uav2.id()));
+
+        // 9. Order E (10:00-12:00, no UAV assigned) when uav1 is booked by B and uav2 is IN_USE ->
+        // 409 NO_UAV_AVAILABLE
+        Mission orderE = createProviderOrder(10, 12, MissionStatus.CONFIRMED);
+        mvc.perform(
+                        post("/api/v1/marketplace/provider/orders/" + orderE.getId() + "/start")
+                                .with(authentication(fleetAuth))
+                                .with(csrf()))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("NO_UAV_AVAILABLE"));
+
+        // 10. Two overlapping responds without specified pilot -> second gets 409
+        // OPERATOR_TIME_CONFLICT
+        Mission resp1 = createProviderOrder(14, 16, MissionStatus.PENDING_CONFIRMATION);
+        Mission resp2 = createProviderOrder(15, 17, MissionStatus.PENDING_CONFIRMATION);
+        Mission respAdjacent = createProviderOrder(16, 18, MissionStatus.PENDING_CONFIRMATION);
+
+        mvc.perform(
+                        post("/api/v1/marketplace/provider/orders/" + resp1.getId() + "/respond")
+                                .with(authentication(fleetAuth))
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"accept\":true,\"reason\":\"Nhận 14-16\"}"))
+                .andExpect(status().isOk());
+
+        mvc.perform(
+                        post("/api/v1/marketplace/provider/orders/" + resp2.getId() + "/respond")
+                                .with(authentication(fleetAuth))
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"accept\":true,\"reason\":\"Nhận 15-17\"}"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("OPERATOR_TIME_CONFLICT"));
+
+        mvc.perform(
+                        post("/api/v1/marketplace/provider/orders/"
+                                        + respAdjacent.getId()
+                                        + "/respond")
+                                .with(authentication(fleetAuth))
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"accept\":true,\"reason\":\"Nhận 16-18 chạm mép\"}"))
+                .andExpect(status().isOk());
     }
 
     private String suffix() {

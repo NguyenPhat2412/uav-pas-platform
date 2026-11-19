@@ -6,6 +6,7 @@ import com.uav.platform.dto.request.inventory.EquipmentRequest;
 import com.uav.platform.dto.request.inventory.QuantityRequest;
 import com.uav.platform.dto.request.marketplace.admin.ProviderModerationRequest;
 import com.uav.platform.dto.request.marketplace.provider.ProviderOnboardingRequest;
+import com.uav.platform.dto.request.marketplace.provider.ProviderOrderActionRequest;
 import com.uav.platform.dto.request.marketplace.provider.ProviderOrderAssignRequest;
 import com.uav.platform.dto.request.marketplace.provider.ProviderPilotUpsertRequest;
 import com.uav.platform.dto.request.marketplace.provider.ProviderUavCreateRequest;
@@ -24,6 +25,7 @@ import com.uav.platform.enums.marketplace.ProviderVerificationStatus;
 import com.uav.platform.enums.mission.MissionPriority;
 import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.mission.MissionType;
+import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
@@ -402,6 +404,86 @@ class MarketplaceConcurrencyPostgresTest {
                                         customer.getUsername()));
         assertEquals(HttpStatus.FORBIDDEN, customerEx.getStatus());
         assertEquals("PROVIDER_PROFILE_REQUIRED", customerEx.getCode());
+    }
+
+    @Test
+    void startOrderWithoutUavRejects409NoUavAvailableWhenOnlyFleetUavIsBookedInOverlappingSlot() {
+        // Fleet has only uav1 available (mark uav2 MAINTENANCE so uav1 is the sole candidate).
+        var u2 = uavs.findById(uav2.id()).orElseThrow();
+        u2.setStatus(UavStatus.MAINTENANCE);
+        uavs.save(u2);
+
+        Mission orderA = createProviderOrder(9, 11, MissionStatus.CONFIRMED);
+        Mission orderB = createProviderOrder(10, 12, MissionStatus.CONFIRMED);
+
+        fleetService.assignOrder(
+                orderA.getId(),
+                new ProviderOrderAssignRequest(pilot1.id(), null, uav1.id(), "Hứa giao X cho A"),
+                fleetOwner.getUsername());
+
+        SystemException ex =
+                assertThrows(
+                        SystemException.class,
+                        () -> providerService.startOrder(orderB.getId(), fleetOwner.getUsername()));
+        assertEquals(HttpStatus.CONFLICT, ex.getStatus());
+        assertEquals("NO_UAV_AVAILABLE", ex.getCode());
+
+        Mission persistedA = missions.findById(orderA.getId()).orElseThrow();
+        assertNotNull(persistedA.getUav());
+        assertEquals(uav1.id(), persistedA.getUav().getId());
+    }
+
+    @Test
+    void startOrderWithoutUavAutoPicksFreeUavYAndLeavesOverlappingUavXForOrderA() {
+        Mission orderA = createProviderOrder(9, 11, MissionStatus.CONFIRMED);
+        Mission orderB = createProviderOrder(10, 12, MissionStatus.CONFIRMED);
+
+        // Order A books uav1 (X) for 9:00-11:00; uav2 (Y) remains free.
+        fleetService.assignOrder(
+                orderA.getId(),
+                new ProviderOrderAssignRequest(pilot1.id(), null, uav1.id(), "A giữ X"),
+                fleetOwner.getUsername());
+
+        var startedB = providerService.startOrder(orderB.getId(), fleetOwner.getUsername());
+        assertEquals(MissionStatus.IN_PROGRESS, startedB.status());
+        assertEquals(uav2.id(), startedB.assignedUavId());
+
+        Mission persistedA = missions.findById(orderA.getId()).orElseThrow();
+        assertNotNull(persistedA.getUav());
+        assertEquals(uav1.id(), persistedA.getUav().getId());
+    }
+
+    @Test
+    void respondToOverlappingOrdersWithoutSpecifiedPilotRejectsSecondWith409AndAllowsAdjacent() {
+        Mission orderA = createProviderOrder(9, 11, MissionStatus.PENDING_CONFIRMATION);
+        Mission orderB = createProviderOrder(10, 12, MissionStatus.PENDING_CONFIRMATION);
+        Mission orderC = createProviderOrder(11, 13, MissionStatus.PENDING_CONFIRMATION);
+
+        var acceptedA =
+                providerService.respondToOrder(
+                        orderA.getId(),
+                        new ProviderOrderActionRequest(true, null, "Nhận đơn A"),
+                        fleetOwner.getUsername());
+        assertEquals(MissionStatus.CONFIRMED, acceptedA.status());
+
+        SystemException overlapEx =
+                assertThrows(
+                        SystemException.class,
+                        () ->
+                                providerService.respondToOrder(
+                                        orderB.getId(),
+                                        new ProviderOrderActionRequest(true, null, "Nhận đơn B"),
+                                        fleetOwner.getUsername()));
+        assertEquals(HttpStatus.CONFLICT, overlapEx.getStatus());
+        assertEquals("OPERATOR_TIME_CONFLICT", overlapEx.getCode());
+
+        // Adjacent 11:00-13:00 touching edge at 11:00 must succeed.
+        var acceptedC =
+                providerService.respondToOrder(
+                        orderC.getId(),
+                        new ProviderOrderActionRequest(true, null, "Nhận đơn C chạm mép"),
+                        fleetOwner.getUsername());
+        assertEquals(MissionStatus.CONFIRMED, acceptedC.status());
     }
 
     private record Outcome(Object value, Throwable error) {}

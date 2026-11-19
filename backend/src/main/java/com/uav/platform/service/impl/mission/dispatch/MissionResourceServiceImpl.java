@@ -61,14 +61,42 @@ public class MissionResourceServiceImpl implements MissionResourceService {
     @Override
     public void requireOperatorAvailable(AppUser operator, Mission mission) {
         if (!eligibleOperator(operator)) throw SystemException.conflict("OPERATOR_NOT_AVAILABLE");
+        requireOperatorFreeFor(operator, mission);
+    }
+
+    @Override
+    public boolean isUavFreeFor(Uav uav, Mission mission) {
+        return !missions.exists(
+                MissionSpecifications.overlappingUav(
+                                uav.getId(),
+                                excludedStatuses(),
+                                mission.getStartTime(),
+                                mission.getExpectedEndTime())
+                        .and((root, query, cb) -> cb.notEqual(root.get("id"), mission.getId())));
+    }
+
+    @Override
+    public void requireUavFreeFor(Uav uav, Mission mission) {
+        if (!isUavFreeFor(uav, mission)) {
+            throw SystemException.conflict(
+                    "Thiết bị bay đã được phân công cho đơn khác trùng khung giờ.",
+                    "UAV_TIME_CONFLICT");
+        }
+    }
+
+    @Override
+    public void requireOperatorFreeFor(AppUser operator, Mission mission) {
         if (missions.exists(
                 MissionSpecifications.overlappingOperator(
                                 operator.getId(),
                                 excludedStatuses(),
                                 mission.getStartTime(),
                                 mission.getExpectedEndTime())
-                        .and((root, query, cb) -> cb.notEqual(root.get("id"), mission.getId()))))
-            throw SystemException.conflict("OPERATOR_TIME_CONFLICT");
+                        .and((root, query, cb) -> cb.notEqual(root.get("id"), mission.getId())))) {
+            throw SystemException.conflict(
+                    "Kỹ sư đã được phân công cho đơn khác trùng khung giờ.",
+                    "OPERATOR_TIME_CONFLICT");
+        }
     }
 
     @Override

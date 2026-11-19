@@ -19,6 +19,12 @@ public interface MissionResourceService {
 
     void requireOperatorAvailable(AppUser operator, Mission mission);
 
+    boolean isUavFreeFor(Uav uav, Mission mission);
+
+    void requireUavFreeFor(Uav uav, Mission mission);
+
+    void requireOperatorFreeFor(AppUser operator, Mission mission);
+
     Equipment lockEquipment(Long id);
 
     List<MissionEquipmentReservation> activeReservationsLocked(Long id);
