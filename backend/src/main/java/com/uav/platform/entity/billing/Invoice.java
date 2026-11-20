@@ -75,6 +75,12 @@ public class Invoice extends BaseEntity {
     @Column(name = "escrow_released_at")
     private LocalDateTime escrowReleasedAt;
 
+    @Column(name = "last_emailed_at")
+    private LocalDateTime lastEmailedAt;
+
+    @Column(name = "last_emailed_to", length = 255)
+    private String lastEmailedTo;
+
     public Invoice(
             String code,
             AppUser user,

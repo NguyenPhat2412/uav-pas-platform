@@ -91,6 +91,9 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     @Autowired(required = false)
     private com.uav.platform.service.settings.SystemConfigService systemConfig;
 
+    @Autowired(required = false)
+    private com.uav.platform.transport.websocket.RealtimeEventBroadcaster realtime;
+
     @org.springframework.beans.factory.annotation.Value(
             "${app.mission.preflight-signoff-required:false}")
     private boolean preflightSignoffRequired;
@@ -335,7 +338,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
             marketplaceListings.save(listing);
         } else if (Boolean.TRUE.equals(request.openRfq())) {
             if (!com.uav.platform.service.impl.settings.SystemConfigurationOperations.boolOrDefault(
-                    systemConfig, "marketplace.rfq_enabled", true)) {
+                    systemConfig, "marketplace.rfq_enabled", false)) {
                 throw SystemException.conflict(
                         "Tính năng đấu thầu báo giá mở (RFQ) hiện đang tạm đóng theo cấu hình hệ thống.",
                         "RFQ_DISABLED");
@@ -421,7 +424,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 mission.getCode());
         // Return the version persisted by this edit, not the pre-flush JPA version.
         missions.flush();
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     @Override
@@ -484,7 +487,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 com.uav.platform.enums.notification.NotificationType.MISSION_ASSIGNED,
                 "Đơn đặt mới " + missionLabel(mission),
                 "Khách hàng vừa gửi yêu cầu dịch vụ " + mission.getTitle() + ".");
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     private void notifyProviderIfPresent(
@@ -567,7 +570,18 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 com.uav.platform.enums.notification.NotificationType.MISSION_STATUS_CHANGED,
                 "Đơn " + missionLabel(mission) + " đã hủy",
                 note == null ? "Khách hàng đã hủy nhiệm vụ." : note);
-        return missionMapper.toResponse(mission);
+        if (realtime != null) {
+            realtime.publishOrderUpdated(
+                    mission.getId(),
+                    mission.getStatus().name(),
+                    com.uav.platform.common.util.OrderStatusGroups.CANCELLED,
+                    mission.getCustomer() != null ? mission.getCustomer().getId() : null,
+                    mission.getProvider() != null && mission.getProvider().getUser() != null
+                            ? mission.getProvider().getUser().getId()
+                            : null,
+                    mission.getOperator() != null ? mission.getOperator().getId() : null);
+        }
+        return toViewerSafeResponse(mission, authentication);
     }
 
     @Override
@@ -595,7 +609,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "Mission " + missionLabel(mission),
                 "Mission confirmed",
                 "MISSION");
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     @Override
@@ -631,7 +645,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "Mission " + missionLabel(mission),
                 reason == null || reason.isBlank() ? "Mission rejected" : reason,
                 "MISSION");
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     @Override
@@ -657,7 +671,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "MISSION",
                 id.toString(),
                 "READY");
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     @Override
@@ -730,7 +744,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "Mission " + missionLabel(mission),
                 startDetail,
                 "MISSION");
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     @Override
@@ -788,7 +802,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "Mission " + missionLabel(mission),
                 request.completionNote().trim(),
                 "MISSION");
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     @Override
@@ -824,7 +838,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "Mission " + missionLabel(mission),
                 request.failureReason(),
                 "MISSION");
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     @Override
@@ -872,7 +886,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "MISSION",
                 id.toString(),
                 "FORCE_FAILED from " + old + " (operator " + operator + "): " + reason);
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     /** The operator may start from startLeadMinutes before the scheduled start onwards. */
@@ -918,7 +932,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 id.toString(),
                 "OPERATOR_ACCEPTED");
         missions.flush();
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     @Override
@@ -975,7 +989,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "MISSION",
                 id.toString(),
                 "OPERATOR_CONFLICT");
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     @Override
@@ -1001,7 +1015,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 "MISSION",
                 id.toString(),
                 "PERMIT_SUBMITTED:" + mission.getPermitNumber());
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     @Override
@@ -1042,7 +1056,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                 approved ? "Giấy phép bay đã được phê duyệt" : "Giấy phép bay bị từ chối",
                 detail,
                 "PERMIT");
-        return missionMapper.toResponse(mission);
+        return toViewerSafeResponse(mission, authentication);
     }
 
     private AirspaceCheckResponse checkAirspace(AirspaceCheckRequest checkRequest) {
@@ -1175,5 +1189,31 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                         "weather %s, wind 80 m %.1f m/s",
                         assessment.clearance(),
                         assessment.windSpeed80mMs());
+    }
+
+    private MissionResponse toViewerSafeResponse(Mission mission, Authentication authentication) {
+        MissionResponse response = missionMapper.toResponse(mission);
+        if (response == null) {
+            return null;
+        }
+        boolean anonymizeForCustomer =
+                authentication != null
+                        && mission.getCustomer() != null
+                        && authentication
+                                .getName()
+                                .equalsIgnoreCase(mission.getCustomer().getUsername())
+                        && !access.hasAuthority(authentication, "MISSION_VIEW_ALL")
+                        && !access.hasAuthority(authentication, "MARKETPLACE_MODERATE")
+                        && !(mission.getProvider() != null
+                                && mission.getProvider().getUser() != null
+                                && authentication
+                                        .getName()
+                                        .equalsIgnoreCase(
+                                                mission.getProvider().getUser().getUsername()));
+        if (!anonymizeForCustomer) {
+            return response;
+        }
+        MissionResponse masked = response.withOrderContext(false, true);
+        return masked != null ? masked : response;
     }
 }

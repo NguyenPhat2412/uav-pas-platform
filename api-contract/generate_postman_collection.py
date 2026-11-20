@@ -67,7 +67,7 @@ ENDPOINT_METADATA = {
     ("POST", "/api/v1/missions/:id/media/upload-url"): ("Lấy Presigned URL tải media cho nhiệm vụ", "Xin link upload trực tiếp lên cloud storage (S3/MinIO)."),
     ("POST", "/api/v1/missions/:id/media/:mediaId/confirm"): ("Xác nhận tải xong media của nhiệm vụ", "Xác nhận tệp media nhiệm vụ đã upload thành công."),
     ("GET", "/api/v1/missions/:id/telemetry/replay"): ("Phát lại hành trình 3D & Mặt cắt địa hình (3D Telemetry Replay)", "Lấy toàn bộ chuỗi mẫu góc nghiêng 3D (pitch/roll/yaw/gimbal), quãng đường tích luỹ và độ cao địa hình ASL/AGL."),
-    ("GET", "/api/v1/missions/:id/inspection-report"): ("Chứng nhận nghiệm thu & Tệp bàn giao Geotag (Inspection Report)", "Tổng hợp chứng chỉ nghiệm thu tự động, điểm chất lượng RTK và danh sách tệp bàn giao gắn toạ độ GPS."),
+    ("GET", "/api/v1/missions/:id/inspection-report"): ("Chứng nhận nghiệm thu & Tệp bàn giao Geotag (Inspection Report)", "Tổng hợp chứng chỉ nghiệm thu tự động, điểm chất lượng định vị GNSS và danh sách tệp bàn giao gắn toạ độ GPS."),
 
     # 05. Services
     ("GET", "/api/v1/uav-services"): ("Danh mục dịch vụ bay (Get Service Offerings)", "Lấy danh sách các gói dịch vụ UAV cung cấp cho khách hàng."),
@@ -192,7 +192,57 @@ ENDPOINT_METADATA = {
     # 22. Settings
     ("GET", "/api/v1/settings"): ("Danh sách cấu hình hệ thống (Get All System Configs)", "Lấy các tham số cấu hình động của hệ thống."),
     ("GET", "/api/v1/settings/:key"): ("Xem cấu hình theo khoá (Get Config By Key)", "Lấy giá trị của một biến cấu hình cụ thể."),
-    ("PUT", "/api/v1/settings/:key"): ("Cập nhật cấu hình hệ thống (Update Config)", "Thay đổi giá trị cấu hình động (hạn mức bay, thời gian timeout...).")
+    ("PUT", "/api/v1/settings/:key"): ("Cập nhật cấu hình hệ thống (Update Config)", "Thay đổi giá trị cấu hình động (hạn mức bay, thời gian timeout...)."),
+
+    # 23. Projects & Subscriptions
+    ("GET", "/api/v1/projects"): ("Danh sách dự án của khách hàng (List My Projects)", "Lấy danh sách phân trang các dự án của khách hàng kèm số gói đăng ký và số đơn bay."),
+    ("POST", "/api/v1/projects"): ("Tạo dự án mới (Create Project)", "Khởi tạo dự án mới với tỉnh/thành và vùng ranh giới GeoJSON."),
+    ("GET", "/api/v1/projects/:id"): ("Chi tiết dự án (Get Project By ID)", "Xem thông tin chi tiết một dự án thuộc quyền sở hữu của khách hàng."),
+    ("PATCH", "/api/v1/projects/:id"): ("Cập nhật dự án (Update Project)", "Cập nhật tên, tỉnh/thành, vùng ranh giới GeoJSON hoặc ghi chú dự án."),
+    ("DELETE", "/api/v1/projects/:id"): ("Xoá mềm dự án (Soft Delete Project)", "Xoá mềm dự án khi không còn đơn hàng đang thực hiện."),
+    ("GET", "/api/v1/projects/:id/subscriptions"): ("Danh sách gói đăng ký theo dự án (List Project Subscriptions)", "Xem các gói dịch vụ bay định kỳ hoặc một lần gắn với dự án."),
+    ("POST", "/api/v1/projects/:id/subscriptions"): ("Đăng ký dịch vụ cho dự án (Create Subscription & Initial Order)", "Đăng ký gói dịch vụ cho dự án và tự động sinh đơn hàng đầu tiên chờ điều phối."),
+    ("PATCH", "/api/v1/projects/:id/subscriptions/:subId"): ("Đổi lịch hoặc tạm dừng gói đăng ký (Update Subscription)", "Đổi chu kỳ (ONCE/WEEKLY/MONTHLY), khối lượng hoặc tạm dừng/tiếp tục gói đăng ký."),
+    ("DELETE", "/api/v1/projects/:id/subscriptions/:subId"): ("Huỷ gói đăng ký dự án (Cancel Subscription)", "Huỷ mềm gói đăng ký dịch vụ thuộc dự án."),
+
+    # 24. Customer Orders & Tracking
+    ("GET", "/api/v1/orders/summary"): ("Tổng hợp 5 nhóm trạng thái đơn hàng (Order Status Summary)", "Đếm số đơn hàng của khách theo 5 nhóm: pending, scheduled, inFlight, delivered, toReview."),
+    ("GET", "/api/v1/orders/:id/tracking"): ("Theo dõi tiến độ bay mô phỏng trực tuyến (Live Order Tracking)", "Lấy tiến độ phần trăm, toạ độ tàu bay, dung lượng pin, tín hiệu kết nối và ETA từ phiên mô phỏng."),
+    ("POST", "/api/v1/missions/:id/review"): ("Gửi đánh giá dịch vụ sau bàn giao (Submit Order Review)", "Đánh giá 1–5 sao và nhận xét cho đơn hàng đã hoàn thành."),
+    ("PUT", "/api/v1/missions/:id/review"): ("Cập nhật đánh giá dịch vụ (Upsert Order Review)", "Tạo hoặc cập nhật đánh giá sao và nhận xét của khách hàng."),
+
+    # 25. Public Marketplace
+    ("GET", "/api/v1/public/marketplace/listings"): ("Danh mục dịch vụ trên chợ công khai (Browse Public Listings)", "Tìm kiếm, lọc dịch vụ theo danh mục, tỉnh/thành, từ khoá (ẩn danh tên đội bay, trả providerBadge)."),
+    ("GET", "/api/v1/public/marketplace/listings/:slug"): ("Chi tiết dịch vụ công khai (Get Listing Detail)", "Xem thông tin gói dịch vụ, sản phẩm bàn giao và huy hiệu đối tác xác minh."),
+
+    # 26. Fleet Partner Workspace (Operations)
+    ("GET", "/api/v1/marketplace/provider/me"): ("Hồ sơ đội bay đối tác của tôi (Get My Provider Profile)", "Xem hồ sơ năng lực và trạng thái thẩm định KYC của đội bay."),
+    ("POST", "/api/v1/marketplace/provider/me"): ("Đăng ký hồ sơ đối tác đội bay (Create Provider Profile)", "Gửi hồ sơ đăng ký trở thành đối tác vận hành bay trên nền tảng."),
+    ("PATCH", "/api/v1/marketplace/provider/me"): ("Cập nhật hồ sơ đội bay (Update Provider Profile)", "Chỉnh sửa thông tin liên hệ, bán kính phục vụ và tài khoản đối soát."),
+    ("GET", "/api/v1/marketplace/provider/listings"): ("Danh sách dịch vụ của đội bay (List My Listings)", "Quản lý danh sách tin đăng dịch vụ thuộc đội bay."),
+    ("POST", "/api/v1/marketplace/provider/listings"): ("Tạo tin đăng dịch vụ mới (Create Provider Listing)", "Tạo mới gói dịch vụ của đội bay."),
+    ("POST", "/api/v1/marketplace/provider/listings/from-template"): ("Tạo dịch vụ nhanh từ mẫu chuẩn (Create Listing From Template)", "Tạo gói dịch vụ nhanh dựa trên danh mục mẫu chuẩn của nền tảng."),
+    ("DELETE", "/api/v1/marketplace/provider/listings/:id"): ("Xoá mềm dịch vụ của đội bay (Delete Provider Listing)", "Ẩn và xoá mềm tin đăng dịch vụ của đội bay."),
+    ("GET", "/api/v1/marketplace/provider/fleet/uavs"): ("Danh sách tàu bay của đội (List Fleet UAVs)", "Lấy danh sách UAV thuộc đội bay kèm trạng thái sẵn sàng/đang bay/bảo trì."),
+    ("POST", "/api/v1/marketplace/provider/fleet/uavs"): ("Thêm UAV vào đội bay (Register Fleet UAV)", "Đăng ký thiết bị bay mới cho đội bay đối tác."),
+    ("PATCH", "/api/v1/marketplace/provider/fleet/uavs/:id"): ("Cập nhật trạng thái hoặc thông tin UAV (Update Fleet UAV)", "Cập nhật model, serial hoặc đổi trạng thái AVAILABLE/MAINTENANCE."),
+    ("DELETE", "/api/v1/marketplace/provider/fleet/uavs/:id"): ("Gỡ UAV khỏi đội bay (Remove Fleet UAV)", "Ngừng khai thác UAV khi không nằm trong đơn hàng đang hoạt động."),
+    ("GET", "/api/v1/marketplace/provider/pilots"): ("Danh sách kỹ sư điều khiển của đội (List Provider Pilots)", "Xem danh sách kỹ sư vận hành bay, chứng chỉ và tàu bay phụ trách."),
+    ("POST", "/api/v1/marketplace/provider/pilots"): ("Thêm kỹ sư điều khiển vào đội (Create Provider Pilot)", "Thêm kỹ sư điều khiển mới và liên kết tài khoản vận hành."),
+    ("PATCH", "/api/v1/marketplace/provider/pilots/:id"): ("Cập nhật kỹ sư điều khiển (Update Provider Pilot)", "Đổi trạng thái làm việc, chứng chỉ hoặc UAV gán cho kỹ sư."),
+    ("DELETE", "/api/v1/marketplace/provider/pilots/:id"): ("Xoá mềm kỹ sư điều khiển (Delete Provider Pilot)", "Gỡ kỹ sư điều khiển khỏi danh sách hoạt động của đội bay."),
+    ("GET", "/api/v1/marketplace/provider/orders"): ("Danh sách đơn hàng được giao cho đội bay (List Provider Orders)", "Xem các đơn hàng nền tảng đã điều phối về đội bay."),
+    ("POST", "/api/v1/marketplace/provider/orders/:missionId/respond"): ("Nhận hoặc từ chối đơn được giao (Respond To Dispatched Order)", "Xác nhận nhận đơn hoặc từ chối kèm lý do để trả đơn về hàng đợi điều phối."),
+    ("POST", "/api/v1/marketplace/provider/orders/:missionId/assign"): ("Phân công kỹ sư và UAV cho đơn hàng (Assign Pilot & UAV)", "Chỉ định kỹ sư điều khiển và tàu bay thuộc đội cho đơn hàng."),
+    ("POST", "/api/v1/marketplace/provider/orders/:missionId/start"): ("Bắt đầu chuyến bay mô phỏng cho đơn hàng (Start Order Simulation)", "Khởi động phiên bay mô phỏng gắn với đơn hàng và chuyển sang IN_PROGRESS."),
+    ("POST", "/api/v1/marketplace/provider/orders/:missionId/complete"): ("Hoàn thành chuyến bay và bàn giao dữ liệu (Complete Order)", "Đánh dấu hoàn tất bay để chuyển đơn sang bước bàn giao nghiệm thu."),
+
+    # 27. Admin Marketplace & Dispatch
+    ("GET", "/api/v1/admin/marketplace/dispatch"): ("Hàng đợi điều phối đơn hàng & Gợi ý đội bay (Get Dispatch Queue)", "Lấy danh sách đơn PENDING_DISPATCH kèm danh sách ứng viên đội bay xếp hạng theo khoảng cách, UAV rảnh và điểm đánh giá."),
+    ("POST", "/api/v1/admin/marketplace/dispatch/:missionId"): ("Điều phối thủ công đơn hàng cho đội bay (Manual Dispatch Order)", "Giao đơn hàng cho một đội bay xác minh cụ thể."),
+    ("POST", "/api/v1/admin/marketplace/dispatch/:missionId/auto"): ("Điều phối tự động đơn hàng theo gợi ý số 1 (Auto Dispatch Single Order)", "Tự động chọn đội bay điểm cao nhất cho đơn hàng."),
+    ("POST", "/api/v1/admin/marketplace/dispatch/auto"): ("Điều phối tự động hàng loạt (Batch Auto Dispatch)", "Tự động giao hàng loạt đơn trong hàng đợi PENDING_DISPATCH."),
+    ("GET", "/api/v1/admin/marketplace/stats"): ("Thống kê vận hành chợ dịch vụ (Marketplace Operations Stats)", "Số liệu đơn theo trạng thái, số đội bay xác minh, tin đăng và doanh số minh hoạ.")
 }
 
 def resolve_schema(schema_ref):
@@ -213,9 +263,9 @@ def get_field_smart_example(field_name, prop_spec):
         return prop_spec['enum'][0]
     
     if 'username' in name_lower:
-        return 'admin'
+        return '{{username}}'
     if 'password' in name_lower:
-        return 'Password123@'
+        return '{{password}}'
     if 'email' in name_lower:
         return 'admin@uav-platform.com'
     if 'phone' in name_lower:
@@ -239,7 +289,7 @@ def get_field_smart_example(field_name, prop_spec):
     if name_lower == 'serialnumber':
         return 'SN-DJI-M300-2026'
     if name_lower == 'model':
-        return 'Matrice 300 RTK'
+        return 'Matrice 350 Survey'
     if name_lower == 'manufacturer':
         return 'DJI Enterprise'
     if name_lower in ('code', 'permissioncode'):
@@ -329,56 +379,115 @@ def sample_from_schema(s, depth=0):
     return get_field_smart_example('sample', s)
 
 PATH_VAR_DEFAULTS = {
-    'id': '1',
-    'userId': '1',
-    'missionId': '1',
-    'stationId': '1',
-    'uavId': '1',
-    'mediaId': '1',
-    'detectionId': '1',
-    'equipmentId': '1',
+    'id': '{{sampleMissionId}}',
+    'subId': '{{sampleSubId}}',
+    'pilotId': '{{samplePilotId}}',
+    'slug': '{{sampleListingSlug}}',
+    'userId': '{{sampleUserId}}',
+    'missionId': '{{sampleMissionId}}',
+    'stationId': '{{sampleStationId}}',
+    'uavId': '{{sampleUavId}}',
+    'mediaId': '{{sampleMediaId}}',
+    'detectionId': '{{sampleDetectionId}}',
+    'equipmentId': '{{sampleEquipmentId}}',
     'code': 'UAV_SERVICES_READ',
     'role': 'ROLE_ADMIN',
-    'key': 'STORAGE_QUOTA',
-    'serviceId': '1'
+    'key': '{{sampleSettingKey}}',
+    'serviceId': '{{sampleServiceId}}'
+}
+
+def resolve_path_var_value(pm_path_str, pv_name):
+    if pv_name in ('id', 'userId') and any(x in pm_path_str for x in ['/users/', '/permissions/users/', '/billing/admin/quotas/']):
+        return '{{sampleUserId}}'
+    if pv_name == 'id':
+        if '/projects/' in pm_path_str:
+            return '{{sampleProjectId}}'
+        if '/uavs/' in pm_path_str:
+            return '{{sampleUavId}}'
+        if '/stations/' in pm_path_str:
+            return '{{sampleStationId}}'
+        if '/inventory/equipment/' in pm_path_str:
+            return '{{sampleEquipmentId}}'
+        if '/maintenance/schedules/' in pm_path_str:
+            return '{{sampleScheduleId}}'
+        if '/maintenance/orders/' in pm_path_str:
+            return '{{sampleRepairOrderId}}'
+        if '/billing/invoices/' in pm_path_str:
+            return '{{sampleInvoiceId}}'
+        if '/media/' in pm_path_str:
+            return '{{sampleMediaId}}'
+        if '/notifications/' in pm_path_str:
+            return '{{sampleNotificationId}}'
+        if '/webhooks/subscriptions/' in pm_path_str:
+            return '{{sampleWebhookId}}'
+        if '/marketplace/provider/listings/' in pm_path_str:
+            return '{{sampleListingId}}'
+        if '/marketplace/provider/pilots/' in pm_path_str:
+            return '{{samplePilotId}}'
+        if '/orders/' in pm_path_str or '/missions/' in pm_path_str:
+            return '{{sampleMissionId}}'
+    return PATH_VAR_DEFAULTS.get(pv_name, '{{sampleMissionId}}')
+
+LIST_VAR_EXTRACTION = {
+    '/api/v1/users': ('sampleUserId', 'id'),
+    '/api/v1/missions': ('sampleMissionId', 'id'),
+    '/api/v1/uav-services': ('sampleServiceId', 'id'),
+    '/api/v1/uavs': ('sampleUavId', 'id'),
+    '/api/v1/stations': ('sampleStationId', 'id'),
+    '/api/v1/inventory/equipment': ('sampleEquipmentId', 'id'),
+    '/api/v1/maintenance/schedules': ('sampleScheduleId', 'id'),
+    '/api/v1/maintenance/orders': ('sampleRepairOrderId', 'id'),
+    '/api/v1/billing/invoices': ('sampleInvoiceId', 'id'),
+    '/api/v1/media': ('sampleMediaId', 'id'),
+    '/api/v1/notifications': ('sampleNotificationId', 'id'),
+    '/api/v1/webhooks/subscriptions': ('sampleWebhookId', 'id'),
+    '/api/v1/settings': ('sampleSettingKey', 'configKey'),
+    '/api/v1/projects': ('sampleProjectId', 'id'),
+    '/api/v1/projects/:id/subscriptions': ('sampleSubId', 'id'),
+    '/api/v1/marketplace/provider/pilots': ('samplePilotId', 'id'),
+    '/api/v1/marketplace/provider/fleet/uavs': ('sampleUavId', 'id'),
+    '/api/v1/marketplace/provider/listings': ('sampleListingId', 'id'),
 }
 
 COLLECTION_PRE_REQUEST_SCRIPT = """// UAV PAS Platform - Automated Auto-Login Pre-request Script
-var baseUrl = pm.collectionVariables.get("baseUrl") || "http://localhost:8080";
-var token = pm.collectionVariables.get("token");
+var baseUrl = pm.variables.get("baseUrl") || "http://localhost:8080";
+var token = pm.variables.get("token");
 var urlStr = pm.request.url ? pm.request.url.toString() : "";
-var isAuth = urlStr.indexOf("/auth/login") !== -1 || urlStr.indexOf("/auth/register") !== -1;
+var isAuth = urlStr.indexOf("/auth/login") !== -1 || urlStr.indexOf("/auth/register") !== -1 || urlStr.indexOf("/public/") !== -1;
+var hasExplicitAuthHeader = pm.request.headers.has("Authorization");
 
-if (!token && !isAuth) {
-    var username = pm.collectionVariables.get("defaultUsername") || "admin";
-    var password = pm.collectionVariables.get("defaultPassword") || "Password123@";
+if (!hasExplicitAuthHeader && !token && !isAuth) {
+    var username = pm.variables.get("username") || pm.variables.get("defaultUsername") || "demo_admin";
+    var password = pm.variables.get("password") || pm.variables.get("defaultPassword") || "";
     
-    pm.sendRequest({
-        url: baseUrl + "/api/v1/auth/login",
-        method: "POST",
-        header: { "Content-Type": "application/json" },
-        body: {
-            mode: "raw",
-            raw: JSON.stringify({
-                usernameOrEmail: username,
-                password: password
-            })
-        }
-    }, function (err, res) {
-        if (!err && res.code === 200) {
-            var data = res.json();
-            var newToken = data.accessToken || (data.data && data.data.accessToken);
-            var newRefreshToken = data.refreshToken || (data.data && data.data.refreshToken);
-            if (newToken) {
-                pm.collectionVariables.set("token", newToken);
-                pm.request.headers.upsert({ key: "Authorization", value: "Bearer " + newToken });
+    if (username && password) {
+        pm.sendRequest({
+            url: baseUrl + "/api/v1/auth/login",
+            method: "POST",
+            header: { "Content-Type": "application/json" },
+            body: {
+                mode: "raw",
+                raw: JSON.stringify({
+                    usernameOrEmail: username,
+                    password: password
+                })
             }
-            if (newRefreshToken) {
-                pm.collectionVariables.set("refreshToken", newRefreshToken);
+        }, function (err, res) {
+            if (!err && res.code === 200) {
+                var data = res.json();
+                var newToken = data.accessToken || (data.data && data.data.accessToken);
+                var newRefreshToken = data.refreshToken || (data.data && data.data.refreshToken);
+                if (newToken) {
+                    pm.collectionVariables.set("token", newToken);
+                    pm.request.headers.upsert({ key: "Authorization", value: "Bearer " + newToken });
+                }
+                if (newRefreshToken) {
+                    pm.collectionVariables.set("refreshToken", newRefreshToken);
+                }
             }
-        }
-    });
-} else if (token && !isAuth) {
+        });
+    }
+} else if (!hasExplicitAuthHeader && token && !isAuth) {
     pm.request.headers.upsert({ key: "Authorization", value: "Bearer " + token });
 }
 """
@@ -387,17 +496,16 @@ collection = {
     'info': {
         'name': 'UAV PAS Platform API - Complete Test Suite',
         'description': '# UAV PAS Platform API Documentation & Postman Collection\n\n'
-                       'Tập hợp đầy đủ **130 API endpoints** với Sample Request Body chi tiết, Query Params, Path Variables mặc định, và **Cơ chế Tự Động Đăng Nhập (Auto-Login)**.\n\n'
-                       '### 🔑 Tài khoản Quản trị viên mặc định:\n'
-                       '- **Username:** `admin`\n'
-                       '- **Password:** `Password123@`\n'
-                       '- **Role:** `ROLE_ADMIN`\n\n'
+                       'Tập hợp đầy đủ các API endpoints với Sample Request Body chi tiết, Query Params, Path Variables mặc định, và **Cơ chế Tự Động Đăng Nhập (Auto-Login)**.\n\n'
+                       '### 🔑 Biến tài khoản kiểm thử (`app.dev-seed.enabled=true`):\n'
+                       '- **Biến đăng nhập:** `{{username}}` / `{{password}}`\n'
+                       '- **Tài khoản dev seed:** `demo_admin` (ROLE_ADMIN), `demo_fleet` (Đội bay xác minh), `demo_customer` (Khách hàng dự án)\n\n'
                        '### 🚀 Các tính năng tự động tích hợp:\n'
-                       '1. **Auto-Login:** Pre-request Script tự động gọi API login để cấp token mới nếu chưa có hoặc hết hạn.\n'
-                       '2. **Auto-Save Token:** Khi gọi request Login thủ công, token và refreshToken mới sẽ tự động lưu vào biến `{{token}}` và `{{refreshToken}}`.\n'
-                       '3. **Full Sample Body:** Tất cả ~60+ POST/PUT/PATCH đều đã được điền sẵn JSON body mẫu hợp lệ, không bị rỗng `{}`.\n'
-                       '4. **Default Path Variables:** Tất cả `:id`, `:userId`, `:missionId`... đều đã được gán sẵn giá trị mặc định `1`.\n'
-                       '5. **Test Scripts:** Tự động kiểm tra HTTP status 2xx và thời gian phản hồi cho từng request.\n',
+                       '1. **Auto-Login:** Pre-request Script tự động gọi API login bằng `{{username}}` / `{{password}}` để cấp token mới nếu chưa có.\n'
+                       '2. **Auto-Save Token:** Khi gọi request Login, token và refreshToken mới sẽ tự động lưu vào biến `{{token}}` và `{{refreshToken}}`.\n'
+                       '3. **Full Sample Body:** Tất cả POST/PUT/PATCH đều điền sẵn JSON body mẫu hợp lệ.\n'
+                       '4. **Default Path Variables:** Tất cả `:id`, `:subId`, `:missionId`... đều gán sẵn giá trị mặc định.\n'
+                       '5. **Test Scripts:** Tự động kiểm tra HTTP status và thời gian phản hồi cho từng request.\n',
         'schema': 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'
     },
     'event': [
@@ -419,8 +527,44 @@ collection = {
         {'key': 'baseUrl', 'value': 'http://localhost:8080', 'type': 'string'},
         {'key': 'token', 'value': CURRENT_ADMIN_TOKEN, 'type': 'string'},
         {'key': 'refreshToken', 'value': CURRENT_REFRESH_TOKEN, 'type': 'string'},
-        {'key': 'defaultUsername', 'value': 'admin', 'type': 'string'},
-        {'key': 'defaultPassword', 'value': 'Password123@', 'type': 'string'}
+        {'key': 'username', 'value': 'demo_admin', 'type': 'string'},
+        {'key': 'password', 'value': '', 'type': 'string'},
+        {'key': 'defaultUsername', 'value': 'demo_admin', 'type': 'string'},
+        {'key': 'defaultPassword', 'value': '', 'type': 'string'},
+        {'key': 'customerUsername', 'value': 'demo_customer', 'type': 'string'},
+        {'key': 'fleetUsername', 'value': 'demo_fleet', 'type': 'string'},
+        {'key': 'adminUsername', 'value': 'demo_admin', 'type': 'string'},
+        {'key': 'customerToken', 'value': '', 'type': 'string'},
+        {'key': 'fleetToken', 'value': '', 'type': 'string'},
+        {'key': 'adminToken', 'value': '', 'type': 'string'},
+        {'key': 'sampleUserId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleMissionId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleServiceId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleUavId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleStationId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleEquipmentId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleScheduleId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleRepairOrderId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleInvoiceId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleMediaId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleNotificationId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleWebhookId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleDetectionId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleSettingKey', 'value': 'marketplace.platform_fee_rate', 'type': 'string'},
+        {'key': 'sampleProjectId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleSubId', 'value': '1', 'type': 'string'},
+        {'key': 'samplePilotId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleListingId', 'value': '1', 'type': 'string'},
+        {'key': 'sampleListingSlug', 'value': 'khao-sat-ban-do-2d-du-an-minh-hoa', 'type': 'string'},
+        {'key': 'flowListingId', 'value': '', 'type': 'string'},
+        {'key': 'flowListingSlug', 'value': '', 'type': 'string'},
+        {'key': 'flowProjectId', 'value': '', 'type': 'string'},
+        {'key': 'flowSubId', 'value': '', 'type': 'string'},
+        {'key': 'flowMissionId', 'value': '', 'type': 'string'},
+        {'key': 'flowMissionCancelId', 'value': '', 'type': 'string'},
+        {'key': 'flowPilotId', 'value': '', 'type': 'string'},
+        {'key': 'flowUavId', 'value': '', 'type': 'string'},
+        {'key': 'flowStartDate', 'value': '2026-11-25', 'type': 'string'}
     ],
     'item': []
 }
@@ -448,7 +592,12 @@ TAG_NAMES = {
     'dashboard-controller': '19. Executive Dashboard',
     'report-controller': '20. Operational Reports',
     'audit-log-controller': '21. System Audit Logs',
-    'system-config-controller': '22. System Configurations'
+    'system-config-controller': '22. System Configurations',
+    'project-controller': '23. Customer Projects & Subscriptions',
+    'order-controller': '24. Customer Orders & Live Tracking',
+    'marketplace-public-controller': '25. Public Service Marketplace',
+    'marketplace-provider-controller': '26. Fleet Partner Workspace',
+    'marketplace-admin-controller': '27. Admin Marketplace & Dispatch'
 }
 
 folders = {}
@@ -484,13 +633,11 @@ for path_str, methods in paths.items():
         
         path_var_names = re.findall(r':([a-zA-Z0-9_]+)', pm_path_str)
         for pv_name in path_var_names:
-            val = PATH_VAR_DEFAULTS.get(pv_name, '1')
-            if pv_name in ('id', 'userId') and any(x in pm_path_str for x in ['/users/', '/permissions/users/', '/billing/admin/quotas/']):
-                val = '2'
+            val = resolve_path_var_value(pm_path_str, pv_name)
             url_obj['variable'].append({
                 'key': pv_name,
                 'value': val,
-                'description': f'Tham số đường dẫn {pv_name}'
+                'description': f'Tham số đường dẫn {pv_name} (lấy động từ danh sách trước đó)'
             })
             
         for param in op.get('parameters', []):
@@ -530,8 +677,8 @@ for path_str, methods in paths.items():
                 # Special overrides
                 if path_str in ('/api/v1/auth/login', '/api/v1/auth/login-json'):
                     sample_body = {
-                        "usernameOrEmail": "admin",
-                        "password": "Password123@"
+                        "usernameOrEmail": "{{username}}",
+                        "password": "{{password}}"
                     }
                 elif path_str == '/api/v1/auth/refresh':
                     sample_body = {
@@ -622,6 +769,28 @@ for path_str, methods in paths.items():
                 'pm.collectionVariables.set("token", "");',
                 'pm.collectionVariables.unset("token");',
             ]
+        elif m_upper == 'GET' and pm_path_str == '/api/v1/public/marketplace/listings':
+            test_script_lines.extend([
+                'if (pm.response.code === 200) {',
+                '    var body = pm.response.json();',
+                '    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);',
+                '    if (items.length > 0) {',
+                '        if (items[0].id !== undefined) pm.collectionVariables.set("sampleListingId", String(items[0].id));',
+                '        if (items[0].slug) pm.collectionVariables.set("sampleListingSlug", String(items[0].slug));',
+                '    }',
+                '}'
+            ])
+        elif m_upper == 'GET' and pm_path_str in LIST_VAR_EXTRACTION:
+            var_name, field_key = LIST_VAR_EXTRACTION[pm_path_str]
+            test_script_lines.extend([
+                'if (pm.response.code === 200) {',
+                '    var body = pm.response.json();',
+                '    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);',
+                f'    if (items.length > 0 && items[0] && items[0]["{field_key}"] !== undefined && items[0]["{field_key}"] !== null) {{',
+                f'        pm.collectionVariables.set("{var_name}", String(items[0]["{field_key}"]));',
+                '    }',
+                '}'
+            ])
             
         req_item = {
             'name': req_name,
@@ -648,7 +817,7 @@ for path_str, methods in paths.items():
         if body_obj:
             req_item['request']['body'] = body_obj
             
-        if path_str in ('/api/v1/auth/login', '/api/v1/auth/login-json', '/api/v1/auth/register', '/api/v1/billing/webhook/payment-ipn'):
+        if path_str in ('/api/v1/auth/login', '/api/v1/auth/login-json', '/api/v1/auth/register', '/api/v1/billing/webhook/payment-ipn') or path_str.startswith('/api/v1/public/'):
             req_item['request']['auth'] = {'type': 'noauth'}
 
         folders[folder_name]['item'].append(req_item)
@@ -660,7 +829,7 @@ for folder_key in sorted(folders.keys()):
         1 if 'refresh' in x['name'].lower() else
         2 if 'register' in x['name'].lower() else
         3 if 'me' in x['name'].lower() else
-        4 if x['request']['method'] == 'GET' and 'id' not in x['request']['url']['raw'] else
+        4 if x['request']['method'] == 'GET' and not x['request']['url'].get('variable') else
         5 if x['request']['method'] == 'GET' else
         6 if x['request']['method'] == 'POST' and 'tạo' in x['name'].lower() else
         7 if x['request']['method'] == 'POST' else
@@ -672,6 +841,430 @@ for folder_key in sorted(folders.keys()):
         item['name'] = f"{idx:02d}. {item['name']}"
         
     collection['item'].append(f_obj)
+
+def make_flow_item(name, method, raw_path, token_var=None, body=None, test_lines=None, prereq_lines=None):
+    headers = []
+    if token_var:
+        headers.append({'key': 'Authorization', 'value': f'Bearer {{{{{token_var}}}}}', 'type': 'text'})
+    if body is not None:
+        headers.append({'key': 'Content-Type', 'value': 'application/json', 'type': 'text'})
+    segs = [seg for seg in raw_path.strip('/').split('/') if seg]
+    req = {
+        'method': method,
+        'header': headers,
+        'url': {
+            'raw': '{{baseUrl}}' + raw_path,
+            'host': ['{{baseUrl}}'],
+            'path': segs
+        },
+        'auth': {'type': 'noauth'}
+    }
+    if body is not None:
+        req['body'] = {
+            'mode': 'raw',
+            'raw': json.dumps(body, indent=2, ensure_ascii=False),
+            'options': {'raw': {'language': 'json'}}
+        }
+    events = []
+    if prereq_lines:
+        events.append({'listen': 'prerequest', 'script': {'type': 'text/javascript', 'exec': prereq_lines}})
+    events.append({
+        'listen': 'test',
+        'script': {
+            'type': 'text/javascript',
+            'exec': test_lines or [
+                'pm.test("HTTP 2xx OK", function () {',
+                '    pm.expect(pm.response.code).to.be.within(200, 299);',
+                '});'
+            ]
+        }
+    })
+    return {'name': name, 'request': req, 'event': events, 'response': []}
+
+order_flow_folder = {
+    'name': '28. Luồng đặt hàng (E2E Order Flow)',
+    'description': (
+        'Chuỗi kiểm thử tự động xuyên suốt luồng đặt hàng chợ dịch vụ UAV trên DB trắng có dev seed '
+        '(`demo_customer`, `demo_admin`, `demo_fleet` dùng chung `{{password}}`). '
+        'Tất cả ID đều lấy động từ phản hồi bước trước, không dùng `id=1` cố định.'
+    ),
+    'item': [
+        make_flow_item(
+            '01. Đăng nhập Khách hàng (demo_customer)',
+            'POST',
+            '/api/v1/auth/login',
+            body={'usernameOrEmail': '{{customerUsername}}', 'password': '{{password}}'},
+            prereq_lines=[
+                'var d = new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10);',
+                'pm.collectionVariables.set("flowStartDate", d);'
+            ],
+            test_lines=[
+                'pm.test("Customer login 200", function () { pm.response.to.have.status(200); });',
+                'var data = pm.response.json();',
+                'pm.collectionVariables.set("customerToken", data.accessToken || (data.data && data.data.accessToken));'
+            ]
+        ),
+        make_flow_item(
+            '02. Lấy dịch vụ công khai đầu tiên trên chợ',
+            'GET',
+            '/api/v1/public/marketplace/listings',
+            test_lines=[
+                'pm.test("Public listings 200", function () { pm.response.to.have.status(200); });',
+                'var items = pm.response.json().content || [];',
+                'pm.expect(items.length).to.be.above(0);',
+                'pm.collectionVariables.set("flowListingId", String(items[0].id));',
+                'pm.collectionVariables.set("flowListingSlug", String(items[0].slug));',
+                'pm.test("Fleet identity is anonymized for customer", function () {',
+                '    pm.expect(items[0].providerDisplayName).to.be.null;',
+                '    pm.expect(items[0].providerBadge).to.be.an("object");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '03. Khách tạo Dự án mới',
+            'POST',
+            '/api/v1/projects',
+            token_var='customerToken',
+            body={
+                'name': 'Dự án Kiểm thử Tự động Postman',
+                'province': 'TP. Hồ Chí Minh',
+                'areaGeoJson': '{"type":"Polygon","coordinates":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}',
+                'note': 'Khởi tạo từ chuỗi Luồng đặt hàng Postman'
+            },
+            test_lines=[
+                'pm.test("Project created 201", function () { pm.response.to.have.status(201); });',
+                'var prj = pm.response.json();',
+                'pm.collectionVariables.set("flowProjectId", String(prj.id));'
+            ]
+        ),
+        make_flow_item(
+            '04. Khách cập nhật ghi chú Dự án',
+            'PATCH',
+            '/api/v1/projects/{{flowProjectId}}',
+            token_var='customerToken',
+            body={'note': 'Đã xác nhận ranh giới bay khảo sát — minh hoạ'},
+            test_lines=[
+                'pm.test("Project updated 200", function () { pm.response.to.have.status(200); });'
+            ]
+        ),
+        make_flow_item(
+            '05. Khách đăng ký Dịch vụ cho Dự án (tạo đơn đầu tiên)',
+            'POST',
+            '/api/v1/projects/{{flowProjectId}}/subscriptions',
+            token_var='customerToken',
+            body={
+                'listingId': '{{flowListingId}}',
+                'scheduleType': 'WEEKLY',
+                'startDate': '{{flowStartDate}}',
+                'units': 10,
+                'note': 'Đăng ký bay định kỳ hàng tuần'
+            },
+            prereq_lines=[
+                'var lid = Number(pm.variables.get("flowListingId"));',
+                'var sdate = pm.variables.get("flowStartDate");',
+                'pm.request.body.raw = JSON.stringify({',
+                '    listingId: lid,',
+                '    scheduleType: "WEEKLY",',
+                '    startDate: sdate,',
+                '    units: 10,',
+                '    note: "Đăng ký bay định kỳ hàng tuần — minh hoạ"',
+                '});'
+            ],
+            test_lines=[
+                'pm.test("Subscription & first order created 201", function () { pm.response.to.have.status(201); });',
+                'var sub = pm.response.json();',
+                'pm.collectionVariables.set("flowSubId", String(sub.id));',
+                'pm.collectionVariables.set("flowMissionId", String(sub.firstMissionId));'
+            ]
+        ),
+        make_flow_item(
+            '06. Khách kiểm tra Thanh 5 trạng thái đơn (/orders/summary)',
+            'GET',
+            '/api/v1/orders/summary',
+            token_var='customerToken',
+            test_lines=[
+                'pm.test("Order summary 200 & pending >= 1", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().pending).to.be.at.least(1);',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '07. Đăng nhập Quản trị viên (demo_admin)',
+            'POST',
+            '/api/v1/auth/login',
+            body={'usernameOrEmail': '{{adminUsername}}', 'password': '{{password}}'},
+            test_lines=[
+                'pm.test("Admin login 200", function () { pm.response.to.have.status(200); });',
+                'var data = pm.response.json();',
+                'pm.collectionVariables.set("adminToken", data.accessToken || (data.data && data.data.accessToken));'
+            ]
+        ),
+        make_flow_item(
+            '08. Admin kiểm tra Hàng đợi điều phối PENDING_DISPATCH',
+            'GET',
+            '/api/v1/admin/marketplace/dispatch',
+            token_var='adminToken',
+            test_lines=[
+                'pm.test("Dispatch queue 200", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().content.length).to.be.at.least(1);',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '09. Admin giao đơn cho Đội bay demo_fleet',
+            'POST',
+            '/api/v1/admin/marketplace/dispatch/{{flowMissionId}}',
+            token_var='adminToken',
+            body={'providerId': 1, 'note': 'Giao cho đội bay kiểm thử tự động'},
+            prereq_lines=[
+                'var baseUrl = pm.variables.get("baseUrl") || "http://localhost:8080";',
+                'var adminTok = pm.variables.get("adminToken");',
+                'pm.sendRequest({',
+                '    url: baseUrl + "/api/v1/admin/marketplace/providers?keyword=doi-bay-mien-nam",',
+                '    method: "GET",',
+                '    header: { "Authorization": "Bearer " + adminTok }',
+                '}, function (err, res) {',
+                '    if (!err && res.code === 200) {',
+                '        var list = res.json().content || [];',
+                '        if (list.length > 0) {',
+                '            pm.collectionVariables.set("flowProviderId", String(list[0].id));',
+                '            pm.request.body.raw = JSON.stringify({ providerId: list[0].id, note: "Giao đội bay miền Nam — minh hoạ" });',
+                '        }',
+                '    }',
+                '});'
+            ],
+            test_lines=[
+                'pm.test("Dispatched to fleet 200", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().providerResponseStatus).to.eql("PENDING_PROVIDER");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '10. Đăng nhập Chủ đội bay (demo_fleet)',
+            'POST',
+            '/api/v1/auth/login',
+            body={'usernameOrEmail': '{{fleetUsername}}', 'password': '{{password}}'},
+            test_lines=[
+                'pm.test("Fleet login 200", function () { pm.response.to.have.status(200); });',
+                'var data = pm.response.json();',
+                'pm.collectionVariables.set("fleetToken", data.accessToken || (data.data && data.data.accessToken));'
+            ]
+        ),
+        make_flow_item(
+            '11. Đội bay lấy danh sách UAV & Kỹ sư rảnh',
+            'GET',
+            '/api/v1/marketplace/provider/fleet/uavs',
+            token_var='fleetToken',
+            test_lines=[
+                'pm.test("Fleet UAVs 200", function () { pm.response.to.have.status(200); });',
+                'var uavs = pm.response.json() || [];',
+                'var avail = uavs.filter(function (u) { return u.status === "AVAILABLE"; });',
+                'var chosen = avail.length > 0 ? avail[0] : uavs[0];',
+                'pm.collectionVariables.set("flowUavId", String(chosen.id));'
+            ]
+        ),
+        make_flow_item(
+            '12. Đội bay lấy Kỹ sư điều khiển đầu tiên',
+            'GET',
+            '/api/v1/marketplace/provider/pilots',
+            token_var='fleetToken',
+            test_lines=[
+                'pm.test("Fleet pilots 200", function () { pm.response.to.have.status(200); });',
+                'var pilots = pm.response.json() || [];',
+                'if (pilots.length > 0) pm.collectionVariables.set("flowPilotId", String(pilots[0].id));',
+                'if (pilots.length > 1) pm.collectionVariables.set("flowSecondPilotId", String(pilots[1].id));'
+            ]
+        ),
+        make_flow_item(
+            '13. Đội bay xác nhận nhận đơn',
+            'POST',
+            '/api/v1/marketplace/provider/orders/{{flowMissionId}}/respond',
+            token_var='fleetToken',
+            body={'accept': True, 'reason': 'Đội bay tiếp nhận lịch bay dự án'},
+            test_lines=[
+                'pm.test("Fleet accepted order 200", function () { pm.response.to.have.status(200); });'
+            ]
+        ),
+        make_flow_item(
+            '14. Đội bay phân công Kỹ sư & UAV',
+            'POST',
+            '/api/v1/marketplace/provider/orders/{{flowMissionId}}/assign',
+            token_var='fleetToken',
+            body={'pilotId': 1, 'uavId': 1, 'note': 'Phân công tổ bay khảo sát'},
+            prereq_lines=[
+                'var pid = Number(pm.variables.get("flowPilotId"));',
+                'var uid = Number(pm.variables.get("flowUavId"));',
+                'pm.request.body.raw = JSON.stringify({ pilotId: pid || null, uavId: uid, note: "Phân công tổ bay khảo sát — minh hoạ" });'
+            ],
+            test_lines=[
+                'pm.test("Assigned pilot & UAV 200", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().statusGroup).to.eql("SCHEDULED");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '14a. Khách tạo đơn thứ hai trùng khung giờ để kiểm thử tranh chấp UAV',
+            'POST',
+            '/api/v1/projects/{{flowProjectId}}/subscriptions',
+            token_var='customerToken',
+            body={
+                'listingId': '{{flowListingId}}',
+                'scheduleType': 'ONCE',
+                'startDate': '{{flowStartDate}}',
+                'units': 5,
+                'note': 'Đơn trùng khung giờ kiểm thử chặn gán trùng UAV'
+            },
+            prereq_lines=[
+                'var lid = Number(pm.variables.get("flowListingId"));',
+                'var sdate = pm.variables.get("flowStartDate");',
+                'pm.request.body.raw = JSON.stringify({',
+                '    listingId: lid,',
+                '    scheduleType: "ONCE",',
+                '    startDate: sdate,',
+                '    units: 5,',
+                '    note: "Đơn trùng khung giờ kiểm thử chặn gán trùng UAV — minh hoạ"',
+                '});'
+            ],
+            test_lines=[
+                'pm.test("Overlapping second order created 201", function () { pm.response.to.have.status(201); });',
+                'var sub2 = pm.response.json();',
+                'pm.collectionVariables.set("flowConflictSubId", String(sub2.id));',
+                'pm.collectionVariables.set("flowConflictMissionId", String(sub2.firstMissionId));'
+            ]
+        ),
+        make_flow_item(
+            '14b. Admin giao đơn trùng giờ cho cùng Đội bay demo_fleet',
+            'POST',
+            '/api/v1/admin/marketplace/dispatch/{{flowConflictMissionId}}',
+            token_var='adminToken',
+            body={'providerId': 1, 'note': 'Giao đơn trùng giờ kiểm thử tranh chấp UAV'},
+            prereq_lines=[
+                'var pid = Number(pm.variables.get("flowProviderId"));',
+                'if (pid) {',
+                '    pm.request.body.raw = JSON.stringify({ providerId: pid, note: "Giao đơn trùng giờ kiểm thử tranh chấp UAV — minh hoạ" });',
+                '}'
+            ],
+            test_lines=[
+                'pm.test("Overlapping order dispatched to same fleet 200", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().providerResponseStatus).to.eql("PENDING_PROVIDER");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '14c. Đội bay phân cùng UAV cho đơn trùng giờ → chặn 409 UAV_TIME_CONFLICT',
+            'POST',
+            '/api/v1/marketplace/provider/orders/{{flowConflictMissionId}}/assign',
+            token_var='fleetToken',
+            body={'pilotId': 2, 'uavId': 1, 'note': 'Thử phân cùng UAV trùng giờ'},
+            prereq_lines=[
+                'var uid = Number(pm.variables.get("flowUavId"));',
+                'var pid2 = Number(pm.variables.get("flowSecondPilotId")) || Number(pm.variables.get("flowPilotId"));',
+                'pm.request.body.raw = JSON.stringify({ pilotId: pid2 || null, uavId: uid, note: "Thử phân cùng UAV trùng khung giờ — minh hoạ" });'
+            ],
+            test_lines=[
+                'pm.test("Double-booked UAV rejected with 409 UAV_TIME_CONFLICT", function () {',
+                '    pm.response.to.have.status(409);',
+                '    var err = pm.response.json();',
+                '    pm.expect(err.code).to.eql("UAV_TIME_CONFLICT");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '14d. Khách huỷ đơn trùng giờ để dọn sạch dự án kiểm thử',
+            'POST',
+            '/api/v1/missions/{{flowConflictMissionId}}/cancel',
+            token_var='customerToken',
+            body={'reason': 'Huỷ đơn phụ sau khi xác minh 409 UAV_TIME_CONFLICT'},
+            test_lines=[
+                'pm.test("Overlapping test order cancelled 200", function () { pm.response.to.have.status(200); });'
+            ]
+        ),
+        make_flow_item(
+            '15. Đội bay bắt đầu chuyến bay mô phỏng',
+            'POST',
+            '/api/v1/marketplace/provider/orders/{{flowMissionId}}/start',
+            token_var='fleetToken',
+            test_lines=[
+                'pm.test("Order simulation started 200", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(pm.response.json().statusGroup).to.eql("IN_FLIGHT");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '16. Khách theo dõi tiến độ bay mô phỏng trực tuyến',
+            'GET',
+            '/api/v1/orders/{{flowMissionId}}/tracking',
+            token_var='customerToken',
+            test_lines=[
+                'pm.test("Live tracking 200 with telemetry", function () {',
+                '    pm.response.to.have.status(200);',
+                '    var trk = pm.response.json();',
+                '    pm.expect(trk.statusGroup).to.eql("IN_FLIGHT");',
+                '    pm.expect(trk.position).to.be.an("object");',
+                '    pm.expect(trk.battery).to.be.a("number");',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '17. Đội bay hoàn thành chuyến bay & bàn giao dữ liệu',
+            'POST',
+            '/api/v1/marketplace/provider/orders/{{flowMissionId}}/complete',
+            token_var='fleetToken',
+            body={
+                'completionNote': 'Bàn giao bình đồ trực giao GeoTIFF — minh hoạ',
+                'equipmentCondition': 'Tàu bay và cảm biến hoạt động bình thường'
+            },
+            test_lines=[
+                'pm.test("Order completed 200", function () {',
+                '    pm.response.to.have.status(200);',
+                '    pm.expect(["DELIVERED", "TO_REVIEW"]).to.include(pm.response.json().statusGroup);',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '18. Khách đánh giá 5 sao & kiểm tra đồng bộ rating',
+            'PUT',
+            '/api/v1/missions/{{flowMissionId}}/review',
+            token_var='customerToken',
+            body={'rating': 5, 'comment': 'Dữ liệu bàn giao rõ nét, đúng tiến độ dự án.'},
+            test_lines=[
+                'pm.test("Customer review saved 200", function () { pm.response.to.have.status(200); });'
+            ]
+        ),
+        make_flow_item(
+            '19. Kiểm tra providerBadge cập nhật điểm đánh giá trên chợ',
+            'GET',
+            '/api/v1/public/marketplace/listings/{{flowListingSlug}}',
+            test_lines=[
+                'pm.test("Listing rating updated & fleet still anonymized", function () {',
+                '    pm.response.to.have.status(200);',
+                '    var d = pm.response.json();',
+                '    var listing = d.listing || d;',
+                '    pm.expect(listing.providerDisplayName == null).to.be.true;',
+                '    pm.expect(listing.providerSlug == null).to.be.true;',
+                '    pm.expect(listing.providerBadge.reviewCount).to.be.at.least(1);',
+                '});'
+            ]
+        ),
+        make_flow_item(
+            '20. Khách xoá mềm Dự án kiểm thử sau khi đơn kết thúc',
+            'DELETE',
+            '/api/v1/projects/{{flowProjectId}}',
+            token_var='customerToken',
+            test_lines=[
+                'pm.test("Soft-deleted completed test project 204", function () { pm.response.to.have.status(204); });'
+            ]
+        )
+    ]
+}
+
+collection['item'].append(order_flow_folder)
 
 with open(POSTMAN_PATH, 'w', encoding='utf-8') as f:
     json.dump(collection, f, indent=2, ensure_ascii=False)

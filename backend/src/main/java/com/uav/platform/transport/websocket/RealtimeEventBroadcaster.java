@@ -285,6 +285,43 @@ public class RealtimeEventBroadcaster {
                 });
     }
 
+    /**
+     * Broadcasts an order/mission lifecycle transition after DB commit strictly to the customer
+     * owner, assigned fleet/pilot user, and staff holding marketplace moderation rights.
+     */
+    public void publishOrderUpdated(
+            Long missionId,
+            String status,
+            String statusGroup,
+            Long customerUserId,
+            Long providerUserId,
+            Long operatorUserId) {
+        if (missionId == null) {
+            return;
+        }
+        runAfterCommit(
+                () -> {
+                    Map<String, Object> frame = new LinkedHashMap<>();
+                    frame.put("type", "ORDER_UPDATED");
+                    frame.put("timestamp", Instant.now().toString());
+                    frame.put("missionId", missionId);
+                    frame.put("status", status);
+                    frame.put("statusGroup", statusGroup);
+                    broadcastMatching(
+                            slot -> {
+                                Long uid = slot.principal().userId();
+                                if (uid == null) {
+                                    return false;
+                                }
+                                return uid.equals(customerUserId)
+                                        || uid.equals(providerUserId)
+                                        || uid.equals(operatorUserId)
+                                        || slot.principal().canAdminMarketplace();
+                            },
+                            frame);
+                });
+    }
+
     private void runAfterCommit(Runnable action) {
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             TransactionSynchronizationManager.registerSynchronization(

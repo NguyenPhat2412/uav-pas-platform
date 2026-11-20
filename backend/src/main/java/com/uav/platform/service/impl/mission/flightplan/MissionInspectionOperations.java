@@ -27,6 +27,15 @@ public final class MissionInspectionOperations {
             List<MissionMediaResponse> mediaItems,
             MissionPreflightLog preflight,
             MissionReview review) {
+        return buildReport(mission, mediaItems, preflight, review, false);
+    }
+
+    public static MissionInspectionReportResponse buildReport(
+            Mission mission,
+            List<MissionMediaResponse> mediaItems,
+            MissionPreflightLog preflight,
+            MissionReview review,
+            boolean anonymizeFleetForCustomer) {
         FlightPlanResponse plan = FlightPlanOperations.read(mission.getFlightPlan());
         double baseLat =
                 mission.getLatitude() != null
@@ -74,13 +83,13 @@ public final class MissionInspectionOperations {
             String fileUrl =
                     assetId != null
                             ? "/api/v1/media/" + assetId + "/download-url"
-                            : "/images/uav-blueprint/uav-350-rtk-isometric.jpg";
+                            : "/images/services/area-inspection.webp";
             String phase = (i % 2 == 0) ? "BEFORE" : "AFTER";
 
             pins.add(
                     new DeliverableGeoPin(
                             assetId != null ? assetId : (long) (i + 1),
-                            fileName,
+                            fileName.replace("RTK", "GNSS"),
                             mediaType,
                             fileUrl,
                             Math.round(wp[0] * 1_000_000.0) / 1_000_000.0,
@@ -99,12 +108,12 @@ public final class MissionInspectionOperations {
                 String phase = (i % 2 == 0) ? "BEFORE" : "AFTER";
                 String img =
                         (i % 2 == 0)
-                                ? "/images/uav-blueprint/uav-350-rtk-isometric.jpg"
-                                : "/images/uav-blueprint/uav-350-rtk-turnaround.jpg";
+                                ? "/images/services/area-inspection.webp"
+                                : "/images/services/data-collection.webp";
                 pins.add(
                         new DeliverableGeoPin(
                                 (long) (i + 1),
-                                "WP-" + (i + 1) + "-RTK-Survey.jpg",
+                                "WP-" + (i + 1) + "-GNSS-Survey.jpg",
                                 "IMAGE",
                                 img,
                                 Math.round(wp[0] * 1_000_000.0) / 1_000_000.0,
@@ -119,9 +128,27 @@ public final class MissionInspectionOperations {
         }
 
         Uav uav = mission.getUav();
-        String uavSerial = uav != null ? uav.getSerialNumber() : "UAV-350-RTK";
-        String uavModel = uav != null ? uav.getModel() : "Enterprise RTK Quadcopter";
-        String airframeClass = UavHealthOperations.classifyAirframe(uavModel, uavSerial);
+        String rawUavSerial = uav != null ? uav.getSerialNumber() : "UAV-350-GNSS";
+        String rawUavModel =
+                uav != null
+                        ? uav.getModel().replace("RTK", "GNSS")
+                        : "Tàu bay khảo sát GNSS đa cánh quạt";
+        String airframeClass =
+                UavHealthOperations.classifyAirframe(rawUavModel, rawUavSerial)
+                        .replace("_RTK", "_GNSS");
+        String stationName =
+                anonymizeFleetForCustomer
+                        ? null
+                        : (mission.getStation() != null ? mission.getStation().getName() : null);
+        String operatorName =
+                anonymizeFleetForCustomer
+                        ? null
+                        : (mission.getOperator() != null
+                                ? mission.getOperator().getFullName()
+                                : null);
+        String uavSerial = anonymizeFleetForCustomer ? null : rawUavSerial;
+        String uavModel =
+                anonymizeFleetForCustomer ? "Tàu bay khảo sát đối tác đã xác minh" : rawUavModel;
 
         boolean preflightPassed =
                 preflight != null
@@ -157,8 +184,8 @@ public final class MissionInspectionOperations {
                 mission.getExpectedEndTime(),
                 mission.getStartTime(),
                 mission.getCompletedAt(),
-                mission.getStation() != null ? mission.getStation().getName() : null,
-                mission.getOperator() != null ? mission.getOperator().getFullName() : null,
+                stationName,
+                operatorName,
                 uavSerial,
                 uavModel,
                 airframeClass,

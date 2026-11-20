@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "UAV PAS Platform API - Complete Test Suite",
-    "description": "# UAV PAS Platform API Documentation & Postman Collection\n\nTập hợp đầy đủ **130 API endpoints** với Sample Request Body chi tiết, Query Params, Path Variables mặc định, và **Cơ chế Tự Động Đăng Nhập (Auto-Login)**.\n\n### 🔑 Tài khoản Quản trị viên mặc định:\n- **Username:** `admin`\n- **Password:** `Password123@`\n- **Role:** `ROLE_ADMIN`\n\n### 🚀 Các tính năng tự động tích hợp:\n1. **Auto-Login:** Pre-request Script tự động gọi API login để cấp token mới nếu chưa có hoặc hết hạn.\n2. **Auto-Save Token:** Khi gọi request Login thủ công, token và refreshToken mới sẽ tự động lưu vào biến `{{token}}` và `{{refreshToken}}`.\n3. **Full Sample Body:** Tất cả ~60+ POST/PUT/PATCH đều đã được điền sẵn JSON body mẫu hợp lệ, không bị rỗng `{}`.\n4. **Default Path Variables:** Tất cả `:id`, `:userId`, `:missionId`... đều đã được gán sẵn giá trị mặc định `1`.\n5. **Test Scripts:** Tự động kiểm tra HTTP status 2xx và thời gian phản hồi cho từng request.\n",
+    "description": "# UAV PAS Platform API Documentation & Postman Collection\n\nTập hợp đầy đủ các API endpoints với Sample Request Body chi tiết, Query Params, Path Variables mặc định, và **Cơ chế Tự Động Đăng Nhập (Auto-Login)**.\n\n### 🔑 Biến tài khoản kiểm thử (`app.dev-seed.enabled=true`):\n- **Biến đăng nhập:** `{{username}}` / `{{password}}`\n- **Tài khoản dev seed:** `demo_admin` (ROLE_ADMIN), `demo_fleet` (Đội bay xác minh), `demo_customer` (Khách hàng dự án)\n\n### 🚀 Các tính năng tự động tích hợp:\n1. **Auto-Login:** Pre-request Script tự động gọi API login bằng `{{username}}` / `{{password}}` để cấp token mới nếu chưa có.\n2. **Auto-Save Token:** Khi gọi request Login, token và refreshToken mới sẽ tự động lưu vào biến `{{token}}` và `{{refreshToken}}`.\n3. **Full Sample Body:** Tất cả POST/PUT/PATCH đều điền sẵn JSON body mẫu hợp lệ.\n4. **Default Path Variables:** Tất cả `:id`, `:subId`, `:missionId`... đều gán sẵn giá trị mặc định.\n5. **Test Scripts:** Tự động kiểm tra HTTP status và thời gian phản hồi cho từng request.\n",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "event": [
@@ -11,41 +11,44 @@
         "type": "text/javascript",
         "exec": [
           "// UAV PAS Platform - Automated Auto-Login Pre-request Script",
-          "var baseUrl = pm.collectionVariables.get(\"baseUrl\") || \"http://localhost:8080\";",
-          "var token = pm.collectionVariables.get(\"token\");",
+          "var baseUrl = pm.variables.get(\"baseUrl\") || \"http://localhost:8080\";",
+          "var token = pm.variables.get(\"token\");",
           "var urlStr = pm.request.url ? pm.request.url.toString() : \"\";",
-          "var isAuth = urlStr.indexOf(\"/auth/login\") !== -1 || urlStr.indexOf(\"/auth/register\") !== -1;",
+          "var isAuth = urlStr.indexOf(\"/auth/login\") !== -1 || urlStr.indexOf(\"/auth/register\") !== -1 || urlStr.indexOf(\"/public/\") !== -1;",
+          "var hasExplicitAuthHeader = pm.request.headers.has(\"Authorization\");",
           "",
-          "if (!token && !isAuth) {",
-          "    var username = pm.collectionVariables.get(\"defaultUsername\") || \"admin\";",
-          "    var password = pm.collectionVariables.get(\"defaultPassword\") || \"Password123@\";",
+          "if (!hasExplicitAuthHeader && !token && !isAuth) {",
+          "    var username = pm.variables.get(\"username\") || pm.variables.get(\"defaultUsername\") || \"demo_admin\";",
+          "    var password = pm.variables.get(\"password\") || pm.variables.get(\"defaultPassword\") || \"\";",
           "    ",
-          "    pm.sendRequest({",
-          "        url: baseUrl + \"/api/v1/auth/login\",",
-          "        method: \"POST\",",
-          "        header: { \"Content-Type\": \"application/json\" },",
-          "        body: {",
-          "            mode: \"raw\",",
-          "            raw: JSON.stringify({",
-          "                usernameOrEmail: username,",
-          "                password: password",
-          "            })",
-          "        }",
-          "    }, function (err, res) {",
-          "        if (!err && res.code === 200) {",
-          "            var data = res.json();",
-          "            var newToken = data.accessToken || (data.data && data.data.accessToken);",
-          "            var newRefreshToken = data.refreshToken || (data.data && data.data.refreshToken);",
-          "            if (newToken) {",
-          "                pm.collectionVariables.set(\"token\", newToken);",
-          "                pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + newToken });",
+          "    if (username && password) {",
+          "        pm.sendRequest({",
+          "            url: baseUrl + \"/api/v1/auth/login\",",
+          "            method: \"POST\",",
+          "            header: { \"Content-Type\": \"application/json\" },",
+          "            body: {",
+          "                mode: \"raw\",",
+          "                raw: JSON.stringify({",
+          "                    usernameOrEmail: username,",
+          "                    password: password",
+          "                })",
           "            }",
-          "            if (newRefreshToken) {",
-          "                pm.collectionVariables.set(\"refreshToken\", newRefreshToken);",
+          "        }, function (err, res) {",
+          "            if (!err && res.code === 200) {",
+          "                var data = res.json();",
+          "                var newToken = data.accessToken || (data.data && data.data.accessToken);",
+          "                var newRefreshToken = data.refreshToken || (data.data && data.data.refreshToken);",
+          "                if (newToken) {",
+          "                    pm.collectionVariables.set(\"token\", newToken);",
+          "                    pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + newToken });",
+          "                }",
+          "                if (newRefreshToken) {",
+          "                    pm.collectionVariables.set(\"refreshToken\", newRefreshToken);",
+          "                }",
           "            }",
-          "        }",
-          "    });",
-          "} else if (token && !isAuth) {",
+          "        });",
+          "    }",
+          "} else if (!hasExplicitAuthHeader && token && !isAuth) {",
           "    pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token });",
           "}",
           ""
@@ -80,13 +83,193 @@
       "type": "string"
     },
     {
+      "key": "username",
+      "value": "demo_admin",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "",
+      "type": "string"
+    },
+    {
       "key": "defaultUsername",
-      "value": "admin",
+      "value": "demo_admin",
       "type": "string"
     },
     {
       "key": "defaultPassword",
-      "value": "Password123@",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "customerUsername",
+      "value": "demo_customer",
+      "type": "string"
+    },
+    {
+      "key": "fleetUsername",
+      "value": "demo_fleet",
+      "type": "string"
+    },
+    {
+      "key": "adminUsername",
+      "value": "demo_admin",
+      "type": "string"
+    },
+    {
+      "key": "customerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "fleetToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sampleUserId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleMissionId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleServiceId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleUavId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleStationId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleEquipmentId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleScheduleId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleRepairOrderId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleInvoiceId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleMediaId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleNotificationId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleWebhookId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleDetectionId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleSettingKey",
+      "value": "marketplace.platform_fee_rate",
+      "type": "string"
+    },
+    {
+      "key": "sampleProjectId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleSubId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "samplePilotId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleListingId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sampleListingSlug",
+      "value": "khao-sat-ban-do-2d-du-an-minh-hoa",
+      "type": "string"
+    },
+    {
+      "key": "flowListingId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "flowListingSlug",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "flowProjectId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "flowSubId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "flowMissionId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "flowMissionCancelId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "flowPilotId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "flowUavId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "flowStartDate",
+      "value": "2026-11-25",
       "type": "string"
     }
   ],
@@ -123,7 +306,7 @@
             "description": "### Đăng nhập hệ thống (Login)\n\nĐăng nhập với username/email và mật khẩu để lấy Access Token (JWT) và Refresh Token.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/auth/login`",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"usernameOrEmail\": \"admin\",\n  \"password\": \"Password123@\"\n}",
+              "raw": "{\n  \"usernameOrEmail\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -440,7 +623,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleUserId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -467,8 +657,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "2",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleUserId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -513,8 +703,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "2",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleUserId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -559,8 +749,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "2",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleUserId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -611,8 +801,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "2",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleUserId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -771,8 +961,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -817,8 +1007,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -870,8 +1060,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMediaId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -926,8 +1116,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -974,13 +1164,13 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMediaId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 },
                 {
                   "key": "mediaId",
-                  "value": "1",
-                  "description": "Tham số đường dẫn mediaId"
+                  "value": "{{sampleMediaId}}",
+                  "description": "Tham số đường dẫn mediaId (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1031,8 +1221,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1092,8 +1282,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1153,8 +1343,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1256,6 +1446,24 @@
                   "value": "20",
                   "description": "",
                   "disabled": false
+                },
+                {
+                  "key": "projectId",
+                  "value": "1",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "providerId",
+                  "value": "1",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "statusGroup",
+                  "value": "PENDING",
+                  "description": "",
+                  "disabled": true
                 }
               ],
               "variable": []
@@ -1273,7 +1481,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleMissionId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -1370,8 +1585,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1416,12 +1631,12 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
-            "description": "### Chứng nhận nghiệm thu & Tệp bàn giao Geotag (Inspection Report)\n\nTổng hợp chứng chỉ nghiệm thu tự động, điểm chất lượng RTK và danh sách tệp bàn giao gắn toạ độ GPS.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/missions/{id}/inspection-report`"
+            "description": "### Chứng nhận nghiệm thu & Tệp bàn giao Geotag (Inspection Report)\n\nTổng hợp chứng chỉ nghiệm thu tự động, điểm chất lượng định vị GNSS và danh sách tệp bàn giao gắn toạ độ GPS.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/missions/{id}/inspection-report`"
           },
           "event": [
             {
@@ -1462,8 +1677,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1567,8 +1782,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1629,8 +1844,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1675,8 +1890,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1727,8 +1942,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1788,8 +2003,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1849,8 +2064,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1910,8 +2125,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -1971,8 +2186,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2026,8 +2241,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2052,7 +2267,68 @@
           "response": []
         },
         {
-          "name": "24. Hoàn thành nhiệm vụ (Complete Mission)",
+          "name": "24. Gửi đánh giá dịch vụ sau bàn giao (Submit Order Review)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/missions/:id/review",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "missions",
+                ":id",
+                "review"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Gửi đánh giá dịch vụ sau bàn giao (Submit Order Review)\n\nĐánh giá 1–5 sao và nhận xét cho đơn hàng đã hoàn thành.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/missions/{id}/review`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 1,\n  \"comment\": \"Dữ liệu bình đồ rõ nét, bàn giao đúng tiến độ.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "25. Hoàn thành nhiệm vụ (Complete Mission)",
           "request": {
             "method": "POST",
             "header": [
@@ -2078,8 +2354,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2113,7 +2389,7 @@
           "response": []
         },
         {
-          "name": "25. Huỷ bỏ nhiệm vụ (Cancel Mission)",
+          "name": "26. Huỷ bỏ nhiệm vụ (Cancel Mission)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2133,8 +2409,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2159,7 +2435,7 @@
           "response": []
         },
         {
-          "name": "26. Khách hàng xác nhận nghiệm thu (Confirm Mission)",
+          "name": "27. Khách hàng xác nhận nghiệm thu (Confirm Mission)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2179,8 +2455,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2205,7 +2481,7 @@
           "response": []
         },
         {
-          "name": "27. Thay thế UAV dự phòng (Replace UAV)",
+          "name": "28. Thay thế UAV dự phòng (Replace UAV)",
           "request": {
             "method": "POST",
             "header": [
@@ -2231,8 +2507,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2266,7 +2542,7 @@
           "response": []
         },
         {
-          "name": "28. Từ chối nhiệm vụ (Reject Mission)",
+          "name": "29. Từ chối nhiệm vụ (Reject Mission)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2293,8 +2569,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2319,7 +2595,7 @@
           "response": []
         },
         {
-          "name": "29. Xác nhận sẵn sàng bay (Mark Ready)",
+          "name": "30. Xác nhận sẵn sàng bay (Mark Ready)",
           "request": {
             "method": "POST",
             "header": [],
@@ -2339,8 +2615,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2365,7 +2641,7 @@
           "response": []
         },
         {
-          "name": "30. Điều phối lại nhân sự (Redispatch Operator)",
+          "name": "31. Điều phối lại nhân sự (Redispatch Operator)",
           "request": {
             "method": "POST",
             "header": [
@@ -2391,8 +2667,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2426,7 +2702,7 @@
           "response": []
         },
         {
-          "name": "31. Điều phối lại trạm bay (Redispatch Station)",
+          "name": "32. Điều phối lại trạm bay (Redispatch Station)",
           "request": {
             "method": "POST",
             "header": [
@@ -2452,8 +2728,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2487,7 +2763,68 @@
           "response": []
         },
         {
-          "name": "32. Cập nhật nhiệm vụ bay (Update Mission)",
+          "name": "33. Cập nhật đánh giá dịch vụ (Upsert Order Review)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/missions/:id/review",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "missions",
+                ":id",
+                "review"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Cập nhật đánh giá dịch vụ (Upsert Order Review)\n\nTạo hoặc cập nhật đánh giá sao và nhận xét của khách hàng.\n\n* **Phương thức:** `PUT`\n* **Endpoint:** `/api/v1/missions/{id}/review`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 1,\n  \"comment\": \"Dữ liệu bình đồ rõ nét, bàn giao đúng tiến độ.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "34. Cập nhật nhiệm vụ bay (Update Mission)",
           "request": {
             "method": "PATCH",
             "header": [
@@ -2512,8 +2849,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2583,7 +2920,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleServiceId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -2693,7 +3037,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleUavId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -2759,8 +3110,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleUavId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2818,8 +3169,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleUavId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2877,8 +3228,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleUavId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -2929,7 +3280,7 @@
             "description": "### Đăng ký máy bay UAV mới (Create UAV)\n\nKhai báo thêm một máy bay UAV vào phi đội.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/uavs`",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"model\": \"Matrice 300 RTK\",\n  \"serialNumber\": \"SN-DJI-M300-2026\",\n  \"manufacturer\": \"DJI Enterprise\"\n}",
+              "raw": "{\n  \"model\": \"Matrice 350 Survey\",\n  \"serialNumber\": \"SN-DJI-M300-2026\",\n  \"manufacturer\": \"DJI Enterprise\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2977,13 +3328,13 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleUavId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 },
                 {
                   "key": "stationId",
-                  "value": "1",
-                  "description": "Tham số đường dẫn stationId"
+                  "value": "{{sampleStationId}}",
+                  "description": "Tham số đường dẫn stationId (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -3033,15 +3384,15 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleUavId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
             "description": "### Cập nhật thông tin UAV (Update UAV)\n\nChỉnh sửa model, serial, nhà sản xuất máy bay.\n\n* **Phương thức:** `PUT`\n* **Endpoint:** `/api/v1/uavs/{id}`",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"model\": \"Matrice 300 RTK\",\n  \"serialNumber\": \"SN-DJI-M300-2026\",\n  \"manufacturer\": \"DJI Enterprise\"\n}",
+              "raw": "{\n  \"model\": \"Matrice 350 Survey\",\n  \"serialNumber\": \"SN-DJI-M300-2026\",\n  \"manufacturer\": \"DJI Enterprise\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3107,8 +3458,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleUavId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -3182,7 +3533,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleStationId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -3209,8 +3567,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleStationId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -3313,8 +3671,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleStationId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -3367,8 +3725,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleStationId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -3419,8 +3777,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleEquipmentId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -3471,8 +3829,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleEquipmentId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -3550,7 +3908,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleEquipmentId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -3692,8 +4057,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleEquipmentId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -3755,13 +4120,13 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleEquipmentId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 },
                 {
                   "key": "stationId",
-                  "value": "1",
-                  "description": "Tham số đường dẫn stationId"
+                  "value": "{{sampleStationId}}",
+                  "description": "Tham số đường dẫn stationId (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -3822,8 +4187,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleEquipmentId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -3884,8 +4249,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleEquipmentId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -3946,8 +4311,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleEquipmentId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -4043,7 +4408,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleRepairOrderId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -4107,7 +4479,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleScheduleId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -4135,8 +4514,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleRepairOrderId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -4296,8 +4675,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleRepairOrderId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -4358,8 +4737,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleRepairOrderId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -4420,8 +4799,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleRepairOrderId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -4481,8 +4860,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleRepairOrderId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -4542,8 +4921,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleScheduleId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -4604,8 +4983,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleRepairOrderId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -4728,7 +5107,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleInvoiceId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -4848,8 +5234,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleInvoiceId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -4955,8 +5341,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleInvoiceId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -5017,8 +5403,8 @@
               "variable": [
                 {
                   "key": "userId",
-                  "value": "2",
-                  "description": "Tham số đường dẫn userId"
+                  "value": "{{sampleUserId}}",
+                  "description": "Tham số đường dẫn userId (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -5196,8 +5582,8 @@
               "variable": [
                 {
                   "key": "missionId",
-                  "value": "1",
-                  "description": "Tham số đường dẫn missionId"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn missionId (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -5357,8 +5743,8 @@
               "variable": [
                 {
                   "key": "missionId",
-                  "value": "1",
-                  "description": "Tham số đường dẫn missionId"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn missionId (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -5420,8 +5806,8 @@
               "variable": [
                 {
                   "key": "missionId",
-                  "value": "1",
-                  "description": "Tham số đường dẫn missionId"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn missionId (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -5473,8 +5859,8 @@
               "variable": [
                 {
                   "key": "missionId",
-                  "value": "1",
-                  "description": "Tham số đường dẫn missionId"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn missionId (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -5520,8 +5906,8 @@
               "variable": [
                 {
                   "key": "missionId",
-                  "value": "1",
-                  "description": "Tham số đường dẫn missionId"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn missionId (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -5627,8 +6013,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -5764,7 +6150,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleMediaId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -5791,8 +6184,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMediaId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -5837,8 +6230,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMediaId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -5883,8 +6276,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMediaId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -5929,8 +6322,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleMediaId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -6004,7 +6397,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleNotificationId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -6163,8 +6563,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleNotificationId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -6233,12 +6633,12 @@
           "response": []
         },
         {
-          "name": "02. Quyền hạn của người dùng cụ thể (Get User Permissions)",
+          "name": "02. Quyền hạn của tài khoản đang đăng nhập (Get My Permissions)",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/permissions/users/:userId",
+              "raw": "{{baseUrl}}/api/v1/permissions/me",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -6246,19 +6646,12 @@
                 "api",
                 "v1",
                 "permissions",
-                "users",
-                ":userId"
+                "me"
               ],
               "query": [],
-              "variable": [
-                {
-                  "key": "userId",
-                  "value": "2",
-                  "description": "Tham số đường dẫn userId"
-                }
-              ]
+              "variable": []
             },
-            "description": "### Quyền hạn của người dùng cụ thể (Get User Permissions)\n\nXem quyền chi tiết của một tài khoản theo User ID.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/permissions/users/{userId}`"
+            "description": "### Quyền hạn của tài khoản đang đăng nhập (Get My Permissions)\n\nLấy danh sách các mã quyền mà người dùng hiện tại sở hữu.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/permissions/me`"
           },
           "event": [
             {
@@ -6279,12 +6672,12 @@
           "response": []
         },
         {
-          "name": "03. Quyền hạn của tài khoản đang đăng nhập (Get My Permissions)",
+          "name": "03. Quyền hạn của người dùng cụ thể (Get User Permissions)",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/permissions/me",
+              "raw": "{{baseUrl}}/api/v1/permissions/users/:userId",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -6292,12 +6685,19 @@
                 "api",
                 "v1",
                 "permissions",
-                "me"
+                "users",
+                ":userId"
               ],
               "query": [],
-              "variable": []
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "{{sampleUserId}}",
+                  "description": "Tham số đường dẫn userId (lấy động từ danh sách trước đó)"
+                }
+              ]
             },
-            "description": "### Quyền hạn của tài khoản đang đăng nhập (Get My Permissions)\n\nLấy danh sách các mã quyền mà người dùng hiện tại sở hữu.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/permissions/me`"
+            "description": "### Quyền hạn của người dùng cụ thể (Get User Permissions)\n\nXem quyền chi tiết của một tài khoản theo User ID.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/permissions/users/{userId}`"
           },
           "event": [
             {
@@ -6346,13 +6746,13 @@
               "variable": [
                 {
                   "key": "userId",
-                  "value": "2",
-                  "description": "Tham số đường dẫn userId"
+                  "value": "{{sampleUserId}}",
+                  "description": "Tham số đường dẫn userId (lấy động từ danh sách trước đó)"
                 },
                 {
                   "key": "code",
                   "value": "UAV_SERVICES_READ",
-                  "description": "Tham số đường dẫn code"
+                  "description": "Tham số đường dẫn code (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -6398,13 +6798,13 @@
               "variable": [
                 {
                   "key": "userId",
-                  "value": "2",
-                  "description": "Tham số đường dẫn userId"
+                  "value": "{{sampleUserId}}",
+                  "description": "Tham số đường dẫn userId (lấy động từ danh sách trước đó)"
                 },
                 {
                   "key": "code",
                   "value": "UAV_SERVICES_READ",
-                  "description": "Tham số đường dẫn code"
+                  "description": "Tham số đường dẫn code (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -6502,12 +6902,12 @@
                 {
                   "key": "role",
                   "value": "ROLE_ADMIN",
-                  "description": "Tham số đường dẫn role"
+                  "description": "Tham số đường dẫn role (lấy động từ danh sách trước đó)"
                 },
                 {
                   "key": "code",
                   "value": "UAV_SERVICES_READ",
-                  "description": "Tham số đường dẫn code"
+                  "description": "Tham số đường dẫn code (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -6569,7 +6969,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleWebhookId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -6798,8 +7205,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleWebhookId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -6844,8 +7251,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "1",
-                  "description": "Tham số đường dẫn id"
+                  "value": "{{sampleWebhookId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -7131,7 +7538,14 @@
                   "});",
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
-                  "});"
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"configKey\"] !== undefined && items[0][\"configKey\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleSettingKey\", String(items[0][\"configKey\"]));",
+                  "    }",
+                  "}"
                 ]
               }
             }
@@ -7158,8 +7572,8 @@
               "variable": [
                 {
                   "key": "key",
-                  "value": "STORAGE_QUOTA",
-                  "description": "Tham số đường dẫn key"
+                  "value": "{{sampleSettingKey}}",
+                  "description": "Tham số đường dẫn key (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -7209,8 +7623,8 @@
               "variable": [
                 {
                   "key": "key",
-                  "value": "STORAGE_QUOTA",
-                  "description": "Tham số đường dẫn key"
+                  "value": "{{sampleSettingKey}}",
+                  "description": "Tham số đường dẫn key (lấy động từ danh sách trước đó)"
                 }
               ]
             },
@@ -7237,6 +7651,3401 @@
                   "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
                   "    pm.expect(pm.response.responseTime).to.be.below(3000);",
                   "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "23. Customer Projects & Subscriptions",
+      "description": "Quản lý các API thuộc phân hệ 23. Customer Projects & Subscriptions",
+      "item": [
+        {
+          "name": "01. Danh sách dự án của khách hàng (List My Projects)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "### Danh sách dự án của khách hàng (List My Projects)\n\nLấy danh sách phân trang các dự án của khách hàng kèm số gói đăng ký và số đơn bay.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/projects`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleProjectId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "02. Chi tiết dự án (Get Project By ID)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleProjectId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Chi tiết dự án (Get Project By ID)\n\nXem thông tin chi tiết một dự án thuộc quyền sở hữu của khách hàng.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/projects/{id}`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "03. Danh sách gói đăng ký theo dự án (List Project Subscriptions)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id",
+                "subscriptions"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleProjectId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Danh sách gói đăng ký theo dự án (List Project Subscriptions)\n\nXem các gói dịch vụ bay định kỳ hoặc một lần gắn với dự án.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/projects/{id}/subscriptions`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleSubId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "04. Tạo dự án mới (Create Project)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Tạo dự án mới (Create Project)\n\nKhởi tạo dự án mới với tỉnh/thành và vùng ranh giới GeoJSON.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/projects`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Trạm Vận Hành Trung Tâm Alpha\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"areaGeoJson\": \"{\\\"type\\\":\\\"Polygon\\\",\\\"coordinates\\\":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}\",\n  \"note\": \"Khảo sát tiến độ san lấp mặt bằng định kỳ\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "05. Đăng ký dịch vụ cho dự án (Create Subscription & Initial Order)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id",
+                "subscriptions"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleProjectId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Đăng ký dịch vụ cho dự án (Create Subscription & Initial Order)\n\nĐăng ký gói dịch vụ cho dự án và tự động sinh đơn hàng đầu tiên chờ điều phối.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/projects/{id}/subscriptions`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listingId\": 1,\n  \"areaGeoJson\": \"{\\\"type\\\":\\\"Polygon\\\",\\\"coordinates\\\":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}\",\n  \"scheduleType\": \"ONCE\",\n  \"startDate\": \"2026-10-23\",\n  \"units\": 100.0,\n  \"note\": \"Bay khảo sát vào buổi sáng\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "06. Cập nhật dự án (Update Project)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleProjectId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Cập nhật dự án (Update Project)\n\nCập nhật tên, tỉnh/thành, vùng ranh giới GeoJSON hoặc ghi chú dự án.\n\n* **Phương thức:** `PATCH`\n* **Endpoint:** `/api/v1/projects/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Trạm Vận Hành Trung Tâm Alpha\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"areaGeoJson\": \"{\\\"type\\\":\\\"Polygon\\\",\\\"coordinates\\\":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}\",\n  \"note\": \"Cập nhật ranh giới phân khu 2\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "07. Đổi lịch hoặc tạm dừng gói đăng ký (Update Subscription)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id/subscriptions/:subId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id",
+                "subscriptions",
+                ":subId"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleProjectId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                },
+                {
+                  "key": "subId",
+                  "value": "{{sampleSubId}}",
+                  "description": "Tham số đường dẫn subId (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Đổi lịch hoặc tạm dừng gói đăng ký (Update Subscription)\n\nĐổi chu kỳ (ONCE/WEEKLY/MONTHLY), khối lượng hoặc tạm dừng/tiếp tục gói đăng ký.\n\n* **Phương thức:** `PATCH`\n* **Endpoint:** `/api/v1/projects/{id}/subscriptions/{subId}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"areaGeoJson\": \"string_sample\",\n  \"scheduleType\": \"ONCE\",\n  \"startDate\": \"2026-10-23\",\n  \"units\": 100.0,\n  \"status\": \"ACTIVE\",\n  \"note\": \"Tạm điều chỉnh lịch tuần tới\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "08. Huỷ gói đăng ký dự án (Cancel Subscription)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id/subscriptions/:subId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id",
+                "subscriptions",
+                ":subId"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleProjectId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                },
+                {
+                  "key": "subId",
+                  "value": "{{sampleSubId}}",
+                  "description": "Tham số đường dẫn subId (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Huỷ gói đăng ký dự án (Cancel Subscription)\n\nHuỷ mềm gói đăng ký dịch vụ thuộc dự án.\n\n* **Phương thức:** `DELETE`\n* **Endpoint:** `/api/v1/projects/{id}/subscriptions/{subId}`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "09. Xoá mềm dự án (Soft Delete Project)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleProjectId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Xoá mềm dự án (Soft Delete Project)\n\nXoá mềm dự án khi không còn đơn hàng đang thực hiện.\n\n* **Phương thức:** `DELETE`\n* **Endpoint:** `/api/v1/projects/{id}`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "24. Customer Orders & Live Tracking",
+      "description": "Quản lý các API thuộc phân hệ 24. Customer Orders & Live Tracking",
+      "item": [
+        {
+          "name": "01. Tổng hợp 5 nhóm trạng thái đơn hàng (Order Status Summary)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "summary"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Tổng hợp 5 nhóm trạng thái đơn hàng (Order Status Summary)\n\nĐếm số đơn hàng của khách theo 5 nhóm: pending, scheduled, inFlight, delivered, toReview.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/orders/summary`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "02. Theo dõi tiến độ bay mô phỏng trực tuyến (Live Order Tracking)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/:id/tracking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                ":id",
+                "tracking"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Theo dõi tiến độ bay mô phỏng trực tuyến (Live Order Tracking)\n\nLấy tiến độ phần trăm, toạ độ tàu bay, dung lượng pin, tín hiệu kết nối và ETA từ phiên mô phỏng.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/orders/{id}/tracking`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "25. Public Service Marketplace",
+      "description": "Quản lý các API thuộc phân hệ 25. Public Service Marketplace",
+      "item": [
+        {
+          "name": "01. Danh mục dịch vụ trên chợ công khai (Browse Public Listings)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/marketplace/listings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "marketplace",
+                "listings"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "khảo sát",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "DATA_COLLECTION",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "province",
+                  "value": "TP. Hồ Chí Minh",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "### Danh mục dịch vụ trên chợ công khai (Browse Public Listings)\n\nTìm kiếm, lọc dịch vụ theo danh mục, tỉnh/thành, từ khoá (ẩn danh tên đội bay, trả providerBadge).\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/public/marketplace/listings`",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0) {",
+                  "        if (items[0].id !== undefined) pm.collectionVariables.set(\"sampleListingId\", String(items[0].id));",
+                  "        if (items[0].slug) pm.collectionVariables.set(\"sampleListingSlug\", String(items[0].slug));",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "02. Chi tiết dịch vụ công khai (Get Listing Detail)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/marketplace/listings/:slug",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "marketplace",
+                "listings",
+                ":slug"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "{{sampleListingSlug}}",
+                  "description": "Tham số đường dẫn slug (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Chi tiết dịch vụ công khai (Get Listing Detail)\n\nXem thông tin gói dịch vụ, sản phẩm bàn giao và huy hiệu đối tác xác minh.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/public/marketplace/listings/{slug}`",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "26. Fleet Partner Workspace",
+      "description": "Quản lý các API thuộc phân hệ 26. Fleet Partner Workspace",
+      "item": [
+        {
+          "name": "01. Thêm UAV vào đội bay (Register Fleet UAV)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/fleet/uavs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "fleet",
+                "uavs"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Thêm UAV vào đội bay (Register Fleet UAV)\n\nĐăng ký thiết bị bay mới cho đội bay đối tác.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/fleet/uavs`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"Matrice 350 Survey\",\n  \"serialNumber\": \"SN-DJI-M300-2026\",\n  \"manufacturer\": \"DJI Enterprise\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "02. Danh sách dịch vụ của đội bay (List My Listings)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/listings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "listings"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "### Danh sách dịch vụ của đội bay (List My Listings)\n\nQuản lý danh sách tin đăng dịch vụ thuộc đội bay.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/marketplace/provider/listings`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleListingId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "03. Danh sách kỹ sư điều khiển của đội (List Provider Pilots)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/pilots",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "pilots"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Danh sách kỹ sư điều khiển của đội (List Provider Pilots)\n\nXem danh sách kỹ sư vận hành bay, chứng chỉ và tàu bay phụ trách.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/marketplace/provider/pilots`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"samplePilotId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "04. Danh sách tàu bay của đội (List Fleet UAVs)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/fleet/uavs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "fleet",
+                "uavs"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Danh sách tàu bay của đội (List Fleet UAVs)\n\nLấy danh sách UAV thuộc đội bay kèm trạng thái sẵn sàng/đang bay/bảo trì.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/marketplace/provider/fleet/uavs`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    var items = Array.isArray(body) ? body : (body.content || (body.data && body.data.content) || []);",
+                  "    if (items.length > 0 && items[0] && items[0][\"id\"] !== undefined && items[0][\"id\"] !== null) {",
+                  "        pm.collectionVariables.set(\"sampleUavId\", String(items[0][\"id\"]));",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "05. Danh sách đơn hàng được giao cho đội bay (List Provider Orders)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "### Danh sách đơn hàng được giao cho đội bay (List Provider Orders)\n\nXem các đơn hàng nền tảng đã điều phối về đội bay.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/marketplace/provider/orders`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "06. Hồ sơ đội bay đối tác của tôi (Get My Provider Profile)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "me"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Hồ sơ đội bay đối tác của tôi (Get My Provider Profile)\n\nXem hồ sơ năng lực và trạng thái thẩm định KYC của đội bay.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/marketplace/provider/me`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "07. Tạo dịch vụ nhanh từ mẫu chuẩn (Create Listing From Template)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/listings/from-template",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "listings",
+                "from-template"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Tạo dịch vụ nhanh từ mẫu chuẩn (Create Listing From Template)\n\nTạo gói dịch vụ nhanh dựa trên danh mục mẫu chuẩn của nền tảng.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/listings/from-template`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"serviceOfferingId\": 1,\n  \"title\": \"Nhiệm vụ bay kiểm tra đê điều và lưới điện\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"serviceRadiusKm\": 1,\n  \"basePriceVnd\": 100.0,\n  \"pricingModel\": \"PER_HOUR\",\n  \"minBookingUnits\": 100.0,\n  \"deliverySlaHours\": 1,\n  \"onSiteSlaHours\": 1,\n  \"submitForReview\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "08. Bắt đầu chuyến bay mô phỏng cho đơn hàng (Start Order Simulation)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/:missionId/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                ":missionId",
+                "start"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "missionId",
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn missionId (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Bắt đầu chuyến bay mô phỏng cho đơn hàng (Start Order Simulation)\n\nKhởi động phiên bay mô phỏng gắn với đơn hàng và chuyển sang IN_PROGRESS.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/orders/{missionId}/start`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "09. Hoàn thành chuyến bay và bàn giao dữ liệu (Complete Order)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/:missionId/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                ":missionId",
+                "complete"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "missionId",
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn missionId (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Hoàn thành chuyến bay và bàn giao dữ liệu (Complete Order)\n\nĐánh dấu hoàn tất bay để chuyển đơn sang bước bàn giao nghiệm thu.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/orders/{missionId}/complete`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"completionNote\": \"Bàn giao bình đồ trực giao GeoTIFF — minh hoạ\",\n  \"equipmentCondition\": \"Thiết bị hoạt động bình thường\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "10. Nhận hoặc từ chối đơn được giao (Respond To Dispatched Order)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/:missionId/respond",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                ":missionId",
+                "respond"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "missionId",
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn missionId (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Nhận hoặc từ chối đơn được giao (Respond To Dispatched Order)\n\nXác nhận nhận đơn hoặc từ chối kèm lý do để trả đơn về hàng đợi điều phối.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/orders/{missionId}/respond`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accept\": true,\n  \"reason\": \"Kiểm tra an toàn tự động định kỳ theo lịch trình kỹ thuật\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "11. Phân công kỹ sư và UAV cho đơn hàng (Assign Pilot & UAV)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/:missionId/assign",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                ":missionId",
+                "assign"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "missionId",
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn missionId (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Phân công kỹ sư và UAV cho đơn hàng (Assign Pilot & UAV)\n\nChỉ định kỹ sư điều khiển và tàu bay thuộc đội cho đơn hàng.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/orders/{missionId}/assign`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pilotId\": 1,\n  \"pilotUserId\": 1,\n  \"uavId\": 1,\n  \"note\": \"Phân công tàu bay khảo sát chính\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "12. Thêm kỹ sư điều khiển vào đội (Create Provider Pilot)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/pilots",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "pilots"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Thêm kỹ sư điều khiển vào đội (Create Provider Pilot)\n\nThêm kỹ sư điều khiển mới và liên kết tài khoản vận hành.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/pilots`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pilotUserId\": 1,\n  \"fullName\": \"Kỹ sư Nguyễn Văn Minh\",\n  \"email\": \"admin@uav-platform.com\",\n  \"phone\": \"0987654321\",\n  \"licenseNumber\": \"CC-UAV-2026-19\",\n  \"specialization\": \"Khảo sát bản đồ & kiểm tra nhiệt\",\n  \"status\": \"AVAILABLE\",\n  \"assignedUavId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "13. Đăng ký hồ sơ đối tác đội bay (Create Provider Profile)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "me"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Đăng ký hồ sơ đối tác đội bay (Create Provider Profile)\n\nGửi hồ sơ đăng ký trở thành đối tác vận hành bay trên nền tảng.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/marketplace/provider/me`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Đội bay Khảo sát Đông Nam Bộ\",\n  \"providerType\": \"COMPANY\",\n  \"taxOrIdNumber\": \"0319008899\",\n  \"flightLicenseNumber\": \"GP-BAY-2026-88\",\n  \"bio\": \"Đội bay khảo sát bản đồ và hạ tầng khu công nghiệp\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"serviceRadiusKm\": 1,\n  \"contactPhone\": \"0987654321\",\n  \"bankName\": \"Vietcombank\",\n  \"bankAccountNumber\": \"0071000889900\",\n  \"bankAccountHolder\": \"DOI BAY DONG NAM BO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "14. Cập nhật hồ sơ đội bay (Update Provider Profile)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "me"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Cập nhật hồ sơ đội bay (Update Provider Profile)\n\nChỉnh sửa thông tin liên hệ, bán kính phục vụ và tài khoản đối soát.\n\n* **Phương thức:** `PATCH`\n* **Endpoint:** `/api/v1/marketplace/provider/me`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Đội bay Khảo sát Đông Nam Bộ\",\n  \"providerType\": \"COMPANY\",\n  \"taxOrIdNumber\": \"0319008899\",\n  \"flightLicenseNumber\": \"GP-BAY-2026-88\",\n  \"bio\": \"Đội bay khảo sát bản đồ và hạ tầng khu công nghiệp\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"serviceRadiusKm\": 1,\n  \"contactPhone\": \"0987654321\",\n  \"bankName\": \"Vietcombank\",\n  \"bankAccountNumber\": \"0071000889900\",\n  \"bankAccountHolder\": \"DOI BAY DONG NAM BO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "15. Cập nhật kỹ sư điều khiển (Update Provider Pilot)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/pilots/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "pilots",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{samplePilotId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Cập nhật kỹ sư điều khiển (Update Provider Pilot)\n\nĐổi trạng thái làm việc, chứng chỉ hoặc UAV gán cho kỹ sư.\n\n* **Phương thức:** `PATCH`\n* **Endpoint:** `/api/v1/marketplace/provider/pilots/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Kỹ sư Nguyễn Văn Minh\",\n  \"phone\": \"0987654321\",\n  \"specialization\": \"Khảo sát bản đồ & mô hình 3D\",\n  \"status\": \"AVAILABLE\",\n  \"assignedUavId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "16. Cập nhật trạng thái hoặc thông tin UAV (Update Fleet UAV)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/fleet/uavs/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "fleet",
+                "uavs",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleUavId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Cập nhật trạng thái hoặc thông tin UAV (Update Fleet UAV)\n\nCập nhật model, serial hoặc đổi trạng thái AVAILABLE/MAINTENANCE.\n\n* **Phương thức:** `PATCH`\n* **Endpoint:** `/api/v1/marketplace/provider/fleet/uavs/{id}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"Matrice 350 Survey\",\n  \"serialNumber\": \"SN-DJI-M300-2026\",\n  \"manufacturer\": \"DJI Enterprise\",\n  \"status\": \"AVAILABLE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "17. Gỡ UAV khỏi đội bay (Remove Fleet UAV)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/fleet/uavs/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "fleet",
+                "uavs",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleUavId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Gỡ UAV khỏi đội bay (Remove Fleet UAV)\n\nNgừng khai thác UAV khi không nằm trong đơn hàng đang hoạt động.\n\n* **Phương thức:** `DELETE`\n* **Endpoint:** `/api/v1/marketplace/provider/fleet/uavs/{id}`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "18. Xoá mềm dịch vụ của đội bay (Delete Provider Listing)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/listings/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "listings",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sampleListingId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Xoá mềm dịch vụ của đội bay (Delete Provider Listing)\n\nẨn và xoá mềm tin đăng dịch vụ của đội bay.\n\n* **Phương thức:** `DELETE`\n* **Endpoint:** `/api/v1/marketplace/provider/listings/{id}`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "19. Xoá mềm kỹ sư điều khiển (Delete Provider Pilot)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/pilots/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "pilots",
+                ":id"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{samplePilotId}}",
+                  "description": "Tham số đường dẫn id (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Xoá mềm kỹ sư điều khiển (Delete Provider Pilot)\n\nGỡ kỹ sư điều khiển khỏi danh sách hoạt động của đội bay.\n\n* **Phương thức:** `DELETE`\n* **Endpoint:** `/api/v1/marketplace/provider/pilots/{id}`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "27. Admin Marketplace & Dispatch",
+      "description": "Quản lý các API thuộc phân hệ 27. Admin Marketplace & Dispatch",
+      "item": [
+        {
+          "name": "01. Hàng đợi điều phối đơn hàng & Gợi ý đội bay (Get Dispatch Queue)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/dispatch",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "dispatch"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "size",
+                  "value": "20",
+                  "description": "",
+                  "disabled": false
+                }
+              ],
+              "variable": []
+            },
+            "description": "### Hàng đợi điều phối đơn hàng & Gợi ý đội bay (Get Dispatch Queue)\n\nLấy danh sách đơn PENDING_DISPATCH kèm danh sách ứng viên đội bay xếp hạng theo khoảng cách, UAV rảnh và điểm đánh giá.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/admin/marketplace/dispatch`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "02. Thống kê vận hành chợ dịch vụ (Marketplace Operations Stats)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "stats"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Thống kê vận hành chợ dịch vụ (Marketplace Operations Stats)\n\nSố liệu đơn theo trạng thái, số đội bay xác minh, tin đăng và doanh số minh hoạ.\n\n* **Phương thức:** `GET`\n* **Endpoint:** `/api/v1/admin/marketplace/stats`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "03. Điều phối thủ công đơn hàng cho đội bay (Manual Dispatch Order)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/dispatch/:missionId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "dispatch",
+                ":missionId"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "missionId",
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn missionId (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Điều phối thủ công đơn hàng cho đội bay (Manual Dispatch Order)\n\nGiao đơn hàng cho một đội bay xác minh cụ thể.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/admin/marketplace/dispatch/{missionId}`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"providerId\": 1,\n  \"note\": \"Điều phối cho đội bay gần khu vực dự án nhất\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "04. Điều phối tự động hàng loạt (Batch Auto Dispatch)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/dispatch/auto",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "dispatch",
+                "auto"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "### Điều phối tự động hàng loạt (Batch Auto Dispatch)\n\nTự động giao hàng loạt đơn trong hàng đợi PENDING_DISPATCH.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/admin/marketplace/dispatch/auto`",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"limit\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "05. Điều phối tự động đơn hàng theo gợi ý số 1 (Auto Dispatch Single Order)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/dispatch/:missionId/auto",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "dispatch",
+                ":missionId",
+                "auto"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "key": "missionId",
+                  "value": "{{sampleMissionId}}",
+                  "description": "Tham số đường dẫn missionId (lấy động từ danh sách trước đó)"
+                }
+              ]
+            },
+            "description": "### Điều phối tự động đơn hàng theo gợi ý số 1 (Auto Dispatch Single Order)\n\nTự động chọn đội bay điểm cao nhất cho đơn hàng.\n\n* **Phương thức:** `POST`\n* **Endpoint:** `/api/v1/admin/marketplace/dispatch/{missionId}/auto`"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is handled properly (no server crash)\", function () {",
+                  "    pm.expect(pm.response.code !== 500).to.be.true;",
+                  "});",
+                  "pm.test(\"Response time is reasonable (< 3000ms)\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "28. Luồng đặt hàng (E2E Order Flow)",
+      "description": "Chuỗi kiểm thử tự động xuyên suốt luồng đặt hàng chợ dịch vụ UAV trên DB trắng có dev seed (`demo_customer`, `demo_admin`, `demo_fleet` dùng chung `{{password}}`). Tất cả ID đều lấy động từ phản hồi bước trước, không dùng `id=1` cố định.",
+      "item": [
+        {
+          "name": "01. Đăng nhập Khách hàng (demo_customer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usernameOrEmail\": \"{{customerUsername}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var d = new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10);",
+                  "pm.collectionVariables.set(\"flowStartDate\", d);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Customer login 200\", function () { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.collectionVariables.set(\"customerToken\", data.accessToken || (data.data && data.data.accessToken));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "02. Lấy dịch vụ công khai đầu tiên trên chợ",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/marketplace/listings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "marketplace",
+                "listings"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Public listings 200\", function () { pm.response.to.have.status(200); });",
+                  "var items = pm.response.json().content || [];",
+                  "pm.expect(items.length).to.be.above(0);",
+                  "pm.collectionVariables.set(\"flowListingId\", String(items[0].id));",
+                  "pm.collectionVariables.set(\"flowListingSlug\", String(items[0].slug));",
+                  "pm.test(\"Fleet identity is anonymized for customer\", function () {",
+                  "    pm.expect(items[0].providerDisplayName).to.be.null;",
+                  "    pm.expect(items[0].providerBadge).to.be.an(\"object\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "03. Khách tạo Dự án mới",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dự án Kiểm thử Tự động Postman\",\n  \"province\": \"TP. Hồ Chí Minh\",\n  \"areaGeoJson\": \"{\\\"type\\\":\\\"Polygon\\\",\\\"coordinates\\\":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}\",\n  \"note\": \"Khởi tạo từ chuỗi Luồng đặt hàng Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Project created 201\", function () { pm.response.to.have.status(201); });",
+                  "var prj = pm.response.json();",
+                  "pm.collectionVariables.set(\"flowProjectId\", String(prj.id));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "04. Khách cập nhật ghi chú Dự án",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/{{flowProjectId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                "{{flowProjectId}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Đã xác nhận ranh giới bay khảo sát — minh hoạ\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Project updated 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "05. Khách đăng ký Dịch vụ cho Dự án (tạo đơn đầu tiên)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/{{flowProjectId}}/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                "{{flowProjectId}}",
+                "subscriptions"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listingId\": \"{{flowListingId}}\",\n  \"scheduleType\": \"WEEKLY\",\n  \"startDate\": \"{{flowStartDate}}\",\n  \"units\": 10,\n  \"note\": \"Đăng ký bay định kỳ hàng tuần\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var lid = Number(pm.variables.get(\"flowListingId\"));",
+                  "var sdate = pm.variables.get(\"flowStartDate\");",
+                  "pm.request.body.raw = JSON.stringify({",
+                  "    listingId: lid,",
+                  "    scheduleType: \"WEEKLY\",",
+                  "    startDate: sdate,",
+                  "    units: 10,",
+                  "    note: \"Đăng ký bay định kỳ hàng tuần — minh hoạ\"",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Subscription & first order created 201\", function () { pm.response.to.have.status(201); });",
+                  "var sub = pm.response.json();",
+                  "pm.collectionVariables.set(\"flowSubId\", String(sub.id));",
+                  "pm.collectionVariables.set(\"flowMissionId\", String(sub.firstMissionId));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "06. Khách kiểm tra Thanh 5 trạng thái đơn (/orders/summary)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "summary"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Order summary 200 & pending >= 1\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().pending).to.be.at.least(1);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "07. Đăng nhập Quản trị viên (demo_admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usernameOrEmail\": \"{{adminUsername}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Admin login 200\", function () { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.collectionVariables.set(\"adminToken\", data.accessToken || (data.data && data.data.accessToken));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "08. Admin kiểm tra Hàng đợi điều phối PENDING_DISPATCH",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/dispatch",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "dispatch"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Dispatch queue 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().content.length).to.be.at.least(1);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "09. Admin giao đơn cho Đội bay demo_fleet",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/dispatch/{{flowMissionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "dispatch",
+                "{{flowMissionId}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"providerId\": 1,\n  \"note\": \"Giao cho đội bay kiểm thử tự động\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var baseUrl = pm.variables.get(\"baseUrl\") || \"http://localhost:8080\";",
+                  "var adminTok = pm.variables.get(\"adminToken\");",
+                  "pm.sendRequest({",
+                  "    url: baseUrl + \"/api/v1/admin/marketplace/providers?keyword=doi-bay-mien-nam\",",
+                  "    method: \"GET\",",
+                  "    header: { \"Authorization\": \"Bearer \" + adminTok }",
+                  "}, function (err, res) {",
+                  "    if (!err && res.code === 200) {",
+                  "        var list = res.json().content || [];",
+                  "        if (list.length > 0) {",
+                  "            pm.collectionVariables.set(\"flowProviderId\", String(list[0].id));",
+                  "            pm.request.body.raw = JSON.stringify({ providerId: list[0].id, note: \"Giao đội bay miền Nam — minh hoạ\" });",
+                  "        }",
+                  "    }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Dispatched to fleet 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().providerResponseStatus).to.eql(\"PENDING_PROVIDER\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "10. Đăng nhập Chủ đội bay (demo_fleet)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usernameOrEmail\": \"{{fleetUsername}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Fleet login 200\", function () { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.collectionVariables.set(\"fleetToken\", data.accessToken || (data.data && data.data.accessToken));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "11. Đội bay lấy danh sách UAV & Kỹ sư rảnh",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleetToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/fleet/uavs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "fleet",
+                "uavs"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Fleet UAVs 200\", function () { pm.response.to.have.status(200); });",
+                  "var uavs = pm.response.json() || [];",
+                  "var avail = uavs.filter(function (u) { return u.status === \"AVAILABLE\"; });",
+                  "var chosen = avail.length > 0 ? avail[0] : uavs[0];",
+                  "pm.collectionVariables.set(\"flowUavId\", String(chosen.id));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "12. Đội bay lấy Kỹ sư điều khiển đầu tiên",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleetToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/pilots",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "pilots"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Fleet pilots 200\", function () { pm.response.to.have.status(200); });",
+                  "var pilots = pm.response.json() || [];",
+                  "if (pilots.length > 0) pm.collectionVariables.set(\"flowPilotId\", String(pilots[0].id));",
+                  "if (pilots.length > 1) pm.collectionVariables.set(\"flowSecondPilotId\", String(pilots[1].id));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "13. Đội bay xác nhận nhận đơn",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleetToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/{{flowMissionId}}/respond",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                "{{flowMissionId}}",
+                "respond"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accept\": true,\n  \"reason\": \"Đội bay tiếp nhận lịch bay dự án\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Fleet accepted order 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "14. Đội bay phân công Kỹ sư & UAV",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleetToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/{{flowMissionId}}/assign",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                "{{flowMissionId}}",
+                "assign"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pilotId\": 1,\n  \"uavId\": 1,\n  \"note\": \"Phân công tổ bay khảo sát\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var pid = Number(pm.variables.get(\"flowPilotId\"));",
+                  "var uid = Number(pm.variables.get(\"flowUavId\"));",
+                  "pm.request.body.raw = JSON.stringify({ pilotId: pid || null, uavId: uid, note: \"Phân công tổ bay khảo sát — minh hoạ\" });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Assigned pilot & UAV 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().statusGroup).to.eql(\"SCHEDULED\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "14a. Khách tạo đơn thứ hai trùng khung giờ để kiểm thử tranh chấp UAV",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/{{flowProjectId}}/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                "{{flowProjectId}}",
+                "subscriptions"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listingId\": \"{{flowListingId}}\",\n  \"scheduleType\": \"ONCE\",\n  \"startDate\": \"{{flowStartDate}}\",\n  \"units\": 5,\n  \"note\": \"Đơn trùng khung giờ kiểm thử chặn gán trùng UAV\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var lid = Number(pm.variables.get(\"flowListingId\"));",
+                  "var sdate = pm.variables.get(\"flowStartDate\");",
+                  "pm.request.body.raw = JSON.stringify({",
+                  "    listingId: lid,",
+                  "    scheduleType: \"ONCE\",",
+                  "    startDate: sdate,",
+                  "    units: 5,",
+                  "    note: \"Đơn trùng khung giờ kiểm thử chặn gán trùng UAV — minh hoạ\"",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Overlapping second order created 201\", function () { pm.response.to.have.status(201); });",
+                  "var sub2 = pm.response.json();",
+                  "pm.collectionVariables.set(\"flowConflictSubId\", String(sub2.id));",
+                  "pm.collectionVariables.set(\"flowConflictMissionId\", String(sub2.firstMissionId));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "14b. Admin giao đơn trùng giờ cho cùng Đội bay demo_fleet",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/marketplace/dispatch/{{flowConflictMissionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "marketplace",
+                "dispatch",
+                "{{flowConflictMissionId}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"providerId\": 1,\n  \"note\": \"Giao đơn trùng giờ kiểm thử tranh chấp UAV\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var pid = Number(pm.variables.get(\"flowProviderId\"));",
+                  "if (pid) {",
+                  "    pm.request.body.raw = JSON.stringify({ providerId: pid, note: \"Giao đơn trùng giờ kiểm thử tranh chấp UAV — minh hoạ\" });",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Overlapping order dispatched to same fleet 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().providerResponseStatus).to.eql(\"PENDING_PROVIDER\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "14c. Đội bay phân cùng UAV cho đơn trùng giờ → chặn 409 UAV_TIME_CONFLICT",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleetToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/{{flowConflictMissionId}}/assign",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                "{{flowConflictMissionId}}",
+                "assign"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pilotId\": 2,\n  \"uavId\": 1,\n  \"note\": \"Thử phân cùng UAV trùng giờ\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var uid = Number(pm.variables.get(\"flowUavId\"));",
+                  "var pid2 = Number(pm.variables.get(\"flowSecondPilotId\")) || Number(pm.variables.get(\"flowPilotId\"));",
+                  "pm.request.body.raw = JSON.stringify({ pilotId: pid2 || null, uavId: uid, note: \"Thử phân cùng UAV trùng khung giờ — minh hoạ\" });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Double-booked UAV rejected with 409 UAV_TIME_CONFLICT\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "    var err = pm.response.json();",
+                  "    pm.expect(err.code).to.eql(\"UAV_TIME_CONFLICT\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "14d. Khách huỷ đơn trùng giờ để dọn sạch dự án kiểm thử",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/missions/{{flowConflictMissionId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "missions",
+                "{{flowConflictMissionId}}",
+                "cancel"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Huỷ đơn phụ sau khi xác minh 409 UAV_TIME_CONFLICT\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Overlapping test order cancelled 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "15. Đội bay bắt đầu chuyến bay mô phỏng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleetToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/{{flowMissionId}}/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                "{{flowMissionId}}",
+                "start"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Order simulation started 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().statusGroup).to.eql(\"IN_FLIGHT\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "16. Khách theo dõi tiến độ bay mô phỏng trực tuyến",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/{{flowMissionId}}/tracking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "{{flowMissionId}}",
+                "tracking"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Live tracking 200 with telemetry\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var trk = pm.response.json();",
+                  "    pm.expect(trk.statusGroup).to.eql(\"IN_FLIGHT\");",
+                  "    pm.expect(trk.position).to.be.an(\"object\");",
+                  "    pm.expect(trk.battery).to.be.a(\"number\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "17. Đội bay hoàn thành chuyến bay & bàn giao dữ liệu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleetToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/marketplace/provider/orders/{{flowMissionId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "marketplace",
+                "provider",
+                "orders",
+                "{{flowMissionId}}",
+                "complete"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"completionNote\": \"Bàn giao bình đồ trực giao GeoTIFF — minh hoạ\",\n  \"equipmentCondition\": \"Tàu bay và cảm biến hoạt động bình thường\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Order completed 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect([\"DELIVERED\", \"TO_REVIEW\"]).to.include(pm.response.json().statusGroup);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "18. Khách đánh giá 5 sao & kiểm tra đồng bộ rating",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/missions/{{flowMissionId}}/review",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "missions",
+                "{{flowMissionId}}",
+                "review"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Dữ liệu bàn giao rõ nét, đúng tiến độ dự án.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Customer review saved 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "19. Kiểm tra providerBadge cập nhật điểm đánh giá trên chợ",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/marketplace/listings/{{flowListingSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "marketplace",
+                "listings",
+                "{{flowListingSlug}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Listing rating updated & fleet still anonymized\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var d = pm.response.json();",
+                  "    var listing = d.listing || d;",
+                  "    pm.expect(listing.providerDisplayName == null).to.be.true;",
+                  "    pm.expect(listing.providerSlug == null).to.be.true;",
+                  "    pm.expect(listing.providerBadge.reviewCount).to.be.at.least(1);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "20. Khách xoá mềm Dự án kiểm thử sau khi đơn kết thúc",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/projects/{{flowProjectId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "projects",
+                "{{flowProjectId}}"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Soft-deleted completed test project 204\", function () { pm.response.to.have.status(204); });"
                 ]
               }
             }

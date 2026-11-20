@@ -20,6 +20,14 @@ public interface MissionMapper {
     @Mapping(target = "providerDisplayName", source = "provider.displayName")
     @Mapping(target = "listingId", source = "listing.id")
     @Mapping(target = "listingTitle", source = "listing.title")
+    @Mapping(target = "projectId", source = "project.id")
+    @Mapping(target = "projectName", source = "project.name")
+    @Mapping(target = "subscriptionId", source = "subscription.id")
+    @Mapping(
+            target = "statusGroup",
+            expression =
+                    "java(com.uav.platform.common.util.OrderStatusGroups.fromMission(mission.getStatus(), false))")
+    @Mapping(target = "reviewed", constant = "false")
     @Mapping(
             target = "flightPlan",
             expression =

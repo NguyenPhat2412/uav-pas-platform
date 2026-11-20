@@ -55,6 +55,9 @@ public class MissionController {
             @RequestParam(required = false) Long customerId,
             @RequestParam(required = false) LocalDate requestedDate,
             @RequestParam(required = false) String search,
+            @RequestParam(required = false) Long projectId,
+            @RequestParam(required = false) Long providerId,
+            @RequestParam(required = false) String statusGroup,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             Authentication authentication) {
@@ -67,7 +70,10 @@ public class MissionController {
                                 operatorId,
                                 customerId,
                                 requestedDate,
-                                search),
+                                search,
+                                projectId,
+                                providerId,
+                                statusGroup),
                         Pageables.desc(page, size, "createdAt"),
                         authentication));
     }
@@ -376,6 +382,16 @@ public class MissionController {
     @PreAuthorize(
             "@permissionService.has(authentication, 'MISSION_CREATE') or @permissionService.has(authentication, 'MISSION_UPDATE') or @permissionService.has(authentication, 'USER_MANAGE')")
     public ResponseEntity<MissionReviewResponse> upsertReview(
+            @PathVariable Long id,
+            @Valid @RequestBody MissionReviewUpsertRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(service.upsertReview(id, request, authentication));
+    }
+
+    @PostMapping(ApiRoutes.Missions.REVIEW)
+    @PreAuthorize(
+            "@permissionService.has(authentication, 'MISSION_CREATE') or @permissionService.has(authentication, 'MISSION_UPDATE') or @permissionService.has(authentication, 'USER_MANAGE')")
+    public ResponseEntity<MissionReviewResponse> createReview(
             @PathVariable Long id,
             @Valid @RequestBody MissionReviewUpsertRequest request,
             Authentication authentication) {

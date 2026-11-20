@@ -10,6 +10,7 @@ import com.uav.platform.dto.request.billing.invoice.PayInvoiceRequest;
 import com.uav.platform.dto.request.billing.reconciliation.PaymentIpnRequest;
 import com.uav.platform.dto.request.billing.reconciliation.SepayWebhookRequest;
 import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
+import com.uav.platform.dto.response.billing.invoice.InvoiceEmailDispatchResponse;
 import com.uav.platform.dto.response.billing.invoice.InvoiceResponse;
 import com.uav.platform.dto.response.billing.invoice.PaymentResponse;
 import com.uav.platform.dto.response.billing.plan.ServicePlanResponse;
@@ -107,6 +108,14 @@ public class BillingServiceImpl implements BillingService {
 
     @Autowired(required = false)
     private com.uav.platform.service.settings.SystemConfigService systemConfig;
+
+    @Autowired(required = false)
+    private com.uav.platform.service.billing.invoice.InvoiceMailService invoiceMailService;
+
+    public void setInvoiceMailService(
+            com.uav.platform.service.billing.invoice.InvoiceMailService invoiceMailService) {
+        this.invoiceMailService = invoiceMailService;
+    }
 
     private int configuredDueDays() {
         return Math.max(
@@ -320,57 +329,21 @@ public class BillingServiceImpl implements BillingService {
         PaymentAccountSettings settings =
                 paymentSettingsService != null ? paymentSettingsService.current() : null;
 
-        String itemTitle;
-        String itemReference;
-        if (invoice.getMission() != null) {
-            itemTitle = "Flight Mission: " + invoice.getMission().getTitle();
-            itemReference =
-                    invoice.getMission().getCode() != null
-                            ? invoice.getMission().getCode()
-                            : "MISSION-" + invoice.getMission().getId();
-        } else if (invoice.getPlan() != null) {
-            itemTitle = "Service Plan: " + invoice.getPlan().getName();
-            itemReference =
-                    invoice.getPlan().getCode() != null
-                            ? invoice.getPlan().getCode()
-                            : "PLAN-" + invoice.getPlan().getId();
-        } else {
-            itemTitle = "UAV PAS Platform Service Charge";
-            itemReference = invoice.getCode();
-        }
-
-        boolean bankConfigured = settings != null && settings.configured();
         InvoiceReceiptData receiptData =
-                new InvoiceReceiptData(
-                        invoice.getId(),
-                        invoice.getCode(),
-                        invoice.getStatus(),
-                        invoice.getAmount(),
-                        settings != null ? settings.vatRate() : new BigDecimal("0.10"),
-                        invoice.getCreatedAt(),
-                        invoice.getDueDate(),
-                        invoice.getPaidAt(),
-                        invoice.getNotes(),
-                        customer != null ? customer.getUsername() : null,
-                        customer != null ? customer.getFullName() : null,
-                        customer != null ? customer.getEmail() : null,
-                        customer != null ? customer.getPhoneNumber() : null,
-                        profile != null ? profile.getOrganizationName() : null,
-                        profile != null ? profile.getTaxCode() : null,
-                        profile != null ? profile.getBillingAddress() : null,
-                        itemTitle,
-                        itemReference,
-                        settledTxn != null ? settledTxn.getGatewayName() : null,
-                        settledTxn != null ? settledTxn.getTransactionCode() : null,
-                        settledTxn != null ? settledTxn.getCompletedAt() : null,
-                        bankConfigured ? settings.bankName() : null,
-                        bankConfigured ? settings.bankBin() : null,
-                        bankConfigured ? settings.accountNumber() : null,
-                        bankConfigured ? settings.accountName() : null,
-                        invoice.getCode() != null
-                                ? BankTransferServiceImpl.transferContent(invoice.getCode())
-                                : null);
+                InvoiceMailServiceImpl.buildReceiptData(
+                        invoice, customer, profile, settledTxn, settings);
         return InvoiceReceiptOperations.renderPdf(receiptData);
+    }
+
+    @Override
+    public InvoiceEmailDispatchResponse sendInvoiceEmail(
+            Long id, String recipientEmail, Authentication auth) {
+        Invoice invoice = accessibleInvoice(id, auth);
+        if (invoiceMailService == null) {
+            throw SystemException.serviceUnavailable(
+                    "Invoice email service is unavailable", "INVOICE_MAIL_UNAVAILABLE");
+        }
+        return invoiceMailService.sendInvoiceEmail(invoice, recipientEmail);
     }
 
     private PaymentTransaction resolveSettledTransaction(Long invoiceId) {

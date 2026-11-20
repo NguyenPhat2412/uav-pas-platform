@@ -8,6 +8,7 @@ import com.uav.platform.entity.user.CustomerBillingProfile;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.repository.user.CustomerBillingProfileRepository;
 import com.uav.platform.repository.user.UserRepository;
+import com.uav.platform.service.auth.verification.EmailDomainPolicyService;
 import com.uav.platform.service.user.profile.BillingProfileService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class BillingProfileServiceImpl implements BillingProfileService {
     public BillingProfileResponse get(String username) {
         return profiles.findById(user(username).getId())
                 .map(BillingProfileServiceImpl::toResponse)
-                .orElse(new BillingProfileResponse(null, null, null, null, null, 0, null));
+                .orElse(new BillingProfileResponse(null, null, null, null, null, null, 0, null));
     }
 
     @Override
@@ -38,7 +39,7 @@ public class BillingProfileServiceImpl implements BillingProfileService {
             throw SystemException.notFound(CoreConstants.USER_NOT_FOUND);
         return profiles.findById(userId)
                 .map(BillingProfileServiceImpl::toResponse)
-                .orElse(new BillingProfileResponse(null, null, null, null, null, 0, null));
+                .orElse(new BillingProfileResponse(null, null, null, null, null, null, 0, null));
     }
 
     @Override
@@ -49,10 +50,12 @@ public class BillingProfileServiceImpl implements BillingProfileService {
         long current = profile == null ? 0 : profile.getVersion();
         if (request.expectedVersion() != current)
             throw SystemException.conflict("BILLING_PROFILE_STALE");
+        String normalizedBillingEmail = cleanBillingEmail(request.billingEmail());
         if (profile == null) profile = new CustomerBillingProfile(userId);
         profile.setOrganizationName(clean(request.organizationName()));
         profile.setTaxCode(clean(request.taxCode()));
         profile.setBillingAddress(clean(request.billingAddress()));
+        profile.setBillingEmail(normalizedBillingEmail);
         profile.setEmergencyContactName(clean(request.emergencyContactName()));
         profile.setEmergencyContactPhone(clean(request.emergencyContactPhone()));
         profile.setUpdatedAt(LocalDateTime.now());
@@ -68,11 +71,26 @@ public class BillingProfileServiceImpl implements BillingProfileService {
         return value == null || value.isBlank() ? null : value.trim();
     }
 
+    static String cleanBillingEmail(String value) {
+        String trimmed = clean(value);
+        if (trimmed == null) {
+            return null;
+        }
+        try {
+            return EmailDomainPolicyService.validateSyntaxAndReserved(trimmed);
+        } catch (SystemException ex) {
+            throw SystemException.badRequest(
+                            "Địa chỉ email nhận hóa đơn không hợp lệ.", "BILLING_EMAIL_INVALID")
+                    .at("billingEmail");
+        }
+    }
+
     private static BillingProfileResponse toResponse(CustomerBillingProfile p) {
         return new BillingProfileResponse(
                 p.getOrganizationName(),
                 p.getTaxCode(),
                 p.getBillingAddress(),
+                p.getBillingEmail(),
                 p.getEmergencyContactName(),
                 p.getEmergencyContactPhone(),
                 p.getVersion(),

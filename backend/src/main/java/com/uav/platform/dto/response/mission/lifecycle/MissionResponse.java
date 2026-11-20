@@ -1,5 +1,7 @@
 package com.uav.platform.dto.response.mission.lifecycle;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.uav.platform.common.util.OrderStatusGroups;
 import com.uav.platform.dto.response.mission.flightplan.FlightPlanResponse;
 import com.uav.platform.dto.response.mission.flightplan.MissionPermitResponse;
 import com.uav.platform.enums.marketplace.PricingModel;
@@ -55,7 +57,107 @@ public record MissionResponse(
         BigDecimal quotedSubtotalVnd,
         BigDecimal securityDepositVnd,
         ProviderOrderStatus providerResponseStatus,
-        String providerResponseNote) {
+        String providerResponseNote,
+        Long projectId,
+        String projectName,
+        Long subscriptionId,
+        String statusGroup,
+        boolean reviewed) {
+
+    public MissionResponse(
+            Long id,
+            String code,
+            Long customerId,
+            String customerName,
+            Long serviceId,
+            MissionType missionType,
+            String title,
+            String description,
+            LocalDate requestedDate,
+            LocalDateTime startTime,
+            LocalDateTime expectedEndTime,
+            String locationName,
+            BigDecimal latitude,
+            BigDecimal longitude,
+            Long stationId,
+            Long uavId,
+            Long operatorId,
+            MissionPriority priority,
+            MissionStatus status,
+            String notes,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt,
+            String completionNote,
+            String equipmentCondition,
+            String failureReason,
+            String failureNotes,
+            boolean operatorAccepted,
+            String operatorConflictNote,
+            long version,
+            String billingStatus,
+            FlightPlanResponse flightPlan,
+            MissionPermitResponse permit,
+            Long providerId,
+            String providerDisplayName,
+            Long listingId,
+            String listingTitle,
+            PricingModel pricingModelSnapshot,
+            BigDecimal unitPriceSnapshotVnd,
+            BigDecimal bookingUnits,
+            BigDecimal quotedSubtotalVnd,
+            BigDecimal securityDepositVnd,
+            ProviderOrderStatus providerResponseStatus,
+            String providerResponseNote) {
+        this(
+                id,
+                code,
+                customerId,
+                customerName,
+                serviceId,
+                missionType,
+                title,
+                description,
+                requestedDate,
+                startTime,
+                expectedEndTime,
+                locationName,
+                latitude,
+                longitude,
+                stationId,
+                uavId,
+                operatorId,
+                priority,
+                status,
+                notes,
+                createdAt,
+                updatedAt,
+                completionNote,
+                equipmentCondition,
+                failureReason,
+                failureNotes,
+                operatorAccepted,
+                operatorConflictNote,
+                version,
+                billingStatus,
+                flightPlan,
+                permit,
+                providerId,
+                providerDisplayName,
+                listingId,
+                listingTitle,
+                pricingModelSnapshot,
+                unitPriceSnapshotVnd,
+                bookingUnits,
+                quotedSubtotalVnd,
+                securityDepositVnd,
+                providerResponseStatus,
+                providerResponseNote,
+                null,
+                null,
+                null,
+                OrderStatusGroups.fromMission(status, false),
+                false);
+    }
 
     public MissionResponse(
             Long id,
@@ -267,5 +369,67 @@ public record MissionResponse(
                 billingStatus,
                 null,
                 null);
+    }
+
+    public MissionResponse withOrderContext(boolean isReviewed, boolean anonymizeProvider) {
+        return new MissionResponse(
+                id,
+                code,
+                customerId,
+                customerName,
+                serviceId,
+                missionType,
+                title,
+                description,
+                requestedDate,
+                startTime,
+                expectedEndTime,
+                locationName,
+                latitude,
+                longitude,
+                stationId,
+                uavId,
+                operatorId,
+                priority,
+                status,
+                notes,
+                createdAt,
+                updatedAt,
+                completionNote,
+                equipmentCondition,
+                failureReason,
+                failureNotes,
+                operatorAccepted,
+                operatorConflictNote,
+                version,
+                billingStatus,
+                flightPlan,
+                permit,
+                anonymizeProvider ? null : providerId,
+                anonymizeProvider ? null : providerDisplayName,
+                listingId,
+                listingTitle,
+                pricingModelSnapshot,
+                unitPriceSnapshotVnd,
+                bookingUnits,
+                quotedSubtotalVnd,
+                securityDepositVnd,
+                providerResponseStatus,
+                providerResponseNote,
+                projectId,
+                projectName,
+                subscriptionId,
+                OrderStatusGroups.fromMission(status, isReviewed),
+                isReviewed);
+    }
+
+    @JsonGetter("assignedUavId")
+    public Long assignedUavId() {
+        return uavId;
+    }
+
+    @JsonGetter("assignedOperatorId")
+    public Long assignedOperatorId() {
+        return operatorId;
     }
 }

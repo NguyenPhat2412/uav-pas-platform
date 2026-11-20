@@ -7,7 +7,28 @@ public record BillingProfileResponse(
         String organizationName,
         String taxCode,
         String billingAddress,
+        String billingEmail,
         String emergencyContactName,
         String emergencyContactPhone,
         long version,
-        LocalDateTime updatedAt) {}
+        LocalDateTime updatedAt) {
+
+    public BillingProfileResponse(
+            String organizationName,
+            String taxCode,
+            String billingAddress,
+            String emergencyContactName,
+            String emergencyContactPhone,
+            long version,
+            LocalDateTime updatedAt) {
+        this(
+                organizationName,
+                taxCode,
+                billingAddress,
+                null,
+                emergencyContactName,
+                emergencyContactPhone,
+                version,
+                updatedAt);
+    }
+}

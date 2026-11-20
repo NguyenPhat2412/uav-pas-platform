@@ -75,6 +75,17 @@ class ApiRoutesTest {
         assertEquals("/{codeOrSlug}", ApiRoutes.Training.BY_CODE);
         assertEquals("/{id}/progress", ApiRoutes.Training.PROGRESS);
         assertEquals("/{id}", ApiRoutes.Training.BY_ID);
+
+        // Billing & Admin Infrastructure Mail/OTP
+        assertEquals("/invoices/{id}/send-email", ApiRoutes.Billing.SEND_INVOICE_EMAIL);
+        assertEquals("/mail-otp-settings", ApiRoutes.Admin.INFRASTRUCTURE_MAIL_OTP_SETTINGS);
+        assertEquals("/otp-tokens", ApiRoutes.Admin.INFRASTRUCTURE_OTP_TOKENS);
+        assertEquals(
+                "/otp-tokens/{id}/invalidate", ApiRoutes.Admin.INFRASTRUCTURE_OTP_TOKEN_INVALIDATE);
+        assertEquals("/otp-support/send-reset", ApiRoutes.Admin.INFRASTRUCTURE_OTP_SEND_RESET);
+        assertEquals(
+                "/otp-support/clear-rate-limit",
+                ApiRoutes.Admin.INFRASTRUCTURE_OTP_CLEAR_RATE_LIMIT);
     }
 
     @Test

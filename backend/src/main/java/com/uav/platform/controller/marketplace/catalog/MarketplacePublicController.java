@@ -31,7 +31,9 @@ public class MarketplacePublicController {
 
     @GetMapping(ApiRoutes.Marketplace.PUBLIC_LISTINGS)
     public ResponseEntity<PageResponse<MarketplaceListingResponse>> listListings(
+            @RequestParam(required = false) String q,
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String category,
             @RequestParam(required = false) ListingType listingType,
             @RequestParam(required = false) MissionType missionType,
             @RequestParam(required = false) PricingModel pricingModel,
@@ -40,16 +42,18 @@ public class MarketplacePublicController {
             @RequestParam(required = false) Long categoryServiceId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size) {
+        String effectiveKeyword = (q != null && !q.isBlank()) ? q : keyword;
         return ResponseEntity.ok(
                 catalogService.listPublicListings(
-                        keyword,
+                        effectiveKeyword,
+                        category,
                         listingType,
                         missionType,
                         pricingModel,
                         province,
                         maxPriceVnd,
                         categoryServiceId,
-                        PageRequest.of(page, size)));
+                        PageRequest.of(Math.max(0, page), Math.min(Math.max(size, 1), 50))));
     }
 
     @GetMapping(ApiRoutes.Marketplace.PUBLIC_LISTING_BY_SLUG)

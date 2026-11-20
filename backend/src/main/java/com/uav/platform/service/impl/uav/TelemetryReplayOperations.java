@@ -26,8 +26,8 @@ public final class TelemetryReplayOperations {
     public static MissionTelemetryReplayResponse buildReplay(
             Mission mission, List<UavTelemetry> recordedSamples) {
         Uav uav = mission.getUav();
-        String serial = uav != null ? uav.getSerialNumber() : "UAV-350-RTK";
-        String model = uav != null ? uav.getModel() : "Enterprise RTK Quadcopter";
+        String serial = uav != null ? uav.getSerialNumber() : "UAV-350-GNSS";
+        String model = uav != null ? uav.getModel() : "Enterprise GNSS Quadcopter";
         String airframe = UavHealthOperations.classifyAirframe(model, serial);
 
         FlightPlanResponse plan = FlightPlanOperations.read(mission.getFlightPlan());

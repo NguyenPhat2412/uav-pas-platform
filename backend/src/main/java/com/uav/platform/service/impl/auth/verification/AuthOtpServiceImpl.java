@@ -32,6 +32,7 @@ import com.uav.platform.service.auth.verification.EmailDomainPolicyService;
 import com.uav.platform.service.auth.verification.TotpService;
 import com.uav.platform.service.impl.auth.session.RegistrationOperations;
 import com.uav.platform.service.impl.user.account.UserAccountServiceImpl;
+import com.uav.platform.service.infrastructure.MailOtpSettingsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -84,6 +85,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
     private EmailDomainPolicyService emailDomainPolicy;
     private SessionTerminationService sessionTermination;
     private AuthSessionLock sessionLock;
+    private MailOtpSettingsService mailOtpSettings;
 
     @Autowired
     public AuthOtpServiceImpl(
@@ -127,6 +129,21 @@ public class AuthOtpServiceImpl implements AuthOtpService {
     @Autowired(required = false)
     public void setEmailDomainPolicy(EmailDomainPolicyService emailDomainPolicy) {
         this.emailDomainPolicy = emailDomainPolicy;
+    }
+
+    @Autowired(required = false)
+    public void setMailOtpSettings(MailOtpSettingsService mailOtpSettings) {
+        this.mailOtpSettings = mailOtpSettings;
+    }
+
+    private int effectiveOtpTtlMinutes() {
+        return mailOtpSettings != null ? mailOtpSettings.effectiveOtpTtlMinutes() : otpTtlMinutes;
+    }
+
+    private int effectiveMaxOtpAttempts() {
+        return mailOtpSettings != null
+                ? mailOtpSettings.effectiveMaxOtpAttempts()
+                : MAX_OTP_ATTEMPTS;
     }
 
     @Override
@@ -213,7 +230,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
                 AuthMailService.maskEmail(targetUser.getEmail()),
                 PURPOSE_REGISTER_VERIFY,
                 METHOD_EMAIL,
-                otpTtlMinutes * 60,
+                effectiveOtpTtlMinutes() * 60,
                 "Mã xác thực OTP gồm 6 chữ số đã được gửi tới email của bạn.",
                 issued.devOtpPreview());
     }
@@ -457,24 +474,33 @@ public class AuthOtpServiceImpl implements AuthOtpService {
                 AuthMailService.maskEmail(user.getEmail()),
                 purpose,
                 METHOD_EMAIL,
-                otpTtlMinutes * 60,
+                effectiveOtpTtlMinutes() * 60,
                 "Đã gửi mã OTP mới tới email của bạn.",
                 issued.devOtpPreview());
     }
 
     @Override
     public OtpChallengeResponse forgotPassword(ForgotPasswordRequest request) {
+        return forgotPassword(request, null);
+    }
+
+    @Override
+    public OtpChallengeResponse forgotPassword(ForgotPasswordRequest request, String source) {
         if (request == null || request.email() == null || request.email().isBlank()) {
             throw SystemException.badRequest("Vui lòng nhập địa chỉ email");
         }
-        return passwordResetChallenge(request.email().trim());
+        return passwordResetChallenge(request.email().trim(), "admin-support".equals(source));
+    }
+
+    private OtpChallengeResponse passwordResetChallenge(String rawEmail) {
+        return passwordResetChallenge(rawEmail, false);
     }
 
     /**
      * Same answer whether or not the email has an account, so the endpoint cannot be used to list
      * accounts. Unknown emails get a stand-in challenge that no code can ever satisfy.
      */
-    private OtpChallengeResponse passwordResetChallenge(String rawEmail) {
+    private OtpChallengeResponse passwordResetChallenge(String rawEmail, boolean adminSupport) {
         String email = EmailDomainPolicyService.validateSyntaxAndReserved(rawEmail);
         // Reset serves existing accounts, so the sign-up allowlist does not apply here.
         if (emailDomainPolicy != null) emailDomainPolicy.validateForExistingAccount(email);
@@ -491,7 +517,9 @@ public class AuthOtpServiceImpl implements AuthOtpService {
                                 user,
                                 user.getEmail(),
                                 PURPOSE_PASSWORD_RESET,
-                                "Khôi phục mật khẩu tài khoản")
+                                "Khôi phục mật khẩu tài khoản",
+                                null,
+                                adminSupport)
                         : issueDecoyResetToken(email);
         return new OtpChallengeResponse(
                 issued.challengeToken(),
@@ -499,7 +527,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
                 AuthMailService.maskEmail(email),
                 PURPOSE_PASSWORD_RESET,
                 METHOD_EMAIL,
-                otpTtlMinutes * 60,
+                effectiveOtpTtlMinutes() * 60,
                 RESET_SENT_MESSAGE,
                 issued.devOtpPreview());
     }
@@ -795,13 +823,13 @@ public class AuthOtpServiceImpl implements AuthOtpService {
         token.setCodeHash(TOTP_CHALLENGE);
         token.setChallengeToken(UUID.randomUUID().toString());
         token.setAttempts(0);
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(otpTtlMinutes));
+        token.setExpiresAt(LocalDateTime.now().plusMinutes(effectiveOtpTtlMinutes()));
         return otpTokenRepository.save(token);
     }
 
     private IssuedChallenge issueOtpToken(
             AppUser user, String email, String purpose, String emailPurposeLabel) {
-        return issueOtpToken(user, email, purpose, emailPurposeLabel, null);
+        return issueOtpToken(user, email, purpose, emailPurposeLabel, null, false);
     }
 
     private IssuedChallenge issueOtpToken(
@@ -810,15 +838,28 @@ public class AuthOtpServiceImpl implements AuthOtpService {
             String purpose,
             String emailPurposeLabel,
             PendingSignup pending) {
+        return issueOtpToken(user, email, purpose, emailPurposeLabel, pending, false);
+    }
+
+    private IssuedChallenge issueOtpToken(
+            AppUser user,
+            String email,
+            String purpose,
+            String emailPurposeLabel,
+            PendingSignup pending,
+            boolean privilegedBudget) {
         if (rateLimiter != null) {
             // Login 2FA and enabling email 2FA follow a correct password or a live session, so an
             // anonymous flood (sign-ups, resets) cannot use up the budget staff need to sign in.
             rateLimiter.checkGlobalEmailBudget(
-                    PURPOSE_LOGIN_2FA.equals(purpose) || PURPOSE_ENABLE_2FA_EMAIL.equals(purpose));
+                    privilegedBudget
+                            || PURPOSE_LOGIN_2FA.equals(purpose)
+                            || PURPOSE_ENABLE_2FA_EMAIL.equals(purpose));
         }
         invalidateExistingTokens(email, purpose);
         String rawCode = String.format("%06d", secureRandom.nextInt(1_000_000));
         String challengeToken = UUID.randomUUID().toString();
+        int ttlMinutes = effectiveOtpTtlMinutes();
 
         AuthOtpToken token = new AuthOtpToken();
         token.setUser(user);
@@ -827,7 +868,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
         token.setCodeHash(passwordEncoder.encode(rawCode));
         token.setChallengeToken(challengeToken);
         token.setAttempts(0);
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(otpTtlMinutes));
+        token.setExpiresAt(LocalDateTime.now().plusMinutes(ttlMinutes));
         if (pending != null) {
             token.setPendingUsername(pending.username());
             token.setPendingPhoneNumber(pending.phoneNumber());
@@ -835,7 +876,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
         }
         otpTokenRepository.save(token);
 
-        authMailService.sendOtpEmail(email, emailPurposeLabel, rawCode, otpTtlMinutes);
+        authMailService.sendOtpEmail(email, emailPurposeLabel, rawCode, ttlMinutes);
         if (rateLimiter != null) rateLimiter.startResendCooldown(cooldownKey(email, purpose));
         String devPreview = authMailService.revealsOtp() ? rawCode : null;
         return new IssuedChallenge(challengeToken, devPreview);
@@ -862,7 +903,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
         token.setCodeHash(passwordEncoder.encode(decoyResetSecret()));
         token.setChallengeToken(challengeToken);
         token.setAttempts(0);
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(otpTtlMinutes));
+        token.setExpiresAt(LocalDateTime.now().plusMinutes(effectiveOtpTtlMinutes()));
         otpTokenRepository.save(token);
         if (rateLimiter != null) {
             rateLimiter.startResendCooldown(cooldownKey(email, PURPOSE_PASSWORD_RESET));
@@ -928,7 +969,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
             throw SystemException.badRequest(
                     "Mã OTP đã hết hạn hiệu lực. Vui lòng bấm Gửi lại mã.");
         }
-        if (token.getAttempts() >= MAX_OTP_ATTEMPTS) {
+        if (token.getAttempts() >= effectiveMaxOtpAttempts()) {
             throw SystemException.badRequest(
                     "Bạn đã nhập sai OTP quá số lần cho phép. Vui lòng yêu cầu gửi mã mới.");
         }
@@ -953,7 +994,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
     /** Safe to read-modify-write: the token row is locked by resolveActiveToken. */
     private void incrementChallengeAttempt(AuthOtpToken token) {
         token.setAttempts(token.getAttempts() + 1);
-        if (token.getAttempts() >= MAX_OTP_ATTEMPTS) {
+        if (token.getAttempts() >= effectiveMaxOtpAttempts()) {
             token.setConsumedAt(LocalDateTime.now());
         }
         otpTokenRepository.save(token);

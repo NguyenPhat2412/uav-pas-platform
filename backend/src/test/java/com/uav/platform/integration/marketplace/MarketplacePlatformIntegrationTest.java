@@ -353,46 +353,57 @@ class MarketplacePlatformIntegrationTest {
         assertEquals(0, new BigDecimal("5000000").compareTo(finalWallet.totalWithdrawnVnd()));
         assertEquals(0, BigDecimal.ZERO.compareTo(finalWallet.pendingPayoutVnd()));
 
-        // 7. Open RFQ Bidding Flow
-        var rfqMission =
-                missionLifecycle.create(
-                        new MissionCreateRequest(
-                                MissionType.AREA_INSPECTION,
-                                "Tìm đối tác kiểm tra nhiệt đường dây 110kV",
-                                "Tuyến dài 15km, cần camera nhiệt bức xạ",
-                                tomorrow.plusDays(2),
-                                start.plusDays(2),
-                                end.plusDays(2),
-                                "Đồng Nai",
-                                new BigDecimal("10.9500"),
-                                new BigDecimal("106.8200"),
-                                null,
-                                MissionPriority.HIGH,
-                                null,
-                                null,
-                                null,
-                                null,
-                                true),
-                        buyer.getUsername());
-        missionLifecycle.submit(rfqMission.id(), buyerAuth);
-        assertTrue(
-                providerService.listOpenRfqs(seller.getUsername()).stream()
-                        .anyMatch(m -> m.id().equals(rfqMission.id())));
+        // 7. Open RFQ Bidding Flow (explicitly enabled for this test since default is false)
+        systemConfig.update(
+                "marketplace.rfq_enabled",
+                new UpdateConfigurationRequest("true", null),
+                authToken(admin));
+        try {
+            var rfqMission =
+                    missionLifecycle.create(
+                            new MissionCreateRequest(
+                                    MissionType.AREA_INSPECTION,
+                                    "Tìm đối tác kiểm tra nhiệt đường dây 110kV",
+                                    "Tuyến dài 15km, cần camera nhiệt bức xạ",
+                                    tomorrow.plusDays(2),
+                                    start.plusDays(2),
+                                    end.plusDays(2),
+                                    "Đồng Nai",
+                                    new BigDecimal("10.9500"),
+                                    new BigDecimal("106.8200"),
+                                    null,
+                                    MissionPriority.HIGH,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    true),
+                            buyer.getUsername());
+            missionLifecycle.submit(rfqMission.id(), buyerAuth);
+            assertTrue(
+                    providerService.listOpenRfqs(seller.getUsername()).stream()
+                            .anyMatch(m -> m.id().equals(rfqMission.id())));
 
-        var bid =
-                providerService.submitRfqBid(
-                        rfqMission.id(),
-                        new MissionBidCreateRequest(
-                                new BigDecimal("7500000"),
-                                36,
-                                "Sử dụng DJI M350 RTK + Zenmuse H20T chụp ảnh nhiệt toàn tuyến.",
-                                "DJI Matrice 350 RTK + H20T"),
-                        seller.getUsername());
+            var bid =
+                    providerService.submitRfqBid(
+                            rfqMission.id(),
+                            new MissionBidCreateRequest(
+                                    new BigDecimal("7500000"),
+                                    36,
+                                    "Sử dụng DJI M350 RTK + Zenmuse H20T chụp ảnh nhiệt toàn tuyến.",
+                                    "DJI Matrice 350 RTK + H20T"),
+                            seller.getUsername());
 
-        var awarded = providerService.acceptMissionBid(rfqMission.id(), bid.id(), buyerAuth);
-        assertEquals(MissionStatus.CONFIRMED, awarded.status());
-        assertEquals(profile.id(), awarded.providerId());
-        assertEquals(0, new BigDecimal("7500000").compareTo(awarded.quotedSubtotalVnd()));
+            var awarded = providerService.acceptMissionBid(rfqMission.id(), bid.id(), buyerAuth);
+            assertEquals(MissionStatus.CONFIRMED, awarded.status());
+            assertEquals(profile.id(), awarded.providerId());
+            assertEquals(0, new BigDecimal("7500000").compareTo(awarded.quotedSubtotalVnd()));
+        } finally {
+            systemConfig.update(
+                    "marketplace.rfq_enabled",
+                    new UpdateConfigurationRequest("false", null),
+                    authToken(admin));
+        }
     }
 
     @Test
@@ -480,6 +491,9 @@ class MarketplacePlatformIntegrationTest {
                     new ProviderModerationRequest(
                             ProviderVerificationStatus.VERIFIED, "OK", new BigDecimal("0.1000")),
                     admin.getUsername());
+            providerService.registerProviderUav(
+                    new ProviderUavCreateRequest("ESCROW-UAV-01", "Matrice 300", "DJI"),
+                    seller.getUsername());
 
             SystemException xssListingErr =
                     assertThrows(
@@ -739,7 +753,7 @@ class MarketplacePlatformIntegrationTest {
                     adminAuth);
             systemConfig.update(
                     "marketplace.rfq_enabled",
-                    new UpdateConfigurationRequest("true", null),
+                    new UpdateConfigurationRequest("false", null),
                     adminAuth);
         }
     }

@@ -14,4 +14,7 @@ public interface MailDiagnosticsService {
 
     /** Cached SMTP connection probe; never sends a message. */
     MailConnectionCheck connection();
+
+    /** Evicts cached SMTP connection probe when runtime mail settings are updated. */
+    default void invalidateConnectionCache() {}
 }

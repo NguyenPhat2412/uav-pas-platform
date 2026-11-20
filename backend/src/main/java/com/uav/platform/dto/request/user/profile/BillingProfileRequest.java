@@ -14,8 +14,31 @@ public record BillingProfileRequest(
                         message = "Mã số thuế gồm 10 chữ số, hoặc 10 chữ số kèm mã chi nhánh -XXX.")
                 String taxCode,
         @Size(max = 500) String billingAddress,
+        @Size(max = 255)
+                @Pattern(
+                        regexp = "^\\s*$|\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*",
+                        message = "Địa chỉ email nhận hóa đơn không hợp lệ.")
+                String billingEmail,
         @Size(max = 120) String emergencyContactName,
         @Pattern(
                         regexp = "^$|\\+?[0-9 .-]{8,20}",
                         message = "Số điện thoại liên hệ khẩn cấp không hợp lệ.")
-                String emergencyContactPhone) {}
+                String emergencyContactPhone) {
+
+    public BillingProfileRequest(
+            Long expectedVersion,
+            String organizationName,
+            String taxCode,
+            String billingAddress,
+            String emergencyContactName,
+            String emergencyContactPhone) {
+        this(
+                expectedVersion,
+                organizationName,
+                taxCode,
+                billingAddress,
+                null,
+                emergencyContactName,
+                emergencyContactPhone);
+    }
+}

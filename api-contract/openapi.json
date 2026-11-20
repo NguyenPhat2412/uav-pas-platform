@@ -1615,6 +1615,33 @@
               "format": "int32",
               "default": 20
             }
+          },
+          {
+            "name": "projectId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "providerId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "statusGroup",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "PENDING"
+            }
           }
         ],
         "responses": {
@@ -4870,6 +4897,1251 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/MissionInspectionReportResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects": {
+      "get": {
+        "tags": [
+          "project-controller"
+        ],
+        "operationId": "listMyProjects",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "project-controller"
+        ],
+        "operationId": "createProject",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{id}": {
+      "get": {
+        "tags": [
+          "project-controller"
+        ],
+        "operationId": "getProject",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "project-controller"
+        ],
+        "operationId": "updateProject",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "project-controller"
+        ],
+        "operationId": "deleteProject",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{id}/subscriptions": {
+      "get": {
+        "tags": [
+          "project-controller"
+        ],
+        "operationId": "listProjectSubscriptions",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "project-controller"
+        ],
+        "operationId": "createProjectSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectSubscriptionCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectSubscriptionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{id}/subscriptions/{subId}": {
+      "patch": {
+        "tags": [
+          "project-controller"
+        ],
+        "operationId": "updateProjectSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "subId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectSubscriptionUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectSubscriptionResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "project-controller"
+        ],
+        "operationId": "cancelProjectSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "subId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/orders/summary": {
+      "get": {
+        "tags": [
+          "order-controller"
+        ],
+        "operationId": "getOrderSummary",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderSummaryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{id}/tracking": {
+      "get": {
+        "tags": [
+          "order-controller"
+        ],
+        "operationId": "getOrderTracking",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderTrackingResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/missions/{id}/review": {
+      "post": {
+        "tags": [
+          "mission-controller"
+        ],
+        "operationId": "submitMissionReview",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MissionReviewUpsertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "mission-controller"
+        ],
+        "operationId": "upsertMissionReview",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MissionReviewUpsertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/public/marketplace/listings": {
+      "get": {
+        "tags": [
+          "marketplace-public-controller"
+        ],
+        "operationId": "browsePublicListings",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "khảo sát"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "DATA_COLLECTION"
+            }
+          },
+          {
+            "name": "province",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "TP. Hồ Chí Minh"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/public/marketplace/listings/{slug}": {
+      "get": {
+        "tags": [
+          "marketplace-public-controller"
+        ],
+        "operationId": "getPublicListingBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/me": {
+      "get": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "getMyProviderProfile",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "createProviderProfile",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderProfileUpsertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "updateProviderProfile",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderProfileUpsertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/listings": {
+      "get": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "listProviderListings",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/listings/from-template": {
+      "post": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "createListingFromTemplate",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateListingFromTemplateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/listings/{id}": {
+      "delete": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "deleteProviderListing",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/fleet/uavs": {
+      "get": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "listProviderUavs",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "registerProviderUav",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderUavCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/fleet/uavs/{id}": {
+      "patch": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "updateProviderUav",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderUavUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "deleteProviderUav",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/pilots": {
+      "get": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "listProviderPilots",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "createProviderPilot",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderPilotUpsertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/pilots/{id}": {
+      "patch": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "updateProviderPilot",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderPilotPatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "deleteProviderPilot",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/orders": {
+      "get": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "listProviderOrders",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/orders/{missionId}/respond": {
+      "post": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "respondProviderOrder",
+        "parameters": [
+          {
+            "name": "missionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderOrderActionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "409": {
+            "description": "Xung đột khung giờ UAV hoặc kỹ sư mặc định khi nhận đơn (UAV_TIME_CONFLICT | OPERATOR_TIME_CONFLICT)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UAV_TIME_CONFLICT",
+                        "OPERATOR_TIME_CONFLICT"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "uavTimeConflict": {
+                    "summary": "UAV trùng khung giờ",
+                    "value": {
+                      "code": "UAV_TIME_CONFLICT",
+                      "message": "Thiết bị bay đã được phân công cho đơn khác trùng khung giờ."
+                    }
+                  },
+                  "operatorTimeConflict": {
+                    "summary": "Kỹ sư trùng khung giờ",
+                    "value": {
+                      "code": "OPERATOR_TIME_CONFLICT",
+                      "message": "Kỹ sư đã được phân công cho đơn khác trùng khung giờ."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/orders/{missionId}/assign": {
+      "post": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "assignProviderOrder",
+        "parameters": [
+          {
+            "name": "missionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderOrderAssignRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "409": {
+            "description": "Trùng khung giờ UAV hoặc kỹ sư điều khiển (UAV_TIME_CONFLICT | OPERATOR_TIME_CONFLICT)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UAV_TIME_CONFLICT",
+                        "OPERATOR_TIME_CONFLICT"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "uavTimeConflict": {
+                    "summary": "UAV trùng khung giờ",
+                    "value": {
+                      "code": "UAV_TIME_CONFLICT",
+                      "message": "Thiết bị bay đã được phân công cho đơn khác trùng khung giờ."
+                    }
+                  },
+                  "operatorTimeConflict": {
+                    "summary": "Kỹ sư trùng khung giờ",
+                    "value": {
+                      "code": "OPERATOR_TIME_CONFLICT",
+                      "message": "Kỹ sư đã được phân công cho đơn khác trùng khung giờ."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/orders/{missionId}/start": {
+      "post": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "startProviderOrderSimulation",
+        "parameters": [
+          {
+            "name": "missionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "409": {
+            "description": "UAV đang thực hiện chuyến bay khác (UAV_IN_USE) hoặc không còn UAV trống trong khung giờ (NO_UAV_AVAILABLE)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UAV_IN_USE",
+                        "NO_UAV_AVAILABLE"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "uavInUse": {
+                    "summary": "UAV đang thực hiện chuyến bay khác",
+                    "value": {
+                      "code": "UAV_IN_USE",
+                      "message": "Thiết bị bay hiện đang thực hiện một chuyến bay khác."
+                    }
+                  },
+                  "noUavAvailable": {
+                    "summary": "Không còn UAV trống trong khung giờ",
+                    "value": {
+                      "code": "NO_UAV_AVAILABLE",
+                      "message": "Không còn thiết bị bay trống trong khung giờ này."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/marketplace/provider/orders/{missionId}/complete": {
+      "post": {
+        "tags": [
+          "marketplace-provider-controller"
+        ],
+        "operationId": "completeProviderOrder",
+        "parameters": [
+          {
+            "name": "missionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderOrderCompleteRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/marketplace/dispatch": {
+      "get": {
+        "tags": [
+          "marketplace-admin-controller"
+        ],
+        "operationId": "getDispatchQueue",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/marketplace/dispatch/{missionId}": {
+      "post": {
+        "tags": [
+          "marketplace-admin-controller"
+        ],
+        "operationId": "manualDispatchOrder",
+        "parameters": [
+          {
+            "name": "missionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualDispatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/marketplace/dispatch/{missionId}/auto": {
+      "post": {
+        "tags": [
+          "marketplace-admin-controller"
+        ],
+        "operationId": "autoDispatchSingleOrder",
+        "parameters": [
+          {
+            "name": "missionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/marketplace/dispatch/auto": {
+      "post": {
+        "tags": [
+          "marketplace-admin-controller"
+        ],
+        "operationId": "autoDispatchBatch",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutoDispatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/marketplace/stats": {
+      "get": {
+        "tags": [
+          "marketplace-admin-controller"
+        ],
+        "operationId": "getMarketplaceAdminStats",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketplaceAdminStatsResponse"
                 }
               }
             }
@@ -9258,6 +10530,747 @@
             "items": {
               "$ref": "#/components/schemas/DeliverableGeoPin"
             }
+          }
+        }
+      },
+      "ProjectCreateRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "province"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Dự án Khu Đô Thị Nam Sài Gòn"
+          },
+          "province": {
+            "type": "string",
+            "example": "TP. Hồ Chí Minh"
+          },
+          "areaGeoJson": {
+            "type": "string",
+            "example": "{\"type\":\"Polygon\",\"coordinates\":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}"
+          },
+          "note": {
+            "type": "string",
+            "example": "Khảo sát tiến độ san lấp mặt bằng định kỳ"
+          }
+        }
+      },
+      "ProjectUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Dự án Khu Đô Thị Nam Sài Gòn — cập nhật"
+          },
+          "province": {
+            "type": "string",
+            "example": "TP. Hồ Chí Minh"
+          },
+          "areaGeoJson": {
+            "type": "string",
+            "example": "{\"type\":\"Polygon\",\"coordinates\":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}"
+          },
+          "note": {
+            "type": "string",
+            "example": "Cập nhật ranh giới phân khu 2"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "ARCHIVED"
+            ]
+          }
+        }
+      },
+      "ProjectResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "province": {
+            "type": "string"
+          },
+          "areaGeoJson": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "ARCHIVED"
+            ]
+          },
+          "activeSubscriptionCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "missionCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ProjectSubscriptionCreateRequest": {
+        "type": "object",
+        "required": [
+          "listingId",
+          "scheduleType",
+          "startDate",
+          "units"
+        ],
+        "properties": {
+          "listingId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "areaGeoJson": {
+            "type": "string",
+            "example": "{\"type\":\"Polygon\",\"coordinates\":[[[106.701,10.728],[106.712,10.728],[106.712,10.736],[106.701,10.736],[106.701,10.728]]]}"
+          },
+          "scheduleType": {
+            "type": "string",
+            "enum": [
+              "ONCE",
+              "WEEKLY",
+              "MONTHLY"
+            ]
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-25"
+          },
+          "units": {
+            "type": "number",
+            "example": 5
+          },
+          "note": {
+            "type": "string",
+            "example": "Bay khảo sát vào buổi sáng"
+          }
+        }
+      },
+      "ProjectSubscriptionUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "areaGeoJson": {
+            "type": "string"
+          },
+          "scheduleType": {
+            "type": "string",
+            "enum": [
+              "ONCE",
+              "WEEKLY",
+              "MONTHLY"
+            ]
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-26"
+          },
+          "units": {
+            "type": "number",
+            "example": 5
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "PAUSED",
+              "ENDED"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "example": "Tạm điều chỉnh lịch tuần tới"
+          }
+        }
+      },
+      "ProjectSubscriptionResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "projectId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "projectName": {
+            "type": "string"
+          },
+          "listingId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "listingSlug": {
+            "type": "string"
+          },
+          "listingTitle": {
+            "type": "string"
+          },
+          "areaGeoJson": {
+            "type": "string"
+          },
+          "scheduleType": {
+            "type": "string",
+            "enum": [
+              "ONCE",
+              "WEEKLY",
+              "MONTHLY"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "PAUSED",
+              "ENDED"
+            ]
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "nextRunAt": {
+            "type": "string",
+            "format": "date"
+          },
+          "units": {
+            "type": "number"
+          },
+          "unitPriceVnd": {
+            "type": "number"
+          },
+          "estimatedTotalVnd": {
+            "type": "number"
+          },
+          "firstMissionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "latestMissionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "note": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "OrderSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "pending": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "scheduled": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "inFlight": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "delivered": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "toReview": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "OrderTrackingPosition": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number"
+          },
+          "longitude": {
+            "type": "number"
+          },
+          "altitudeMeters": {
+            "type": "number"
+          },
+          "headingDeg": {
+            "type": "number"
+          },
+          "speedMs": {
+            "type": "number"
+          }
+        }
+      },
+      "OrderTrackingResponse": {
+        "type": "object",
+        "properties": {
+          "missionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "type": "string"
+          },
+          "statusGroup": {
+            "type": "string"
+          },
+          "progressPct": {
+            "type": "integer"
+          },
+          "position": {
+            "$ref": "#/components/schemas/OrderTrackingPosition"
+          },
+          "battery": {
+            "type": "integer"
+          },
+          "link": {
+            "type": "string"
+          },
+          "etaMinutes": {
+            "type": "integer"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "MissionReviewUpsertRequest": {
+        "type": "object",
+        "properties": {
+          "rating": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "example": 5
+          },
+          "comment": {
+            "type": "string",
+            "example": "Dữ liệu bình đồ rõ nét, bàn giao đúng tiến độ."
+          }
+        }
+      },
+      "ProviderBadgeResponse": {
+        "type": "object",
+        "properties": {
+          "verified": {
+            "type": "boolean"
+          },
+          "ratingAvg": {
+            "type": "number"
+          },
+          "reviewCount": {
+            "type": "integer"
+          }
+        }
+      },
+      "ProviderProfileUpsertRequest": {
+        "type": "object",
+        "required": [
+          "displayName",
+          "providerType",
+          "province",
+          "contactPhone"
+        ],
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "example": "Đội bay Khảo sát Đông Nam Bộ"
+          },
+          "providerType": {
+            "type": "string",
+            "enum": [
+              "COMPANY",
+              "INDIVIDUAL"
+            ]
+          },
+          "taxOrIdNumber": {
+            "type": "string",
+            "example": "0319008899"
+          },
+          "flightLicenseNumber": {
+            "type": "string",
+            "example": "GP-BAY-2026-88"
+          },
+          "bio": {
+            "type": "string",
+            "example": "Đội bay khảo sát bản đồ và hạ tầng khu công nghiệp"
+          },
+          "province": {
+            "type": "string",
+            "example": "TP. Hồ Chí Minh"
+          },
+          "serviceRadiusKm": {
+            "type": "integer",
+            "example": 250
+          },
+          "contactPhone": {
+            "type": "string",
+            "example": "0909123456"
+          },
+          "bankName": {
+            "type": "string",
+            "example": "Vietcombank"
+          },
+          "bankAccountNumber": {
+            "type": "string",
+            "example": "0071000889900"
+          },
+          "bankAccountHolder": {
+            "type": "string",
+            "example": "DOI BAY DONG NAM BO"
+          }
+        }
+      },
+      "CreateListingFromTemplateRequest": {
+        "type": "object",
+        "required": [
+          "serviceOfferingId"
+        ],
+        "properties": {
+          "serviceOfferingId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Khảo sát bản đồ 2D khu công nghiệp"
+          },
+          "province": {
+            "type": "string",
+            "example": "TP. Hồ Chí Minh"
+          },
+          "serviceRadiusKm": {
+            "type": "integer",
+            "example": 200
+          },
+          "basePriceVnd": {
+            "type": "number",
+            "example": 450000
+          },
+          "pricingModel": {
+            "type": "string",
+            "enum": [
+              "PER_HOUR",
+              "PER_HECTARE",
+              "PER_PACKAGE"
+            ]
+          },
+          "minBookingUnits": {
+            "type": "number",
+            "example": 5
+          },
+          "deliverySlaHours": {
+            "type": "integer",
+            "example": 48
+          },
+          "onSiteSlaHours": {
+            "type": "integer",
+            "example": 24
+          },
+          "submitForReview": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "ProviderUavCreateRequest": {
+        "type": "object",
+        "required": [
+          "model",
+          "serialNumber",
+          "manufacturer"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "example": "Matrice 350 Survey"
+          },
+          "serialNumber": {
+            "type": "string",
+            "example": "SN-M350-DEMO-99"
+          },
+          "manufacturer": {
+            "type": "string",
+            "example": "DJI"
+          }
+        }
+      },
+      "ProviderUavUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "example": "Matrice 350 Survey"
+          },
+          "serialNumber": {
+            "type": "string",
+            "example": "SN-M350-DEMO-99"
+          },
+          "manufacturer": {
+            "type": "string",
+            "example": "DJI"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "IN_USE",
+              "MAINTENANCE"
+            ]
+          }
+        }
+      },
+      "ProviderPilotUpsertRequest": {
+        "type": "object",
+        "required": [
+          "fullName"
+        ],
+        "properties": {
+          "pilotUserId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "fullName": {
+            "type": "string",
+            "example": "Kỹ sư Nguyễn Văn Minh"
+          },
+          "email": {
+            "type": "string",
+            "example": "pilot.minh@uav.local"
+          },
+          "phone": {
+            "type": "string",
+            "example": "0909888777"
+          },
+          "licenseNumber": {
+            "type": "string",
+            "example": "CC-UAV-2026-19"
+          },
+          "specialization": {
+            "type": "string",
+            "example": "Khảo sát bản đồ & kiểm tra nhiệt"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "IN_FLIGHT",
+              "OFF_DUTY"
+            ]
+          },
+          "assignedUavId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          }
+        }
+      },
+      "ProviderPilotPatchRequest": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Kỹ sư Nguyễn Văn Minh"
+          },
+          "phone": {
+            "type": "string",
+            "example": "0909888777"
+          },
+          "specialization": {
+            "type": "string",
+            "example": "Khảo sát bản đồ & mô hình 3D"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "IN_FLIGHT",
+              "OFF_DUTY"
+            ]
+          },
+          "assignedUavId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          }
+        }
+      },
+      "ProviderOrderActionRequest": {
+        "type": "object",
+        "required": [
+          "accept"
+        ],
+        "properties": {
+          "accept": {
+            "type": "boolean",
+            "example": true
+          },
+          "reason": {
+            "type": "string",
+            "example": "Đội bay sẵn sàng thực hiện theo lịch dự án"
+          }
+        }
+      },
+      "ProviderOrderAssignRequest": {
+        "type": "object",
+        "required": [
+          "uavId"
+        ],
+        "properties": {
+          "pilotId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "pilotUserId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "uavId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "note": {
+            "type": "string",
+            "example": "Phân công tàu bay khảo sát chính"
+          }
+        }
+      },
+      "ManualDispatchRequest": {
+        "type": "object",
+        "required": [
+          "providerId"
+        ],
+        "properties": {
+          "providerId": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "note": {
+            "type": "string",
+            "example": "Điều phối cho đội bay gần khu vực dự án nhất"
+          }
+        }
+      },
+      "AutoDispatchRequest": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "example": 20
+          }
+        }
+      },
+      "MarketplaceAdminStatsResponse": {
+        "type": "object",
+        "properties": {
+          "pendingDispatchCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pendingProviderCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "scheduledCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "inFlightCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "deliveredCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "completedCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cancelledCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "verifiedProvidersCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pendingProvidersCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "publishedListingsCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pendingListingsCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "illustrativeGrossVolumeVnd": {
+            "type": "number"
+          },
+          "illustrativePlatformFeeVnd": {
+            "type": "number"
+          }
+        }
+      },
+      "ProviderOrderCompleteRequest": {
+        "type": "object",
+        "required": [
+          "completionNote"
+        ],
+        "properties": {
+          "completionNote": {
+            "type": "string",
+            "example": "Bàn giao bình đồ trực giao GeoTIFF — minh hoạ"
+          },
+          "equipmentCondition": {
+            "type": "string",
+            "example": "Thiết bị hoạt động bình thường"
           }
         }
       }

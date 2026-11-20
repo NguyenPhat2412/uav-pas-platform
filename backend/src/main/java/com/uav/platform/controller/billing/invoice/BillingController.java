@@ -6,7 +6,9 @@ import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.dto.request.billing.invoice.CancelInvoiceRequest;
 import com.uav.platform.dto.request.billing.invoice.CreateInvoiceRequest;
 import com.uav.platform.dto.request.billing.invoice.PayInvoiceRequest;
+import com.uav.platform.dto.request.billing.invoice.SendInvoiceEmailRequest;
 import com.uav.platform.dto.request.billing.quota.UpdateQuotaRequest;
+import com.uav.platform.dto.response.billing.invoice.InvoiceEmailDispatchResponse;
 import com.uav.platform.dto.response.billing.invoice.InvoiceResponse;
 import com.uav.platform.dto.response.billing.invoice.PaymentResponse;
 import com.uav.platform.dto.response.billing.plan.ServicePlanResponse;
@@ -98,6 +100,16 @@ public class BillingController {
                         HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=\"invoice-" + safeCode + ".pdf\"")
                 .body(pdf);
+    }
+
+    @PostMapping(ApiRoutes.Billing.SEND_INVOICE_EMAIL)
+    public ResponseEntity<InvoiceEmailDispatchResponse> sendInvoiceEmail(
+            @PathVariable Long id,
+            @Valid @RequestBody(required = false) SendInvoiceEmailRequest request,
+            Authentication auth) {
+        return ResponseEntity.ok(
+                billingService.sendInvoiceEmail(
+                        id, request == null ? null : request.recipientEmail(), auth));
     }
 
     @PostMapping(ApiRoutes.Billing.INVOICES)

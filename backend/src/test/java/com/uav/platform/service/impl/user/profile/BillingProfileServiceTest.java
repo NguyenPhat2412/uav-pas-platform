@@ -66,4 +66,38 @@ class BillingProfileServiceTest {
                                                         2L, "ACME", null, null, null, null)))
                         .getMessage());
     }
+
+    @Test
+    void billingEmailIsNormalizedAndValidated() {
+        when(profiles.findById(7L)).thenReturn(Optional.empty());
+        var saved =
+                service.update(
+                        "pilot",
+                        new BillingProfileRequest(
+                                0L,
+                                "ACME Vietnam",
+                                "0101234567",
+                                "Hà Nội",
+                                "  Accounting@Acme.VN ",
+                                null,
+                                null));
+        assertEquals("accounting@acme.vn", saved.billingEmail());
+
+        SystemException invalid =
+                assertThrows(
+                        SystemException.class,
+                        () ->
+                                service.update(
+                                        "pilot",
+                                        new BillingProfileRequest(
+                                                0L,
+                                                "ACME",
+                                                null,
+                                                null,
+                                                "not-an-email",
+                                                null,
+                                                null)));
+        assertEquals("BILLING_EMAIL_INVALID", invalid.getCode());
+        assertEquals("billingEmail", invalid.getField());
+    }
 }

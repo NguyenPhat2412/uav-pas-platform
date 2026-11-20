@@ -29,7 +29,23 @@ public class SystemSettingsDataInitializer implements ApplicationRunner {
                 SettingValueType.DECIMAL,
                 new BigDecimal("0.0000"),
                 new BigDecimal("0.5000"),
-                "Tỷ lệ hoa hồng nền tảng thu trên mỗi đơn hàng Đối tác 3P hoàn thành (0.00 đến 0.50)");
+                "Tỷ lệ đối soát dịch vụ nền tảng tiêu chuẩn theo Phụ lục Biểu phí Đối tác (0.00 đến 0.50)");
+        seed(
+                "marketplace.pro_fee_rate",
+                "0.06",
+                "MARKETPLACE",
+                SettingValueType.DECIMAL,
+                new BigDecimal("0.0000"),
+                new BigDecimal("0.5000"),
+                "Tỷ lệ đối soát dịch vụ nền tảng theo Phụ lục Đối tác gói Pro (0.00 đến 0.50)");
+        seed(
+                "marketplace.enterprise_fee_rate",
+                "0.03",
+                "MARKETPLACE",
+                SettingValueType.DECIMAL,
+                new BigDecimal("0.0000"),
+                new BigDecimal("0.5000"),
+                "Tỷ lệ đối soát dịch vụ nền tảng theo Phụ lục Đối tác gói Enterprise (0.00 đến 0.50)");
         seed(
                 "marketplace.min_payout_vnd",
                 "100000",
@@ -56,12 +72,12 @@ public class SystemSettingsDataInitializer implements ApplicationRunner {
                 "Bán kính phục vụ mặc định khi tạo hồ sơ hoặc tin đăng dịch vụ (km)");
         seed(
                 "marketplace.rfq_enabled",
-                "true",
+                "false",
                 "MARKETPLACE",
                 SettingValueType.BOOLEAN,
                 null,
                 null,
-                "Cho phép đăng yêu cầu báo giá mở (Open RFQ) và đối tác chào thầu");
+                "Cho phép mở yêu cầu báo giá mở (ngoài phạm vi đồ án, mặc định tắt)");
         seed(
                 "marketplace.require_escrow_before_start",
                 "false",

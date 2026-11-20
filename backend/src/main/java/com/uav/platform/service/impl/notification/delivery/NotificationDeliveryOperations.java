@@ -14,6 +14,8 @@ import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.repository.notification.PushDeviceTokenRepository;
 import com.uav.platform.service.auth.verification.AuthMailService;
 import com.uav.platform.service.auth.verification.EmailDomainPolicyService;
+import com.uav.platform.service.billing.invoice.InvoiceMailService;
+import com.uav.platform.service.infrastructure.MailOtpSettingsService;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.mail.Session;
@@ -75,6 +77,12 @@ public class NotificationDeliveryOperations {
 
     @Autowired(required = false)
     private ObjectProvider<EmailDomainPolicyService> emailDomainPolicyProvider;
+
+    @Autowired(required = false)
+    private ObjectProvider<MailOtpSettingsService> mailOtpSettingsProvider;
+
+    @Autowired(required = false)
+    private ObjectProvider<InvoiceMailService> invoiceMailServiceProvider;
 
     private Executor executor;
     private HttpClient httpClient;
@@ -149,6 +157,16 @@ public class NotificationDeliveryOperations {
     public void setEmailDomainPolicyProvider(
             ObjectProvider<EmailDomainPolicyService> emailDomainPolicyProvider) {
         this.emailDomainPolicyProvider = emailDomainPolicyProvider;
+    }
+
+    public void setMailOtpSettingsProvider(
+            ObjectProvider<MailOtpSettingsService> mailOtpSettingsProvider) {
+        this.mailOtpSettingsProvider = mailOtpSettingsProvider;
+    }
+
+    public void setInvoiceMailServiceProvider(
+            ObjectProvider<InvoiceMailService> invoiceMailServiceProvider) {
+        this.invoiceMailServiceProvider = invoiceMailServiceProvider;
     }
 
     public static PushDeviceToken createOrReassign(
@@ -328,6 +346,14 @@ public class NotificationDeliveryOperations {
     }
 
     void dispatchOperationalEmail(NotificationDeliveryPayload payload) throws Exception {
+        if (payload.referenceType() != null
+                && "INVOICE".equalsIgnoreCase(payload.referenceType().trim())
+                && invoiceMailServiceProvider != null
+                && invoiceMailServiceProvider.getIfAvailable() != null) {
+            // Itemized invoice & receipt emails with PDF attachments are dispatched by
+            // InvoiceMailService.
+            return;
+        }
         boolean emailAllowed =
                 payload.emailAllowed() != null
                         ? payload.emailAllowed()
@@ -335,11 +361,19 @@ public class NotificationDeliveryOperations {
         if (!emailAllowed) {
             return;
         }
+        MailOtpSettingsService dynamicSettings =
+                mailOtpSettingsProvider == null ? null : mailOtpSettingsProvider.getIfAvailable();
         AuthMailService authMail =
                 authMailProvider == null ? null : authMailProvider.getIfAvailable();
         JavaMailSender mailSender =
-                mailSenderProvider == null ? null : mailSenderProvider.getIfAvailable();
-        if (authMail == null || !authMail.isMailEnabled() || mailSender == null) {
+                dynamicSettings != null
+                        ? dynamicSettings.currentMailSender()
+                        : (mailSenderProvider == null ? null : mailSenderProvider.getIfAvailable());
+        boolean mailEnabled =
+                dynamicSettings != null
+                        ? dynamicSettings.isMailEnabled()
+                        : (authMail != null && authMail.isMailEnabled());
+        if (!mailEnabled || mailSender == null) {
             return;
         }
         String toEmail = payload.userEmail() == null ? null : payload.userEmail().trim();
@@ -364,10 +398,19 @@ public class NotificationDeliveryOperations {
         }
         MimeMessageHelper helper =
                 new MimeMessageHelper(message, false, StandardCharsets.UTF_8.name());
-        helper.setFrom(
-                fromAddress == null || fromAddress.isBlank()
-                        ? "no-reply@uav.all1.vn"
-                        : fromAddress.trim());
+        String resolvedFrom =
+                dynamicSettings != null
+                        ? dynamicSettings.effectiveFromAddress()
+                        : (fromAddress == null || fromAddress.isBlank()
+                                ? "no-reply@uav.all1.vn"
+                                : fromAddress.trim());
+        String displayName =
+                dynamicSettings != null ? dynamicSettings.effectiveSenderDisplayName() : null;
+        if (displayName != null && !displayName.isBlank()) {
+            helper.setFrom(resolvedFrom, displayName.trim());
+        } else {
+            helper.setFrom(resolvedFrom);
+        }
         helper.setTo(toEmail);
         String sanitizedSubject =
                 payload.title() == null

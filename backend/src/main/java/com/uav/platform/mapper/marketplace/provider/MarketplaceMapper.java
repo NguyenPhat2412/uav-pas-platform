@@ -3,10 +3,12 @@ package com.uav.platform.mapper.marketplace.provider;
 import com.uav.platform.dto.response.marketplace.catalog.MarketplaceListingResponse;
 import com.uav.platform.dto.response.marketplace.catalog.MarketplaceReviewResponse;
 import com.uav.platform.dto.response.marketplace.catalog.MissionBidResponse;
+import com.uav.platform.dto.response.marketplace.catalog.ProviderBadgeResponse;
 import com.uav.platform.dto.response.marketplace.escrow.ProviderPayoutResponse;
 import com.uav.platform.dto.response.marketplace.escrow.WalletTransactionResponse;
 import com.uav.platform.dto.response.marketplace.provider.ProviderDocumentResponse;
 import com.uav.platform.dto.response.marketplace.provider.ProviderEquipmentResponse;
+import com.uav.platform.dto.response.marketplace.provider.ProviderPilotResponse;
 import com.uav.platform.dto.response.marketplace.provider.ProviderProfileResponse;
 import com.uav.platform.dto.response.marketplace.provider.ProviderUavResponse;
 import com.uav.platform.entity.inventory.Equipment;
@@ -14,13 +16,16 @@ import com.uav.platform.entity.marketplace.MarketplaceListing;
 import com.uav.platform.entity.marketplace.MissionBid;
 import com.uav.platform.entity.marketplace.ProviderDocument;
 import com.uav.platform.entity.marketplace.ProviderPayout;
+import com.uav.platform.entity.marketplace.ProviderPilot;
 import com.uav.platform.entity.marketplace.ProviderProfile;
 import com.uav.platform.entity.marketplace.WalletTransaction;
 import com.uav.platform.entity.mission.MissionReview;
 import com.uav.platform.entity.uav.Uav;
+import com.uav.platform.enums.marketplace.ProviderVerificationStatus;
 
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Component
@@ -71,6 +76,26 @@ public class MarketplaceMapper {
                         : documents.stream().map(this::toDocumentResponse).toList());
     }
 
+    public ProviderBadgeResponse toProviderBadge(MarketplaceListing listing) {
+        var provider = listing.getProvider();
+        boolean verified =
+                provider == null
+                        || provider.getVerificationStatus() == ProviderVerificationStatus.VERIFIED;
+        BigDecimal rating =
+                listing.getReviewCount() > 0 || provider == null
+                        ? listing.getRatingAvg()
+                        : (provider.getRatingAvg() != null
+                                ? provider.getRatingAvg()
+                                : BigDecimal.ZERO);
+        int reviews =
+                listing.getReviewCount() > 0 || provider == null
+                        ? listing.getReviewCount()
+                        : provider.getReviewCount();
+        return new ProviderBadgeResponse(
+                verified, rating != null ? rating : BigDecimal.ZERO, reviews);
+    }
+
+    /** Full listing projection for Admin moderation and Seller Studio. */
     public MarketplaceListingResponse toListingResponse(MarketplaceListing listing) {
         var provider = listing.getProvider();
         var category = listing.getCategoryService();
@@ -78,7 +103,7 @@ public class MarketplaceMapper {
                 listing.getId(),
                 provider != null ? provider.getId() : null,
                 provider != null ? provider.getSlug() : null,
-                provider != null ? provider.getDisplayName() : "UAV-PAS Chính hãng",
+                provider != null ? provider.getDisplayName() : "Đối tác đã xác minh UAV PAS",
                 provider != null ? provider.getVerificationStatus() : null,
                 provider == null,
                 category != null ? category.getId() : null,
@@ -107,7 +132,51 @@ public class MarketplaceMapper {
                 listing.getReviewCount(),
                 listing.getBookingCount(),
                 listing.isFeatured(),
-                listing.getCreatedAt());
+                listing.getCreatedAt(),
+                toProviderBadge(listing));
+    }
+
+    /** Anonymized listing projection for public/customer marketplace: hides fleet name and slug. */
+    public MarketplaceListingResponse toPublicListingResponse(MarketplaceListing listing) {
+        var provider = listing.getProvider();
+        var category = listing.getCategoryService();
+        return new MarketplaceListingResponse(
+                listing.getId(),
+                null,
+                null,
+                null,
+                provider != null
+                        ? provider.getVerificationStatus()
+                        : ProviderVerificationStatus.VERIFIED,
+                true,
+                category != null ? category.getId() : null,
+                category != null ? category.getCode() : null,
+                category != null ? category.getName() : null,
+                listing.getSlug(),
+                listing.getTitle(),
+                listing.getSummary(),
+                listing.getDescription(),
+                listing.getListingType(),
+                listing.getMissionType(),
+                listing.getPricingModel(),
+                listing.getBasePriceVnd(),
+                listing.getMinBookingUnits(),
+                listing.getSecurityDepositVnd(),
+                listing.getProvince(),
+                listing.getServiceRadiusKm(),
+                listing.getEquipmentSpecs(),
+                listing.getDeliverablesSummary(),
+                listing.getCoverImageUrl(),
+                listing.getOnSiteSlaHours(),
+                listing.getDeliverySlaHours(),
+                listing.getModerationStatus(),
+                null,
+                listing.getRatingAvg(),
+                listing.getReviewCount(),
+                listing.getBookingCount(),
+                listing.isFeatured(),
+                listing.getCreatedAt(),
+                toProviderBadge(listing));
     }
 
     public MarketplaceReviewResponse toReviewResponse(MissionReview review) {
@@ -152,6 +221,25 @@ public class MarketplaceMapper {
                 eq.getAvailableQuantity(),
                 eq.getStatus(),
                 eq.getCreatedAt());
+    }
+
+    public ProviderPilotResponse toPilotResponse(ProviderPilot pilot, long completedMissionsCount) {
+        Long pilotUserId = pilot.getPilotUser() != null ? pilot.getPilotUser().getId() : null;
+        return new ProviderPilotResponse(
+                pilot.getId(),
+                pilot.getProvider() != null ? pilot.getProvider().getId() : null,
+                pilotUserId,
+                pilotUserId,
+                pilot.getFullName(),
+                pilot.getEmail(),
+                pilot.getPhone(),
+                pilot.getLicenseNumber(),
+                pilot.getSpecialization(),
+                pilot.getPilotStatus(),
+                pilot.getAssignedUav() != null ? pilot.getAssignedUav().getId() : null,
+                pilot.getAssignedUav() != null ? pilot.getAssignedUav().getModel() : null,
+                completedMissionsCount,
+                pilot.getCreatedAt());
     }
 
     public WalletTransactionResponse toWalletTransactionResponse(WalletTransaction tx) {

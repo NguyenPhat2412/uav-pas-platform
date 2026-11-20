@@ -50,6 +50,8 @@ public interface MissionRepository
     boolean existsByUavIdAndIdNotAndStatusNotIn(
             Long uavId, Long missionId, Collection<MissionStatus> terminalStatuses);
 
+    boolean existsByUavIdAndIdNotAndStatus(Long uavId, Long missionId, MissionStatus status);
+
     @EntityGraph(attributePaths = {"uav", "operator", "station"})
     @Query("select m from Mission m where m.status not in :excludedStatuses")
     List<Mission> findActiveWithResourcesNotIn(
@@ -72,4 +74,13 @@ public interface MissionRepository
             "select m from Mission m where m.providerResponseStatus = com.uav.platform.enums.marketplace.ProviderOrderStatus.OPEN_RFQ and m.status in :openStatuses order by m.createdAt desc")
     List<Mission> findOpenRfqMissions(
             @Param("openStatuses") Collection<MissionStatus> openStatuses);
+
+    long countByProjectId(Long projectId);
+
+    boolean existsByProjectIdAndStatusNotIn(
+            Long projectId, Collection<MissionStatus> terminalStatuses);
+
+    Optional<Mission> findFirstBySubscriptionIdOrderByIdAsc(Long subscriptionId);
+
+    Optional<Mission> findFirstBySubscriptionIdOrderByIdDesc(Long subscriptionId);
 }

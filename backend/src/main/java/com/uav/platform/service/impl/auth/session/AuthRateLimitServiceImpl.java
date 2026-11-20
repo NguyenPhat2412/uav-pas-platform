@@ -3,6 +3,7 @@ package com.uav.platform.service.impl.auth.session;
 import com.uav.platform.enums.auth.AuthRateLimitAction;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.service.auth.session.AuthRateLimitService;
+import com.uav.platform.service.infrastructure.MailOtpSettingsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +44,7 @@ public class AuthRateLimitServiceImpl implements AuthRateLimitService {
     private final int maxSignedInEmailsPerMinute;
     private final Duration resendCooldown;
     private final Clock clock;
+    private MailOtpSettingsService mailOtpSettings;
 
     @Autowired
     public AuthRateLimitServiceImpl(
@@ -113,21 +115,52 @@ public class AuthRateLimitServiceImpl implements AuthRateLimitService {
         this.clock = clock;
     }
 
+    @Autowired(required = false)
+    public void setMailOtpSettings(MailOtpSettingsService mailOtpSettings) {
+        this.mailOtpSettings = mailOtpSettings;
+    }
+
+    private int effectiveOtpPerAccount() {
+        return mailOtpSettings != null ? mailOtpSettings.effectiveOtpPerAccount() : otpPerAccount;
+    }
+
+    private int effectiveOtpPerClient() {
+        return mailOtpSettings != null ? mailOtpSettings.effectiveOtpPerIp() : otpPerClient;
+    }
+
+    private int effectiveMaxEmailsPerMinute() {
+        return mailOtpSettings != null
+                ? mailOtpSettings.effectiveMaxEmailsPerMinute()
+                : maxEmailsPerMinute;
+    }
+
+    private Duration effectiveResendCooldown() {
+        return mailOtpSettings != null
+                ? Duration.ofSeconds(mailOtpSettings.effectiveResendCooldownSeconds())
+                : resendCooldown;
+    }
+
     @Override
     public void checkClient(AuthRateLimitAction action, String clientIp) {
-        int limit = action == AuthRateLimitAction.OTP_ISSUE ? otpPerClient : action.perClient();
+        int limit =
+                action == AuthRateLimitAction.OTP_ISSUE
+                        ? effectiveOtpPerClient()
+                        : action.perClient();
         consume(action.name() + "|ip|" + normalize(clientIp), clientIp, limit, WINDOW);
     }
 
     @Override
     public void checkAccount(AuthRateLimitAction action, String accountKey) {
-        int limit = action == AuthRateLimitAction.OTP_ISSUE ? otpPerAccount : action.perAccount();
+        int limit =
+                action == AuthRateLimitAction.OTP_ISSUE
+                        ? effectiveOtpPerAccount()
+                        : action.perAccount();
         consume(action.name() + "|acct|" + normalize(accountKey), accountKey, limit, WINDOW);
     }
 
     @Override
     public void checkGlobalEmailBudget(boolean signedIn) {
-        int budget = signedIn ? maxSignedInEmailsPerMinute : maxEmailsPerMinute;
+        int budget = signedIn ? maxSignedInEmailsPerMinute : effectiveMaxEmailsPerMinute();
         if (!enabled || budget <= 0) return;
         long now = clock.millis();
         long windowStart = now - EMAIL_BUDGET_WINDOW.toMillis();
@@ -158,7 +191,7 @@ public class AuthRateLimitServiceImpl implements AuthRateLimitService {
         if (!enabled || blank(key)) return;
         Long last = cooldowns.get(normalize(key));
         if (last == null) return;
-        long waitMs = last + resendCooldown.toMillis() - clock.millis();
+        long waitMs = last + effectiveResendCooldown().toMillis() - clock.millis();
         if (waitMs > 0) {
             long seconds = Math.max(1, (waitMs + 999) / 1000);
             throw new SystemException(
@@ -172,6 +205,17 @@ public class AuthRateLimitServiceImpl implements AuthRateLimitService {
     public void startResendCooldown(String key) {
         if (!enabled || blank(key)) return;
         cooldowns.put(normalize(key), clock.millis());
+    }
+
+    @Override
+    public void clearAccountLimits(String accountKey) {
+        if (blank(accountKey)) return;
+        String norm = normalize(accountKey);
+        String acctSuffix = "|acct|" + norm;
+        String acctDisableSuffix = "|acct|2fa-disable:" + norm;
+        hits.keySet().removeIf(k -> k.endsWith(acctSuffix) || k.endsWith(acctDisableSuffix));
+        String cooldownSuffix = "|" + norm;
+        cooldowns.keySet().removeIf(k -> k.equals(norm) || k.endsWith(cooldownSuffix));
     }
 
     private void consume(String bucket, String rawKey, int limit, Duration window) {
@@ -200,6 +244,7 @@ public class AuthRateLimitServiceImpl implements AuthRateLimitService {
     public void purgeExpired() {
         long now = clock.millis();
         long windowStart = now - WINDOW.toMillis();
+        long cooldownMillis = effectiveResendCooldown().toMillis();
         hits.entrySet()
                 .removeIf(
                         e -> {
@@ -210,7 +255,7 @@ public class AuthRateLimitServiceImpl implements AuthRateLimitService {
                                 return times.isEmpty();
                             }
                         });
-        cooldowns.values().removeIf(t -> t + resendCooldown.toMillis() <= now);
+        cooldowns.values().removeIf(t -> t + cooldownMillis <= now);
     }
 
     private static boolean blank(String value) {

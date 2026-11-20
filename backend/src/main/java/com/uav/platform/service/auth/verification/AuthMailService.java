@@ -1,5 +1,8 @@
 package com.uav.platform.service.auth.verification;
 
+import com.uav.platform.service.infrastructure.MailOtpSettingsService;
+
+import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 /**
  * Handles outbound transactional authentication emails (OTP verification, 2FA, password reset).
@@ -25,6 +30,7 @@ public class AuthMailService {
     private final String fromAddress;
     private final boolean otpDevPreview;
     private EmailDomainPolicyService emailDomainPolicy;
+    private MailOtpSettingsService mailOtpSettings;
 
     public AuthMailService(
             @Autowired(required = false) JavaMailSender mailSender,
@@ -42,6 +48,11 @@ public class AuthMailService {
         this.emailDomainPolicy = emailDomainPolicy;
     }
 
+    @Autowired(required = false)
+    public void setMailOtpSettings(MailOtpSettingsService mailOtpSettings) {
+        this.mailOtpSettings = mailOtpSettings;
+    }
+
     /**
      * Local development only: OTP codes may be echoed in API responses and logs. Off by default, because a
      * reset code returned to the requester (or written to shared logs) hands over the account.
@@ -50,8 +61,24 @@ public class AuthMailService {
         return otpDevPreview;
     }
 
+    public JavaMailSender effectiveMailSender() {
+        return mailOtpSettings != null ? mailOtpSettings.currentMailSender() : mailSender;
+    }
+
+    public String effectiveFromAddress() {
+        String configured =
+                mailOtpSettings != null ? mailOtpSettings.effectiveFromAddress() : fromAddress;
+        return StringUtils.hasText(configured) ? configured.trim() : "no-reply@uav.all1.vn";
+    }
+
+    public String effectiveSenderDisplayName() {
+        return mailOtpSettings != null ? mailOtpSettings.effectiveSenderDisplayName() : null;
+    }
+
     public boolean isMailEnabled() {
-        return mailEnabled && mailSender != null;
+        boolean enabledFlag =
+                mailOtpSettings != null ? mailOtpSettings.isMailEnabled() : mailEnabled;
+        return enabledFlag && effectiveMailSender() != null;
     }
 
     public void sendOtpEmail(String toEmail, String purposeLabel, String otpCode, int ttlMinutes) {
@@ -70,7 +97,8 @@ public class AuthMailService {
                     isMailEnabled());
         }
 
-        if (!isMailEnabled()) {
+        JavaMailSender activeSender = effectiveMailSender();
+        if (!isMailEnabled() || activeSender == null) {
             return;
         }
 
@@ -84,14 +112,23 @@ public class AuthMailService {
         }
 
         try {
-            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessage message = activeSender.createMimeMessage();
+            if (message == null) {
+                message = new MimeMessage(Session.getInstance(new Properties()));
+            }
             MimeMessageHelper helper =
                     new MimeMessageHelper(message, false, StandardCharsets.UTF_8.name());
-            helper.setFrom(fromAddress);
+            String from = effectiveFromAddress();
+            String displayName = effectiveSenderDisplayName();
+            if (StringUtils.hasText(displayName)) {
+                helper.setFrom(from, displayName);
+            } else {
+                helper.setFrom(from);
+            }
             helper.setTo(toEmail);
             helper.setSubject("[UAV PAS] Mã xác thực OTP: " + otpCode + " — " + purposeLabel);
             helper.setText(buildHtmlTemplate(purposeLabel, otpCode, ttlMinutes), true);
-            mailSender.send(message);
+            activeSender.send(message);
         } catch (Exception ex) {
             log.warn(
                     "Failed to dispatch SMTP email to {} (OTP remains available in logs): {}",

@@ -1,11 +1,14 @@
 package com.uav.platform.specification.mission.lifecycle;
 
+import com.uav.platform.common.util.OrderStatusGroups;
 import com.uav.platform.dto.record.mission.lifecycle.MissionFilter;
 import com.uav.platform.entity.mission.Mission;
+import com.uav.platform.entity.mission.MissionReview;
 import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.mission.MissionType;
 
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Subquery;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -15,16 +18,13 @@ import java.util.Collection;
 import java.util.Locale;
 
 /**
- * Specification Factory for Mission entity according to Clean Architecture and DDD.
- * Provides atomic, composable specifications with null-safe semantics.
+ * Specification Factory for Mission entity according to Clean Architecture and DDD. Provides
+ * atomic, composable specifications with null-safe semantics.
  */
 public final class MissionSpecifications {
 
     private MissionSpecifications() {}
 
-    /**
-     * Case-insensitive keyword search across code, title, customer full name, and username.
-     */
     public static Specification<Mission> hasKeyword(String keyword) {
         return (root, query, cb) -> {
             if (keyword == null || keyword.isBlank()) {
@@ -40,64 +40,88 @@ public final class MissionSpecifications {
         };
     }
 
-    /**
-     * Exact match on MissionStatus.
-     */
     public static Specification<Mission> hasStatus(MissionStatus status) {
         return (root, query, cb) -> status == null ? null : cb.equal(root.get("status"), status);
     }
 
-    /**
-     * Filter by a collection of allowed MissionStatuses.
-     */
     public static Specification<Mission> hasStatusIn(Collection<MissionStatus> statuses) {
         return (root, query, cb) ->
                 (statuses == null || statuses.isEmpty()) ? null : root.get("status").in(statuses);
     }
 
-    /**
-     * Exact match on MissionType.
-     */
     public static Specification<Mission> hasMissionType(MissionType missionType) {
         return (root, query, cb) ->
                 missionType == null ? null : cb.equal(root.get("missionType"), missionType);
     }
 
-    /**
-     * Filter missions assigned to a specific station ID.
-     */
     public static Specification<Mission> belongsToStation(Long stationId) {
         return (root, query, cb) ->
                 stationId == null ? null : cb.equal(root.get("station").get("id"), stationId);
     }
 
-    /**
-     * Filter missions assigned to a specific operator ID.
-     */
+    public static Specification<Mission> belongsToProject(Long projectId) {
+        return (root, query, cb) ->
+                projectId == null ? null : cb.equal(root.get("project").get("id"), projectId);
+    }
+
+    public static Specification<Mission> belongsToProvider(Long providerId) {
+        return (root, query, cb) ->
+                providerId == null ? null : cb.equal(root.get("provider").get("id"), providerId);
+    }
+
+    public static Specification<Mission> hasStatusGroup(String rawGroup) {
+        String group = OrderStatusGroups.normalizeGroupParam(rawGroup);
+        if (group == null) {
+            return (root, query, cb) -> null;
+        }
+        return (root, query, cb) ->
+                switch (group) {
+                    case OrderStatusGroups.PENDING ->
+                            root.get("status").in(OrderStatusGroups.PENDING_STATUSES);
+                    case OrderStatusGroups.SCHEDULED ->
+                            root.get("status").in(OrderStatusGroups.SCHEDULED_STATUSES);
+                    case OrderStatusGroups.IN_FLIGHT ->
+                            cb.equal(root.get("status"), MissionStatus.IN_PROGRESS);
+                    case OrderStatusGroups.DELIVERED ->
+                            cb.equal(root.get("status"), MissionStatus.COMPLETED);
+                    case OrderStatusGroups.TO_REVIEW -> {
+                        Subquery<Long> sq = query.subquery(Long.class);
+                        var reviewRoot = sq.from(MissionReview.class);
+                        sq.select(reviewRoot.get("id"))
+                                .where(cb.equal(reviewRoot.get("mission"), root));
+                        yield cb.and(
+                                cb.equal(root.get("status"), MissionStatus.COMPLETED),
+                                cb.not(cb.exists(sq)));
+                    }
+                    case "REVIEWED" -> {
+                        Subquery<Long> sq = query.subquery(Long.class);
+                        var reviewRoot = sq.from(MissionReview.class);
+                        sq.select(reviewRoot.get("id"))
+                                .where(cb.equal(reviewRoot.get("mission"), root));
+                        yield cb.and(
+                                cb.equal(root.get("status"), MissionStatus.COMPLETED),
+                                cb.exists(sq));
+                    }
+                    case OrderStatusGroups.CANCELLED ->
+                            root.get("status").in(OrderStatusGroups.CANCELLED_STATUSES);
+                    default -> null;
+                };
+    }
+
     public static Specification<Mission> hasOperator(Long operatorId) {
         return (root, query, cb) ->
                 operatorId == null ? null : cb.equal(root.get("operator").get("id"), operatorId);
     }
 
-    /**
-     * Filter missions requested by a specific customer ID.
-     */
     public static Specification<Mission> hasCustomer(Long customerId) {
         return (root, query, cb) ->
                 customerId == null ? null : cb.equal(root.get("customer").get("id"), customerId);
     }
 
-    /**
-     * Filter missions requested on a specific calendar date.
-     */
     public static Specification<Mission> requestedOn(LocalDate date) {
         return (root, query, cb) -> date == null ? null : cb.equal(root.get("requestedDate"), date);
     }
 
-    /**
-     * Filter missions overlapping with a given UAV's scheduled time window,
-     * ignoring terminal or canceled statuses (excluded).
-     */
     public static Specification<Mission> overlappingUav(
             Long uavId,
             Collection<MissionStatus> excluded,
@@ -117,10 +141,6 @@ public final class MissionSpecifications {
         };
     }
 
-    /**
-     * Filter missions overlapping with a given Operator's scheduled time window,
-     * ignoring terminal or canceled statuses (excluded).
-     */
     public static Specification<Mission> overlappingOperator(
             Long operatorId,
             Collection<MissionStatus> excluded,
@@ -140,12 +160,9 @@ public final class MissionSpecifications {
         };
     }
 
-    /**
-     * Composite filter method preserving full backward compatibility with MissionFilter.
-     */
     public static Specification<Mission> filtered(MissionFilter filter, Long ownerId) {
         if (filter == null && ownerId == null) {
-            return null;
+            return (root, query, cb) -> null;
         }
         MissionFilter f = filter == null ? MissionFilter.empty() : filter;
         Long effectiveCustomerId = ownerId != null ? ownerId : f.customerId();
@@ -153,6 +170,9 @@ public final class MissionSpecifications {
                 .and(hasStatus(f.status()))
                 .and(hasMissionType(f.missionType()))
                 .and(belongsToStation(f.stationId()))
+                .and(belongsToProject(f.projectId()))
+                .and(belongsToProvider(ownerId != null ? null : f.providerId()))
+                .and(hasStatusGroup(f.statusGroup()))
                 .and(hasOperator(f.operatorId()))
                 .and(requestedOn(f.requestedDate()))
                 .and(hasKeyword(f.search()));

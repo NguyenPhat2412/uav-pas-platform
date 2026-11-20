@@ -10,6 +10,8 @@ import com.uav.platform.enums.marketplace.PricingModel;
 import com.uav.platform.enums.marketplace.ProviderVerificationStatus;
 import com.uav.platform.enums.mission.MissionType;
 
+import jakarta.persistence.criteria.JoinType;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -18,6 +20,10 @@ import java.util.Locale;
 public final class MarketplaceSpecifications {
 
     private MarketplaceSpecifications() {}
+
+    public static Specification<MarketplaceListing> listingNotDeleted() {
+        return (root, query, cb) -> cb.isFalse(root.get("deleted"));
+    }
 
     public static Specification<MarketplaceListing> listingModerationStatus(
             ListingModerationStatus status) {
@@ -71,6 +77,27 @@ public final class MarketplaceSpecifications {
                 categoryServiceId == null
                         ? null
                         : cb.equal(root.get("categoryService").get("id"), categoryServiceId);
+    }
+
+    public static Specification<MarketplaceListing> listingCategory(String category) {
+        return (root, query, cb) -> {
+            if (category == null || category.isBlank()) {
+                return null;
+            }
+            String trimmed = category.trim();
+            String lower = trimmed.toLowerCase(Locale.ROOT);
+            var serviceJoin = root.join("categoryService", JoinType.LEFT);
+            var byCode = cb.equal(cb.lower(serviceJoin.get("code")), lower);
+            var byName = cb.like(cb.lower(serviceJoin.get("name")), "%" + lower + "%");
+            var byMissionType = cb.equal(cb.lower(root.get("missionType").as(String.class)), lower);
+            try {
+                Long numericId = Long.parseLong(trimmed);
+                return cb.or(
+                        byCode, byName, byMissionType, cb.equal(serviceJoin.get("id"), numericId));
+            } catch (NumberFormatException ignored) {
+                return cb.or(byCode, byName, byMissionType);
+            }
+        };
     }
 
     public static Specification<ProviderProfile> providerStatus(ProviderVerificationStatus status) {

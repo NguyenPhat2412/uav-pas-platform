@@ -3,6 +3,8 @@ package com.uav.platform.entity.mission;
 import com.uav.platform.common.entity.BaseEntity;
 import com.uav.platform.entity.marketplace.MarketplaceListing;
 import com.uav.platform.entity.marketplace.ProviderProfile;
+import com.uav.platform.entity.project.Project;
+import com.uav.platform.entity.project.ProjectSubscription;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.entity.uav.Uav;
 import com.uav.platform.entity.user.AppUser;
@@ -189,4 +191,12 @@ public class Mission extends BaseEntity {
 
     @Column(name = "provider_responded_at")
     private LocalDateTime providerRespondedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subscription_id")
+    private ProjectSubscription subscription;
 }
