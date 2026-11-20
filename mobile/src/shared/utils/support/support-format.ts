@@ -10,7 +10,7 @@ import type {
 export const SUPPORT_TOPIC_OPTIONS: readonly { value: SupportTopic; label: string }[] = [
     {value: 'GENERAL_SUPPORT', label: 'Hỗ trợ trực tuyến chung'},
     {value: 'SURVEY_SERVICE', label: 'Khảo sát GIS / Quay chụp'},
-    {value: 'PRICING_PLAN', label: 'Gói cước & Báo giá'},
+    {value: 'PRICING_PLAN', label: 'Gói cước & Phí đối soát'},
     {value: 'FLIGHT_PERMIT_NFZ', label: 'Xin phép bay & NFZ'},
     {value: 'ACCOUNT_DISPATCH', label: 'Tài khoản & Điều phối'},
     {value: 'SAR_AI_RND', label: 'AI & Buồng lái SAR'},
