@@ -1,6 +1,11 @@
-import {keepVietnamesePhrases} from "@/lib/typography";
-import {customerUrl} from "@/content/marketing/site-content";
-import {type UavScene, UavPhoto} from "@/components/marketing/UavPhoto";
+'use client';
+
+import type {ReactNode} from 'react';
+import Link from 'next/link';
+import {keepVietnamesePhrases} from '@/lib/typography';
+import {customerUrl} from '@/content/marketing/site-content';
+import {type UavScene, UavPhoto} from '@/components/marketing/UavPhoto';
+import {useI18n} from '@/providers/I18nContext';
 
 export function PublicPage({eyebrow, title, accent, intro, scene, children}: {
     eyebrow: string;
@@ -9,7 +14,7 @@ export function PublicPage({eyebrow, title, accent, intro, scene, children}: {
     accent?: string;
     intro: string;
     scene?: UavScene;
-    children: React.ReactNode
+    children: ReactNode;
 }) {
     return (
         <>
@@ -41,15 +46,18 @@ export function PublicPage({eyebrow, title, accent, intro, scene, children}: {
 }
 
 export function CustomerCta() {
+    const {t} = useI18n();
     return (
         <div className="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-slate-50/90 p-6 sm:p-8">
-            <p className="text-base font-bold text-foreground">Bạn đã sẵn sàng mô tả nhu cầu thực hiện nhiệm vụ?</p>
-            <a
-                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover transition-colors shadow-xs"
+            <p className="m-0 text-base font-bold text-foreground">
+                {t('publicSite.publicCta.prompt')}
+            </p>
+            <Link
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-xs transition-colors hover:bg-primary-hover"
                 href={`${customerUrl}/services`}
             >
-                Xem dịch vụ
-            </a>
+                {t('publicSite.publicCta.action')}
+            </Link>
         </div>
     );
 }

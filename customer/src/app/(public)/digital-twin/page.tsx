@@ -1,12 +1,12 @@
 import {pageMetadata} from '@/content/marketing/metadata';
-import {DigitalTwinShowcase} from '@/components/digital-twin/DigitalTwinShowcase';
+import {FlightSimulationPageView} from '@/components/marketing/FlightSimulationPageView';
 
 export const metadata = pageMetadata(
-    'Digital Twin – Mô hình 3D từ dữ liệu UAV',
-    'Xem mô hình số 3D mẫu (dựng tự động để minh hoạ): xoay, phóng to, đổi góc nhìn và xem UAV mô phỏng tuần tra, khảo sát.',
+    'Mô phỏng bay UAV — Lộ trình quét lưới & Fail-safe',
+    'Trải nghiệm mô phỏng chuyến bay UAV trên bản đồ: sinh đường bay quét lưới, điều khiển lệnh an toàn Fail-safe và theo dõi chỉ số pin, tín hiệu liên kết.',
     '/digital-twin',
 );
 
-export default function DigitalTwinPage() {
-    return <DigitalTwinShowcase/>;
+export default function FlightSimulationPage() {
+    return <FlightSimulationPageView/>;
 }

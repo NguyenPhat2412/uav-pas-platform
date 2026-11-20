@@ -2,7 +2,8 @@
 import {type FormEvent, useEffect, useRef, useState} from 'react';
 import {displayLabel} from "@/lib/presentation";
 import {Button, Field, Panel} from "@/components/customer/CustomerUi";
-import {OptionalMark} from "@/components/ui";
+import {OptionalMark, PageSkeleton} from "@/components/ui";
+import {ProfileQuickGrid} from '@/components/profile/ProfileQuickGrid';
 import {useAuth} from '@/providers/AuthContext';
 import {
     type CustomerProfile,
@@ -17,6 +18,8 @@ import {toast} from '@/providers/ToastContext';
 import {EnterpriseProfilePanel} from '@/components/profile/EnterpriseProfilePanel';
 import {AvatarEditor} from '@/components/profile/AvatarEditor';
 import {AccountDeletionCard} from '@/components/profile/AccountDeletionCard';
+import {PasswordChangeCard} from '@/components/profile/PasswordChangeCard';
+import {CustomerSellerDossierCard} from '@/components/profile/CustomerSellerDossierCard';
 
 export function CustomerProfilePage() {
     const {user} = useAuth();
@@ -109,6 +112,7 @@ function Profile() {
 
     return <>
         <div className="flex flex-1 flex-col divide-y divide-slate-200 bg-white">
+            <ProfileQuickGrid/>
             <div className="grid grid-cols-1 gap-px bg-slate-200 xl:grid-cols-[minmax(280px,0.95fr)_minmax(0,1.15fr)_minmax(0,1fr)] [&>*]:border-0">
                 <AvatarEditor name={profile?.fullName || user?.fullName || user?.username || ''}/>
                 <Panel title={t('profile.personalInfo')} className="h-full border-0" action={!draft && profile ?
@@ -118,19 +122,7 @@ function Profile() {
                         {success}
                     </div>
                 )}
-                {!profile && !query.isError && (
-                    <div role="status" aria-label={t('profile.loading')} className="grid animate-pulse grid-cols-1 gap-4 sm:grid-cols-2">
-                        <span className="sr-only">{t('profile.loading')}</span>
-                        <div className="space-y-2">
-                            <div className="h-3.5 w-24 rounded-badge bg-slate-100"/>
-                            <div className="h-5 w-40 rounded-badge bg-slate-100"/>
-                        </div>
-                        <div className="space-y-2">
-                            <div className="h-3.5 w-28 rounded-badge bg-slate-100"/>
-                            <div className="h-5 w-36 rounded-badge bg-slate-100"/>
-                        </div>
-                    </div>
-                )}
+                {!profile && !query.isError && <PageSkeleton label={t('profile.loading')} rows={2} className="p-0"/>}
                 {query.isError && (
                     <div className="px-3.5 py-3 mb-4 rounded-panel bg-rose-50 text-danger text-[13px] flex items-center justify-between gap-3 flex-wrap" role="alert">
                         <span>{t('profile.loadError')}</span>
@@ -264,6 +256,10 @@ function Profile() {
                 </Panel>
             </div>
             <EnterpriseProfilePanel/>
+            <div className="grid grid-cols-1 gap-px bg-slate-200 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] [&>*]:border-0">
+                <PasswordChangeCard/>
+                <CustomerSellerDossierCard/>
+            </div>
             <div className="bg-white [&>*]:rounded-none [&>*]:border-0">
                 <AccountDeletionCard/>
             </div>

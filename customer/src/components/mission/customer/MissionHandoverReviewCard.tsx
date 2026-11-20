@@ -47,7 +47,17 @@ function StarSelector({
                             aria-label={`${label}: ${score}/5`}
                             disabled={disabled}
                             onClick={() => onChange?.(score)}
-                            className="h-8 w-8 bg-white p-0 hover:bg-amber-50 disabled:cursor-default disabled:opacity-100"
+                            onKeyDown={e => {
+                                if (disabled || !onChange) return;
+                                if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                                    e.preventDefault();
+                                    onChange(Math.min(5, value + 1));
+                                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                                    e.preventDefault();
+                                    onChange(Math.max(1, value - 1));
+                                }
+                            }}
+                            className="h-9 w-9 bg-white p-0 hover:bg-amber-50 disabled:cursor-default disabled:opacity-100"
                         >
                             <Star
                                 size={16}
@@ -164,6 +174,7 @@ export function MissionHandoverReviewCard({
             await actions.upsertReview.mutateAsync({
                 id: missionId,
                 payload: {
+                    rating: overall,
                     overallRating: overall,
                     dataQualityRating: dataQuality,
                     timelinessRating: timeliness,
@@ -245,10 +256,10 @@ export function MissionHandoverReviewCard({
                     />
                     <p className="m-0 text-[11.5px] text-slate-500">
                         {isReviewedAccepted
-                            ? 'Trạng thái nghiệm thu đã được khóa sau khi giải ngân Ký quỹ. Bạn vẫn có thể cập nhật điểm đánh giá và nhận xét.'
+                            ? t('marketplaceShop.reviewEscrowLocked')
                             : accepted
-                              ? 'Khi xác nhận nghiệm thu, hệ thống sẽ giải ngân Ký quỹ Escrow (nếu có) về ví đối tác thực hiện.'
-                              : 'Bỏ chọn nếu dữ liệu chưa đạt yêu cầu — khoản Ký quỹ Escrow sẽ được khóa bảo vệ cho tới khi đối tác bổ sung.'}
+                              ? t('marketplaceShop.reviewEscrowRelease')
+                              : t('marketplaceShop.reviewEscrowHold')}
                     </p>
                 </div>
 

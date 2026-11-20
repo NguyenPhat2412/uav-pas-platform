@@ -46,7 +46,7 @@ export function ProviderListingForm({
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <label className="grid gap-1.5 text-xs font-bold text-slate-700 sm:col-span-2">
                     <span>Tiêu đề gói dịch vụ / thiết bị cho thuê<RequiredMark/></span>
-                    <input required className={INPUT_CLASS} value={form.title} onChange={e => setForm(s => ({...s, title: e.target.value}))} placeholder="VD: Khảo sát địa hình LiDAR Matrice 350 RTK miền Bắc"/>
+                    <input required className={INPUT_CLASS} value={form.title} onChange={e => setForm(s => ({...s, title: e.target.value}))} placeholder="VD: Khảo sát địa hình LiDAR Matrice 350 miền Bắc"/>
                 </label>
 
                 <label className="grid gap-1.5 text-xs font-bold text-slate-700">
@@ -115,7 +115,7 @@ export function ProviderListingForm({
 
                 <label className="grid gap-1.5 text-xs font-bold text-slate-700 sm:col-span-2">
                     <span>Cấu hình máy bay UAV & Cảm biến sử dụng<OptionalMark/></span>
-                    <input className={INPUT_CLASS} value={form.equipmentSpecs ?? ''} onChange={e => setForm(s => ({...s, equipmentSpecs: e.target.value}))} placeholder="VD: DJI Matrice 350 RTK + Zenmuse L2 LiDAR"/>
+                    <input className={INPUT_CLASS} value={form.equipmentSpecs ?? ''} onChange={e => setForm(s => ({...s, equipmentSpecs: e.target.value}))} placeholder="VD: DJI Matrice 350 + Zenmuse L2 LiDAR"/>
                 </label>
 
                 <label className="grid gap-1.5 text-xs font-bold text-slate-700">

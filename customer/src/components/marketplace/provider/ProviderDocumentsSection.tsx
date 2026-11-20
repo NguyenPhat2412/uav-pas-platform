@@ -62,9 +62,9 @@ export function ProviderDocumentsSection({
     return (
         <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
             <div>
-                <h2 className="m-0 text-base font-extrabold text-slate-900">3. Hồ sơ Pháp lý & Chứng chỉ bay đính kèm</h2>
+                <h2 className="m-0 text-base font-extrabold text-slate-900">3. Bộ Hồ sơ Pháp lý, Phép bay & Phụ lục Đối soát</h2>
                 <p className="m-0 mt-0.5 text-xs text-slate-500">
-                    Khai báo giấy phép kinh doanh, chứng chỉ điều khiển UAV hoặc bảo hiểm trách nhiệm để tăng độ tin cậy với khách hàng.
+                    Đính kèm giấy chứng nhận đăng ký doanh nghiệp, chứng chỉ điều khiển UAV, văn bản chấp thuận vùng bay, hồ sơ mã số thuế và bản xác nhận Phụ lục Biểu phí đối soát dịch vụ.
                 </p>
             </div>
 

@@ -42,7 +42,7 @@ export function MissionMarketplaceBanner({
                             </span>
                             <h3 className="m-0 text-base font-semibold text-on-surface">{activeListing.title}</h3>
                             <p className="m-0 text-xs text-muted tabular-nums">
-                                Đơn vị cung cấp: <strong className="text-on-surface">{activeListing.providerDisplayName}</strong> ({activeListing.province}) · Đơn giá:{' '}
+                                Đối tác đã xác minh · Khu vực {activeListing.province} · Đơn giá minh hoạ:{' '}
                                 <strong className="text-on-surface">{formatVndCompact(activeListing.basePriceVnd)} / {pricingUnitLabel(activeListing.pricingModel)}</strong>
                             </p>
                             <p className="m-0 text-xs text-muted tabular-nums">
@@ -60,7 +60,7 @@ export function MissionMarketplaceBanner({
                                 className="h-10 w-36 rounded-control border border-border-input bg-card px-3 text-sm font-bold text-on-surface tabular-nums"
                             />
                             <span className="text-xs font-semibold text-on-surface">
-                                Tạm tính: {formatVndCompact(estimatedSubtotal)}
+                                Tạm tính minh hoạ: {formatVndCompact(estimatedSubtotal)}
                             </span>
                         </label>
                     </div>
@@ -69,30 +69,13 @@ export function MissionMarketplaceBanner({
         );
     }
 
-    if (rfqEnabled) {
-        return (
-            <label className="col-span-full flex cursor-pointer items-start gap-3 rounded-panel border border-slate-200 bg-surface-container-low/70 p-3.5 text-xs">
-                <input
-                    type="checkbox"
-                    checked={openRfq}
-                    onChange={e => onOpenRfqChange(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 accent-primary"
-                />
-                <span>
-                    <strong className="block font-semibold text-on-surface">
-                        Đăng yêu cầu mở nhận báo giá từ các Đối tác UAV (Open RFQ)
-                    </strong>
-                    <span className="text-muted">
-                        Cho phép các đối tác UAV đã xác minh KYC gửi báo giá cạnh tranh và phương án thiết bị để bạn lựa chọn.
-                    </span>
-                </span>
-            </label>
-        );
-    }
+    void rfqEnabled;
+    void openRfq;
+    void onOpenRfqChange;
 
     return (
         <p className="col-span-full m-0 rounded-panel border border-slate-200 bg-surface-container-low px-3.5 py-2.5 text-xs text-muted">
-            Chế độ đấu thầu báo giá mở (Open RFQ) hiện đang tạm đóng theo cấu hình vận hành của sàn. Bạn vẫn có thể đặt thuê trực tiếp gói niêm yết hoặc gửi yêu cầu tới đội bay UAV PAS.
+            UAV PAS điều phối đội bay đã xác minh cho yêu cầu của bạn theo khu vực và lịch trình đã chọn.
         </p>
     );
 }

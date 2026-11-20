@@ -91,9 +91,15 @@ export function EnterpriseProfilePanel() {
                                             id={fieldId}
                                             label={t(`enterprise.field.${k}`)}
                                             optional
-                                            helperText={k === 'taxCode' ? t('enterprise.taxCodeHint') : undefined}
+                                            helperText={
+                                                k === 'taxCode'
+                                                    ? t('enterprise.taxCodeHint')
+                                                    : k === 'billingEmail'
+                                                      ? t('enterprise.billingEmailHint')
+                                                      : undefined
+                                            }
                                             error={err}
-                                            className={k === 'billingAddress' ? 'sm:col-span-2' : undefined}
+                                            className={k === 'billingAddress' || k === 'billingEmail' ? 'sm:col-span-2' : undefined}
                                         >
                                             {k === 'billingAddress' ? (
                                                 <Textarea
@@ -109,8 +115,8 @@ export function EnterpriseProfilePanel() {
                                                     id={fieldId}
                                                     value={draft[k]}
                                                     aria-invalid={Boolean(err)}
-                                                    inputMode={k === 'taxCode' ? 'numeric' : undefined}
-                                                    type={k === 'emergencyContactPhone' ? 'tel' : 'text'}
+                                                    inputMode={k === 'taxCode' ? 'numeric' : k === 'billingEmail' ? 'email' : undefined}
+                                                    type={k === 'emergencyContactPhone' ? 'tel' : k === 'billingEmail' ? 'email' : 'text'}
                                                     onChange={e => setDraft({...draft, [k]: e.target.value})}
                                                     className={cn('h-11 px-3 text-sm', err && 'border-danger')}
                                                 />
@@ -130,10 +136,10 @@ export function EnterpriseProfilePanel() {
                         ) : profile && (
                             <dl className="m-0 grid gap-4 sm:grid-cols-2">
                                 {BILLING_PROFILE_FIELD_KEYS.map(k => (
-                                    <div key={k} className={k === 'billingAddress' ? 'sm:col-span-2' : undefined}>
+                                    <div key={k} className={k === 'billingAddress' || k === 'billingEmail' ? 'sm:col-span-2' : undefined}>
                                         <dt className="text-[13px] text-slate-500">{t(`enterprise.field.${k}`)}</dt>
                                         <dd className="mb-0 mt-1 break-words font-semibold text-card-foreground">
-                                            {profile[k] || t('enterprise.empty')}
+                                            {profile[k] || (k === 'billingEmail' ? t('enterprise.billingEmailDefault') : t('enterprise.empty'))}
                                         </dd>
                                     </div>
                                 ))}

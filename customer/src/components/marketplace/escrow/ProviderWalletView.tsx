@@ -58,16 +58,16 @@ export default function ProviderWalletView() {
     };
 
     const balanceCards = wallet ? [
-        {icon: Wallet, title: 'Số dư khả dụng (Rút ngay)', amount: wallet.availableBalanceVnd, sub: `Đã trừ phí vận hành sàn ${(Number(wallet.platformFeeRate || 0) * 100).toFixed(1)}%`, tone: 'text-on-surface'},
-        {icon: Lock, title: 'Đang giữ Ký quỹ (Escrow)', amount: wallet.escrowHeldVnd, sub: 'Mở khoá tự động khi khách nghiệm thu kết quả', tone: 'text-amber-700'},
+        {icon: Wallet, title: 'Số dư khả dụng (Rút ngay)', amount: wallet.availableBalanceVnd, sub: `Đã đối soát theo Phụ lục Biểu phí (${(Number(wallet.platformFeeRate || 0) * 100).toFixed(1)}%)`, tone: 'text-on-surface'},
+        {icon: Lock, title: 'Đang tạm giữ chờ nghiệm thu', amount: wallet.escrowHeldVnd, sub: 'Mở khoá tự động khi khách nghiệm thu kết quả', tone: 'text-amber-700'},
         {icon: Landmark, title: 'Chờ giải ngân ngân hàng', amount: wallet.pendingPayoutVnd, sub: `Đã rút luỹ kế: ${formatVndCompact(wallet.totalWithdrawnVnd)}`, tone: 'text-on-surface'},
-        {icon: ShieldCheck, title: 'Tổng doanh thu ròng luỹ kế', amount: wallet.totalEarnedVnd, sub: 'Minh bạch trên sổ cái bất biến', tone: 'text-on-surface'},
+        {icon: ShieldCheck, title: 'Tổng doanh thu ròng luỹ kế', amount: wallet.totalEarnedVnd, sub: 'Ghi nhận minh bạch trên sổ cái đối soát', tone: 'text-on-surface'},
     ] : [];
 
     return (
         <ProviderStudioShell
-            title="Ví Ký quỹ Escrow & Đối soát Doanh thu"
-            subtitle="Theo dõi tiền ký quỹ đang giữ, doanh thu ròng sau chiết khấu sàn và rút tiền về tài khoản ngân hàng."
+            title="Sổ cái Đối soát & Giải ngân Thanh toán"
+            subtitle="Theo dõi khoản thanh toán tạm giữ, doanh thu ròng theo Phụ lục Biểu phí đã xác nhận và lệnh rút tiền về ngân hàng thụ hưởng."
         >
             {!profileQuery.isLoading && !profile ? (
                 <div className="rounded-panel border border-amber-200 bg-amber-50/70 p-6 text-center" role="status">

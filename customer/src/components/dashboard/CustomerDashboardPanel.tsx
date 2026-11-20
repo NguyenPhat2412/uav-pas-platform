@@ -177,9 +177,9 @@ function Dashboard() {
                             <table className="w-full border-collapse">
                                 <thead>
                                 <tr className="border-b border-border bg-slate-50/70 text-left text-[11px] font-bold text-muted">
-                                    <th className="px-4 py-3">{t('dashboard.missionCode')}</th>
-                                    <th className="px-4 py-3">{t('dashboard.time')}</th>
-                                    <th className="px-4 py-3 text-right">{t('common.status')}</th>
+                                    <th className="px-2.5 py-2.5 sm:px-4 sm:py-3">{t('dashboard.missionCode')}</th>
+                                    <th className="whitespace-nowrap px-2.5 py-2.5 sm:px-4 sm:py-3">{t('dashboard.time')}</th>
+                                    <th className="whitespace-nowrap px-2.5 py-2.5 text-right sm:px-4 sm:py-3">{t('common.status')}</th>
                                 </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border text-[13px]">
@@ -188,16 +188,16 @@ function Dashboard() {
                                 </tr>}
                                 {rows.slice(0, 5).map(m => (
                                     <tr key={m.id} className="transition-colors hover:bg-slate-50">
-                                        <td className="px-4 py-3 align-middle">
+                                        <td className="min-w-0 px-2.5 py-2.5 align-middle sm:px-4 sm:py-3">
                                             <Link className="tabular-nums font-bold text-slate-900 hover:text-primary" href={`/customer/missions/${toMissionSlug(m)}`}>
                                                 {m.code}
                                             </Link>
-                                            <div className="mt-0.5 text-xs text-muted">{m.title}</div>
+                                            <div className="mt-0.5 line-clamp-2 text-xs text-muted">{m.title}</div>
                                         </td>
-                                        <td className="whitespace-nowrap px-4 py-3 align-middle tabular-nums text-xs text-slate-500">
+                                        <td className="whitespace-nowrap px-2.5 py-2.5 align-middle tabular-nums text-xs text-slate-500 sm:px-4 sm:py-3">
                                             {shortDate(m.startTime)}
                                         </td>
-                                        <td className="px-4 py-3 text-right align-middle">
+                                        <td className="whitespace-nowrap px-2.5 py-2.5 text-right align-middle sm:px-4 sm:py-3">
                                             <Status value={m.status}/>
                                         </td>
                                     </tr>

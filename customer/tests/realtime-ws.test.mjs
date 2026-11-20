@@ -152,11 +152,17 @@ test('support and billing components keep <= 300 lines, zero emerald classes, an
     }
     const customerLayout = read('src/components/customer/CustomerLayout.tsx');
     assert.ok(customerLayout.split('\n').length <= 300, 'CustomerLayout.tsx must stay <= 300 lines');
-    assert.match(customerLayout, /<PublicSupportWidget\s+mode="portal"\s*\/>/);
+    assert.match(customerLayout, /<PublicSupportWidget\s+mode="portal"\s+hideLauncher\s*\/>/);
+    assert.match(customerLayout, /<AssistantWidget\s+portal="CUSTOMER"\s+hideLauncher\s*\/>/);
+    assert.match(customerLayout, /<UnifiedFloatingLauncher\s*\/>/);
+
+    const unified = read('src/components/shared/UnifiedFloatingLauncher.tsx');
+    assert.ok(unified.split('\n').length <= 300, 'UnifiedFloatingLauncher.tsx must stay <= 300 lines');
+    assert.match(unified, /OPEN_SUPPORT_WIDGET_EVENT/, 'UnifiedFloatingLauncher dispatches support widget open event');
+    assert.match(unified, /OPEN_ASSISTANT_WIDGET_EVENT/, 'UnifiedFloatingLauncher dispatches assistant widget open event');
 
     const launcher = read('src/components/support/PublicSupportLauncher.tsx');
-    assert.match(launcher, /bottom-24/, 'portal launcher docks above AssistantWidget (bottom-5)');
-    assert.match(launcher, /pointer-events-none fixed right-5/, 'outer launcher dock must not intercept clicks over table actions');
+    assert.ok(launcher.split('\n').length <= 120, 'PublicSupportLauncher remains a single compact button');
 
     const buttonUi = read('src/components/ui/Button.tsx');
     assert.match(buttonUi, /\bwhitespace-nowrap\b/, 'Button primitive prevents multi-line text spill inside table cells');

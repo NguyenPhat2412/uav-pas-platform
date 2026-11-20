@@ -36,7 +36,7 @@ const EVERYWHERE = [
 
 /** Unverified technical or commercial claims; checked on the public site, auth screens and their copy. */
 const PUBLIC_CLAIMS = [
-    ['unverified RTK accuracy', /\d\s*[–-]\s*\d\s*cm\s*RTK|RTK\s*\d\s*[–-]\s*\d\s*cm|<\s*1[.,]5\s*cm/i],
+    ['unverified RTK claim', /RTK/],
     ['AI on board claim', /khoang bay|on[- ]board|gắn trên UAV,/i],
     ['100% claim', /100\s?%\s*(chuyến|flight)/i],
     ['official pricing', /chính thức/i],
@@ -44,6 +44,13 @@ const PUBLIC_CLAIMS = [
     ['contract or tax claim', /hợp đồng|hóa đơn VAT|hoá đơn VAT|bao gồm VAT/i],
     ['standard compliance claim', /chuẩn quốc tế/i],
     ['school lab claim', /phòng thí nghiệm .* hiện trường/i],
+    ['unverified same-day activation', /kích hoạt ngay trong ngày/i],
+    ['unverified 5-minute reply', /phản hồi trong ~?5 phút/i],
+    ['unverified on-site hours claim', /có mặt hiện trường/i],
+    ['unverified VietQR EMVCo claim', /VietQR EMVCo|EMVCo VietQR/i],
+    ['unverified GNSS FIXED/FLOAT claim', /GNSS FIXED|GNSS FLOAT/i],
+    ['unverified real digital twin claim', /digital twin thật/i],
+    ['model-contradicting phrase', /chọn nhà cung cấp|chọn đối tác|so sánh báo giá|báo giá đối tác|\bOpen RFQ\b|đấu thầu|chào giá|sàn 3P|kết nối ngay đơn vị bay/i],
 ];
 
 const SOURCES = ['.ts', '.tsx', '.json'];
@@ -58,8 +65,10 @@ test('public site and sign-in copy makes no unverified technical or commercial c
         ...files('src/components/marketing', SOURCES),
         ...files('src/components/auth', SOURCES),
         ...files('src/content/marketing', SOURCES),
+        ...files('src/messages/sections/publicSite', SOURCES),
     ];
     assert.deepEqual(offences(paths, PUBLIC_CLAIMS), []);
+    assert.deepEqual(offences(files('src/components/marketplace', SOURCES), [['unverified RTK claim', /RTK/]]), []);
 });
 
 const DEMO_BANNERS = [
@@ -102,4 +111,59 @@ test('customer, operations, and root catalogs avoid internal stack jargon and aw
         ...files('src/messages/sections/opsShared', ['.json']),
     ];
     assert.deepEqual(offences(userCatalogs, USER_FACING_JARGON), []);
+});
+
+test('all JSON message catalogs contain zero RTK claims in user-facing string values', () => {
+    function collectRtkValues(obj, file, prefix = '', hits = []) {
+        if (typeof obj === 'string') {
+            if (/\bRTK\b/i.test(obj)) hits.push(`${file}:${prefix}: ${obj}`);
+        } else if (Array.isArray(obj)) {
+            obj.forEach((v, idx) => collectRtkValues(v, file, `${prefix}[${idx}]`, hits));
+        } else if (obj && typeof obj === 'object') {
+            for (const [k, v] of Object.entries(obj)) {
+                collectRtkValues(v, file, prefix ? `${prefix}.${k}` : k, hits);
+            }
+        }
+        return hits;
+    }
+    const hits = [];
+    for (const file of files('src/messages', ['.json'])) {
+        collectRtkValues(JSON.parse(readFileSync(`${root}${file}`, 'utf8')), file, '', hits);
+    }
+    assert.deepEqual(hits, []);
+});
+
+test('non-ja publicSite catalogs and customer portal UI avoid decorative Japanese and 3P/RFQ wording', () => {
+    const nonJaPublic = [
+        'src/messages/sections/publicSite/vi.json',
+        'src/messages/sections/publicSite/en.json',
+        'src/messages/customer/vi.json',
+        'src/messages/customer/en.json',
+        ...files('src/app/(public)', ['.ts', '.tsx']),
+        ...files('src/components/marketing', ['.ts', '.tsx']),
+        ...files('src/content/marketing', ['.ts', '.tsx']),
+    ];
+    assert.deepEqual(
+        offences(nonJaPublic, [
+            ['decorative Japanese in vi/en catalog', /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/],
+            ['legacy 3P/RFQ wording', /sàn 3P|\b3P\b|\bRFQ\b|đấu thầu|chào giá|so sánh báo giá|chọn nhà cung cấp/i],
+        ]),
+        [],
+    );
+
+    const homepageComponents = [
+        'src/components/marketing/HomeLanding.tsx',
+        'src/components/marketing/HomeHeroSection.tsx',
+        'src/components/marketing/HomeCategoryGridSection.tsx',
+        'src/components/marketing/HomeFeaturedServicesSection.tsx',
+        'src/components/marketing/HomeHowItWorksSection.tsx',
+        'src/components/marketing/HomeSimulationHighlightSection.tsx',
+        'src/components/marketing/HomePartnerCtaSection.tsx',
+    ];
+    assert.deepEqual(
+        offences(homepageComponents, [
+            ['technical jargon on homepage', /\b(AGL|GSD|DPU|IAMSAR|HMAC|Signed-URL|YOLOv8s|EMVCo)\b/i],
+        ]),
+        [],
+    );
 });

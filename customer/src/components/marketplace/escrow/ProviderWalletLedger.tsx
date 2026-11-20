@@ -38,7 +38,7 @@ export function ProviderWalletLedger({wallet}: { wallet: ProviderWallet }) {
                                     </strong>
                                     {Number(tx.feeAmountVnd) > 0 && (
                                         <span className="block text-xs text-slate-500">
-                                            Phí sàn: -{formatVndCompact(tx.feeAmountVnd)}
+                                            Đối soát phụ lục: -{formatVndCompact(tx.feeAmountVnd)}
                                         </span>
                                     )}
                                 </div>

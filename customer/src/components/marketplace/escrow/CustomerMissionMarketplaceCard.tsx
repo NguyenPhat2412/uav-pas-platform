@@ -2,7 +2,7 @@
 
 import {useState} from 'react';
 import Link from 'next/link';
-import {AlertTriangle, Building2, Download, Lock, QrCode, RefreshCcw, ShieldCheck} from 'lucide-react';
+import {AlertTriangle, Download, Lock, QrCode, RefreshCcw, ShieldCheck} from 'lucide-react';
 import {BankTransferDialog} from '@/components/billing/BankTransferDialog';
 import {Button} from '@/components/customer/CustomerUi';
 import {CustomerMissionRfqBids} from '@/components/marketplace/escrow/CustomerMissionRfqBids';
@@ -70,15 +70,13 @@ export function CustomerMissionMarketplaceCard({mission, isOwner}: { mission: Mi
                             </span>
                         )}
                     </div>
-                    {mission.listingTitle && <p className="m-0 text-sm font-extrabold text-slate-900">Gói thuê: {mission.listingTitle}</p>}
-                    {mission.providerDisplayName && (
-                        <p className="m-0 flex items-center gap-1.5 text-xs font-semibold text-slate-700">
-                            <Building2 size={13} className="text-primary" aria-hidden="true"/>
-                            Đơn vị thực hiện: <strong>{mission.providerDisplayName}</strong>
-                        </p>
-                    )}
+                    {mission.listingTitle && <p className="m-0 text-sm font-extrabold text-slate-900">Gói dịch vụ: {mission.listingTitle}</p>}
+                    <p className="m-0 flex items-center gap-1.5 text-xs font-semibold text-slate-700">
+                        <ShieldCheck size={13} className="text-primary" aria-hidden="true"/>
+                        Đối tác đã xác minh · Điều phối bởi nền tảng UAV PAS
+                    </p>
                     {mission.providerResponseNote && (
-                        <p className="m-0 text-xs text-slate-600">Phản hồi từ đối tác: <em>{mission.providerResponseNote}</em></p>
+                        <p className="m-0 text-xs text-slate-600">Ghi chú điều phối: <em>{mission.providerResponseNote}</em></p>
                     )}
                 </div>
 
@@ -86,7 +84,7 @@ export function CustomerMissionMarketplaceCard({mission, isOwner}: { mission: Mi
                     {(missionInvoice || mission.quotedSubtotalVnd != null) && (
                         <div className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-right">
                             <span className="block text-xs font-bold uppercase text-slate-400">
-                                {missionInvoice ? `Hóa đơn ${missionInvoice.code}` : 'Tạm tính trước thuế'}
+                                {missionInvoice ? `Hóa đơn ${missionInvoice.code} · minh hoạ` : 'Tạm tính · minh hoạ'}
                             </span>
                             <strong className="text-sm font-black text-primary">
                                 {formatVndCompact(missionInvoice ? missionInvoice.amount : mission.quotedSubtotalVnd)}

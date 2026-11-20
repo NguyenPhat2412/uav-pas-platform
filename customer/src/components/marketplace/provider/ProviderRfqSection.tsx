@@ -40,7 +40,7 @@ export function ProviderRfqSection({
             setBiddingMissionId(null);
             setBidForm(initialBidForm());
         } catch (err) {
-            onError(extractActionableError(err, 'Không thể gửi báo giá RFQ.'));
+            onError(extractActionableError(err, 'Không thể gửi đề xuất điều phối.'));
         }
     };
 
@@ -48,12 +48,12 @@ export function ProviderRfqSection({
         <div className="space-y-6">
             {!rfqEnabled && (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900" role="status">
-                    Tính năng Đấu thầu mở (Open RFQ) hiện đang tạm đóng theo cấu hình quản trị hệ thống.
+                    Chế độ đề xuất mở hiện đang tạm đóng theo cấu hình điều phối tập trung của UAV PAS.
                 </div>
             )}
             {rfqs.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-xs text-slate-500" role="status">
-                    Hiện chưa có yêu cầu mở (Open RFQ) nào đang chờ báo giá.
+                    Hiện chưa có yêu cầu bổ sung nào đang chờ điều phối.
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -74,7 +74,7 @@ export function ProviderRfqSection({
                                 </div>
                                 <Button onClick={() => setBiddingMissionId(rfq.id)}>
                                     <Gavel size={14} className="mr-1 inline" aria-hidden="true"/>
-                                    Gửi báo giá chào thầu
+                                    Gửi phương án thực hiện
                                 </Button>
                             </div>
 
@@ -113,7 +113,7 @@ export function ProviderRfqSection({
                                             onChange={e =>
                                                 setBidForm(s => ({...s, proposedUavModel: e.target.value}))
                                             }
-                                            placeholder="VD: DJI Matrice 350 RTK"
+                                            placeholder="VD: DJI Matrice 350"
                                             className="h-9 rounded-control border border-slate-300 bg-white px-3 text-xs"
                                         />
                                     </label>
@@ -133,7 +133,7 @@ export function ProviderRfqSection({
                                         </Button>
                                         <Button type="submit" disabled={isSubmitting}>
                                             <Send size={13} className="mr-1 inline" aria-hidden="true"/>
-                                            Gửi báo giá
+                                            Gửi phương án
                                         </Button>
                                     </div>
                                 </form>

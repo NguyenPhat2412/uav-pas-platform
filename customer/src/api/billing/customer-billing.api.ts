@@ -1,4 +1,5 @@
 import {apiClient, API_ROUTES} from '@/lib/api';
+import type {InvoiceEmailDispatchResult} from '@/types/billing/billing.types';
 import type {Invoice, PageResponse, ServicePlan, UserQuota} from '@/types/customer';
 
 export const customerBillingService = {
@@ -8,4 +9,5 @@ export const customerBillingService = {
         apiClient.get<PageResponse<Invoice>>(`${API_ROUTES.billing.invoices}?page=${page}&size=20`, {signal}),
     payInvoice: (id: number) => apiClient.post(API_ROUTES.billing.payInvoice(id)),
     downloadReceipt: (id: number) => apiClient.getBlob(API_ROUTES.billing.invoiceReceipt(id)),
+    sendInvoiceEmail: (id: number) => apiClient.post<InvoiceEmailDispatchResult>(API_ROUTES.billing.sendInvoiceEmail(id)),
 };

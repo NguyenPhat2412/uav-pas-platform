@@ -13,6 +13,7 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
+    PageSkeleton,
     Spinner,
 } from '@/components/ui';
 import {BankTransferDialog} from '@/components/billing/BankTransferDialog';
@@ -25,6 +26,7 @@ import {
     useCustomerBillingRealtime,
     useDownloadInvoiceReceipt,
     useRefreshCustomerBilling,
+    useSendInvoiceEmail,
     useSubscribePlan,
 } from '@/hooks/billing/useCustomerBilling';
 import {displayLabel, planName} from '@/lib/presentation';
@@ -57,6 +59,10 @@ export default function CustomerBillingPage() {
     const downloadReceipt = useDownloadInvoiceReceipt({
         onError: (error) => toast.error(error instanceof Error ? error.message : t('billingPage.downloadPdfError')),
     });
+    const sendInvoiceEmail = useSendInvoiceEmail({
+        onSuccess: (res) => toast.success(t('billingPage.sendEmailSuccess', {invoiceCode: res.invoiceCode, recipientEmail: res.recipientEmail})),
+        onError: (error) => toast.error(error instanceof Error ? error.message : t('billingPage.sendEmailError')),
+    });
 
     useEffect(() => {
         const settled = billingRealtime.lastSettledInvoice;
@@ -85,16 +91,7 @@ export default function CustomerBillingPage() {
     return (
         <PageGuard permission={null}>
             <div className="flex flex-1 flex-col bg-white">
-                {isLoading && (
-                    <div className="border-b border-border bg-card p-5">
-                        <Spinner size="sm" label={t('billingPage.loading')} className="sr-only" />
-                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                            {[0, 1, 2].map((i) => (
-                                <div key={i} className="h-44 animate-pulse rounded-panel border border-slate-200 bg-slate-100" />
-                            ))}
-                        </div>
-                    </div>
-                )}
+                {isLoading && <PageSkeleton label={t('billingPage.loading')} rows={4}/>}
 
                 {queryError && !isLoading && (
                     <Alert
@@ -102,7 +99,12 @@ export default function CustomerBillingPage() {
                         title={t('billingPage.loadError')}
                         className="rounded-none border-x-0 border-t-0"
                     >
-                        {queryError instanceof Error ? queryError.message : t('billingPage.unknownError')}
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <span>{queryError instanceof Error ? queryError.message : t('billingPage.unknownError')}</span>
+                            <Button type="button" size="sm" variant="outline" onClick={() => void refreshBilling()} className="whitespace-nowrap">
+                                {t('common.retry')}
+                            </Button>
+                        </div>
                     </Alert>
                 )}
 
@@ -153,7 +155,7 @@ export default function CustomerBillingPage() {
                                 </div>
                                 <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-200">
                                     <div
-                                        className={`h-full rounded-full transition-[width] duration-300 ${usagePercent > 80 ? 'bg-primary' : 'bg-success'}`}
+                                        className={`h-full rounded-full transition-[width] duration-300 ${usagePercent > 80 ? 'bg-primary' : 'bg-slate-800'}`}
                                         style={{width: `${usagePercent}%`}}
                                     />
                                 </div>
@@ -258,8 +260,10 @@ export default function CustomerBillingPage() {
                     wsConnected={billingRealtime.wsConnected}
                     awaitingTransferHint={t('payment.awaitingTransferHint')}
                     downloadingInvoiceId={downloadReceipt.isPending ? downloadReceipt.variables?.id ?? null : null}
+                    sendingEmailInvoiceId={sendInvoiceEmail.isPending ? sendInvoiceEmail.variables ?? null : null}
                     onPay={setPayingInvoice}
                     onDownloadReceipt={(id, code) => downloadReceipt.mutate({id, code})}
+                    onSendEmail={(id) => sendInvoiceEmail.mutate(id)}
                 />
 
                 {payingInvoice && (

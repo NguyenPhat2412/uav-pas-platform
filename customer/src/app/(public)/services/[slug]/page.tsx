@@ -1,10 +1,10 @@
 import {serviceScenes} from "@/components/marketing/UavPhoto";
-import {pageMetadata} from "@/content/marketing/metadata";
 import Link from 'next/link';
 import {serviceDetails} from "@/content/marketing/service-details";
 import {services} from "@/content/marketing/site-content";
 import {CustomerCta, PublicPage} from "@/components/marketing/PublicPage";
 import {PublicListingDetail} from "@/components/marketplace/catalog/PublicListingDetail";
+import {buildPublicServiceMetadata} from "@/lib/marketplace-seo";
 
 export function generateStaticParams() {
     return services.map(({slug}) => ({slug}));
@@ -12,15 +12,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({params}: { params: Promise<{ slug: string }> }) {
     const {slug} = await params;
-    const service = services.find((item) => item.slug === slug);
-    if (!service) {
-        return pageMetadata(
-            'Chi tiết Gói dịch vụ & Thiết bị UAV',
-            'Thông số kỹ thuật, đơn giá thuê theo đơn vị và đánh giá nghiệm thu trên sàn giao dịch UAV PAS.',
-            `/services/${slug}`,
-        );
-    }
-    return pageMetadata(`Dịch vụ: ${service.title}`, service.text, `/services/${slug}`);
+    return buildPublicServiceMetadata(slug);
 }
 
 export default async function ServiceDetail({params}: { params: Promise<{ slug: string }> }) {
@@ -90,8 +82,8 @@ export default async function ServiceDetail({params}: { params: Promise<{ slug: 
                     </div>
 
                     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
-                        <h2 className="text-lg font-bold text-slate-900">Đầu ra bàn giao tiêu chuẩn (Deliverables)</h2>
-                        <p className="mt-1 text-xs text-slate-500">Tất cả tệp kết quả được lưu trữ bảo mật trên cổng khách hàng qua Signed-URL.</p>
+                        <h2 className="text-lg font-bold text-slate-900">Đầu ra bàn giao tiêu chuẩn</h2>
+                        <p className="mt-1 text-xs text-slate-500">Tất cả tệp kết quả được lưu trữ bảo mật và tải trực tiếp trên cổng khách hàng.</p>
                         <ul className="mt-4 space-y-2.5">
                             {detail.deliverables.map((item) => (
                                 <li key={item} className="flex items-start gap-2.5 rounded-xl border border-slate-100 bg-slate-50/70 p-3 text-xs font-medium text-slate-700">

@@ -22,7 +22,8 @@
     "actions": "Thao tác",
     "hideLesson": "Ẩn bài",
     "showLesson": "Hiện lại bài",
-    "hideLessonConfirm": "Ẩn bài \"{title}\"? Học viên sẽ không thấy bài này nữa; bạn có thể hiện lại bất cứ lúc nào."
+    "hideLessonConfirm": "Ẩn bài \"{title}\"? Học viên sẽ không thấy bài này nữa; bạn có thể hiện lại bất cứ lúc nào.",
+    "search": "Tìm kiếm"
   },
   "shell": {
     "skipToContent": "Bỏ qua tới nội dung",
@@ -115,6 +116,16 @@
     "security": "Bảo mật",
     "infrastructure": "Hạ tầng"
   },
+  "adminNavSubGroups": {
+    "operationsPulse": "Điều hành & Hỗ trợ",
+    "airspaceWeather": "Bản đồ & Không phận",
+    "catalogPlans": "Danh mục & Gói cước",
+    "marketplace3p": "Sàn dịch vụ UAV",
+    "billingLedger": "Đối soát & Sổ cái",
+    "rbacGovernance": "Phân quyền & Vai trò",
+    "runtimeOps": "Máy chủ & Triển khai",
+    "dataComms": "Lưu trữ, Dữ liệu & Email"
+  },
   "adminNav": {
     "dashboard": "Tổng quan",
     "users": "Người dùng",
@@ -129,12 +140,16 @@
     "reports": "Báo cáo & thống kê",
     "webhooks": "Webhook & sự kiện",
     "settings": "Cấu hình hệ thống",
+    "translations": "Ngôn ngữ hệ thống (i18n)",
     "auditLogs": "Nhật ký quản trị",
     "notifications": "Thông báo",
     "supportInbox": "Tin nhắn hỗ trợ",
     "fleetMap": "Bản đồ đội bay",
     "uavs": "Đội UAV",
     "services": "Danh mục dịch vụ",
+    "marketplaceProviders": "Duyệt đối tác KYC",
+    "marketplaceListings": "Kiểm duyệt tin đăng",
+    "billingPayouts": "Giải ngân đối tác",
     "systemHealth": "Sức khỏe hệ thống",
     "aiRouter": "AI Router",
     "aiConversations": "Nhật ký hội thoại AI",
@@ -166,7 +181,7 @@
     "badge": "Precision Flight Control v4.2",
     "heading": "Chào mừng đến với UAV PAS",
     "desc": "Nền tảng chỉ huy, điều hành bay tự động và giám sát dữ liệu viễn thám thời gian thực chuẩn công nghiệp cho hệ thống thiết bị bay không người lái chuyên dụng.",
-    "telemetry": "Telemetry Hoạt động • RTK Sẵn sàng",
+    "telemetry": "Telemetry Hoạt động • GNSS Sẵn sàng",
     "cert": "Chứng nhận ISO/IEC 27001"
   },
   "auth": {
@@ -272,14 +287,14 @@
     "title": "Trung tâm điều hành nhiệm vụ UAV PAS",
     "edition": "TRUNG TÂM ĐIỀU HÀNH",
     "realtimeBadge": "Giám sát trực tuyến",
-    "syncRtk": "Đồng bộ RTK",
+    "syncRtk": "Đồng bộ GNSS",
     "openMap": "Mở bản đồ điều hành",
     "officers": "Điều hành viên",
     "chargingStations": "Trạm sạc",
     "readyFleet": "UAV sẵn sàng",
     "sensors": "Hệ cảm biến",
     "flightHours": "Tổng giờ bay",
-    "broadbandActive": "Băng rộng 5G RTK hoạt động",
+    "broadbandActive": "Băng rộng 5G GNSS hoạt động",
     "kpiFleet": "Đội bay UAV",
     "kpiFleetReady": "{count} thiết bị sẵn sàng",
     "kpiSuccessRate": "Tỷ lệ hoàn thành",
@@ -287,7 +302,7 @@
     "kpiStationEnergy": "Năng lượng dự trữ trạm",
     "kpiSolar": "Đang sạc năng lượng mặt trời",
     "kpiLatency": "Độ trễ kết nối",
-    "kpiRtkPrecision": "Độ chính xác RTK",
+    "kpiRtkPrecision": "Độ chính xác GNSS",
     "fleetTableTitle": "Trạng thái sẵn sàng đội bay UAV",
     "activeDevices": "5 thiết bị đang hoạt động",
     "thDevice": "Thiết bị / Model",
@@ -304,7 +319,7 @@
     "thCodeName": "Mã trạm & Tên gọi",
     "thConnection": "Đường truyền",
     "thAddress": "Địa chỉ lắp đặt",
-    "thCoords": "Tọa độ GPS RTK",
+    "thCoords": "Tọa độ GPS GNSS",
     "hangarTitle": "Nhà chứa UAV 3D & Radar kiểm soát",
     "battery": "Pin",
     "altitude": "Độ cao mặt đất",
@@ -383,7 +398,7 @@
     "customerPortal": "Khách hàng",
     "customerPortalUser": "Cổng Khách hàng ({username})",
     "register": "Đăng ký",
-    "digitalTwin": "Digital Twin"
+    "digitalTwin": "Mô phỏng bay"
   },
   "publicFooter": {
     "university": "Điều phối & Vận hành Bay",
@@ -393,7 +408,7 @@
     "services": "Dịch vụ bay UAV",
     "solutions": "Giải pháp",
     "pricing": "Bảng giá & Gói cước",
-    "howItWorks": "Quy trình 5 bước",
+    "howItWorks": "Cách hoạt động",
     "portalsHeading": "Hệ sinh thái & Đào tạo",
     "customerPortal": "Cổng Khách hàng",
     "operationsPortal": "Trung tâm Điều hành",
@@ -572,54 +587,6 @@
       "daySlots": "Các khung giờ trong ngày"
     }
   },
-  "digitalTwin": {
-    "badge": "UAV PAS · Mô hình 3D mẫu",
-    "loading": "Đang dựng mô hình 3D",
-    "webglError": "Trình duyệt này không hỗ trợ WebGL nên không hiển thị được mô hình 3D.",
-    "hint": "Kéo để xoay, cuộn để phóng to, hoặc dùng các nút điều khiển để đổi góc nhìn",
-    "sampleNote": "Mô hình mẫu được dựng tự động để minh hoạ. Dự án thật dùng mô hình photogrammetry từ ảnh UAV bay chụp.",
-    "controls": {
-      "toolbar": "Công cụ hiển thị",
-      "pad": "Điều khiển góc nhìn",
-      "fullscreen": "Toàn màn hình",
-      "exitFullscreen": "Thoát toàn màn hình",
-      "autoRotate": "Tự xoay",
-      "paths": "Hiện đường bay",
-      "zoomIn": "Phóng to",
-      "zoomOut": "Thu nhỏ",
-      "tiltUp": "Nghiêng lên",
-      "tiltDown": "Nghiêng xuống",
-      "rotateLeft": "Xoay trái",
-      "rotateRight": "Xoay phải",
-      "north": "Hướng Bắc",
-      "top": "Nhìn từ trên xuống",
-      "reset": "Đặt lại góc nhìn"
-    },
-    "legend": {
-      "title": "Chú thích",
-      "tower": "Trung tâm điều hành UAV",
-      "patrol": "UAV tuần tra – đường bay",
-      "survey": "UAV khảo sát – vùng quét",
-      "pad": "UAV cất/hạ cánh tại bãi H"
-    },
-    "explainer": {
-      "title": "Digital twin từ dữ liệu bay UAV",
-      "subtitle": "Bản sao số 3D của công trình hoặc khu vực, dựng từ ảnh UAV, giúp kiểm tra hiện trạng, đo đạc và giám sát từ xa mà không cần ra hiện trường.",
-      "capture": {
-        "title": "Bay chụp",
-        "body": "UAV bay theo lưới và vòng quanh công trình, chụp ảnh chồng phủ cao kèm toạ độ GPS/RTK."
-      },
-      "process": {
-        "title": "Dựng mô hình",
-        "body": "Phần mềm photogrammetry ghép ảnh thành mô hình 3D có texture, đám mây điểm và bản đồ trực ảnh."
-      },
-      "operate": {
-        "title": "Khai thác",
-        "body": "Xem trực tuyến trên nền tảng UAV PAS: xoay, đo, so sánh theo thời gian và gắn với nhiệm vụ bay."
-      },
-      "cta": "Đăng ký tư vấn digital twin"
-    }
-  },
   "errorPage": {
     "title": "Trang này gặp sự cố",
     "detail": "Đã xảy ra lỗi khi hiển thị trang. Bạn có thể thử lại; nếu lỗi lặp lại, hãy gửi mã tham chiếu bên dưới cho bộ phận hỗ trợ.",
@@ -705,7 +672,7 @@
       "heading": "Hướng",
       "waypoint": "Điểm",
       "toHome": "Cách điểm xuất phát",
-      "rtk": "Định vị RTK",
+      "rtk": "Định vị GNSS",
       "airspace": "Cảnh báo vùng trời",
       "wind": "Gió / Tốc độ"
     },
@@ -993,7 +960,7 @@
       "checks": {
         "airframe": "Khung thân, càng đáp & cánh quạt nguyên vẹn, khóa chặt",
         "battery": "Điện áp các cell pin cân bằng, nhiệt độ ổn định (≥ 25%)",
-        "gnss": "Tín hiệu GNSS / RTK đạt trạng thái khóa ổn định, la bàn không nhiễu",
+        "gnss": "Tín hiệu GNSS đạt trạng thái khóa ổn định, la bàn không nhiễu",
         "weather": "Tốc độ gió, tầm nhìn và lượng mưa tại hiện trường nằm trong ngưỡng an toàn",
         "airspace": "Hành lang bay thông thoáng, giấy phép bay / NOTAM đã đối chiếu hợp lệ"
       },
@@ -1001,7 +968,7 @@
       "satellites": "Số vệ tinh GNSS",
       "windMs": "Gió hiện trường (m/s)",
       "notes": "Ghi chú kiểm tra hiện trường",
-      "notesPlaceholder": "Tình trạng RTK, chướng ngại vật mới phát sinh hoặc lưu ý cất cánh...",
+      "notesPlaceholder": "Tình trạng GNSS, chướng ngại vật mới phát sinh hoặc lưu ý cất cánh...",
       "signButton": "Ký xác nhận biên bản tiền bay",
       "signing": "Đang lưu biên bản...",
       "savedToast": "Đã lưu biên bản kiểm tra an toàn tiền bay."

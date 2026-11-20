@@ -2,6 +2,7 @@
 import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
 import {billingKeys} from '@/hooks/billing/query-keys';
+import {projectKeys} from '@/hooks/project/query-keys';
 import {queryKeys} from '@/lib/query';
 import {customerMissionService} from '@/api/mission/customer-missions.api';
 import type {
@@ -11,6 +12,7 @@ import type {
     MissionReviewUpsertInput,
     MissionStatus,
     MissionType,
+    OrderStatusGroup,
     SavedFlightSiteUpsertInput,
 } from '@/types/customer';
 
@@ -55,12 +57,21 @@ export function useMissionInspectionReport(id: number, enabled = true) {
     });
 }
 
-export function useMissions(search = '', page = 0, status?: MissionStatus, missionType?: MissionType) {
+export function useMissions(
+    search = '',
+    page = 0,
+    status?: MissionStatus,
+    missionType?: MissionType,
+    extra?: { projectId?: number | null; statusGroup?: OrderStatusGroup | '' },
+) {
     const {key, user, can, permissionsReady} = useCustomerScope();
+    const projectId = extra?.projectId ?? undefined;
+    const statusGroup = extra?.statusGroup || undefined;
     return useQuery({
-        queryKey: [...key, 'missions', {search, page, status, missionType}],
+        queryKey: [...key, 'missions', {search, page, status, missionType, projectId, statusGroup}],
         placeholderData: keepPreviousData,
-        queryFn: ({signal}) => customerMissionService.missions(search, page, status, missionType, signal),
+        queryFn: ({signal}) =>
+            customerMissionService.missions(search, page, status, missionType, signal, {projectId, statusGroup}),
         enabled: (!!user && permissionsReady && can('MISSION_VIEW'))
     });
 }
@@ -99,6 +110,8 @@ export function useMissionActions() {
             client.invalidateQueries({queryKey: [...key, 'missions']}),
             client.invalidateQueries({queryKey: [...key, 'mission', id]}),
             client.invalidateQueries({queryKey: billingKeys.customer(user?.id)}),
+            client.invalidateQueries({queryKey: projectKeys.orderSummary(user?.id)}),
+            client.invalidateQueries({queryKey: projectKeys.all(user?.id)}),
             client.invalidateQueries({queryKey: ['marketplace']}),
         ]);
     };

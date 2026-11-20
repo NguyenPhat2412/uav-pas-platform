@@ -24,7 +24,7 @@ import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {Badge, Button} from '@/components/ui';
 import {LanguageSwitcher} from '@/components/ui/LanguageSwitcher';
-import {CUSTOMER_SIDEBAR_GROUPS, type CUSTOMER_SIDEBAR_ROUTES} from '@/config/sidebar-routes';
+import {CUSTOMER_SIDEBAR_GROUPS, type CUSTOMER_SIDEBAR_ROUTES, type CustomerNavGroup} from '@/config/sidebar-routes';
 import type {useSidebarController} from '@/hooks/useSidebarController';
 import {useSidebarCounts} from '@/hooks/useSidebarCounts';
 import {cn} from '@/lib/utils';
@@ -33,7 +33,7 @@ import {useI18n} from '@/providers/I18nContext';
 type CustomerRouteItem = (typeof CUSTOMER_SIDEBAR_ROUTES)[number];
 type SidebarController = ReturnType<typeof useSidebarController>;
 
-const GROUP_ICONS: Partial<Record<(typeof CUSTOMER_SIDEBAR_GROUPS)[number], LucideIcon>> = {
+const GROUP_ICONS: Partial<Record<CustomerNavGroup, LucideIcon>> = {
     overview: LayoutDashboard,
     missions: Plane,
     services: ReceiptText,

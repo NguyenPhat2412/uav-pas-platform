@@ -1,6 +1,6 @@
 'use client';
 import {useCallback} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
 import {afterSuccess, type MutationOptions} from '@/lib/query';
 import {trainingService} from '@/api/training/training.api';
@@ -23,6 +23,7 @@ export function useTrainingOverview(portal: TrainingPortalTier) {
     const {user} = useAuth();
     return useQuery({
         queryKey: trainingKeys.overview(user?.id, portal),
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => trainingService.getOverview({portal}, signal),
     });
 }
@@ -66,6 +67,7 @@ export function useTrainingCourses(portal: TrainingPortalTier) {
     const {user} = useAuth();
     return useQuery({
         queryKey: trainingKeys.courses(user?.id, portal),
+        placeholderData: keepPreviousData,
         queryFn: ({signal}) => trainingService.listCourses(portal, signal),
     });
 }

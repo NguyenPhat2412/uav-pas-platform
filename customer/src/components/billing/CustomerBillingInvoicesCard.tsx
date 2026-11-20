@@ -1,6 +1,7 @@
 'use client';
 
-import {Download, FileText, MessageCircleMore} from 'lucide-react';
+import Link from 'next/link';
+import {Download, FileText, Mail, MessageCircleMore} from 'lucide-react';
 import {Badge, Button, Card, CardContent, CardHeader, CardTitle, StatusBadge} from '@/components/ui';
 import {openPublicSupportWidget} from '@/hooks/support/usePublicSupport';
 import {planName} from '@/lib/presentation';
@@ -17,8 +18,10 @@ export interface CustomerBillingInvoicesCardProps {
     wsConnected?: boolean;
     awaitingTransferHint: string;
     downloadingInvoiceId: number | null;
+    sendingEmailInvoiceId?: number | null;
     onPay: (invoice: Invoice) => void;
     onDownloadReceipt: (id: number, code: string) => void;
+    onSendEmail?: (id: number) => void;
 }
 
 export function CustomerBillingInvoicesCard({
@@ -30,8 +33,10 @@ export function CustomerBillingInvoicesCard({
     wsConnected = false,
     awaitingTransferHint,
     downloadingInvoiceId,
+    sendingEmailInvoiceId = null,
     onPay,
     onDownloadReceipt,
+    onSendEmail,
 }: CustomerBillingInvoicesCardProps) {
     const {t, formatDate: formatLocalDate, formatCurrency} = useI18n();
     const formatDate = (value?: string) => (value ? formatLocalDate(value, {dateStyle: 'short'}) : '—');
@@ -87,7 +92,10 @@ export function CustomerBillingInvoicesCard({
                                 <td className="whitespace-nowrap px-4 py-4 align-middle text-xs tabular-nums text-slate-500 sm:px-5">{formatDate(inv.createdAt)}</td>
                                 <td className="whitespace-nowrap px-4 py-4 align-middle text-xs tabular-nums text-slate-500 sm:px-5">{formatDate(inv.dueDate)}</td>
                                 <td className="whitespace-nowrap px-4 py-4 align-middle font-extrabold tabular-nums text-slate-900 sm:px-5">
-                                    {formatCurrency(inv.amount)}
+                                    <span>{formatCurrency(inv.amount)}</span>
+                                    <span className="ml-1 text-xs font-medium text-slate-500">
+                                        · {t('marketplaceShop.illustrative')}
+                                    </span>
                                 </td>
                                 <td className="whitespace-nowrap px-4 py-4 align-middle text-xs text-slate-700 sm:px-5">
                                     <StatusBadge
@@ -95,6 +103,12 @@ export function CustomerBillingInvoicesCard({
                                         label={t(`billingPage.status.${inv.status}`)}
                                         className={inv.status === 'PAID' ? 'border-slate-900 bg-slate-900 text-white [&>span]:bg-white' : undefined}
                                     />
+                                    {inv.lastEmailedTo && (
+                                        <span className="mt-1 flex items-center gap-1 text-[11px] text-slate-500">
+                                            <Mail size={11} className="shrink-0 text-uav-blue" aria-hidden="true" />
+                                            <span>{t('billingPage.emailedTo', {email: inv.lastEmailedTo})}</span>
+                                        </span>
+                                    )}
                                 </td>
                                 <td className="min-w-[240px] px-4 py-4 text-right align-middle sm:px-5">
                                     <div className="flex flex-wrap items-center justify-end gap-2">
@@ -146,6 +160,21 @@ export function CustomerBillingInvoicesCard({
                                         ) : (
                                             <span className="whitespace-nowrap text-xs tabular-nums text-slate-400">{formatDate(inv.paidAt)}</span>
                                         )}
+                                        {onSendEmail && (
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                isLoading={sendingEmailInvoiceId === inv.id}
+                                                leftIcon={<Mail size={13} aria-hidden="true" />}
+                                                onClick={() => onSendEmail(inv.id)}
+                                                aria-label={t('billingPage.sendEmailAria', {code: inv.code})}
+                                                title={t('billingPage.sendEmailAria', {code: inv.code})}
+                                                className="min-h-8 px-2.5 py-1.5 text-xs"
+                                            >
+                                                {t('billingPage.sendEmail')}
+                                            </Button>
+                                        )}
                                         <Button
                                             type="button"
                                             variant="outline"
@@ -167,9 +196,18 @@ export function CustomerBillingInvoicesCard({
                     </table>
                 </div>
                 {invoices.length === 0 && !isLoading && !hasError && (
-                    <p role="status" className="m-0 px-5 py-8 text-center text-slate-500">
-                        {t('billingPage.noInvoices')}
-                    </p>
+                    <div role="status" className="flex flex-col items-center justify-center gap-2.5 px-5 py-10 text-center">
+                        <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-uav-red-light text-primary">
+                            <FileText size={20} aria-hidden="true" />
+                        </span>
+                        <p className="m-0 text-sm text-slate-600">{t('billingPage.noInvoices')}</p>
+                        <Link
+                            href="/customer/services"
+                            className="inline-flex min-h-9 items-center justify-center rounded-control border border-slate-200 bg-white px-3.5 text-xs font-semibold whitespace-nowrap text-primary transition-colors hover:bg-slate-50"
+                        >
+                            {t('marketplaceShop.exploreCatalogCta')}
+                        </Link>
+                    </div>
                 )}
             </CardContent>
         </Card>

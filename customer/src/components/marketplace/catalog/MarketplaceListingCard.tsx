@@ -1,143 +1,151 @@
 'use client';
 
+import {useState} from 'react';
 import Link from 'next/link';
-import {Building2, CheckCircle2, MapPin, ShieldCheck, Star} from 'lucide-react';
-import {scenes} from '@/components/marketing/UavPhoto';
-import {
-    formatVndCompact,
-    listingTypeLabel,
-    pricingUnitLabel,
-} from '@/forms/marketplace/marketplace-forms';
-import type {MarketplaceListing} from '@/types/marketplace/marketplace.types';
+import {CheckCircle2, Clock3, MapPin, Star} from 'lucide-react';
+import {ServiceCategoryIcon} from '@/components/marketplace/shop/ServiceCategoryIcon';
+import {formatVndCompact} from '@/forms/marketplace/marketplace-forms';
+import {resolveListingBadge, sanitizeMarketplaceName} from '@/forms/project/project-form';
+import {iconNameForMissionType} from '@/lib/marketplace/service-categories';
+import {useI18n} from '@/providers/I18nContext';
+import type {ListingType, MarketplaceListing, PricingModel} from '@/types/marketplace/marketplace.types';
 
-const MISSION_FALLBACK_PHOTOS: Record<string, { src: string; alt: string }> = {
-    UAV_RENTAL: scenes.rentalFleet,
-    AREA_INSPECTION: scenes.inspectionGrid,
-    AERIAL_RECORDING: scenes.recordingCinema,
-    DATA_COLLECTION: scenes.dataCorridor,
-    SEARCH_AND_RESCUE: scenes.sarResponse,
-};
+const BANNED_LOGO_IMAGE_PATTERN =
+    /usgs-plum-island-team|data-collection-corridor|managed-ops-command|step-01-select-service|usgs-yosemite-preflight/i;
 
-export function resolveListingPhoto(listing: Pick<MarketplaceListing, 'coverImageUrl' | 'missionType' | 'title'>) {
+/**
+ * Resolves a listing's cover image when present and free of third-party organization logos.
+ * Returns `null` when missing so callers render the brand-consistent `primaryLight` icon container.
+ */
+export function resolveListingPhoto(
+    listing: Pick<MarketplaceListing, 'coverImageUrl' | 'missionType' | 'title'>,
+): { src: string; alt: string } | null {
     const customUrl = listing.coverImageUrl?.trim();
-    if (customUrl && /^https?:\/\//i.test(customUrl)) {
-        return {src: customUrl, alt: listing.title};
+    if (
+        customUrl &&
+        (/^https?:\/\//i.test(customUrl) || customUrl.startsWith('/')) &&
+        !BANNED_LOGO_IMAGE_PATTERN.test(customUrl)
+    ) {
+        return {src: customUrl, alt: sanitizeMarketplaceName(listing.title)};
     }
-    return MISSION_FALLBACK_PHOTOS[listing.missionType] ?? scenes.rentalFleet;
+    return null;
 }
 
-export function MarketplaceListingCard({item}: { item: MarketplaceListing }) {
+export function MarketplaceListingCard({
+    item,
+    mode = 'public',
+}: {
+    item: MarketplaceListing;
+    mode?: 'public' | 'portal';
+}) {
+    const {t} = useI18n();
+    const [imgFailed, setImgFailed] = useState(false);
     const photo = resolveListingPhoto(item);
-    const createHref = `/customer/missions/create?listing=${encodeURIComponent(item.slug)}`;
+    const badge = resolveListingBadge(item);
+    const fallbackIconName = iconNameForMissionType(item.missionType);
+    const detailHref = mode === 'portal' ? `/customer/services/${item.slug}` : `/services/${item.slug}`;
+    const createHref = `/customer/services/${encodeURIComponent(item.slug)}?subscribe=1`;
+
+    const typeText = (type: ListingType) => {
+        if (type === 'WET_LEASE') return t('publicSite.catalog.typeWetLease');
+        if (type === 'DRY_LEASE') return t('publicSite.catalog.typeDryLease');
+        return t('publicSite.catalog.typeFlightService');
+    };
+
+    const unitText = (model: PricingModel) => {
+        if (model === 'PER_DAY') return t('publicSite.catalog.unitDay');
+        if (model === 'PER_HECTARE') return t('publicSite.catalog.unitHectare');
+        if (model === 'PER_PACKAGE') return t('publicSite.catalog.unitPackage');
+        return t('publicSite.catalog.unitHour');
+    };
+
+    const cleanTitle = sanitizeMarketplaceName(item.title);
 
     return (
-        <article className="group flex flex-col justify-between overflow-hidden rounded-panel border border-slate-200 bg-card shadow-xs transition-shadow duration-200 hover:shadow-md">
+        <article className="group flex flex-col justify-between overflow-hidden rounded-panel border border-slate-200 bg-white shadow-2xs transition-shadow duration-200 hover:shadow-md">
             <div>
                 <Link
-                    href={`/services/${item.slug}`}
-                    className="relative block aspect-[16/10] w-full overflow-hidden bg-slate-900"
+                    href={detailHref}
+                    className="relative block aspect-[4/3] w-full overflow-hidden bg-uav-red-light"
                 >
-                    <img
-                        src={photo.src}
-                        alt={photo.alt}
-                        loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
-                    />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/15 to-transparent"/>
-                    <div className="absolute top-3 right-3 left-3 flex flex-wrap items-center justify-between gap-2">
-                        <span className="rounded-badge bg-slate-950/75 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-xs">
-                            {listingTypeLabel(item.listingType)}
-                        </span>
-                        {item.officialPlatformListing ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-white shadow-xs">
-                                <ShieldCheck size={13} aria-hidden="true"/>
-                                Đội bay UAV PAS
-                            </span>
-                        ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/90 px-2.5 py-1 text-xs font-semibold text-white ring-1 ring-white/20 backdrop-blur-xs">
-                                <CheckCircle2 size={13} aria-hidden="true"/>
-                                Đối tác xác minh KYC
-                            </span>
-                        )}
-                    </div>
-                    <div className="absolute right-3 bottom-3 left-3 flex items-end justify-between gap-2 text-white tabular-nums">
-                        <div>
-                            <span className="text-lg font-bold tracking-tight text-white">
-                                {formatVndCompact(item.basePriceVnd)}
-                            </span>
-                            <span className="ml-1 text-xs font-medium text-slate-200">
-                                / {pricingUnitLabel(item.pricingModel)}
+                    {!imgFailed && photo?.src ? (
+                        <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={photo.src}
+                                alt={photo.alt}
+                                loading="lazy"
+                                onError={() => setImgFailed(true)}
+                                className="h-full w-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105 motion-reduce:transition-none"
+                            />
+                            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/5 to-transparent"/>
+                        </>
+                    ) : (
+                        <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-uav-red-light text-primary">
+                            <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-white/80 shadow-2xs ring-1 ring-primary/15">
+                                <ServiceCategoryIcon name={fallbackIconName} size={28} strokeWidth={1.75}/>
                             </span>
                         </div>
-                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/75 px-2.5 py-0.5 text-xs font-semibold text-amber-300 backdrop-blur-xs">
-                            <Star size={12} className="fill-amber-400 text-amber-400" aria-hidden="true"/>
-                            {item.reviewCount > 0 ? `${Number(item.ratingAvg).toFixed(1)} (${item.reviewCount})` : 'Mới'}
+                    )}
+                    <div className="absolute top-2.5 left-2.5 right-2.5 flex items-start">
+                        <span className="rounded-badge bg-slate-950/80 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-xs">
+                            {typeText(item.listingType)}
                         </span>
                     </div>
                 </Link>
 
-                <div className="space-y-3 p-5 pb-3">
-                    <div>
-                        <h3 className="m-0 text-base font-semibold leading-snug text-on-surface">
-                            <Link href={`/services/${item.slug}`} className="hover:text-primary">
-                                {item.title}
-                            </Link>
-                        </h3>
-                        {item.summary && (
-                            <p className="m-0 mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted">
-                                {item.summary}
-                            </p>
+                <div className="space-y-2 p-3.5 pb-2.5">
+                    <h3 className="m-0 line-clamp-2 min-h-[2.5rem] text-sm font-semibold leading-snug text-slate-900">
+                        <Link href={detailHref} className="transition-colors hover:text-primary">
+                            {cleanTitle}
+                        </Link>
+                    </h3>
+
+                    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-500 tabular-nums">
+                        <span className="inline-flex items-center gap-1">
+                            <MapPin size={13} className="shrink-0 text-slate-400" aria-hidden="true"/>
+                            {item.province}
+                        </span>
+                        {item.deliverySlaHours != null && (
+                            <span className="inline-flex items-center gap-1">
+                                <Clock3 size={13} className="shrink-0 text-slate-400" aria-hidden="true"/>
+                                {item.deliverySlaHours}h
+                            </span>
                         )}
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted tabular-nums">
-                        {item.providerSlug ? (
-                            <Link
-                                href={`/providers/${item.providerSlug}`}
-                                className="inline-flex items-center gap-1 font-semibold text-on-surface hover:text-primary"
-                            >
-                                <Building2 size={13} aria-hidden="true"/>
-                                {item.providerDisplayName}
-                            </Link>
-                        ) : (
-                            <span className="inline-flex items-center gap-1 font-semibold text-on-surface">
-                                <Building2 size={13} aria-hidden="true"/>
-                                {item.providerDisplayName}
-                            </span>
-                        )}
-                        <span className="inline-flex items-center gap-1">
-                            <MapPin size={13} aria-hidden="true"/>
-                            {item.province} · {item.serviceRadiusKm} km
+                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5 tabular-nums">
+                        <span className="text-base font-bold text-primary">
+                            {formatVndCompact(item.basePriceVnd)}
+                        </span>
+                        <span className="text-[11px] text-slate-500">/ {unitText(item.pricingModel)}</span>
+                        <span className="rounded-badge bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                            {t('marketplaceShop.illustrative')}
                         </span>
                     </div>
 
-                    {item.equipmentSpecs && (
-                        <p className="m-0 line-clamp-1 rounded-control bg-surface-container-low px-3 py-2 text-xs text-muted">
-                            <strong className="font-semibold text-on-surface">Thiết bị:</strong> {item.equipmentSpecs}
-                        </p>
-                    )}
+                    <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs text-slate-600 tabular-nums">
+                        <span className="inline-flex items-center gap-1 rounded-badge bg-uav-red-light px-2 py-0.5 text-[11px] leading-tight font-semibold text-primary">
+                            <CheckCircle2 size={12} className="shrink-0" aria-hidden="true"/>
+                            <span>{t('publicSite.catalog.verifiedPartner')}</span>
+                        </span>
+                        <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold whitespace-nowrap text-slate-700">
+                            <Star size={12} className="shrink-0 fill-amber-400 text-amber-500" aria-hidden="true"/>
+                            {badge.reviewCount > 0
+                                ? `${badge.ratingAvg.toFixed(1)} (${badge.reviewCount})`
+                                : t('publicSite.catalog.newListing')}
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            <div className="space-y-2.5 border-t border-slate-100 px-5 pt-3 pb-5">
-                <div className="flex items-center justify-between text-xs text-muted tabular-nums">
-                    <span>Tối thiểu {item.minBookingUnits} {pricingUnitLabel(item.pricingModel)}</span>
-                    <span>Đã nhận {item.bookingCount} đơn</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                    <Link
-                        href={createHref}
-                        className="inline-flex min-h-9 items-center justify-center rounded-control bg-primary px-3 text-xs font-semibold whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary-hover"
-                    >
-                        Đặt thuê ngay
-                    </Link>
-                    <Link
-                        href={`/services/${item.slug}`}
-                        className="inline-flex min-h-9 items-center justify-center rounded-control border border-slate-200 bg-card px-3 text-xs font-semibold whitespace-nowrap text-on-surface transition-colors hover:bg-surface-container-low"
-                    >
-                        Xem chi tiết
-                    </Link>
-                </div>
+            <div className="border-t border-slate-100 px-3.5 pt-2.5 pb-3.5">
+                <Link
+                    href={mode === 'portal' ? detailHref : createHref}
+                    className="inline-flex min-h-9 w-full items-center justify-center rounded-control bg-primary px-3 text-xs font-bold whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary-hover"
+                >
+                    {t('marketplaceShop.subscribeForProject')}
+                </Link>
             </div>
         </article>
     );

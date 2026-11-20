@@ -11,11 +11,13 @@ import {HeaderSearch} from '@/components/layout/HeaderSearch';
 import {PortalSwitcher} from '@/components/layout/PortalSwitcher';
 import {NotificationBell} from '@/components/notification/inbox/NotificationBell';
 import {PortalErrorView} from '@/components/shared/PortalErrorView';
+import {UnifiedFloatingLauncher} from '@/components/shared/UnifiedFloatingLauncher';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import {PublicSupportWidget} from '@/components/support/PublicSupportWidget';
-import {Alert, Button, LanguageSwitcher, UavLoader} from '@/components/ui';
+import {Alert, Button, LanguageSwitcher, PageSkeleton, UavLoader} from '@/components/ui';
 import {CUSTOMER_SIDEBAR_ROUTES, resolveSidebarActiveItem} from '@/config/sidebar-routes';
 import {useOwnProfile} from '@/hooks/profile/useProfile';
+import {useOrderRealtimeSync} from '@/hooks/project/useCustomerProjects';
 import {useSidebarController} from '@/hooks/useSidebarController';
 import {CUSTOMER_RECENT_PAGES_KEY, rememberRecentPage} from '@/lib/recent-pages';
 import {useAuth} from '@/providers/AuthContext';
@@ -31,6 +33,7 @@ export function AppShell({children}: { children: React.ReactNode }) {
     const {user, can, permissionsReady} = useAuth();
     const {t} = useI18n();
     const profile = useOwnProfile();
+    useOrderRealtimeSync(undefined, {notifyToast: true});
     const sidebar = useSidebarController('uav_customer_sidebar_collapsed');
     const {open, setOpen, menuButton} = sidebar;
 
@@ -120,8 +123,9 @@ export function AppShell({children}: { children: React.ReactNode }) {
                 <main id="content" className="flex w-full flex-1 flex-col bg-white outline-none" tabIndex={-1}>
                     {children}
                 </main>
-                <PublicSupportWidget mode="portal"/>
-                <AssistantWidget portal="CUSTOMER"/>
+                <PublicSupportWidget mode="portal" hideLauncher/>
+                <AssistantWidget portal="CUSTOMER" hideLauncher/>
+                <UnifiedFloatingLauncher/>
             </div>
         </div>
     );
@@ -184,7 +188,7 @@ export function PageGuard({children, permission = 'MISSION_VIEW'}: {
                     </Alert>
                 </div>
             ) : permission && !permissionsReady ? (
-                <div className="py-10 text-center text-sm text-slate-500" role="status">{t('common.checkingPermissions')}</div>
+                <PageSkeleton label={t('common.checkingPermissions')}/>
             ) : permission && !can(permission) ? (
                 <div className="m-auto w-full max-w-lg p-6">
                     <div className="flex flex-col items-center justify-center gap-2 rounded-panel border border-amber-200 bg-amber-50/60 p-8 text-center text-slate-700" role="status" data-permission={permission}>

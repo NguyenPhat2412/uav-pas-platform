@@ -24,8 +24,8 @@ export default function SolutionsPage() {
             {/* Dark hero banner (distinct from all other pages) */}
             <section className="relative overflow-hidden bg-slate-950 py-16 text-white sm:py-22">
                 <Image
-                    src={scenes.response.src}
-                    alt={scenes.response.alt}
+                    src={scenes.sarResponse.src}
+                    alt={scenes.sarResponse.alt}
                     fill
                     sizes="100vw"
                     className="object-cover opacity-30"

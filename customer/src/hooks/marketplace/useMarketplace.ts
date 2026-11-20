@@ -1,6 +1,6 @@
 'use client';
 
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {marketplaceApi} from '@/api/marketplace/marketplace.api';
 import {billingKeys} from '@/hooks/billing/query-keys';
 import {queryKeys} from '@/lib/query';
@@ -21,6 +21,7 @@ import type {
 export function usePublicListings(filters: PublicListingFilters = {}, enabled = true) {
     return useQuery({
         queryKey: ['marketplace', 'public-listings', filters],
+        placeholderData: keepPreviousData,
         queryFn: () => marketplaceApi.listPublicListings(filters),
         enabled,
     });
@@ -71,6 +72,7 @@ export function useProviderOnboardingActions() {
 export function useMyProviderListings(enabled = true) {
     return useQuery({
         queryKey: ['marketplace', 'provider-listings'],
+        placeholderData: keepPreviousData,
         queryFn: () => marketplaceApi.listMyListings(),
         enabled,
     });
@@ -123,6 +125,7 @@ export function useProviderFleetActions() {
 export function useProviderOrders(enabled = true) {
     return useQuery({
         queryKey: ['marketplace', 'provider-orders'],
+        placeholderData: keepPreviousData,
         queryFn: () => marketplaceApi.listMyOrders(),
         enabled,
     });
@@ -131,6 +134,7 @@ export function useProviderOrders(enabled = true) {
 export function useOpenRfqMissions(enabled = true) {
     return useQuery({
         queryKey: ['marketplace', 'open-rfq'],
+        placeholderData: keepPreviousData,
         queryFn: () => marketplaceApi.listOpenRfqs(),
         enabled,
     });
@@ -139,6 +143,7 @@ export function useOpenRfqMissions(enabled = true) {
 export function useMySubmittedBids(enabled = true) {
     return useQuery({
         queryKey: ['marketplace', 'my-bids'],
+        placeholderData: keepPreviousData,
         queryFn: () => marketplaceApi.listMyBids(),
         enabled,
     });

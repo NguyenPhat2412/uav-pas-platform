@@ -65,8 +65,8 @@ export default function ProviderFleetView() {
 
     return (
         <ProviderStudioShell
-            title="Đội bay UAV & Thiết bị chuyên dụng của Đối tác (3P Fleet)"
-            subtitle="Khai báo máy bay UAV và cảm biến thuộc sở hữu của bạn để gán trực tiếp khi nhận đơn hàng trên sàn."
+            title="Đội bay UAV & Thiết bị chuyên dụng của Đối tác"
+            subtitle="Khai báo máy bay UAV và cảm biến thuộc sở hữu của bạn để phân công khi nhận đơn điều phối."
         >
             {!profileQuery.isLoading && !profile ? (
                 <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-6 text-center" role="status">
@@ -93,7 +93,7 @@ export default function ProviderFleetView() {
                             <form onSubmit={handleCreateUav} className="grid grid-cols-1 items-end gap-2.5 rounded-xl bg-slate-50 p-3.5 sm:grid-cols-3">
                                 <label className="grid gap-1 text-xs font-bold text-slate-700">
                                     <span>Model tàu bay<RequiredMark/></span>
-                                    <input required aria-label="Model tàu bay UAV" className={INPUT_CLASS} value={uavForm.model} onChange={e => setUavForm(s => ({...s, model: e.target.value}))} placeholder="VD: Matrice 350 RTK"/>
+                                    <input required aria-label="Model tàu bay UAV" className={INPUT_CLASS} value={uavForm.model} onChange={e => setUavForm(s => ({...s, model: e.target.value}))} placeholder="VD: Matrice 350"/>
                                 </label>
                                 <label className="grid gap-1 text-xs font-bold text-slate-700">
                                     <span>Số Serial<RequiredMark/></span>

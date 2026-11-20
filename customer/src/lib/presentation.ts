@@ -18,8 +18,10 @@ const intlLocales: Record<PresentationLocale, string> = {vi: 'vi-VN', en: 'en-US
 
 const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
     en: {
-        DRAFT: 'Draft', PENDING_CONFIRMATION: 'Awaiting confirmation', CONFIRMED: 'Confirmed',
-        RESOURCE_RESERVED: 'Resources reserved', READY: 'Ready', IN_PROGRESS: 'In progress', COMPLETED: 'Completed',
+        DRAFT: 'Draft', PENDING_DISPATCH: 'Awaiting dispatch', PENDING_PROVIDER: 'Assigning partner',
+        PENDING_CONFIRMATION: 'Awaiting confirmation', ACCEPTED: 'Scheduled', SCHEDULED: 'Scheduled', CONFIRMED: 'Confirmed',
+        RESOURCE_RESERVED: 'Resources reserved', READY: 'Ready', IN_FLIGHT: 'In flight', IN_PROGRESS: 'In progress',
+        DELIVERED: 'Delivered', COMPLETED: 'Completed', REVIEWED: 'Reviewed',
         CANCELLED: 'Cancelled', REJECTED: 'Rejected', FAILED: 'Unsuccessful',
         UAV_RENTAL: 'UAV rental', AREA_INSPECTION: 'Area inspection', AERIAL_RECORDING: 'Aerial recording',
         DATA_COLLECTION: 'Data collection', OTHER: 'Other',
@@ -50,8 +52,10 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         AVATAR_UPDATED: 'Profile picture updated', AVATAR_REMOVED: 'Profile picture removed',
     },
     ja: {
-        DRAFT: '下書き', PENDING_CONFIRMATION: '確認待ち', CONFIRMED: '確認済み', RESOURCE_RESERVED: 'リソース手配済み',
-        READY: '準備完了', IN_PROGRESS: '実施中', COMPLETED: '完了', CANCELLED: 'キャンセル済み', REJECTED: '却下',
+        DRAFT: '下書き', PENDING_DISPATCH: '配車調整中', PENDING_PROVIDER: 'パートナー手配中',
+        PENDING_CONFIRMATION: '確認待ち', ACCEPTED: '飛行予定', SCHEDULED: '飛行予定', CONFIRMED: '確認済み', RESOURCE_RESERVED: 'リソース手配済み',
+        READY: '準備完了', IN_FLIGHT: '飛行中', IN_PROGRESS: '実施中', DELIVERED: '納品済み', COMPLETED: '完了',
+        REVIEWED: '評価済み', CANCELLED: 'キャンセル済み', REJECTED: '却下',
         FAILED: '未完了',
         UAV_RENTAL: 'UAVレンタル', AREA_INSPECTION: 'エリア調査', AERIAL_RECORDING: '空撮', DATA_COLLECTION: 'データ収集',
         OTHER: 'その他',
@@ -94,12 +98,19 @@ const presentationText: Record<PresentationLocale, { notUpdated: string; mission
 
 const labels: Record<string, string> = {
     DRAFT: 'Bản nháp',
+    PENDING_DISPATCH: 'Chờ điều phối',
+    PENDING_PROVIDER: 'Đang ghép đội bay',
     PENDING_CONFIRMATION: 'Chờ xác nhận',
+    ACCEPTED: 'Đã xếp lịch',
+    SCHEDULED: 'Chờ bay',
     CONFIRMED: 'Đã xác nhận',
     RESOURCE_RESERVED: 'Đã bố trí tài nguyên',
     READY: 'Sẵn sàng',
+    IN_FLIGHT: 'Đang bay',
     IN_PROGRESS: 'Đang thực hiện',
+    DELIVERED: 'Đã bàn giao',
     COMPLETED: 'Hoàn tất',
+    REVIEWED: 'Đã đánh giá',
     CANCELLED: 'Đã hủy',
     REJECTED: 'Đã từ chối',
     FAILED: 'Không thành công',

@@ -22,7 +22,8 @@
     "actions": "操作",
     "hideLesson": "レッスンを非表示",
     "showLesson": "レッスンを再表示",
-    "hideLessonConfirm": "「{title}」を非表示にしますか？受講者には表示されなくなりますが、いつでも再表示できます。"
+    "hideLessonConfirm": "「{title}」を非表示にしますか？受講者には表示されなくなりますが、いつでも再表示できます。",
+    "search": "検索"
   },
   "shell": {
     "skipToContent": "本文へスキップ",
@@ -115,6 +116,16 @@
     "security": "セキュリティ",
     "infrastructure": "インフラ"
   },
+  "adminNavSubGroups": {
+    "operationsPulse": "運航・サポート",
+    "airspaceWeather": "マップ・空域",
+    "catalogPlans": "カタログ・プラン",
+    "marketplace3p": "UAVサービス市場",
+    "billingLedger": "請求照合・台帳",
+    "rbacGovernance": "ロール・権限設計",
+    "runtimeOps": "サーバー・デプロイ",
+    "dataComms": "ストレージ・DB・メール"
+  },
   "adminNav": {
     "dashboard": "概要",
     "users": "ユーザー",
@@ -129,12 +140,16 @@
     "reports": "レポート・統計",
     "webhooks": "Webhook・連携",
     "settings": "システム設定",
+    "translations": "システム多言語管理 (i18n)",
     "auditLogs": "管理者監査ログ",
     "notifications": "通知",
     "supportInbox": "サポート受信箱",
     "fleetMap": "UAV機体マップ",
     "uavs": "UAV機体",
     "services": "サービスカタログ",
+    "marketplaceProviders": "パートナーKYC審査",
+    "marketplaceListings": "出品サービス審査",
+    "billingPayouts": "パートナー出金精算",
     "systemHealth": "システム状態",
     "aiRouter": "AIルーター制御",
     "aiConversations": "AIチャット監査ログ",
@@ -166,7 +181,7 @@
     "badge": "Precision Flight Control v4.2",
     "heading": "UAV PAS へようこそ",
     "desc": "産業グレードの自動飛行指揮・ミッション管制・リアルタイム遠隔テレメトリ監視プラットフォーム。",
-    "telemetry": "テレメトリ稼働中 • RTK待機完了",
+    "telemetry": "テレメトリ稼働中 • GNSS待機完了",
     "cert": "ISO/IEC 27001 認証取得"
   },
   "auth": {
@@ -272,14 +287,14 @@
     "title": "UAV PAS ミッション運用センター",
     "edition": "運用センター",
     "realtimeBadge": "リアルタイム監視",
-    "syncRtk": "RTK同期",
+    "syncRtk": "GNSS同期",
     "openMap": "運用マップを開く",
     "officers": "管制要員",
     "chargingStations": "充電基地",
     "readyFleet": "出動可能UAV",
     "sensors": "センサー群",
     "flightHours": "総飛行時間",
-    "broadbandActive": "5G RTK 広帯域稼働中",
+    "broadbandActive": "5G GNSS 広帯域稼働中",
     "kpiFleet": "UAV機隊",
     "kpiFleetReady": "{count}機 待機中",
     "kpiSuccessRate": "任務完了率",
@@ -287,7 +302,7 @@
     "kpiStationEnergy": "基地局蓄電残量",
     "kpiSolar": "太陽光発電中",
     "kpiLatency": "通信遅延",
-    "kpiRtkPrecision": "RTK測位精度",
+    "kpiRtkPrecision": "GNSS測位精度",
     "fleetTableTitle": "待撃UAV機隊 稼働状況",
     "activeDevices": "5機 稼働中",
     "thDevice": "機体 / モデル",
@@ -304,7 +319,7 @@
     "thCodeName": "基地識別コード & 名称",
     "thConnection": "回線接続",
     "thAddress": "設置住所",
-    "thCoords": "GPS RTK 座標",
+    "thCoords": "GPS GNSS 座標",
     "hangarTitle": "3D 機体ハンガー & レーダー管制",
     "battery": "バッテリー",
     "altitude": "対地高度",
@@ -383,7 +398,7 @@
     "customerPortal": "顧客",
     "customerPortalUser": "顧客ポータル ({username})",
     "register": "新規登録",
-    "digitalTwin": "デジタルツイン"
+    "digitalTwin": "飛行シミュレーション"
   },
   "publicFooter": {
     "university": "ドローン運航管理基盤",
@@ -393,7 +408,7 @@
     "services": "UAV飛行サービス",
     "solutions": "ソリューション",
     "pricing": "料金プラン",
-    "howItWorks": "5段階の運用フロー",
+    "howItWorks": "ご利用の流れ",
     "portalsHeading": "ポータル・研修",
     "customerPortal": "顧客ポータル",
     "operationsPortal": "運用センター",
@@ -572,54 +587,6 @@
       "daySlots": "日中の時間帯"
     }
   },
-  "digitalTwin": {
-    "badge": "UAV PAS · サンプル3Dモデル",
-    "loading": "3D モデルを構築中",
-    "webglError": "このブラウザは WebGL に対応していないため、3D モデルを表示できません。",
-    "hint": "ドラッグで回転、スクロールで拡大、または操作ボタンで視点を変更できます",
-    "sampleNote": "説明用に自動生成したサンプルモデルです。実際の案件では UAV 撮影画像から作るフォトグラメトリモデルを使用します。",
-    "controls": {
-      "toolbar": "表示ツール",
-      "pad": "視点操作",
-      "fullscreen": "全画面",
-      "exitFullscreen": "全画面を終了",
-      "autoRotate": "自動回転",
-      "paths": "飛行経路を表示",
-      "zoomIn": "拡大",
-      "zoomOut": "縮小",
-      "tiltUp": "上に傾ける",
-      "tiltDown": "下に傾ける",
-      "rotateLeft": "左に回転",
-      "rotateRight": "右に回転",
-      "north": "北向き",
-      "top": "真上から見る",
-      "reset": "視点をリセット"
-    },
-    "legend": {
-      "title": "凡例",
-      "tower": "UAV 運用センター",
-      "patrol": "巡回 UAV – 飛行経路",
-      "survey": "測量 UAV – スキャン範囲",
-      "pad": "H パッドでの UAV 離着陸"
-    },
-    "explainer": {
-      "title": "UAV 飛行データから作るデジタルツイン",
-      "subtitle": "UAV 画像から構築した建物やエリアの 3D デジタルコピー。現地に行かずに現況確認・計測・遠隔監視ができます。",
-      "capture": {
-        "title": "撮影",
-        "body": "UAV がグリッド飛行と周回飛行を行い、GPS/RTK 位置付きの高重複写真を撮影します。"
-      },
-      "process": {
-        "title": "モデル構築",
-        "body": "フォトグラメトリソフトで写真からテクスチャ付き 3D メッシュ、点群、オルソ画像を作成します。"
-      },
-      "operate": {
-        "title": "活用",
-        "body": "UAV PAS 上でオンライン表示：回転・計測・経時比較ができ、飛行ミッションとも連携します。"
-      },
-      "cta": "デジタルツインについて相談する"
-    }
-  },
   "errorPage": {
     "title": "このページで問題が発生しました",
     "detail": "ページを表示できませんでした。再試行してください。繰り返し発生する場合は、下の参照コードをサポートにお送りください。",
@@ -705,7 +672,7 @@
       "heading": "方位",
       "waypoint": "地点",
       "toHome": "帰還距離",
-      "rtk": "RTK測位",
+      "rtk": "GNSS測位",
       "airspace": "空域警報",
       "wind": "風速 / 倍率"
     },
@@ -993,7 +960,7 @@
       "checks": {
         "airframe": "機体フレーム・ランディングギア・プロペラに損傷がなく確実に固定されている",
         "battery": "バッテリーセル電圧・温度が正常範囲内（残量25%以上）",
-        "gnss": "GNSS / RTK測位が安定ロックし、コンパスの磁気干渉がない",
+        "gnss": "GNSS測位が安定ロックし、コンパスの磁気干渉がない",
         "weather": "現地の風速・視程・降水状況が安全運航基準内である",
         "airspace": "飛行回廊の安全および飛行許可証・一時NOTAMを照合済み"
       },
@@ -1001,7 +968,7 @@
       "satellites": "GNSS衛星数",
       "windMs": "現地風速 (m/s)",
       "notes": "現地点検メモ",
-      "notesPlaceholder": "RTKステータス、新規障害物、離陸時の注意事項など...",
+      "notesPlaceholder": "GNSSステータス、新規障害物、離陸時の注意事項など...",
       "signButton": "飛行前安全記録に署名して保存",
       "signing": "保存中...",
       "savedToast": "飛行前安全チェックリストを保存しました。"

@@ -11,6 +11,7 @@ import {AssistantWidgetLauncher, CORNER_KEY, EXPANDED_KEY, isCorner, PANEL_AT, P
 import {AssistantWidgetHeader} from '@/components/assistant/widget/AssistantWidgetHeader';
 import {AssistantWidgetMessageList} from '@/components/assistant/widget/AssistantWidgetMessageList';
 import {AssistantWidgetComposer, readMediaAttachments} from '@/components/assistant/widget/AssistantWidgetComposer';
+import {OPEN_ASSISTANT_WIDGET_EVENT} from '@/components/shared/UnifiedFloatingLauncher';
 import {MAX_ATTACHMENTS} from '@/utils/assistant/attachments';
 import {cn} from '@/lib/utils';
 
@@ -58,7 +59,13 @@ function saveHistory(key: string, messages: ChatMessage[]) {
  * Floating assistant (bottom-right) for every signed-in user, chatting through the AI gateway in one of two modes.
  * Each portal gets its own audience, starter questions and thread; turns are stored server-side for admin review.
  */
-export function AssistantWidget({portal}: { portal: AssistantPortal }) {
+export function AssistantWidget({
+    portal,
+    hideLauncher = false,
+}: {
+    portal: AssistantPortal;
+    hideLauncher?: boolean;
+}) {
     const {user, can, isAuthenticated} = useAuth();
     const {t} = useI18n();
     const storageKey = `uav_assistant_history:${portal}:${user?.id ?? 'anon'}`;
@@ -85,6 +92,12 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
     useEffect(() => {
         if (open) input.current?.focus();
     }, [open]);
+
+    useEffect(() => {
+        const onOpen = () => setOpen(true);
+        window.addEventListener(OPEN_ASSISTANT_WIDGET_EVENT, onOpen);
+        return () => window.removeEventListener(OPEN_ASSISTANT_WIDGET_EVENT, onOpen);
+    }, []);
 
     useEffect(() => {
         try {
@@ -271,11 +284,13 @@ export function AssistantWidget({portal}: { portal: AssistantPortal }) {
                     />
                 </section>
             )}
-            <AssistantWidgetLauncher
-                open={open} corner={corner} dragging={dragging} title={t('admin.assistant.title')}
-                ariaLabel={open ? t('admin.assistant.close') : t('admin.assistant.open')}
-                onToggle={() => setOpen((v) => !v)} onCornerChange={setCorner} onDraggingChange={setDragging}
-            />
+            {!hideLauncher && (
+                <AssistantWidgetLauncher
+                    open={open} corner={corner} dragging={dragging} title={t('admin.assistant.title')}
+                    ariaLabel={open ? t('admin.assistant.close') : t('admin.assistant.open')}
+                    onToggle={() => setOpen((v) => !v)} onCornerChange={setCorner} onDraggingChange={setDragging}
+                />
+            )}
         </>
     );
 }

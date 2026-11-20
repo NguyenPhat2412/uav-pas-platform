@@ -69,7 +69,13 @@ const INITIAL_START_DRAFT: SupportStartDraft = {
 
 type EditablePrefillField = 'fullName' | 'contactInfo' | 'organization';
 
-export function PublicSupportWidget({mode = 'public'}: {mode?: SupportWidgetMode} = {}) {
+export function PublicSupportWidget({
+    mode = 'public',
+    hideLauncher = false,
+}: {
+    mode?: SupportWidgetMode;
+    hideLauncher?: boolean;
+} = {}) {
     const isPortal = mode === 'portal';
     const [open, setOpen] = useState(false);
     const [visitorToken, setVisitorToken] = useState<string | null>(null);
@@ -271,15 +277,17 @@ export function PublicSupportWidget({mode = 'public'}: {mode?: SupportWidgetMode
                     zaloPhone={siteInfo.zaloPhone}
                 />
             )}
-            <PublicSupportLauncher
-                mode={mode}
-                open={open}
-                unreadCount={unreadCount}
-                threadCode={session?.code}
-                zaloPhone={siteInfo.zaloPhone}
-                onToggle={() => setOpen((prev) => !prev)}
-                onOpen={() => setOpen(true)}
-            />
+            {!hideLauncher && (
+                <PublicSupportLauncher
+                    mode={mode}
+                    open={open}
+                    unreadCount={unreadCount}
+                    threadCode={session?.code}
+                    zaloPhone={siteInfo.zaloPhone}
+                    onToggle={() => setOpen((prev) => !prev)}
+                    onOpen={() => setOpen(true)}
+                />
+            )}
         </>
     );
 }
