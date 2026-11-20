@@ -47,8 +47,11 @@ module.exports = ({config: base}) => {
     if (!iosClientId.endsWith(IOS_CLIENT_SUFFIX))
         throw new Error(`EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID must end with ${IOS_CLIENT_SUFFIX}`);
     const iosUrlScheme = `com.googleusercontent.apps.${iosClientId.slice(0, -IOS_CLIENT_SUFFIX.length)}`;
+    const withoutGooglePlugin = (config.plugins ?? []).filter(
+        p => (Array.isArray(p) ? p[0] : p) !== '@react-native-google-signin/google-signin',
+    );
     return {
         ...config,
-        plugins: [...(config.plugins ?? []), ['@react-native-google-signin/google-signin', {iosUrlScheme}]],
+        plugins: [...withoutGooglePlugin, ['@react-native-google-signin/google-signin', {iosUrlScheme}]],
     };
 };

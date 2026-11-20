@@ -35,7 +35,15 @@ if (!ip || !/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) {
     console.error('No Wi-Fi IPv4 address found. Pass one: npm run lan -- 192.168.1.20');
     process.exit(1);
 }
-writeFileSync(target, `# Written by scripts/detect-lan-env.mjs; delete it (or npm run lan -- --reset) to use production.\nEXPO_PUBLIC_API_URL=http://${ip}:8080\n`);
+writeFileSync(
+    target,
+    `# Written by scripts/detect-lan-env.mjs; delete it (or npm run lan -- --reset) to use production.
+EXPO_PUBLIC_API_URL=http://${ip}:8080
+EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=527884427670-baa1dat4f4t2v1r8oa9rk03j2kh0nb06.apps.googleusercontent.com
+EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=527884427670-cf502cj66u6q9sd515rqspghve9p5230.apps.googleusercontent.com
+EXPO_PUBLIC_APPLE_SIGN_IN_ENABLED=true
+`,
+);
 console.log(`EXPO_PUBLIC_API_URL=http://${ip}:8080 -> .env.development.local
 Restart Metro with --clear. The iPhone must be on the same Wi-Fi and the backend listening on 0.0.0.0:8080.
 Media uploads also need storage reachable from the phone (R2 is; a local MinIO needs APP_STORAGE_PUBLIC_ENDPOINT=http://${ip}:9000).`);

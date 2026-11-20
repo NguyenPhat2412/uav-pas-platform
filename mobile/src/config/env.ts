@@ -4,8 +4,14 @@ import {readDevApiBaseUrl, saveDevApiBaseUrl} from '@/lib/storage/preferences';
 // Expo inlines EXPO_PUBLIC_* at build time only when read as a literal process.env.NAME expression.
 const schema = z.object({
     EXPO_PUBLIC_API_URL: z.string().url().default('https://api.uav.all1.vn'),
-    EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: z.string().endsWith('.apps.googleusercontent.com').optional(),
-    EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID: z.string().endsWith('.apps.googleusercontent.com').optional(),
+    EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: z
+        .string()
+        .endsWith('.apps.googleusercontent.com')
+        .default('527884427670-baa1dat4f4t2v1r8oa9rk03j2kh0nb06.apps.googleusercontent.com'),
+    EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID: z
+        .string()
+        .endsWith('.apps.googleusercontent.com')
+        .default('527884427670-cf502cj66u6q9sd515rqspghve9p5230.apps.googleusercontent.com'),
 });
 
 const parsed = schema.safeParse({
