@@ -13,7 +13,7 @@ const webhookKeys = {
 
 /** Subscriptions, recent deliveries and the dispatcher state, loaded together; the page shows a failure inline. */
 export function useWebhookOverview() {
-    const {user} = useAuth();
+    const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: webhookKeys.overview(user?.id),
         queryFn: async ({signal}) => {
@@ -22,6 +22,7 @@ export function useWebhookOverview() {
             ]);
             return {subscriptions, deliveries, status: runtime.status};
         },
+        enabled: permissionsReady && can('USER_MANAGE'),
         meta: QUIET,
     });
 }

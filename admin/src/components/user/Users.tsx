@@ -20,6 +20,7 @@ import {toUserSlug} from '@/lib/url-slugs';
 import {useI18n} from '@/providers/I18nContext';
 import {avatarSrc} from '@/components/shared/Avatar';
 import {CustomerBillingProfileCard} from '@/components/billing/invoices/CustomerBillingProfileCard';
+import {AdminUserProviderCard} from '@/components/user/AdminUserProviderCard';
 import {UserAccountActions, UserActivitySection} from '@/components/user/UserDetailSections';
 import {UserFormDrawer} from '@/components/user/UserFormDrawer';
 import {UsersToolbar} from '@/components/user/UsersToolbar';
@@ -221,6 +222,7 @@ export function UserDetail({id}: { id: number }) {
                         </CardContent>
                     </Card>
                     {can('USER_VIEW') && <CustomerBillingProfileCard userId={query.data.id}/>}
+                    {can('MARKETPLACE_MODERATE') && <AdminUserProviderCard userId={query.data.id} username={query.data.username}/>}
                     {(can('USER_LOCK') || can('USER_UNLOCK') || can('USER_PERMISSION_MANAGE')) && (
                         <UserAccountActions key={`${query.data.id}:${query.data.role}:${query.data.status}:${Boolean(query.data.locked)}`} user={query.data}/>
                     )}

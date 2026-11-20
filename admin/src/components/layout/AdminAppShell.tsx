@@ -4,6 +4,7 @@ import Image from 'next/image';
 import {useSidebarController} from '@/hooks/useSidebarController';
 import {AssistantWidget} from '@/components/assistant/widget/AssistantWidget';
 import {AdminSupportQuickDock} from '@/components/support/AdminSupportQuickDock';
+import {UnifiedFloatingLauncher} from '@/components/shared/UnifiedFloatingLauncher';
 import {useSupportSummary} from '@/hooks/support/useAdminSupport';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import Link from 'next/link';
@@ -272,11 +273,12 @@ export function AppShell({children, activeResource, pageTitle}: { children: Reac
                                    describe={describeTab} onClose={workspaceTabs.close} onCloseOthers={workspaceTabs.closeOthers}/>
                 </div>
                 <WelcomeBack/>
-                <main id="workspace" className="flex w-full flex-1 flex-col gap-4 outline-none" tabIndex={-1}>
+                <main id="workspace" className="flex w-full flex-1 flex-col gap-4 pb-20 outline-none lg:pr-16" tabIndex={-1}>
                     <UnsavedChangesContext.Provider value={workspaceTabs.reportDirty}>{children}</UnsavedChangesContext.Provider>
                 </main>
-                <AdminSupportQuickDock/>
-                <AssistantWidget portal="ADMIN"/>
+                <AdminSupportQuickDock hideLauncher/>
+                <AssistantWidget portal="ADMIN" hideLauncher/>
+                <UnifiedFloatingLauncher/>
             </div>
         </div>
     );

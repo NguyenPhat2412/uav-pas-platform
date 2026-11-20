@@ -14,10 +14,11 @@ import type {
 } from '@/types/storage/storage-pool.types';
 
 export function useStoragePoolOverview() {
-    const {user} = useAuth();
+    const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: queryKeys.of(user?.id, 'storage-pool', 'overview'),
         queryFn: ({signal}) => storagePoolService.overview(signal),
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE'),
     });
 }
 

@@ -50,8 +50,8 @@ export function AdminShellHeader({
                     <Menu size={18}/>
                 </button>
                 <div className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[13px] text-slate-500">
-                    <span className="hidden xl:inline">UAV PAS</span>
-                    <span className="hidden xl:inline">/</span>
+                    <span className="hidden 2xl:inline">UAV PAS</span>
+                    <span className="hidden 2xl:inline">/</span>
                     <span className="hidden xl:inline">{activeNav ? t(`adminNavGroups.${activeNav.group}`) : t('shell.adminSection')}</span>
                     {activeNav?.subGroup && (
                         <>

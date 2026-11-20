@@ -11,9 +11,13 @@ const catalogKeys = {
 
 /** Every service including deactivated ones; the customer catalog only ever sees active ones. */
 export function useAdminServiceOfferings() {
-    const {user} = useAuth();
+    const {user, can, permissionsReady} = useAuth();
     const client = useQueryClient();
-    const query = useQuery({queryKey: catalogKeys.admin(user?.id), queryFn: ({signal}) => serviceOfferingsService.all(signal)});
+    const query = useQuery({
+        queryKey: catalogKeys.admin(user?.id),
+        queryFn: ({signal}) => serviceOfferingsService.all(signal),
+        enabled: permissionsReady && can('MISSION_CONFIRM'),
+    });
     const refresh = () => client.invalidateQueries({queryKey: catalogKeys.admin(user?.id)});
     return {query, refresh};
 }

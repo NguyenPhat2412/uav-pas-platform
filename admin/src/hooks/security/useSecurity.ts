@@ -7,21 +7,30 @@ import {securityKeys} from '@/hooks/security/query-keys';
 import type {SecurityActionResult, SessionFilter} from '@/types/security/security.types';
 
 export function useSecurityPolicy() {
-    const {user} = useAuth();
-    return useQuery({queryKey: securityKeys.policy(user?.id), queryFn: ({signal}) => securityService.policy(signal)});
+    const {user, can, permissionsReady} = useAuth();
+    return useQuery({
+        queryKey: securityKeys.policy(user?.id),
+        queryFn: ({signal}) => securityService.policy(signal),
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE'),
+    });
 }
 
 export function useSecuritySecrets() {
-    const {user} = useAuth();
-    return useQuery({queryKey: securityKeys.secrets(user?.id), queryFn: ({signal}) => securityService.secrets(signal)});
+    const {user, can, permissionsReady} = useAuth();
+    return useQuery({
+        queryKey: securityKeys.secrets(user?.id),
+        queryFn: ({signal}) => securityService.secrets(signal),
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE'),
+    });
 }
 
 export function useSecuritySessions(filter: SessionFilter) {
-    const {user} = useAuth();
+    const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: securityKeys.sessions(user?.id, filter),
         queryFn: ({signal}) => securityService.sessions(filter, signal),
         placeholderData: keepPreviousData,
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE'),
     });
 }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useId, useRef, useState} from 'react';
+import React, {useEffect, useId, useRef, useState} from 'react';
 import {AlertTriangle, HelpCircle, X} from 'lucide-react';
 import {Button} from '@/components/ui/Button';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
@@ -43,12 +43,24 @@ export function ConfirmDialog({
     onConfirm,
     onCancel,
 }: ConfirmDialogProps) {
+    const topLayerRef = useRef<HTMLDialogElement>(null);
     const dialogRef = useRef<HTMLElement>(null);
     const titleId = useId();
     const descId = useId();
     const inputId = useId();
     const [checked, setChecked] = useState(defaultChecked);
     const [value, setValue] = useState(defaultValue);
+
+    useEffect(() => {
+        const el = topLayerRef.current;
+        if (!el) return;
+        if (open && !el.open) {
+            el.showModal();
+        }
+        return () => {
+            if (el.open) el.close();
+        };
+    }, [open]);
 
     useDialogFocusTrap(dialogRef, open, onCancel);
 
@@ -64,12 +76,16 @@ export function ConfirmDialog({
     };
 
     return (
-        <div
-            role="presentation"
-            className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-[1px]"
+        <dialog
+            ref={topLayerRef}
+            onCancel={event => {
+                event.preventDefault();
+                onCancel();
+            }}
             onMouseDown={event => {
                 if (event.target === event.currentTarget) onCancel();
             }}
+            className="fixed inset-0 z-[80] m-0 flex h-dvh max-h-none w-screen max-w-none items-center justify-center border-0 bg-slate-900/55 p-4 backdrop-blur-[1px] backdrop:bg-transparent"
         >
             <section
                 ref={dialogRef}
@@ -161,6 +177,6 @@ export function ConfirmDialog({
                     </div>
                 </form>
             </section>
-        </div>
+        </dialog>
     );
 }

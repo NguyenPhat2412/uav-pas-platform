@@ -4,7 +4,7 @@ import {AdminMarketplaceListings} from '@/components/marketplace/AdminMarketplac
 export default function AdminMarketplaceListingsPage() {
     return (
         <AdminPage
-            title="Kiểm duyệt tin đăng"
+            title="adminCommerce.marketplace.listings.pageTitle"
             permission="MARKETPLACE_MODERATE"
             activeResource="/admin/marketplace/listings"
         >

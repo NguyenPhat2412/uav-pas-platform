@@ -14,7 +14,9 @@ async function loadTs(path) {
 const {
     closeOtherWorkspaceTabs,
     closeWorkspaceTab,
+    MAX_VISIBLE_WORKSPACE_TABS,
     openWorkspaceTab,
+    partitionWorkspaceTabs,
     readWorkspaceTabs,
     withPinnedTab,
 } = await loadTs('../src/lib/workspace-tabs.ts');
@@ -73,4 +75,20 @@ test('workspace tabs: saved tabs survive only in a valid shape', () => {
     assert.deepEqual(readWorkspaceTabs('k'), []);
     delete globalThis.localStorage;
     assert.deepEqual(readWorkspaceTabs('k'), [], 'no storage at all is an empty list');
+});
+
+test('workspace tabs: shows at most 6 primary tabs and routes extras into overflow while keeping home and active visible', () => {
+    assert.equal(MAX_VISIBLE_WORKSPACE_TABS, 6);
+    const six = [tab(HOME), tab('/1'), tab('/2'), tab('/3'), tab('/4'), tab('/5')];
+    const fit = partitionWorkspaceTabs(six, '/3', HOME);
+    assert.equal(fit.primary.length, 6);
+    assert.equal(fit.overflow.length, 0);
+
+    const eight = [...six, tab('/6'), tab('/7')];
+    const withOverflow = partitionWorkspaceTabs(eight, '/7', HOME);
+    assert.equal(withOverflow.primary.length, 6);
+    assert.equal(withOverflow.overflow.length, 2);
+    assert.equal(withOverflow.primary[0].href, HOME);
+    assert.ok(withOverflow.primary.some(item => item.href === '/7'), 'active tab must stay directly visible');
+    assert.ok(withOverflow.overflow.some(item => item.href === '/5'), 'demoted tab moves into overflow');
 });

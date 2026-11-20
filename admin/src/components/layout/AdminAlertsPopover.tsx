@@ -69,7 +69,7 @@ export function AdminAlertsPopover() {
             >
                 <Bell size={17} aria-hidden="true"/>
                 {alerts.length > 0 && (
-                    <span className={cn('absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white', urgent ? 'bg-danger' : 'bg-amber-500')}>
+                    <span className={cn('absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] leading-none font-bold whitespace-nowrap text-white', urgent ? 'bg-danger' : 'bg-amber-500')}>
                         {alerts.length}
                     </span>
                 )}

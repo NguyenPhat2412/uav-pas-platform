@@ -120,13 +120,12 @@ const config = {
             },
             keyframes: {
                 "slide-in-right": {
-                    "0%": {transform: "translateX(115%)", opacity: "0"},
-                    "65%": {transform: "translateX(-4px)", opacity: "1"},
-                    "100%": {transform: "translateX(0)", opacity: "1"},
+                    "0%": {transform: "translateY(-10px)", opacity: "0"},
+                    "100%": {transform: "translateY(0)", opacity: "1"},
                 },
                 "slide-out-right": {
-                    "0%": {transform: "translateX(0)", opacity: "1"},
-                    "100%": {transform: "translateX(115%)", opacity: "0"},
+                    "0%": {transform: "translateY(0)", opacity: "1"},
+                    "100%": {transform: "translateY(-8px)", opacity: "0"},
                 },
                 "toast-progress": {
                     "0%": {width: "100%"},

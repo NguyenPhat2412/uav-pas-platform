@@ -69,7 +69,7 @@ function connectStrut(
 
 /**
  * Builds a detailed 3D enterprise UAV model supporting 3 airframe classes:
- * - QUADCOPTER_RTK (4-rotor industrial RTK survey quadcopter)
+ * - QUADCOPTER_RTK (4-rotor industrial GNSS survey quadcopter)
  * - HEXACOPTER_SAR (6-rotor heavy-lift Search & Rescue hexacopter with rescue pod)
  * - VTOL_FIXED_WING (Twin-boom fixed-wing VTOL with 4 lift rotors + pusher prop)
  */

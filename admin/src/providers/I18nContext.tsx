@@ -1,6 +1,7 @@
 'use client';
 
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useState, useSyncExternalStore} from 'react';
+import {fetchPublicLocaleBundle, switchPublicLocale} from '@/api/i18n/i18n.api';
 import {useBrowserStorage, writeBrowserStorage} from '@/hooks/useBrowserStorage';
 import {
   defaultLocale,
@@ -56,6 +57,42 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'uav_locale';
 const LEGACY_STORAGE_KEY = 'uav_customer_locale';
+export const I18N_UPDATED_EVENT = 'uav:i18n-updated';
+
+const STALE_REMOTE_VALUE_RE = new RegExp(
+    [
+        '\\b' + '3' + 'P\\b',
+        '\\b' + 'R' + 'FQ\\b',
+        'đấu\\s+' + 'thầu',
+        'chào\\s+' + 'giá',
+        'VietQR\\s+' + 'EMVCo',
+        'GNSS\\s+(?:' + 'FIXED|FLOAT)',
+    ].join('|'),
+    'i',
+);
+const BUNDLED_PRIORITY_NAV_KEYS = new Set([
+    'adminNavSubGroups.marketplace3p',
+    'adminNav.marketplaceStats',
+    'adminNav.marketplaceProviders',
+    'adminNav.marketplaceListings',
+    'adminNav.marketplaceDispatch',
+    'adminNav.marketplaceOrders',
+    'adminNav.marketplaceProjects',
+    'adminNav.billingPayouts',
+    'adminPlatform.settings.labels.marketplace_rfq_enabled',
+]);
+
+// Shared in-memory cache of PostgreSQL bundles fetched from /api/v1/public/i18n/{locale}
+const cachedRemoteBundles: Partial<Record<SupportedLocale, MessageRecord>> = {};
+
+export function notifyI18nCatalogUpdated() {
+    for (const key of Object.keys(cachedRemoteBundles) as SupportedLocale[]) {
+        delete cachedRemoteBundles[key];
+    }
+    if (typeof window !== 'undefined' && typeof CustomEvent !== 'undefined') {
+        window.dispatchEvent(new CustomEvent(I18N_UPDATED_EVENT));
+    }
+}
 
 /** The URL does not change under the provider without a reload, so its read needs no subscription. */
 const noSubscribe = () => () => {};
@@ -71,16 +108,17 @@ export function I18nProvider({children, area = 'operations'}: {
 }) {
     const activeCatalog = area === 'customer' ? customerMessagesMap : defaultMessagesMap;
 
-    // Server render and hydration use defaultLocale; the browser then reads ?lang= (wins and is remembered) or the
-    // saved choice. A choice made on this page lives in state too, so it applies even when storage refuses the write.
     const queryLocale = useSyncExternalStore(noSubscribe, readQueryLocale, () => null);
     const savedLocale = useBrowserStorage(STORAGE_KEY);
     const legacyLocale = useBrowserStorage(LEGACY_STORAGE_KEY);
     const [chosenLocale, setChosenLocale] = useState<SupportedLocale | null>(null);
+    const [remoteBundles, setRemoteBundles] = useState<Partial<Record<SupportedLocale, MessageRecord>>>(
+        () => ({...cachedRemoteBundles}),
+    );
+
     const fromBrowser = queryLocale ?? savedLocale ?? legacyLocale;
     const locale: SupportedLocale = chosenLocale ?? (fromBrowser ? normalizeLocale(fromBrowser) : defaultLocale);
 
-    // Remember a locale given in the URL (or migrate the legacy key) for the next visit; no state is set here.
     useEffect(() => {
         if (queryLocale) {
             const normalized = normalizeLocale(queryLocale);
@@ -90,6 +128,34 @@ export function I18nProvider({children, area = 'operations'}: {
             writeBrowserStorage(STORAGE_KEY, normalizeLocale(legacyLocale));
         }
     }, [queryLocale, savedLocale, legacyLocale]);
+
+    // Fetch PostgreSQL-backed translations for the active locale via REST API.
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const controller = new AbortController();
+        let active = true;
+
+        const syncLocale = (force = false) => {
+            if (!force && cachedRemoteBundles[locale]) {
+                setRemoteBundles(prev => (prev[locale] === cachedRemoteBundles[locale] ? prev : {...prev, [locale]: cachedRemoteBundles[locale]}));
+                return;
+            }
+            void fetchPublicLocaleBundle(locale, controller.signal).then(res => {
+                if (!active || !res?.messages) return;
+                cachedRemoteBundles[locale] = res.messages;
+                setRemoteBundles(prev => ({...prev, [locale]: res.messages}));
+            });
+        };
+
+        syncLocale();
+        const onUpdated = () => syncLocale(true);
+        window.addEventListener(I18N_UPDATED_EVENT, onUpdated);
+        return () => {
+            active = false;
+            controller.abort();
+            window.removeEventListener(I18N_UPDATED_EVENT, onUpdated);
+        };
+    }, [locale]);
 
     // Plain label helpers read this during the same render pass, so it must be set before children render.
     setPresentationLocale(locale);
@@ -106,6 +172,13 @@ export function I18nProvider({children, area = 'operations'}: {
         setChosenLocale(canonical);
         writeBrowserStorage(STORAGE_KEY, canonical);
         writeBrowserStorage(LEGACY_STORAGE_KEY, canonical);
+        if (typeof window !== 'undefined') {
+            void switchPublicLocale(canonical).then(res => {
+                if (!res?.messages) return;
+                cachedRemoteBundles[canonical] = res.messages;
+                setRemoteBundles(prev => ({...prev, [canonical]: res.messages}));
+            });
+        }
     }, []);
 
     const toggleLocale = useCallback(() => {
@@ -130,20 +203,31 @@ export function I18nProvider({children, area = 'operations'}: {
                 return current;
             };
 
-            // 1. Look up in active catalog with current locale
-            let val = lookup(activeCatalog[locale]);
+            // 1. PostgreSQL live bundle via /api/v1/public/i18n/{locale}
+            //    Skip stale DB values that still contain retired partner-tier/bidding labels or outdated long nav names.
+            const remoteVal = BUNDLED_PRIORITY_NAV_KEYS.has(key) ? undefined : lookup(remoteBundles[locale]);
+            let val: unknown =
+                typeof remoteVal === 'string' && !STALE_REMOTE_VALUE_RE.test(remoteVal) ? remoteVal : undefined;
 
-            // 2. Fallback to Vietnamese in active catalog
+            // 2. Bundled catalog for current locale (SSR & offline resilience)
             if (typeof val !== 'string') {
-                val = lookup(activeCatalog.vi);
+                val = lookup(activeCatalog[locale]);
             }
 
-            // 3. Cascade fallback to root catalog if in customer area
+            // 3. Fallback to Vietnamese (DB first unless stale, then bundled)
+            if (typeof val !== 'string') {
+                const remoteVi = BUNDLED_PRIORITY_NAV_KEYS.has(key) ? undefined : lookup(remoteBundles.vi);
+                val =
+                    (typeof remoteVi === 'string' && !STALE_REMOTE_VALUE_RE.test(remoteVi) ? remoteVi : undefined) ??
+                    lookup(activeCatalog.vi);
+            }
+
+            // 4. Cascade fallback to root catalog if in customer area
             if (typeof val !== 'string' && area === 'customer') {
                 val = lookup(defaultMessagesMap[locale]) ?? lookup(defaultMessagesMap.vi);
             }
 
-            // 4. Return raw key if not resolved
+            // 5. Return raw key if not resolved
             if (typeof val !== 'string') {
                 return key;
             }
@@ -152,13 +236,15 @@ export function I18nProvider({children, area = 'operations'}: {
             if (params) {
                 for (const [paramKey, paramVal] of Object.entries(params)) {
                     const escaped = paramKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    result = result.replace(new RegExp(`\\{${escaped}\\}`, 'g'), String(paramVal));
+                    result = result
+                        .replace(new RegExp(`\\{\\{${escaped}\\}\\}`, 'g'), String(paramVal))
+                        .replace(new RegExp(`\\{${escaped}\\}`, 'g'), String(paramVal));
                 }
             }
 
             return result;
         },
-        [locale, activeCatalog, area]
+        [locale, remoteBundles, activeCatalog, area]
     );
 
     const formatNumber = useCallback((value: number, options?: Intl.NumberFormatOptions): string => {

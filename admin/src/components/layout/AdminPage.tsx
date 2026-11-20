@@ -2,7 +2,7 @@
 
 import {createContext, useContext, useEffect, useLayoutEffect, useState} from 'react';
 import {usePathname, useRouter} from 'next/navigation';
-import {Button, UavLoader} from "@/components/ui";
+import {Button} from "@/components/ui";
 import {AppShell} from "@/components/layout/AdminAppShell";
 import {PermissionGate} from "@/components/data/WorkspaceState";
 import {useAuth} from '@/providers/AuthContext';
@@ -16,6 +16,50 @@ interface AdminPageMeta {
 }
 
 const AdminFrameContext = createContext<((meta: AdminPageMeta) => void) | null>(null);
+
+/**
+ * Lightweight instant shell skeleton shown while verifying an admin session on direct navigation
+ * so /admin/marketplace/* paints the workspace frame immediately instead of blocking behind a
+ * full-screen 3D "Đang xác thực" wall (never renders protected page children until authorized).
+ */
+function AdminShellSkeleton({label}: { label: string }) {
+    return (
+        <div
+            role="status"
+            aria-busy="true"
+            aria-label={label}
+            className="flex min-h-dvh bg-background text-foreground"
+        >
+            <span className="sr-only">{label}</span>
+            <aside className="hidden w-[256px] shrink-0 flex-col gap-3 border-r border-border bg-card p-3 lg:flex">
+                <div className="h-9 w-36 animate-pulse rounded-control bg-slate-100"/>
+                <div className="space-y-2 pt-2">
+                    {[0, 1, 2, 3, 4, 5].map(i => (
+                        <div key={i} className="h-8 w-full animate-pulse rounded-control bg-slate-100"/>
+                    ))}
+                </div>
+            </aside>
+            <div className="flex min-w-0 flex-1 flex-col">
+                <header className="flex min-h-13 items-center justify-between gap-4 border-b border-border bg-card px-4 sm:px-6">
+                    <div className="h-5 w-44 animate-pulse rounded-control bg-slate-100"/>
+                    <div className="flex items-center gap-2">
+                        <div className="h-8 w-36 animate-pulse rounded-control bg-slate-100"/>
+                        <div className="h-8 w-8 animate-pulse rounded-full bg-slate-100"/>
+                    </div>
+                </header>
+                <main className="mx-auto w-full max-w-7xl flex-1 space-y-4 p-4 sm:p-6">
+                    <div className="h-24 animate-pulse rounded-panel border border-border bg-card"/>
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        {[0, 1, 2, 3].map(i => (
+                            <div key={i} className="h-24 animate-pulse rounded-panel border border-border bg-card"/>
+                        ))}
+                    </div>
+                    <div className="h-64 animate-pulse rounded-panel border border-border bg-card"/>
+                </main>
+            </div>
+        </div>
+    );
+}
 
 /**
  * The admin shell (sidebar, header, alerts, assistant) for every portal page. It lives in the portal
@@ -49,7 +93,9 @@ export function AdminPortalFrame({children, page}: { children: React.ReactNode; 
             </main>
         );
     }
-    if (isLoading || !isAuthenticated || !isAdmin) return <UavLoader fullScreen label={t('admin.page.authenticating')}/>;
+    if (isLoading || !isAuthenticated || !isAdmin) {
+        return <AdminShellSkeleton label={t('admin.page.authenticating')}/>;
+    }
     return <AdminFrameContext.Provider value={setMeta}>
         <AppShell activeResource={(page ?? meta).activeResource} pageTitle={(page ?? meta).pageTitle}>{children}</AppShell>
     </AdminFrameContext.Provider>;

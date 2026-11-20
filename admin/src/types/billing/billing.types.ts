@@ -1,5 +1,6 @@
-import type {InvoiceStatus, ServicePlan} from '@/types';
+import type {Invoice, InvoiceStatus, ServicePlan} from '@/types';
 
+export type {Invoice};
 export type PlanInput = Omit<ServicePlan, 'id' | 'active'>;
 export type InvoiceFilterKey = 'ALL' | InvoiceStatus | 'OVERDUE';
 
@@ -108,8 +109,18 @@ export interface BankTransferInstructions {
     flightHours: number | null;
     dueDate: string | null;
     issuedAt: string | null;
+    lastEmailedAt?: string | null;
+    lastEmailedTo?: string | null;
     /** A customer may cancel only an unpaid PLAN invoice. */
     kind: 'MISSION' | 'PLAN' | 'OTHER';
+}
+
+export interface InvoiceEmailDispatchResult {
+    invoiceId: number;
+    invoiceCode: string;
+    recipientEmail: string;
+    pdfAttached: boolean;
+    sentAt: string;
 }
 
 export interface VietQrOptions {

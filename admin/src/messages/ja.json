@@ -76,7 +76,13 @@
       "discardConfirm": "このページには未保存の変更があります。変更を破棄して移動しますか？",
       "scrollLeft": "左のタブを表示",
       "scrollRight": "右のタブを表示",
-      "all": "開いているすべてのタブ"
+      "all": "開いているすべてのタブ",
+      "moreTabs": "他 {count} 件のタブを表示"
+    },
+    "fab": {
+      "menuLabel": "サポート・AIアシスタント",
+      "aiAssistant": "AIアシスタント",
+      "liveSupport": "オンラインサポート"
     }
   },
   "operationsNavGroups": {
@@ -119,7 +125,7 @@
     "operationsPulse": "運航・サポート",
     "airspaceWeather": "マップ・空域",
     "catalogPlans": "カタログ・プラン",
-    "marketplace3p": "3Pマーケットプレイス",
+    "marketplace3p": "機隊パートナー",
     "billingLedger": "請求照合・台帳",
     "rbacGovernance": "ロール・権限設計",
     "runtimeOps": "サーバー・デプロイ",
@@ -139,15 +145,16 @@
     "reports": "レポート・統計",
     "webhooks": "Webhook・連携",
     "settings": "システム設定",
+    "translations": "システム多言語管理 (i18n)",
     "auditLogs": "管理者監査ログ",
     "notifications": "通知",
     "supportInbox": "サポート受信箱",
     "fleetMap": "UAV機体マップ",
     "uavs": "UAV機体",
     "services": "サービスカタログ",
-    "marketplaceProviders": "パートナーKYC審査",
-    "marketplaceListings": "出品サービス審査",
-    "billingPayouts": "パートナー出金精算",
+    "marketplaceProviders": "パートナー審査",
+    "marketplaceListings": "出品審査",
+    "billingPayouts": "出金精算",
     "systemHealth": "システム状態",
     "aiRouter": "AIルーター制御",
     "aiConversations": "AIチャット監査ログ",
@@ -171,7 +178,11 @@
     "infrastructureEmail": "メール",
     "weather": "飛行気象",
     "airspace": "空域ゾーン",
-    "notificationModules": "通知モジュール管理"
+    "notificationModules": "通知モジュール管理",
+    "marketplaceDispatch": "配車割当",
+    "marketplaceOrders": "注文一覧",
+    "marketplaceProjects": "プロジェクト",
+    "marketplaceStats": "統計"
   },
   "sidebar": {
     "title": "UAV PAS",
@@ -179,7 +190,7 @@
     "badge": "Precision Flight Control v4.2",
     "heading": "UAV PAS へようこそ",
     "desc": "産業グレードの自動飛行指揮・ミッション管制・リアルタイム遠隔テレメトリ監視プラットフォーム。",
-    "telemetry": "テレメトリ稼働中 • RTK待機完了",
+    "telemetry": "テレメトリ稼働中 • GNSS待機完了",
     "cert": "ISO/IEC 27001 認証取得"
   },
   "auth": {
@@ -285,14 +296,14 @@
     "title": "UAV PAS ミッション運用センター",
     "edition": "運用センター",
     "realtimeBadge": "リアルタイム監視",
-    "syncRtk": "RTK同期",
+    "syncRtk": "GNSS同期",
     "openMap": "運用マップを開く",
     "officers": "管制要員",
     "chargingStations": "充電基地",
     "readyFleet": "出動可能UAV",
     "sensors": "センサー群",
     "flightHours": "総飛行時間",
-    "broadbandActive": "5G RTK 広帯域稼働中",
+    "broadbandActive": "5G GNSS 広帯域稼働中",
     "kpiFleet": "UAV機隊",
     "kpiFleetReady": "{count}機 待機中",
     "kpiSuccessRate": "任務完了率",
@@ -300,7 +311,7 @@
     "kpiStationEnergy": "基地局蓄電残量",
     "kpiSolar": "太陽光発電中",
     "kpiLatency": "通信遅延",
-    "kpiRtkPrecision": "RTK測位精度",
+    "kpiRtkPrecision": "GNSS測位精度",
     "fleetTableTitle": "待撃UAV機隊 稼働状況",
     "activeDevices": "5機 稼働中",
     "thDevice": "機体 / モデル",
@@ -317,7 +328,7 @@
     "thCodeName": "基地識別コード & 名称",
     "thConnection": "回線接続",
     "thAddress": "設置住所",
-    "thCoords": "GPS RTK 座標",
+    "thCoords": "GNSS 座標",
     "hangarTitle": "3D 機体ハンガー & レーダー管制",
     "battery": "バッテリー",
     "altitude": "対地高度",
@@ -620,7 +631,7 @@
       "subtitle": "UAV 画像から構築した建物やエリアの 3D デジタルコピー。現地に行かずに現況確認・計測・遠隔監視ができます。",
       "capture": {
         "title": "撮影",
-        "body": "UAV がグリッド飛行と周回飛行を行い、GPS/RTK 位置付きの高重複写真を撮影します。"
+        "body": "UAV がグリッド飛行と周回飛行を行い、GNSS 位置付きの高重複写真を撮影します。"
       },
       "process": {
         "title": "モデル構築",
@@ -718,7 +729,7 @@
       "heading": "方位",
       "waypoint": "地点",
       "toHome": "帰還距離",
-      "rtk": "RTK測位",
+      "rtk": "GNSS測位",
       "airspace": "空域警報",
       "wind": "風速 / 倍率"
     },
@@ -1006,7 +1017,7 @@
       "checks": {
         "airframe": "機体フレーム・ランディングギア・プロペラに損傷がなく確実に固定されている",
         "battery": "バッテリーセル電圧・温度が正常範囲内（残量25%以上）",
-        "gnss": "GNSS / RTK測位が安定ロックし、コンパスの磁気干渉がない",
+        "gnss": "GNSS測位が安定ロックし、コンパスの磁気干渉がない",
         "weather": "現地の風速・視程・降水状況が安全運航基準内である",
         "airspace": "飛行回廊の安全および飛行許可証・一時NOTAMを照合済み"
       },
@@ -1014,7 +1025,7 @@
       "satellites": "GNSS衛星数",
       "windMs": "現地風速 (m/s)",
       "notes": "現地点検メモ",
-      "notesPlaceholder": "RTKステータス、新規障害物、離陸時の注意事項など...",
+      "notesPlaceholder": "GNSSステータス、新規障害物、離陸時の注意事項など...",
       "signButton": "飛行前安全記録に署名して保存",
       "signing": "保存中...",
       "savedToast": "飛行前安全チェックリストを保存しました。"

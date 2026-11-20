@@ -10,11 +10,11 @@ import type {RoleTemplate, User} from '@/types/admin';
 
 /** A user's explicit allow/deny overrides; 'admin-user-permissions' is what user administration invalidates. */
 export function useUserPermissionOverrides(userId: number) {
-    const {user, can} = useAuth();
+    const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: queryKeys.of(user?.id, 'admin-user-permissions', userId),
         queryFn: ({signal}) => accessService.userPermissions(userId, signal),
-        enabled: can('USER_PERMISSION_MANAGE')
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE')
     });
 }
 

@@ -55,6 +55,7 @@ export interface FinancialOutboxEvent {
 export interface AdminBillingProfile {
     organizationName: string | null;
     taxCode: string | null;
+    billingEmail?: string | null;
     billingAddress: string | null;
     emergencyContactName: string | null;
     emergencyContactPhone: string | null;

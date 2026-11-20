@@ -76,7 +76,13 @@
       "discardConfirm": "This page has unsaved changes. Leave and discard them?",
       "scrollLeft": "Show tabs on the left",
       "scrollRight": "Show tabs on the right",
-      "all": "All open tabs"
+      "all": "All open tabs",
+      "moreTabs": "Show {count} more open tabs"
+    },
+    "fab": {
+      "menuLabel": "Support & AI Assistant",
+      "aiAssistant": "AI Assistant",
+      "liveSupport": "Live Support"
     }
   },
   "operationsNavGroups": {
@@ -119,7 +125,7 @@
     "operationsPulse": "Operations & Support",
     "airspaceWeather": "Map & Airspace",
     "catalogPlans": "Catalog & Plans",
-    "marketplace3p": "3P Partner Marketplace",
+    "marketplace3p": "Fleet Partners",
     "billingLedger": "Reconciliation & Ledger",
     "rbacGovernance": "Roles & Permissions",
     "runtimeOps": "Runtime & Deployment",
@@ -139,15 +145,16 @@
     "reports": "Reports & Analytics",
     "webhooks": "Webhooks & Events",
     "settings": "System Settings",
+    "translations": "System Translations (i18n)",
     "auditLogs": "Admin Audit Logs",
     "notifications": "Notifications",
     "supportInbox": "Support Inbox",
     "fleetMap": "Fleet Map",
     "uavs": "UAV Fleet",
     "services": "Service Catalog",
-    "marketplaceProviders": "Partner KYC Review",
-    "marketplaceListings": "Listing Moderation",
-    "billingPayouts": "Partner Payouts",
+    "marketplaceProviders": "Partner KYC",
+    "marketplaceListings": "Listings",
+    "billingPayouts": "Payouts",
     "systemHealth": "System Health",
     "aiRouter": "AI Router Console",
     "aiConversations": "AI Chat Audit",
@@ -171,7 +178,11 @@
     "infrastructureEmail": "Email",
     "weather": "Flight weather",
     "airspace": "Airspace zones",
-    "notificationModules": "Notification modules"
+    "notificationModules": "Notification modules",
+    "marketplaceDispatch": "Dispatch",
+    "marketplaceOrders": "Orders",
+    "marketplaceProjects": "Projects",
+    "marketplaceStats": "Analytics"
   },
   "sidebar": {
     "title": "UAV PAS",
@@ -179,7 +190,7 @@
     "badge": "Precision Flight Control v4.2",
     "heading": "Welcome to UAV PAS",
     "desc": "Industrial-grade autonomous flight command, mission control, and real-time remote telemetry monitoring platform for specialized UAV equipment.",
-    "telemetry": "Telemetry Active • RTK Ready",
+    "telemetry": "Telemetry Active • GNSS Ready",
     "cert": "ISO/IEC 27001 Certified"
   },
   "auth": {
@@ -285,14 +296,14 @@
     "title": "UAV PAS Mission Operations Center",
     "edition": "OPERATIONS CENTER",
     "realtimeBadge": "Live Monitoring",
-    "syncRtk": "RTK Synchronized",
+    "syncRtk": "GNSS Synchronized",
     "openMap": "Open Operations Map",
     "officers": "Operators",
     "chargingStations": "Charging Stations",
     "readyFleet": "Ready UAVs",
     "sensors": "Sensors Array",
     "flightHours": "Total Flight Hours",
-    "broadbandActive": "5G RTK Broadband Active",
+    "broadbandActive": "5G GNSS Broadband Active",
     "kpiFleet": "UAV Fleet",
     "kpiFleetReady": "{count} units ready",
     "kpiSuccessRate": "Mission Success Rate",
@@ -300,7 +311,7 @@
     "kpiStationEnergy": "Station Energy Reserve",
     "kpiSolar": "Solar charging active",
     "kpiLatency": "Latency",
-    "kpiRtkPrecision": "RTK precision",
+    "kpiRtkPrecision": "GNSS precision",
     "fleetTableTitle": "Ready UAV Fleet Status",
     "activeDevices": "5 units operational",
     "thDevice": "UAV / Model",
@@ -317,7 +328,7 @@
     "thCodeName": "Code & Station Name",
     "thConnection": "Connectivity",
     "thAddress": "Location Address",
-    "thCoords": "GPS RTK Coordinates",
+    "thCoords": "GNSS Coordinates",
     "hangarTitle": "3D Hangar & Radar Control",
     "battery": "Battery",
     "altitude": "Altitude AGL",
@@ -620,7 +631,7 @@
       "subtitle": "A 3D digital copy of a building or site, built from UAV imagery, for inspecting condition, measuring and monitoring remotely without a site visit.",
       "capture": {
         "title": "Capture",
-        "body": "The UAV flies a grid and orbits the structure, taking highly overlapping photos tagged with GPS/RTK positions."
+        "body": "The UAV flies a grid and orbits the structure, taking highly overlapping photos tagged with GNSS positions."
       },
       "process": {
         "title": "Reconstruct",
@@ -718,7 +729,7 @@
       "heading": "Heading",
       "waypoint": "Waypoint",
       "toHome": "Distance to home",
-      "rtk": "RTK GNSS",
+      "rtk": "GNSS GNSS",
       "airspace": "Airspace alerts",
       "wind": "Wind / Speed"
     },
@@ -738,7 +749,7 @@
     "rehearseStarted": "Started flight rehearsal for {code}",
     "openSimulation": "Open simulation console",
     "faultInjection": "Safety scenario testing",
-    "faultGps": "Weak GPS/RTK signal",
+    "faultGps": "Weak GNSS signal",
     "faultGpsRestore": "Restore positioning",
     "faultBattery": "Battery drop (-15%)",
     "airspaceZonesOverlay": "Showing {count} airspace & NOTAM zones",
@@ -1006,7 +1017,7 @@
       "checks": {
         "airframe": "Airframe, landing gear & propellers intact and securely locked",
         "battery": "Battery cell voltage balanced and temperature nominal (≥ 25%)",
-        "gnss": "GNSS / RTK position locked cleanly with zero compass interference",
+        "gnss": "GNSS position locked cleanly with zero compass interference",
         "weather": "Field wind speed, visibility, and precipitation within safe limits",
         "airspace": "Flight corridor clear and permit / temporary NOTAM verified"
       },
@@ -1014,7 +1025,7 @@
       "satellites": "GNSS satellites",
       "windMs": "Field wind (m/s)",
       "notes": "Field inspection notes",
-      "notesPlaceholder": "RTK fix status, new local obstacles, or takeoff remarks...",
+      "notesPlaceholder": "GNSS fix status, new local obstacles, or takeoff remarks...",
       "signButton": "Sign pre-flight safety log",
       "signing": "Saving log...",
       "savedToast": "Saved auditable pre-flight safety checklist."

@@ -168,7 +168,7 @@ export function Mission3DReplayAndTerrainCard({
                 <div className="space-y-3">
                     <UavModelViewer
                         serial={uavSerial ?? replay.uavSerialNumber ?? missionCode ?? `UAV-M${missionId}`}
-                        model={uavModel ?? replay.uavModel ?? 'Enterprise RTK Aircraft'}
+                        model={uavModel ?? replay.uavModel ?? 'Enterprise GNSS Aircraft'}
                         status={status ?? 'IN_PROGRESS'}
                         airframeClass={airframeClass}
                         altitudeM={activeFrame?.altitudeAglMeters}

@@ -47,7 +47,7 @@ export function NotificationBell({viewAllHref = '/operations/notifications'}: { 
             >
                 <Bell size={18}/>
                 {unreadCount > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-4 min-w-4 animate-pulse items-center justify-center rounded-panel bg-primary px-1 text-[10px] font-bold text-primary-foreground ring-2 ring-white">
+                    <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] animate-pulse items-center justify-center rounded-panel bg-primary px-1 text-[10px] leading-none font-bold whitespace-nowrap text-primary-foreground ring-2 ring-white">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}

@@ -20,16 +20,21 @@ const fileKeys = {
 const CLEANUP_BATCH = 100;
 
 export function useFileSummary() {
-    const {user} = useAuth();
-    return useQuery({queryKey: fileKeys.summary(user?.id), queryFn: ({signal}) => filesService.summary(signal)});
+    const {user, can, permissionsReady} = useAuth();
+    return useQuery({
+        queryKey: fileKeys.summary(user?.id),
+        queryFn: ({signal}) => filesService.summary(signal),
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE'),
+    });
 }
 
 export function useFileList(query: FileListQuery) {
-    const {user} = useAuth();
+    const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: fileKeys.list(user?.id, query),
         queryFn: ({signal}) => filesService.list(query, signal),
         placeholderData: keepPreviousData,
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE'),
     });
 }
 
@@ -51,7 +56,7 @@ export function useRemoveFile() {
 
 /** Every deletable UNUSED / PENDING file, largest first, always fetched fresh when the dialog opens. */
 export function useCleanupCandidates() {
-    const {user} = useAuth();
+    const {user, can, permissionsReady} = useAuth();
     return useQuery({
         queryKey: fileKeys.cleanup(user?.id),
         queryFn: async ({signal}) => {
@@ -68,6 +73,7 @@ export function useCleanupCandidates() {
         },
         staleTime: 0,
         gcTime: 0,
+        enabled: permissionsReady && can('USER_PERMISSION_MANAGE'),
     });
 }
 

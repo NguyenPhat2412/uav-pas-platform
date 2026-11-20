@@ -14,6 +14,7 @@ import type {ProfileErrors, ProfileFields} from '@/types/profile/profile.types';
 import {PasswordChangeCard} from '@/components/profile/PasswordChangeCard';
 import {TwoFactorSettingsCard} from '@/components/profile/TwoFactorSettingsCard';
 import {AccountDeletionCard} from '@/components/profile/AccountDeletionCard';
+import {AvatarEditor} from '@/components/profile/AvatarEditor';
 
 /** The admin's own account: editable name and phone, read-only identity, and a self-service password change. */
 export function AdminProfilePanel() {
@@ -49,9 +50,14 @@ export function AdminProfilePanel() {
     };
 
     const saveError = save.error && !profileError(save.error, tp).fields ? profileError(save.error, tp) : null;
+    const displayName = profile.data?.fullName || user?.fullName || user?.username || '';
 
     return (
-        <div className="grid gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 lg:grid-cols-2">
+        <div className="space-y-4">
+            <div className="border border-slate-200 bg-white">
+                <AvatarEditor name={displayName}/>
+            </div>
+            <div className="grid gap-px border border-slate-200 bg-slate-200 [&>*]:border-0 lg:grid-cols-2">
             <Card className="rounded-none bg-white" aria-labelledby="profile-title">
                 <CardHeader className="flex-row items-center gap-2 space-y-0">
                     <UserRound size={17} className="text-primary" aria-hidden="true"/>
@@ -127,6 +133,7 @@ export function AdminProfilePanel() {
             <p className="m-0 bg-white py-3 text-center text-xs text-slate-400 lg:col-span-2">
                 NguyenPhat2412 · UAV PAS
             </p>
+            </div>
         </div>
     );
 }
