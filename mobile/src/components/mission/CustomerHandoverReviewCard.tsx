@@ -140,6 +140,7 @@ export function CustomerHandoverReviewCard({
             <Pressable
                 disabled={lockedAccepted}
                 accessibilityRole="checkbox"
+                accessibilityLabel={t('capabilities.review.acceptDeliverables')}
                 accessibilityState={{checked: accepted, disabled: lockedAccepted}}
                 onPress={() => setOverrides(prev => ({...prev, accepted: !accepted}))}
                 style={({pressed}) => [styles.acceptRow, pressed && !lockedAccepted && styles.pressed]}>

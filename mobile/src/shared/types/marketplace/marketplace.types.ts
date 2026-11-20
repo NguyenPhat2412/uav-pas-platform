@@ -9,7 +9,10 @@ export type ProviderDocumentType =
     | 'BUSINESS_LICENSE'
     | 'PILOT_CERTIFICATE'
     | 'UAV_REGISTRATION'
-    | 'INSURANCE_POLICY';
+    | 'INSURANCE_POLICY'
+    | 'FLIGHT_OPERATION_PERMIT'
+    | 'PLATFORM_FEE_AGREEMENT'
+    | 'TAX_SETTLEMENT_DOSSIER';
 export type ProviderDocumentStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 export type ListingType = 'FLIGHT_SERVICE' | 'WET_LEASE' | 'DRY_LEASE';
 export type PricingModel = 'PER_HOUR' | 'PER_HECTARE' | 'PER_DAY' | 'PER_PACKAGE';
@@ -90,12 +93,19 @@ export interface ProviderDocumentInput {
     mediaAssetId?: number;
 }
 
+export interface ProviderBadge {
+    verified: boolean;
+    ratingAvg: number;
+    reviewCount: number;
+}
+
 export interface MarketplaceListing {
     id: number;
     providerId?: number | null;
     providerSlug?: string | null;
-    providerDisplayName: string;
-    providerVerificationStatus: ProviderVerificationStatus;
+    providerDisplayName?: string | null;
+    providerVerificationStatus?: ProviderVerificationStatus | null;
+    providerBadge?: ProviderBadge | null;
     officialPlatformListing: boolean;
     categoryServiceId?: number | null;
     categoryServiceCode?: string | null;
@@ -154,6 +164,8 @@ export type ListingSortOption = 'featured' | 'rating' | 'price_asc' | 'price_des
 
 export interface PublicListingFilters {
     keyword?: string;
+    q?: string;
+    category?: string;
     listingType?: ListingType | '';
     missionType?: MissionType | '';
     pricingModel?: PricingModel | '';

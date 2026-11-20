@@ -4,7 +4,6 @@ import {
     Compass,
     Database,
     Layers,
-    Megaphone,
     Plane,
     ShieldCheck,
     Store,
@@ -59,7 +58,7 @@ export function MissionBookingOptionsCard({
     onChange: (updater: (prev: MissionInput) => MissionInput) => void;
 }) {
     const {t} = useI18n();
-    const {rfqEnabled, invoiceDueDays, requireEscrowBeforeStart} = useSiteInfo();
+    const {invoiceDueDays, requireEscrowBeforeStart} = useSiteInfo();
     const catalogQuery = usePublicListings({size: 24}, !isEditing);
 
     const mode: BookingMode = form.openRfq
@@ -129,16 +128,6 @@ export function MissionBookingOptionsCard({
             badge: 'Escrow',
             icon: Store,
         },
-        ...(rfqEnabled
-            ? [
-                  {
-                      value: 'RFQ' as const,
-                      label: t('mobile.booking.modeRfq'),
-                      description: t('mobile.booking.modeRfqDesc'),
-                      icon: Megaphone,
-                  },
-              ]
-            : []),
     ];
 
     const serviceOptions: GlassOption<string>[] = [
@@ -162,7 +151,7 @@ export function MissionBookingOptionsCard({
     const listingOptions: GlassOption<string>[] = allListings.map(item => ({
         value: String(item.id),
         label: item.title,
-        description: item.providerDisplayName,
+        description: item.province,
         badge: `${formatVndCompact(item.basePriceVnd)}/${pricingUnitLabel(item.pricingModel)}`,
         icon: Store,
     }));

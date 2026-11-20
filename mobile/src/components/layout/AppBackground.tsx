@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {AccessibilityInfo, Animated, Easing, StyleSheet, useWindowDimensions, View} from 'react-native';
 import {usePathname} from 'expo-router';
 import Svg, {Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Pattern, RadialGradient, Rect, Stop} from 'react-native-svg';
-import {backgroundArt, backgroundGradient} from '@/styles/tokens';
+import {backgroundArt, backgroundGradient, colors} from '@/styles/tokens';
 
 // Drawn on a phone-sized canvas and scaled to cover the screen ("slice"), so circles stay round on every device.
 const W = 390;
@@ -32,10 +32,11 @@ function rotorCentres(drone: DroneLook) {
     }));
 }
 
-/** 0 → 1 once per propeller turn, on the native thread; stays at 0 when the phone asks for reduced motion. */
-function useSpin() {
+/** 0 → 1 once per propeller turn, on the native thread; disabled on calm Customer screens or reduced motion. */
+function useSpin(enabled: boolean) {
     const [spin] = useState(() => new Animated.Value(0));
     useEffect(() => {
+        if (!enabled) return;
         let loop: Animated.CompositeAnimation | undefined;
         let active = true;
         void AccessibilityInfo.isReduceMotionEnabled().then(reduced => {
@@ -47,27 +48,28 @@ function useSpin() {
             active = false;
             loop?.stop();
         };
-    }, [spin]);
+    }, [enabled, spin]);
     return spin;
 }
 
 /**
- * The page behind every screen: the brand gradient plus a survey map in the UAV operations style. A dotted grid,
- * terrain contour lines, radar rings around the flight base (top right) and a dashed flight route with waypoints and
- * a drone on its way, its propellers turning. Everything is faint enough that cards and text on top stay the focus.
- *
- * The artwork is anchored to the window, not to the view: each copy measures where it sits and shifts the drawing up
- * by that much. AppHeader and the page below it therefore show two halves of one picture, joined without a seam.
+ * Customer Marketplace screens follow a calm 60% neutral surface (#f8fafc) with zero radar clutter so service cards,
+ * prices, and CTAs stand out cleanly. Auth and Operations retain the UAV survey contour & radar artwork.
  */
 export function AppBackground() {
+    const pathname = usePathname();
+    const isCustomer = pathname.startsWith('/customer');
     const {width, height} = useWindowDimensions();
     const frame = useRef<React.ComponentRef<typeof View>>(null);
     const [top, setTop] = useState(0);
-    const spin = useSpin();
+    const spin = useSpin(!isCustomer);
     const rotate = spin.interpolate({inputRange: [0, 1], outputRange: ['0deg', '360deg']});
+    if (isCustomer) {
+        return <View style={styles.customerCalm} pointerEvents="none"/>;
+    }
     // Same "slice" fit as the Svg below, so the blades land on the drawn rotor rings.
     const scale = Math.max(width / W, height / H);
-    const drone = /^\/(customer|operations)(\/|$)/.test(usePathname()) ? DRONES.quiet : DRONES.hero;
+    const drone = /^\/(customer|operations)(\/|$)/.test(pathname) ? DRONES.quiet : DRONES.hero;
     const blade = ROTOR_RADIUS * drone.size * scale;
     const measure = () => frame.current?.measureInWindow((_x: number, y: number) => setTop(current => (Math.abs(current - y) < 0.5 ? current : y)));
     return (
@@ -140,6 +142,7 @@ export function AppBackground() {
 
 const styles = StyleSheet.create({
     frame: {position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, overflow: 'hidden'},
+    customerCalm: {position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: colors.customerCanvas},
     rotor: {position: 'absolute', justifyContent: 'center'},
     blade: {borderRadius: 2, backgroundColor: backgroundArt.route},
 });

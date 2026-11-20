@@ -164,7 +164,8 @@ export function AssistantScreen() {
         <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={insets.top + 44}>
             {header}
             <AppBackground/>
-            <ScrollView ref={scroll} contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.thread} keyboardShouldPersistTaps="handled"
+            <ScrollView ref={scroll} contentInsetAdjustmentBehavior="never" directionalLockEnabled alwaysBounceHorizontal={false} showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.thread} keyboardShouldPersistTaps="handled"
                         onContentSizeChange={() => scroll.current?.scrollToEnd({animated: true})}>
                 {thread.messages.length === 0 ? (
                     <View style={styles.hello}>

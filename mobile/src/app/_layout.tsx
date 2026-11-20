@@ -11,7 +11,13 @@ import {ToastProvider} from '@/providers/ToastContext';
 import {AppErrorView} from '@/components/shared/AppStatusViews';
 import {GlobalOfflineScreen} from '@/components/shared/ConnectionLostScreen';
 import {LiveNotificationBanner} from '@/components/notification/LiveNotificationBanner';
+import {useDevSimulatorQa} from '@/hooks/dev/useDevSimulatorQa';
 import {colors} from '@/styles/tokens';
+
+function DevQaController() {
+    useDevSimulatorQa();
+    return null;
+}
 
 // AuthProvider hides it once the session check is done.
 void SplashScreen.preventAutoHideAsync().catch(() => undefined);
@@ -33,7 +39,19 @@ export default function RootLayout() {
                             <AuthProvider>
                                 <ToastProvider>
                                     <StatusBar style="dark"/>
-                                    <Stack screenOptions={{headerShown: false, contentStyle: {backgroundColor: colors.canvas}}}/>
+                                    <Stack
+                                        screenOptions={{
+                                            headerShown: false,
+                                            scrollEdgeEffects: {
+                                                top: 'hidden',
+                                                bottom: 'hidden',
+                                                left: 'hidden',
+                                                right: 'hidden',
+                                            },
+                                            contentStyle: {backgroundColor: colors.canvas},
+                                        }}
+                                    />
+                                    <DevQaController/>
                                     <LiveNotificationBanner/>
                                     <GlobalOfflineScreen/>
                                 </ToastProvider>

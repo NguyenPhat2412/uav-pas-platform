@@ -1,4 +1,4 @@
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {mobileMarketplaceApi} from '@/api/marketplace/marketplace.api';
 import {billingKeys} from '@/shared/hooks/billing/query-keys';
 import {queryKeys} from '@/shared/lib/query';
@@ -9,6 +9,7 @@ export function usePublicListings(filters: PublicListingFilters = {}, enabled = 
     return useQuery({
         queryKey: ['marketplace', 'public-listings', filters],
         queryFn: ({signal}) => mobileMarketplaceApi.listPublicListings(filters, signal),
+        placeholderData: keepPreviousData,
         enabled,
     });
 }

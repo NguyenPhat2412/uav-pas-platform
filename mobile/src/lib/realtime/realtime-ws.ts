@@ -1,8 +1,9 @@
-import {API_BASE_URL} from '@/config/env';
+import {getApiBaseUrl} from '@/config/env';
 import {onSessionEnded, onSessionTokenChanged, sessionStore} from '@/lib/api/session';
 import {readSupportVisitorToken, readTokens} from '@/lib/storage/secure-tokens';
 import type {InvoiceStatus} from '@/shared/types/customer';
 import type {RealtimeNotificationPopupPayload} from '@/shared/types/notification/notification.types';
+import type {OrderStatusGroup} from '@/shared/types/project/project.types';
 import type {PublicSupportThreadSession, SupportAdminSummary, SupportChatMessage, SupportThread} from '@/shared/types/support/support.types';
 
 export type SupportThreadItem = SupportThread;
@@ -25,6 +26,7 @@ export type RealtimeServerFrame =
     | { type: 'SUPPORT_SUMMARY_UPDATED'; timestamp: string; summary: SupportAdminSummary }
     | { type: 'SUPPORT_VISITOR_TYPING'; timestamp: string; threadId: number; senderName?: string; typing: boolean }
     | { type: 'INVOICE_UPDATED'; timestamp: string; invoiceId: number; invoiceCode: string; status: InvoiceStatus | string }
+    | { type: 'ORDER_UPDATED'; timestamp?: string; missionId: number; orderId?: number; status: string; statusGroup?: OrderStatusGroup }
     | { type: 'NOTIFICATION_CREATED'; timestamp: string; notification: RealtimeNotificationPopupPayload; unreadCount: number; screenPopup?: boolean; desktopOs?: boolean };
 
 export interface RealtimeSocketLike {
@@ -341,7 +343,7 @@ export function createRealtimeWsClient(options: RealtimeWsOptions) {
 export type RealtimeWsClient = ReturnType<typeof createRealtimeWsClient>;
 
 export const realtimeWs = createRealtimeWsClient({
-    getBaseUrl: () => API_BASE_URL,
+    getBaseUrl: getApiBaseUrl,
     getAccessTokenSync: () => sessionStore.read()?.accessToken ?? null,
     getAccessTokenAsync: async () => (await readTokens())?.accessToken ?? null,
     getVisitorTokenAsync: () => readSupportVisitorToken(),

@@ -53,11 +53,14 @@ export const PRICING_MODEL_OPTIONS: { value: PricingModel; label: string; unitSh
 ];
 
 export const DOCUMENT_TYPE_OPTIONS: { value: ProviderDocumentType; label: string }[] = [
-    {value: 'IDENTITY_CARD', label: 'CCCD / Hộ chiếu người đại diện'},
-    {value: 'BUSINESS_LICENSE', label: 'Giấy phép đăng ký doanh nghiệp'},
-    {value: 'PILOT_CERTIFICATE', label: 'Chứng chỉ điều khiển UAV / Phi công'},
-    {value: 'UAV_REGISTRATION', label: 'Hồ sơ đăng ký tàu bay / Serial UAV'},
-    {value: 'INSURANCE_POLICY', label: 'Bảo hiểm trách nhiệm dân sự bay'},
+    {value: 'BUSINESS_LICENSE', label: 'Giấy chứng nhận đăng ký doanh nghiệp / Hộ kinh doanh'},
+    {value: 'IDENTITY_CARD', label: 'CCCD / Hộ chiếu người đại diện pháp luật'},
+    {value: 'PILOT_CERTIFICATE', label: 'Chứng chỉ điều khiển UAV / Năng định tổ lái'},
+    {value: 'UAV_REGISTRATION', label: 'Hồ sơ đăng ký tàu bay & Serial thiết bị'},
+    {value: 'FLIGHT_OPERATION_PERMIT', label: 'Văn bản chấp thuận khai thác / Phép bay chuyên ngành'},
+    {value: 'INSURANCE_POLICY', label: 'Chứng nhận bảo hiểm trách nhiệm dân sự bay'},
+    {value: 'PLATFORM_FEE_AGREEMENT', label: 'Bản xác nhận Phụ lục Biểu phí & Quy chế đối soát dịch vụ'},
+    {value: 'TAX_SETTLEMENT_DOSSIER', label: 'Hồ sơ đăng ký mã số thuế & Tài khoản nhận đối soát'},
 ];
 
 export const EQUIPMENT_CATEGORY_OPTIONS: { value: ProviderEquipmentCategory; label: string }[] = [
@@ -65,7 +68,7 @@ export const EQUIPMENT_CATEGORY_OPTIONS: { value: ProviderEquipmentCategory; lab
     {value: 'SENSOR', label: 'Cảm biến LiDAR / Đa phổ / Nhiệt'},
     {value: 'BATTERY', label: 'Pin thông minh & Trạm sạc'},
     {value: 'KV260', label: 'Bộ xử lý biên KV260'},
-    {value: 'ACCESSORY', label: 'Phụ kiện RTK / Trạm gốc GNSS'},
+    {value: 'ACCESSORY', label: 'Phụ kiện định vị / Trạm gốc GNSS'},
 ];
 
 export function listingTypeLabel(type?: ListingType | null): string {

@@ -30,6 +30,7 @@ export type {
 export const BILLING_PROFILE_FIELD_KEYS: (keyof BillingProfileFields)[] = [
     'organizationName',
     'taxCode',
+    'billingEmail',
     'billingAddress',
     'emergencyContactName',
     'emergencyContactPhone',
@@ -94,7 +95,7 @@ export function toBillingProfilePayload(
     version: number,
 ): { fields: BillingProfileFields; version: number } {
     return {
-        fields: Object.fromEntries(BILLING_PROFILE_FIELD_KEYS.map(key => [key, draft[key].trim()])) as BillingProfileFields,
+        fields: Object.fromEntries(BILLING_PROFILE_FIELD_KEYS.map(key => [key, (draft[key] ?? '').trim()])) as BillingProfileFields,
         version,
     };
 }

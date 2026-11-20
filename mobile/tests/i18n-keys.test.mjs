@@ -17,6 +17,7 @@ const catalog = locale => merge(merge({
     ...read(`shared/messages/sections/admin/${locale}.json`),
     ...read(`shared/messages/sections/customerPro/${locale}.json`),
     ...read(`shared/messages/sections/opsMissions/${locale}.json`),
+    ...read(`shared/messages/sections/publicSite/${locale}.json`),
 }, read(`shared/messages/customer/${locale}.json`)), read(`messages/${locale}.json`));
 const lookup = (tree, key) => key.split('.').reduce((node, part) => (isObject(node) ? node[part] : undefined), tree);
 
@@ -45,6 +46,31 @@ test('i18n: every key used by the app exists in vi, en and ja', () => {
 
 test('i18n: the app catalogs have the same keys in every language', () => {
     const flat = (tree, prefix = '') => Object.entries(tree).flatMap(([key, value]) => isObject(value) ? flat(value, `${prefix}${key}.`) : [`${prefix}${key}`]);
-    const vi = flat(read('messages/vi.json')).sort();
-    for (const locale of ['en', 'ja']) assert.deepEqual(flat(read(`messages/${locale}.json`)).sort(), vi, locale);
+    const viTree = read('messages/vi.json');
+    const enTree = read('messages/en.json');
+    const jaTree = read('messages/ja.json');
+    const vi = flat(viTree).sort();
+    assert.deepEqual(flat(enTree).sort(), vi, 'en');
+    assert.deepEqual(flat(jaTree).sort(), vi, 'ja');
+
+    const extractPlaceholders = text => [...String(text).matchAll(/\{([a-zA-Z0-9_]+)\}/g)].map(m => m[1]).sort();
+    const vnDiacritics = /[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]/i;
+
+    for (const key of vi) {
+        const viVal = lookup(viTree, key);
+        const enVal = lookup(enTree, key);
+        const jaVal = lookup(jaTree, key);
+        assert.equal(typeof viVal, 'string', `vi ${key} must be string`);
+        assert.equal(typeof enVal, 'string', `en ${key} must be string`);
+        assert.equal(typeof jaVal, 'string', `ja ${key} must be string`);
+        assert.ok(viVal.trim().length > 0, `vi ${key} must not be empty`);
+        assert.ok(enVal.trim().length > 0, `en ${key} must not be empty`);
+        assert.ok(jaVal.trim().length > 0, `ja ${key} must not be empty`);
+        assert.deepEqual(extractPlaceholders(enVal), extractPlaceholders(viVal), `en placeholders mismatch at ${key}`);
+        assert.deepEqual(extractPlaceholders(jaVal), extractPlaceholders(viVal), `ja placeholders mismatch at ${key}`);
+        if (key.startsWith('mobile.overnight.') || key.startsWith('mobile.shop.')) {
+            assert.doesNotMatch(enVal, vnDiacritics, `en ${key} still contains Vietnamese diacritics`);
+            assert.doesNotMatch(jaVal, vnDiacritics, `ja ${key} still contains Vietnamese diacritics`);
+        }
+    }
 });

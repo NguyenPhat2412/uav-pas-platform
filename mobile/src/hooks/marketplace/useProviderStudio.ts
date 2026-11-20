@@ -1,7 +1,15 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {mobileMarketplaceApi} from '@/api/marketplace/marketplace.api';
-import {queryKeys} from '@/shared/lib/query';
+import {
+    mobileMarketplaceApi,
+    type CreateListingFromTemplateInput,
+    type ProviderOrderAssignInput,
+    type ProviderPilot,
+    type ProviderPilotStatus,
+    type ProviderPilotUpsertInput,
+} from '@/api/marketplace/marketplace.api';
+import {useOrderRealtimeSync} from '@/hooks/order/useOrders';
 import {useAuth} from '@/providers/AuthContext';
+import {queryKeys} from '@/shared/lib/query';
 import type {
     MarketplaceListingUpsertInput,
     MissionBidCreateInput,
@@ -13,6 +21,14 @@ import type {
     ProviderOrderCompleteInput,
     ProviderUavCreateInput,
 } from '@/shared/types/marketplace/marketplace.types';
+
+export type {
+    CreateListingFromTemplateInput,
+    ProviderOrderAssignInput,
+    ProviderPilot,
+    ProviderPilotStatus,
+    ProviderPilotUpsertInput,
+};
 
 export function useMyProviderProfile() {
     const {user} = useAuth();
@@ -41,8 +57,19 @@ export function useMyProviderFleet() {
     });
 }
 
+export function useMyProviderPilots() {
+    const {user} = useAuth();
+    return useQuery({
+        queryKey: queryKeys.of(user?.id, 'marketplace', 'my-pilots'),
+        queryFn: ({signal}) => mobileMarketplaceApi.listMyPilots(signal),
+        enabled: Boolean(user),
+        retry: false,
+    });
+}
+
 export function useProviderOrders() {
     const {user} = useAuth();
+    useOrderRealtimeSync();
     return useQuery({
         queryKey: queryKeys.of(user?.id, 'marketplace', 'my-orders'),
         queryFn: ({signal}) => mobileMarketplaceApi.listMyOrders(signal),
@@ -86,6 +113,7 @@ export function useProviderStudioMutations() {
         void qc.invalidateQueries({queryKey: featureKey});
         void qc.invalidateQueries({queryKey: ['marketplace']});
         void qc.invalidateQueries({queryKey: ['public', 'site-info']});
+        void qc.invalidateQueries({queryKey: queryKeys.feature(user?.id, 'orders')});
     };
 
     return {
@@ -108,9 +136,18 @@ export function useProviderStudioMutations() {
                 mobileMarketplaceApi.createListing(payload),
             onSettled: refresh,
         }),
+        createListingFromTemplate: useMutation({
+            mutationFn: (payload: CreateListingFromTemplateInput) =>
+                mobileMarketplaceApi.createListingFromTemplate(payload),
+            onSettled: refresh,
+        }),
         updateListing: useMutation({
             mutationFn: ({id, payload}: { id: number; payload: MarketplaceListingUpsertInput }) =>
                 mobileMarketplaceApi.updateListing(id, payload),
+            onSettled: refresh,
+        }),
+        deleteListing: useMutation({
+            mutationFn: (id: number) => mobileMarketplaceApi.deleteListing(id),
             onSettled: refresh,
         }),
         toggleListingPause: useMutation({
@@ -122,9 +159,27 @@ export function useProviderStudioMutations() {
                 mobileMarketplaceApi.registerUav(payload),
             onSettled: refresh,
         }),
+        deleteUav: useMutation({
+            mutationFn: (id: number) => mobileMarketplaceApi.deleteUav(id),
+            onSettled: refresh,
+        }),
         registerEquipment: useMutation({
             mutationFn: (payload: ProviderEquipmentCreateInput) =>
                 mobileMarketplaceApi.registerEquipment(payload),
+            onSettled: refresh,
+        }),
+        createPilot: useMutation({
+            mutationFn: (payload: ProviderPilotUpsertInput) =>
+                mobileMarketplaceApi.createPilot(payload),
+            onSettled: refresh,
+        }),
+        updatePilot: useMutation({
+            mutationFn: ({id, payload}: { id: number; payload: Partial<ProviderPilotUpsertInput> }) =>
+                mobileMarketplaceApi.updatePilot(id, payload),
+            onSettled: refresh,
+        }),
+        deletePilot: useMutation({
+            mutationFn: (id: number) => mobileMarketplaceApi.deletePilot(id),
             onSettled: refresh,
         }),
         respondToOrder: useMutation({
@@ -135,6 +190,16 @@ export function useProviderStudioMutations() {
                 missionId: number;
                 payload: ProviderOrderActionInput;
             }) => mobileMarketplaceApi.respondToOrder(missionId, payload),
+            onSettled: refresh,
+        }),
+        assignOrder: useMutation({
+            mutationFn: ({
+                missionId,
+                payload,
+            }: {
+                missionId: number;
+                payload: ProviderOrderAssignInput;
+            }) => mobileMarketplaceApi.assignOrder(missionId, payload),
             onSettled: refresh,
         }),
         startOrder: useMutation({

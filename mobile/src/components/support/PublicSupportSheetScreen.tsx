@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {usePathname} from 'expo-router';
-import {Radio, RotateCcw, Send} from 'lucide-react-native';
-import {MobileSupportContactCard} from '@/components/support/MobileSupportContactCard';
+import { usePathname, useRouter } from 'expo-router';
+import { Radio, RotateCcw, Send, Sparkles } from 'lucide-react-native';
+import { AssistantMascot } from '@/components/assistant/AssistantMascot';
+import { MobileSupportContactCard } from '@/components/support/MobileSupportContactCard';
 import {SupportMessageStatusRow} from '@/components/support/SupportMessageStatusRow';
 import {
     AppText,
@@ -30,6 +31,7 @@ import {
     type ResolvedMessageReceipt,
 } from '@/shared/utils/support/message-status';
 import {formatSupportTime, formatSupportTopic, SUPPORT_TOPIC_OPTIONS} from '@/shared/utils/support/support-format';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 const TOPIC_CHIPS = SUPPORT_TOPIC_OPTIONS.map(option => ({value: option.value, label: option.label}));
@@ -75,9 +77,11 @@ function SupportMessageBubble({message, youLabel, adminFallback, receipt, onRetr
 /** Visitor & customer direct contact + live 2-way support chat form-sheet screen. */
 export function PublicSupportSheetScreen() {
     const {t, locale} = useI18n();
-    const {user} = useAuth();
+    const {status, user} = useAuth();
     const toast = useToast();
+    const router = useRouter();
     const pathname = usePathname();
+    const isCustomerSupportTab = pathname.startsWith('/customer');
     const isActiveRoute = pathname === '/customer/support' || pathname === '/support';
     const {
         hydrated,
@@ -104,7 +108,7 @@ export function PublicSupportSheetScreen() {
     const [draft, setDraft] = useState('');
     const [replyError, setReplyError] = useState<string | null>(null);
 
-    const fullName = fullNameInput ?? (user?.fullName || user?.username || '');
+    const fullName = fullNameInput ?? cleanEntityName(user?.fullName || user?.username || '');
     const contactInfo = contactInput ?? (user?.email || user?.phoneNumber || '');
 
     const handleStartInquiry = () => {
@@ -189,6 +193,32 @@ export function PublicSupportSheetScreen() {
 
     return (
         <Screen onRefresh={() => void handleRefresh()} refreshing={refreshing}>
+            {isCustomerSupportTab && (
+                <Card style={styles.aiConciergeCard}>
+                    <View style={styles.aiRow}>
+                        <View style={styles.aiMascotBox}>
+                            <AssistantMascot size={28}/>
+                        </View>
+                        <View style={styles.flex}>
+                            <AppText variant="title" style={styles.aiTitle}>
+                                {t('mobile.shop.aiSupportCardTitle')}
+                            </AppText>
+                            <AppText variant="caption" style={styles.aiDesc}>
+                                {t('mobile.shop.aiSupportCardDesc')}
+                            </AppText>
+                        </View>
+                    </View>
+                    <Button
+                        size="sm"
+                        icon={Sparkles}
+                        label={t('mobile.shop.aiSupportOpenBtn')}
+                        onPress={() =>
+                            router.push(status === 'signed-in' ? '/customer/assistant' : '/login')
+                        }
+                    />
+                </Card>
+            )}
+
             <MobileSupportContactCard/>
 
             {!hydrated || (Boolean(visitorToken) && isLoading && !session) ? (
@@ -264,6 +294,22 @@ export function PublicSupportSheetScreen() {
 
 const styles = StyleSheet.create({
     flex: {flex: 1},
+    aiConciergeCard: {
+        backgroundColor: colors.slate900,
+        borderColor: colors.slateDark,
+        gap: spacing.sm,
+    },
+    aiRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
+    aiMascotBox: {
+        width: 44,
+        height: 44,
+        borderRadius: radius.card,
+        backgroundColor: colors.surface,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    aiTitle: {color: colors.white},
+    aiDesc: {color: colors.border},
     topicSection: {gap: spacing.xs},
     topicLabel: {fontSize: font.small, fontWeight: '600', color: colors.text},
     errorText: {color: colors.danger},

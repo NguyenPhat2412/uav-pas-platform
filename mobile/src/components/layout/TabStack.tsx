@@ -11,6 +11,24 @@ import {colors} from '@/styles/tokens';
 export const detailHeader = {
     header: AppHeader,
     headerTransparent: false,
+    scrollEdgeEffects: {
+        top: 'hidden',
+        bottom: 'hidden',
+        left: 'hidden',
+        right: 'hidden',
+    },
+    contentStyle: {backgroundColor: colors.canvas},
+} as const;
+
+export const tabHeader = {
+    header: AppHeader,
+    headerTransparent: false,
+    scrollEdgeEffects: {
+        top: 'hidden',
+        bottom: 'automatic',
+        left: 'hidden',
+        right: 'hidden',
+    },
     contentStyle: {backgroundColor: colors.canvas},
 } as const;
 
@@ -18,7 +36,7 @@ export const detailHeader = {
 export function TabStack({titleKey}: { titleKey: string }) {
     const {t} = useI18n();
     return (
-        <Stack screenOptions={detailHeader}>
+        <Stack screenOptions={tabHeader}>
             <Stack.Screen name="index" options={{title: t(titleKey), headerBackVisible: false, headerTitleAlign: 'left'}}/>
         </Stack>
     );

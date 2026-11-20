@@ -27,8 +27,7 @@ export function AccountMoreSheet() {
     const openAdminQuick = async () => {
         if (router.canDismiss()) router.dismiss();
         await switchPortal('operations');
-        router.replace('/operations/missions');
-        setTimeout(() => router.push('/operations/admin-quick'), 50);
+        router.replace('/operations/admin-quick');
     };
 
     return (

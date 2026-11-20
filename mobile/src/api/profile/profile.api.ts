@@ -1,6 +1,12 @@
 import {apiClient, API_ROUTES, uploadToSignedUrl} from '@/lib/api/client';
 import {profilePayload} from '@/shared/forms/profile/profile-form';
-import type {CustomerProfile, ProfileFields, SignedAvatarUpload} from '@/shared/types/profile/profile.types';
+import type {
+    BillingProfile,
+    BillingProfileFields,
+    CustomerProfile,
+    ProfileFields,
+    SignedAvatarUpload,
+} from '@/shared/types/profile/profile.types';
 
 /** A photo picked or taken on the phone (same shape as media.api's LocalFile). */
 export interface AvatarFile {
@@ -51,6 +57,10 @@ export const profileService = {
         apiClient.patch<CustomerProfile>(API_ROUTES.users.profile, profilePayload(fields, revision)),
     changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) =>
         apiClient.post<void>(API_ROUTES.users.profilePassword, {currentPassword, newPassword, confirmPassword}),
+    getBilling: (signal?: AbortSignal) =>
+        apiClient.get<BillingProfile>(API_ROUTES.users.profileBilling, {signal}),
+    updateBilling: (fields: BillingProfileFields, expectedVersion: number) =>
+        apiClient.put<BillingProfile>(API_ROUTES.users.profileBilling, {expectedVersion, ...fields}),
     getDeletionPolicy: (signal?: AbortSignal) => apiClient.get<AccountDeletionPolicy>(API_ROUTES.users.deletionPolicy, {signal}),
     deleteOwnAccount: (payload: DeleteOwnAccountPayload) =>
         apiClient.post<{ message: string }>(API_ROUTES.users.deleteOwnAccount, {

@@ -12,7 +12,7 @@ interface Props {
 }
 
 const AIRFRAME_LABELS: Record<UavHealthProfile['airframeClass'], string> = {
-    QUADCOPTER_RTK: '4 Cánh RTK',
+    QUADCOPTER_RTK: '4 Cánh GNSS',
     HEXACOPTER_SAR: '6 Cánh SAR',
     VTOL_FIXED_WING: 'VTOL Cánh bằng',
 };

@@ -2,22 +2,8 @@ import {SkeletonList} from './Skeleton';
 import {FieldLabel} from './FieldLabel';
 import React, {type ComponentType, createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {
-    ActivityIndicator,
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    RefreshControl,
-    ScrollView,
-    StyleProp,
-    StyleSheet,
-    Text,
-    TextInput,
-    TextInputProps,
-    TextProps,
-    TextStyle,
-    View,
-    ViewStyle,
+    ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Pressable, RefreshControl,
+    ScrollView, StyleProp, StyleSheet, Text, TextInput, TextInputProps, TextProps, TextStyle, View, ViewStyle,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets, type Edge} from 'react-native-safe-area-context';
 import {usePathname} from 'expo-router';
@@ -94,7 +80,7 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
     const scrolled = useRef(0);
     const insets = useSafeAreaInsets();
     const pathname = usePathname();
-    const isTabRoot = /^\/(customer|operations)\/(home|missions|services|support|account|sar|fleet|weather)$/.test(pathname);
+    const isTabRoot = /^\/(customer|operations)\/(?:\(tabs\)\/)?(home|missions|services|support|account|sar|fleet|weather)\/?$/.test(pathname);
     const top = edges.includes('top') ? insets.top : 0;
     const reveal = useCallback(() => {
         requestAnimationFrame(() => {
@@ -115,9 +101,17 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
         return () => shown.remove();
     }, [reveal]);
     const keyboardReveal = useMemo(() => ({reveal, anchor}), [reveal]);
-    const bottomPad = insets.bottom + (isTabRoot ? 128 : spacing.xl);
+    const bottomPad = insets.bottom + spacing.xl;
+    useEffect(() => {
+        if (typeof __DEV__ !== 'undefined' && __DEV__) {
+            const g = globalThis as { __uavScrollRefs?: Record<string, typeof scrollRef>; __uavScrollBottom?: boolean };
+            (g.__uavScrollRefs ??= {})[pathname] = scrollRef;
+            if (g.__uavScrollBottom) setTimeout(() => scrollRef.current?.scrollToEnd({animated: false}), 250);
+        }
+    });
+    const effectiveMaxWidth = (typeof __DEV__ !== 'undefined' && __DEV__ && (globalThis as { __uavDevMaxWidth?: number | null }).__uavDevMaxWidth) || maxWidth;
     const column = (
-        <View style={[styles.column, {maxWidth}, contentStyle]}>
+        <View style={[styles.column, {maxWidth: effectiveMaxWidth}, contentStyle]}>
             <OfflineBanner/>
             {children}
         </View>
@@ -129,9 +123,18 @@ export function Screen({children, onRefresh, refreshing = false, scroll = true, 
                 {scroll ? (
                     <ScrollView
                         ref={scrollRef}
+                        onContentSizeChange={() => {
+                            if (typeof __DEV__ !== 'undefined' && __DEV__ && (globalThis as { __uavScrollBottom?: boolean }).__uavScrollBottom) {
+                                scrollRef.current?.scrollToEnd({animated: false});
+                            }
+                        }}
                         onScroll={event => { scrolled.current = event.nativeEvent.contentOffset.y; }}
                         scrollEventThrottle={16}
-                        contentInsetAdjustmentBehavior="automatic"
+                        contentInsetAdjustmentBehavior={isTabRoot ? 'automatic' : 'never'}
+                        automaticallyAdjustsScrollIndicatorInsets={isTabRoot}
+                        directionalLockEnabled
+                        alwaysBounceHorizontal={false}
+                        showsHorizontalScrollIndicator={false}
                         automaticallyAdjustKeyboardInsets
                         contentContainerStyle={[styles.content, {paddingBottom: bottomPad}]}
                         keyboardShouldPersistTaps="handled"
@@ -177,12 +180,12 @@ export function Button({label, onPress, tone = 'primary', size = 'md', loading =
     const compact = size === 'sm';
     return (
         <Pressable
-            onPress={onPress} disabled={inactive} accessibilityRole="button"
+            onPress={onPress} disabled={inactive} accessibilityRole="button" accessibilityLabel={label}
             accessibilityState={{disabled: inactive, busy: loading}}
             style={({pressed}) => [styles.button, compact && styles.buttonSm, {backgroundColor: palette.background, borderColor: palette.border},
                 inactive && styles.disabled, pressed && styles.pressed, style]}>
             {loading ? <ActivityIndicator size="small" color={palette.text}/> : Icon ? <Icon size={compact ? 15 : 18} color={palette.text}/> : null}
-            <ScaledText numberOfLines={1} style={[styles.buttonText, compact && styles.buttonTextSm, {color: palette.text}]}>{label}</ScaledText>
+            <ScaledText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.buttonText, compact && styles.buttonTextSm, {color: palette.text}]}>{label}</ScaledText>
         </Pressable>
     );
 }
@@ -240,7 +243,7 @@ export function Badge({label, background = colors.slateLight, color = colors.sla
     return (
         <View style={[styles.badge, {backgroundColor: background}]}>
             {Icon && <Icon size={12} color={color}/>}
-            <ScaledText style={[styles.badgeText, {color}]} numberOfLines={1}>{label}</ScaledText>
+            <ScaledText style={[styles.badgeText, {color}]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}>{label}</ScaledText>
         </View>
     );
 }
@@ -288,7 +291,7 @@ export function ChipGroup<T extends string>({options, value, onChange, wrap = fa
     const items = options.map(option => {
         const active = option.value === value;
         return (
-            <Pressable key={option.value} onPress={() => onChange(option.value)} accessibilityRole="button"
+            <Pressable key={option.value} onPress={() => onChange(option.value)} accessibilityRole="button" accessibilityLabel={option.label}
                        accessibilityState={{selected: active}}>
                 <GlassSurface interactive tint={active ? colors.slateDark : colors.slateLight}
                               style={[styles.chip, wrap && styles.chipWrapItem, liquidGlass && styles.chipGlass]}
@@ -304,7 +307,7 @@ export function ChipGroup<T extends string>({options, value, onChange, wrap = fa
 
 export const styles = StyleSheet.create({
     flex: {flex: 1},
-    screen: {flex: 1, backgroundColor: colors.canvas},
+    screen: {flex: 1, backgroundColor: colors.canvas, overflow: 'hidden'},
     // Cards sit on the gradient; a hairline keeps them distinct without heavy shadows.
     content: {flexGrow: 1, padding: spacing.lg, paddingBottom: spacing.xxl},
     column: {width: '100%', alignSelf: 'center', gap: spacing.lg},

@@ -10,7 +10,7 @@ import {
 } from '@/api/profile/profile.api';
 import {apiImageSource} from '@/lib/api/client';
 import {useAuth} from '@/providers/AuthContext';
-import type {ProfileFields} from '@/shared/types/profile/profile.types';
+import type {BillingProfile, BillingProfileFields, ProfileFields} from '@/shared/types/profile/profile.types';
 
 export type {AccountDeletionPolicy, DeleteOwnAccountPayload};
 
@@ -67,6 +67,30 @@ export function useAccountDeletionPolicy(enabled = true) {
 export function useDeleteOwnAccount() {
     return useMutation({
         mutationFn: (payload: DeleteOwnAccountPayload) => profileService.deleteOwnAccount(payload),
+        retry: false,
+    });
+}
+
+/** Corporate & VAT invoice dossier plus on-site emergency contact for the signed-in user. */
+export function useBillingProfile(enabled = true) {
+    const {user} = useAuth();
+    return useQuery<BillingProfile>({
+        queryKey: profileKeys.billing(user?.id),
+        queryFn: ({signal}) => profileService.getBilling(signal),
+        enabled: !!user && enabled,
+    });
+}
+
+/** Updates the signed-in user's Corporate & VAT billing dossier with optimistic version checking. */
+export function useUpdateBillingProfile() {
+    const {user} = useAuth();
+    const client = useQueryClient();
+    return useMutation({
+        mutationFn: ({fields, version}: { fields: BillingProfileFields; version: number }) =>
+            profileService.updateBilling(fields, version),
+        onSuccess: saved => {
+            client.setQueryData(profileKeys.billing(user?.id), saved);
+        },
         retry: false,
     });
 }

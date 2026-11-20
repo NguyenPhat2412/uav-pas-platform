@@ -1,9 +1,10 @@
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import {getLocales} from 'expo-localization';
+import {fetchMobileLocaleBundle, switchMobileLocale} from '@/api/i18n/i18n.api';
 import {normalizeLocale, supportedLocales, type SupportedLocale} from '@/shared/i18n/config';
 import {setPresentationLocale} from '@/shared/lib/presentation';
 import {readSavedLocale, saveLocale} from '@/lib/storage/preferences';
-import {translate} from '@/lib/i18n/catalog';
+import {setRemoteCatalog, translate} from '@/lib/i18n/catalog';
 
 interface I18nValue {
     locale: SupportedLocale;
@@ -14,8 +15,6 @@ interface I18nValue {
     formatCurrency: (amount: number, currency?: string) => string;
 }
 
-// Fast Refresh re-runs this module when a message file changes; a fresh context object would orphan the mounted
-// provider and every screen would throw. Keeping one object per JS runtime makes that reload harmless.
 const shared = globalThis as { __uavI18nContext?: React.Context<I18nValue | undefined> };
 const I18nContext = (shared.__uavI18nContext ??= createContext<I18nValue | undefined>(undefined));
 
@@ -25,8 +24,8 @@ function deviceLocale(): SupportedLocale {
 }
 
 export function I18nProvider({children}: { children: ReactNode }) {
-    // The phone's language until a saved choice loads; a choice made in the app wins from then on.
     const [locale, setLocaleState] = useState<SupportedLocale>(deviceLocale);
+    const [remoteVersion, setRemoteVersion] = useState(0);
 
     useEffect(() => {
         let active = true;
@@ -38,40 +37,61 @@ export function I18nProvider({children}: { children: ReactNode }) {
         };
     }, []);
 
-    // Label helpers shared with the web (lib/presentation) and API error wording read this during render.
+    useEffect(() => {
+        let active = true;
+        const controller = new AbortController();
+        void fetchMobileLocaleBundle(locale, controller.signal).then(res => {
+            if (!active || !res?.messages) return;
+            setRemoteCatalog(locale, res.messages);
+            setRemoteVersion(v => v + 1);
+        });
+        return () => {
+            active = false;
+            controller.abort();
+        };
+    }, [locale]);
+
     setPresentationLocale(locale);
 
     const setLocale = useCallback((next: SupportedLocale) => {
         setLocaleState(next);
         void saveLocale(next);
+        void switchMobileLocale(next).then(res => {
+            if (!res?.messages) return;
+            setRemoteCatalog(next, res.messages);
+            setRemoteVersion(v => v + 1);
+        });
     }, []);
 
-    const value = useMemo<I18nValue>(() => ({
-        locale,
-        setLocale,
-        t: (key, params) => translate(locale, key, params),
-        formatDate: (value, options) => {
-            try {
-                return new Intl.DateTimeFormat(locale, options ?? {dateStyle: 'medium', timeStyle: 'short'}).format(new Date(value));
-            } catch {
-                return String(value);
-            }
-        },
-        formatNumber: (value, options) => {
-            try {
-                return new Intl.NumberFormat(locale, options).format(value);
-            } catch {
-                return String(value);
-            }
-        },
-        formatCurrency: (amount, currency = 'VND') => {
-            try {
-                return new Intl.NumberFormat(locale, {style: 'currency', currency, maximumFractionDigits: 0}).format(amount);
-            } catch {
-                return `${amount} ${currency}`;
-            }
-        },
-    }), [locale, setLocale]);
+    const value = useMemo<I18nValue>(() => {
+        void remoteVersion;
+        return {
+            locale,
+            setLocale,
+            t: (key, params) => translate(locale, key, params),
+            formatDate: (value, options) => {
+                try {
+                    return new Intl.DateTimeFormat(locale, options ?? {dateStyle: 'medium', timeStyle: 'short'}).format(new Date(value));
+                } catch {
+                    return String(value);
+                }
+            },
+            formatNumber: (value, options) => {
+                try {
+                    return new Intl.NumberFormat(locale, options).format(value);
+                } catch {
+                    return String(value);
+                }
+            },
+            formatCurrency: (amount, currency = 'VND') => {
+                try {
+                    return new Intl.NumberFormat(locale, {style: 'currency', currency, maximumFractionDigits: 0}).format(amount);
+                } catch {
+                    return `${amount} ${currency}`;
+                }
+            },
+        };
+    }, [locale, remoteVersion, setLocale]);
 
     return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
@@ -82,10 +102,6 @@ export function useI18n(): I18nValue {
     return context;
 }
 
-/**
- * Translation for the root error screen, which expo-router draws outside every provider: the provider's `t` when it
- * is there, else the device language read straight from the catalog.
- */
 export function useTranslateOutsideProvider(): I18nValue['t'] {
     const context = useContext(I18nContext);
     return context?.t ?? ((key, params) => translate(deviceLocale(), key, params));

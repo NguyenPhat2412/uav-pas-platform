@@ -1,5 +1,5 @@
 import {useMemo} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {keepPreviousData, useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {queryKeys} from '@/shared/lib/query';
 import type {FleetMap, UavStatus} from '@/shared/types/uav/fleet-map.types';
 import type {UavTelemetry} from '@/shared/types/uav/telemetry.types';
@@ -95,6 +95,7 @@ export function useMaintenanceOrders(status = '') {
     return useQuery({
         queryKey: [...key, 'orders', {status}],
         queryFn: ({signal}) => fleetService.orders(0, status, signal),
+        placeholderData: keepPreviousData,
         enabled: permissionsReady && can('UAV_MAINTENANCE_VIEW'),
     });
 }

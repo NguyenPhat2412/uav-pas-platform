@@ -162,7 +162,7 @@ export function MobileMissionMarketplaceCard({
                 })}
             </View>
 
-            {mission.providerDisplayName ? (
+            {!owned && mission.providerDisplayName ? (
                 <View style={styles.metaRow}>
                     <Building2 size={15} color={colors.primary}/>
                     <AppText variant="small" style={styles.bold}>
@@ -180,7 +180,9 @@ export function MobileMissionMarketplaceCard({
 
             {mission.quotedSubtotalVnd != null || invoice ? (
                 <View style={styles.amountBox}>
-                    <AppText variant="small">{t('mobile.marketplace.estimatedEscrow')}</AppText>
+                    <AppText variant="small">
+                        {t('mobile.marketplace.estimatedEscrow')} · {t('mobile.shop.illustrativePrice')}
+                    </AppText>
                     <AppText variant="title" style={styles.price}>
                         {formatVndCompact(invoice?.amount ?? mission.quotedSubtotalVnd)}
                     </AppText>

@@ -12,6 +12,9 @@ import jaAdmin from '@/shared/messages/sections/admin/ja.json';
 import viOpsMissions from '@/shared/messages/sections/opsMissions/vi.json';
 import enOpsMissions from '@/shared/messages/sections/opsMissions/en.json';
 import jaOpsMissions from '@/shared/messages/sections/opsMissions/ja.json';
+import viPublicSite from '@/shared/messages/sections/publicSite/vi.json';
+import enPublicSite from '@/shared/messages/sections/publicSite/en.json';
+import jaPublicSite from '@/shared/messages/sections/publicSite/ja.json';
 import viCustomer from '@/shared/messages/customer/vi.json';
 import enCustomer from '@/shared/messages/customer/en.json';
 import jaCustomer from '@/shared/messages/customer/ja.json';
@@ -32,18 +35,23 @@ export function deepMerge(target: MessageRecord, source: MessageRecord): Message
     return output;
 }
 
-// The web customer & field operations catalog (root + sections, customer overrides), then the app's own `mobile.*` keys.
-// The admin section is included because the assistant's texts (admin.assistant.*) live there on the web too.
 const build = (root: unknown, sections: unknown[], customer: unknown, mobile: unknown) =>
     deepMerge(deepMerge(Object.assign({}, root, ...sections) as MessageRecord, customer as MessageRecord), mobile as MessageRecord);
 
 export const catalogs: Record<SupportedLocale, MessageRecord> = {
-    vi: build(viRoot, [viAdmin, viCustomerPro, viOpsMissions], viCustomer, viMobile),
-    en: build(enRoot, [enAdmin, enCustomerPro, enOpsMissions], enCustomer, enMobile),
-    ja: build(jaRoot, [jaAdmin, jaCustomerPro, jaOpsMissions], jaCustomer, jaMobile),
+    vi: build(viRoot, [viAdmin, viCustomerPro, viOpsMissions, viPublicSite], viCustomer, viMobile),
+    en: build(enRoot, [enAdmin, enCustomerPro, enOpsMissions, enPublicSite], enCustomer, enMobile),
+    ja: build(jaRoot, [jaAdmin, jaCustomerPro, jaOpsMissions, jaPublicSite], jaCustomer, jaMobile),
 };
 
-function lookup(catalog: MessageRecord, key: string): unknown {
+const remoteCatalogs: Partial<Record<SupportedLocale, MessageRecord>> = {};
+
+export function setRemoteCatalog(locale: SupportedLocale, messages: MessageRecord) {
+    remoteCatalogs[locale] = messages;
+}
+
+function lookup(catalog: MessageRecord | undefined, key: string): unknown {
+    if (!catalog) return undefined;
     let current: unknown = catalog;
     for (const part of key.split('.')) {
         if (!current || typeof current !== 'object' || !(part in (current as Record<string, unknown>))) return undefined;
@@ -52,12 +60,20 @@ function lookup(catalog: MessageRecord, key: string): unknown {
     return current;
 }
 
-/** The text for key in locale (falling back to Vietnamese, then the key itself), with {param} placeholders filled. */
+/** Resolves text from bundled mobile.* catalogs (or PostgreSQL remote bundle for shared CMS keys), with {param} interpolation. */
 export function translate(locale: SupportedLocale, key: string, params?: Record<string, string | number>): string {
-    let value = lookup(catalogs[locale], key);
-    if (typeof value !== 'string') value = lookup(catalogs.vi, key);
+    const preferBundled = key.startsWith('mobile.');
+    let value = preferBundled
+        ? lookup(catalogs[locale], key) ?? lookup(remoteCatalogs[locale], key)
+        : lookup(remoteCatalogs[locale], key);
+    if (typeof value !== 'string') value = lookup(catalogs[locale], key);
+    if (typeof value !== 'string') value = lookup(remoteCatalogs.vi, key) ?? lookup(catalogs.vi, key);
     if (typeof value !== 'string') return key;
-    let result = value;
-    if (params) for (const [name, param] of Object.entries(params)) result = result.split(`{${name}}`).join(String(param));
+    let result = value.replace(/\bRTK\b/gi, 'GNSS');
+    if (params) {
+        for (const [name, param] of Object.entries(params)) {
+            result = result.split(`{{${name}}}`).join(String(param)).split(`{${name}}`).join(String(param));
+        }
+    }
     return result;
 }

@@ -8,9 +8,13 @@ const SAVE_DELAY_MS = 2000;
 
 /** Only this user's session-scoped, successful queries outside the skip list. */
 export function shouldPersistQuery(query: Pick<Query, 'queryKey' | 'state'>, userId: number): boolean {
+    if (query.state.status !== 'success') return false;
     const [scope, owner, feature] = query.queryKey as unknown[];
+    if (scope === 'marketplace' && (owner === 'public-listings' || owner === 'public-listing')) {
+        return true;
+    }
     return scope === 'session' && owner === userId && typeof feature === 'string'
-        && !SKIP_FEATURES.has(feature) && query.state.status === 'success';
+        && !SKIP_FEATURES.has(feature);
 }
 
 export async function restoreQueryCache(client: QueryClient, userId: number): Promise<void> {

@@ -170,6 +170,8 @@ export interface Invoice {
     dueDate: string;
     paidAt?: string;
     notes?: string;
+    lastEmailedAt?: string | null;
+    lastEmailedTo?: string | null;
     createdAt: string;
 }
 

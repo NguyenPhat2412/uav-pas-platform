@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
 import {StyleSheet} from 'react-native';
+import {usePathname} from 'expo-router';
 import {RefreshCw, Save} from 'lucide-react-native';
 import {AppText, Button, Card, ErrorState, LoadingState, Screen, SectionTitle, TextField} from '@/components/ui';
-import {useProfile} from '@/hooks/profile/useProfile';
+import {MobileBillingProfileCard, MobileSellerDossierCard} from '@/components/profile/MobileBillingProfileCard';
+import {useBillingProfile, useProfile} from '@/hooks/profile/useProfile';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
@@ -48,13 +50,24 @@ function ProfileForm({profile, onReload}: { profile: CustomerProfile; onReload: 
 export function ProfileScreen() {
     const {t} = useI18n();
     const {user} = useAuth();
+    const pathname = usePathname();
     const {profile} = useProfile();
+    const billing = useBillingProfile();
+    const isCustomerPortal = pathname.startsWith('/customer');
     if (profile.isPending) return <Screen><LoadingState label={t('profile.loading')}/></Screen>;
     if (!profile.data) return <Screen><ErrorState message={t('profile.loadError')} retryLabel={t('common.retry')} onRetry={() => void profile.refetch()}/></Screen>;
     return (
-        <Screen>
+        <Screen
+            refreshing={profile.isRefetching || billing.isRefetching}
+            onRefresh={() => {
+                void profile.refetch();
+                void billing.refetch();
+            }}
+        >
             {/* Keyed by revision: loading the latest version replaces the draft. */}
             <ProfileForm key={profile.data.revision} profile={profile.data} onReload={() => void profile.refetch()}/>
+            <MobileBillingProfileCard/>
+            {isCustomerPortal ? <MobileSellerDossierCard/> : null}
             <Card>
                 <SectionTitle title={t('profile.accountInfo')}/>
                 <AppText variant="caption">{t('profile.username')}</AppText>

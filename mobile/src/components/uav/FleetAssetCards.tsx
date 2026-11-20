@@ -97,7 +97,7 @@ export function FleetUavCard({
                         {t('opsMissions.overview.hud.speed')}:{' '}
                         {sample.groundSpeedMs != null ? `${sample.groundSpeedMs.toFixed(1)} m/s` : '—'}
                     </AppText>
-                    <AppText variant="caption">RTK: {sample.rtkStatus ?? 'NONE'}</AppText>
+                    <AppText variant="caption">GNSS: {sample.rtkStatus ?? 'NONE'}</AppText>
                 </View>
             ) : null}
 

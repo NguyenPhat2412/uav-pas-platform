@@ -1,5 +1,5 @@
 import {Platform} from 'react-native';
-import {API_BASE_URL} from '@/config/env';
+import {getApiBaseUrl} from '@/config/env';
 import {apiMessageCodes, apiMessages, clientText} from '@/shared/lib/api/messages';
 import {API_ROUTES} from '@/shared/lib/api/routes';
 import {getPresentationLocale} from '@/shared/lib/presentation';
@@ -26,9 +26,17 @@ function emitTransport(signal: TransportSignal) {
 
 /** The only place the app talks HTTP; the architecture check forbids fetch() anywhere else. */
 export const apiClient = createApiClient({
-    baseUrl: API_BASE_URL,
+    baseUrl: getApiBaseUrl,
     fetch: async (input, init) => {
-        const isApi = typeof input === 'string' && input.startsWith(API_BASE_URL);
+        const isApi = typeof input === 'string' && input.startsWith(getApiBaseUrl());
+        if (
+            isApi &&
+            typeof __DEV__ !== 'undefined' &&
+            __DEV__ &&
+            (globalThis as { __uavNetworkStore?: { netDisconnected?: boolean } }).__uavNetworkStore?.netDisconnected
+        ) {
+            throw new TypeError('Offline');
+        }
         try {
             const response = await fetch(input, init);
             if (isApi) {
@@ -71,7 +79,7 @@ export function apiImageSource(url?: string | null): { uri: string; headers?: Re
     if (!url) return undefined;
     if (!url.startsWith('/api/')) return {uri: url};
     const token = sessionStore.read()?.accessToken;
-    return {uri: `${API_BASE_URL}${url}`, headers: token ? {Authorization: `Bearer ${token}`} : undefined};
+    return {uri: `${getApiBaseUrl()}${url}`, headers: token ? {Authorization: `Bearer ${token}`} : undefined};
 }
 
 /** Downloads an authenticated API binary (e.g. invoice PDF) and encodes it as a Base64 data: URI for native sharing. */

@@ -5,6 +5,7 @@ import {CheckCircle2, ChevronDown, Circle, X, type LucideIcon} from 'lucide-reac
 import {GlassSurface} from '@/components/ui/Glass';
 import {FieldLabel} from '@/components/ui/FieldLabel';
 import {AppText, Badge, ScaledText} from '@/components/ui';
+import {useTranslateOutsideProvider} from '@/providers/I18nContext';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 export interface GlassOption<T extends string = string> {
@@ -145,6 +146,7 @@ export function GlassSelectField<T extends string>({
     disabled?: boolean;
     showTriggerDescription?: boolean;
 }) {
+    const t = useTranslateOutsideProvider();
     const [open, setOpen] = useState(false);
     const current = options.find(item => item.value === value);
     const CurrentIcon = current?.icon;
@@ -198,7 +200,12 @@ export function GlassSelectField<T extends string>({
 
             <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
                 <View style={styles.backdrop}>
-                    <Pressable style={styles.backdropDismiss} onPress={() => setOpen(false)}/>
+                    <Pressable
+                        style={styles.backdropDismiss}
+                        accessibilityRole="button"
+                        accessibilityLabel={t('common.close')}
+                        onPress={() => setOpen(false)}
+                    />
                     <GlassSurface style={styles.sheet} fallback={styles.sheetFallback}>
                         <SafeAreaView edges={['bottom']} style={styles.sheetInner}>
                             <View style={styles.grabber}/>
@@ -206,7 +213,12 @@ export function GlassSelectField<T extends string>({
                                 <AppText variant="title" style={styles.flex} numberOfLines={1}>
                                     {sheetTitle || label || placeholder || ''}
                                 </AppText>
-                                <Pressable onPress={() => setOpen(false)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Close" style={styles.closeBtn}>
+                                <Pressable
+                                    onPress={() => setOpen(false)}
+                                    hitSlop={8}
+                                    accessibilityRole="button"
+                                    accessibilityLabel={t('common.close')}
+                                    style={styles.closeBtn}>
                                     <X size={18} color={colors.slateDark}/>
                                 </Pressable>
                             </View>

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Cpu, Package, Plane, Plus} from 'lucide-react-native';
+import {Cpu, Package, Plane, Plus, Trash2} from 'lucide-react-native';
 import {
     AppText,
     Badge,
@@ -26,6 +26,7 @@ import {
     initialUavForm,
 } from '@/shared/forms/marketplace/marketplace-forms';
 import type {ProviderEquipmentCategory} from '@/shared/types/marketplace/marketplace.types';
+import {cleanEntityName} from '@/utils/marketplace/clean-text';
 import {colors, spacing} from '@/styles/tokens';
 
 type FleetTab = 'UAV' | 'EQUIPMENT';
@@ -115,6 +116,12 @@ export function ProviderFleetScreen() {
 
     const uavs = fleetQuery.data?.uavs ?? [];
     const equipment = fleetQuery.data?.equipment ?? [];
+    const formatUavStatus = (status: string) => {
+        if (status === 'AVAILABLE') return t('mobile.overnight.uavStatusAvailable');
+        if (status === 'IN_USE') return t('mobile.overnight.uavStatusInUse');
+        if (status === 'MAINTENANCE') return t('mobile.overnight.uavStatusMaintenance');
+        return status;
+    };
 
     return (
         <Screen
@@ -133,7 +140,7 @@ export function ProviderFleetScreen() {
                         <SectionTitle title={t('mobile.provider.addUavTitle')}/>
                         <TextField
                             label={t('mobile.provider.uavModelLabel')} required
-                            placeholder="DJI Matrice 350 RTK"
+                            placeholder="M350 / M3E"
                             value={uavForm.model}
                             onChangeText={val => setUavForm(prev => ({...prev, model: val}))}
                         />
@@ -160,7 +167,7 @@ export function ProviderFleetScreen() {
                         />
                     </Card>
 
-                    {fleetQuery.isPending ? (
+                    {fleetQuery.isPending && !fleetQuery.data ? (
                         <LoadingState/>
                     ) : uavs.length === 0 ? (
                         <EmptyState icon={Plane} message={t('mobile.provider.noUavs')}/>
@@ -168,16 +175,49 @@ export function ProviderFleetScreen() {
                         uavs.map(item => (
                             <Card key={item.id}>
                                 <View style={styles.rowBetween}>
-                                    <AppText variant="title">{item.model}</AppText>
+                                    <AppText variant="title" numberOfLines={1} style={styles.flex}>
+                                        {cleanEntityName(item.model)}
+                                    </AppText>
                                     <Badge
-                                        label={item.status}
-                                        background={colors.primaryLight}
-                                        color={colors.primary}
+                                        label={formatUavStatus(item.status)}
+                                        background={
+                                            item.status === 'IN_USE'
+                                                ? colors.warningLight
+                                                : colors.primaryLight
+                                        }
+                                        color={
+                                            item.status === 'IN_USE'
+                                                ? colors.warning
+                                                : colors.primary
+                                        }
                                     />
                                 </View>
-                                <AppText variant="caption">
-                                    {item.manufacturer} · SN: {item.serialNumber}
-                                </AppText>
+                                <View style={styles.rowBetween}>
+                                    <AppText variant="caption" numberOfLines={1} style={styles.flex}>
+                                        {item.manufacturer} · SN: {item.serialNumber}
+                                    </AppText>
+                                    <Button
+                                        size="sm"
+                                        tone="ghost"
+                                        icon={Trash2}
+                                        loading={
+                                            mutations.deleteUav.isPending &&
+                                            mutations.deleteUav.variables === item.id
+                                        }
+                                        label={t('mobile.overnight.deleteUavBtn')}
+                                        onPress={() =>
+                                            mutations.deleteUav.mutate(item.id, {
+                                                onSuccess: () =>
+                                                    toast.show(t('mobile.overnight.uavDeletedToast'), 'info'),
+                                                onError: err =>
+                                                    toast.show(
+                                                        extractActionableError(err, t('mobile.provider.saveError')),
+                                                        'error',
+                                                    ),
+                                            })
+                                        }
+                                    />
+                                </View>
                             </Card>
                         ))
                     )}
@@ -231,7 +271,7 @@ export function ProviderFleetScreen() {
                         />
                     </Card>
 
-                    {fleetQuery.isPending ? (
+                    {fleetQuery.isPending && !fleetQuery.data ? (
                         <LoadingState/>
                     ) : equipment.length === 0 ? (
                         <EmptyState icon={Package} message={t('mobile.provider.noEquipment')}/>
@@ -246,7 +286,10 @@ export function ProviderFleetScreen() {
                                         color={colors.slateDark}
                                     />
                                 </View>
-                                <AppText variant="caption">{item.type}</AppText>
+                                <AppText variant="caption">
+                                    {EQUIPMENT_CATEGORY_OPTIONS.find(o => o.value === item.type)?.label ??
+                                        item.type}
+                                </AppText>
                             </Card>
                         ))
                     )}

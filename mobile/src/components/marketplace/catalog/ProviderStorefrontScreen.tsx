@@ -1,30 +1,24 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {useLocalSearchParams, useRouter} from 'expo-router';
-import {Award, Building2, CheckCircle2, Layers, MapPin, Star} from 'lucide-react-native';
+import {useLocalSearchParams} from 'expo-router';
+import {Award, CheckCircle2, Layers, MapPin, Star, Store} from 'lucide-react-native';
+import {MarketplaceListingCard} from '@/components/marketplace/catalog/MarketplaceListingCard';
 import {
     AppText,
     Badge,
     Card,
     EmptyState,
     ErrorState,
-    GlassSurface,
     LoadingState,
     Screen,
     SectionTitle,
 } from '@/components/ui';
 import {usePublicProvider} from '@/hooks/marketplace/useMarketplaceCatalog';
 import {useI18n} from '@/providers/I18nContext';
-import {
-    formatVndCompact,
-    listingTypeLabel,
-    pricingUnitLabel,
-} from '@/shared/forms/marketplace/marketplace-forms';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export function ProviderStorefrontScreen() {
     const {t, formatNumber} = useI18n();
-    const router = useRouter();
     const {slug} = useLocalSearchParams<{ slug: string }>();
     const query = usePublicProvider(slug);
 
@@ -55,13 +49,15 @@ export function ProviderStorefrontScreen() {
         <Screen
             onRefresh={() => void query.refetch()}
             refreshing={query.isRefetching}>
-            <GlassSurface style={styles.heroGlass} fallback={styles.heroFallback}>
+            <Card style={styles.shopBanner}>
                 <View style={styles.topRow}>
                     <View style={styles.iconCircle}>
-                        <Building2 size={22} color={colors.primary}/>
+                        <Store size={24} color={colors.white}/>
                     </View>
                     <View style={styles.flex}>
-                        <AppText variant="heading">{provider.displayName}</AppText>
+                        <AppText variant="heading" style={styles.shopTitle}>
+                            {provider.displayName}
+                        </AppText>
                         <View style={styles.metaRow}>
                             <Badge
                                 icon={CheckCircle2}
@@ -70,8 +66,8 @@ export function ProviderStorefrontScreen() {
                                 color={colors.primary}
                             />
                             <View style={styles.metaChip}>
-                                <MapPin size={13} color={colors.slate}/>
-                                <AppText variant="caption">
+                                <MapPin size={13} color={colors.border}/>
+                                <AppText variant="caption" style={styles.shopSub}>
                                     {provider.province} · {provider.serviceRadiusKm} km
                                 </AppText>
                             </View>
@@ -79,7 +75,11 @@ export function ProviderStorefrontScreen() {
                     </View>
                 </View>
 
-                {provider.bio ? <AppText variant="small">{provider.bio}</AppText> : null}
+                {provider.bio ? (
+                    <AppText variant="small" style={styles.shopBio}>
+                        {provider.bio}
+                    </AppText>
+                ) : null}
 
                 <View style={styles.statsRow}>
                     <View style={styles.statBox}>
@@ -105,7 +105,7 @@ export function ProviderStorefrontScreen() {
                         </AppText>
                     </View>
                 </View>
-            </GlassSurface>
+            </Card>
 
             <SectionTitle
                 title={t('mobile.marketplace.storefrontListings', {count: listings.length})}
@@ -113,32 +113,7 @@ export function ProviderStorefrontScreen() {
             {listings.length === 0 ? (
                 <EmptyState icon={Layers} message={t('mobile.marketplace.emptyListings')}/>
             ) : (
-                listings.map(item => (
-                    <Card
-                        key={item.id}
-                        onPress={() =>
-                            router.push({
-                                pathname: '/customer/marketplace/[slug]',
-                                params: {slug: item.slug},
-                            })
-                        }>
-                        <Badge
-                            label={listingTypeLabel(item.listingType)}
-                            background={colors.slateLight}
-                            color={colors.slateDark}
-                        />
-                        <AppText variant="title">{item.title}</AppText>
-                        {item.summary ? (
-                            <AppText variant="small" numberOfLines={2}>
-                                {item.summary}
-                            </AppText>
-                        ) : null}
-                        <AppText variant="title" style={styles.priceText}>
-                            {formatVndCompact(item.basePriceVnd)} /{' '}
-                            {pricingUnitLabel(item.pricingModel)}
-                        </AppText>
-                    </Card>
-                ))
+                listings.map(item => <MarketplaceListingCard key={item.id} item={item}/>)
             )}
 
             {reviews.length > 0 ? (
@@ -169,23 +144,23 @@ export function ProviderStorefrontScreen() {
 }
 
 const styles = StyleSheet.create({
-    heroGlass: {
-        borderRadius: radius.card,
-        padding: spacing.md,
-        gap: spacing.sm,
-        borderWidth: 1,
-        borderColor: colors.glassBorderSelected,
+    shopBanner: {
+        backgroundColor: colors.slate900,
+        borderColor: colors.slateDark,
+        gap: spacing.md,
     },
-    heroFallback: {backgroundColor: colors.glassSurfaceSelected},
     topRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.sm},
     iconCircle: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+        width: 52,
+        height: 52,
+        borderRadius: radius.card,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: colors.primaryLight,
+        backgroundColor: colors.primary,
     },
+    shopTitle: {color: colors.white},
+    shopSub: {color: colors.border},
+    shopBio: {color: colors.border},
     metaRow: {flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.xs, marginTop: 4},
     metaChip: {flexDirection: 'row', alignItems: 'center', gap: 4},
     statsRow: {flexDirection: 'row', gap: spacing.sm},
@@ -196,10 +171,7 @@ const styles = StyleSheet.create({
         padding: spacing.sm,
         alignItems: 'center',
         gap: 2,
-        borderWidth: 1,
-        borderColor: colors.border,
     },
-    priceText: {color: colors.primary, fontWeight: '700'},
     bold: {fontWeight: '700', color: colors.text},
     flex: {flex: 1},
 });

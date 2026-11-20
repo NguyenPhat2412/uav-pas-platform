@@ -1,6 +1,6 @@
 import {apiClient, API_ROUTES, fetchApiBase64DataUri} from '@/lib/api/client';
 import type {Invoice, PageResponse, ServicePlan, UserQuota} from '@/shared/types/customer';
-import type {BankTransferInstructions, BankTransferStatus} from '@/shared/types/billing/billing.types';
+import type {BankTransferInstructions, BankTransferStatus, InvoiceEmailDispatchResult} from '@/shared/types/billing/billing.types';
 
 export const customerBillingService = {
     quota: (signal?: AbortSignal) => apiClient.get<UserQuota>(API_ROUTES.billing.subscription, {signal}),
@@ -12,6 +12,8 @@ export const customerBillingService = {
         apiClient.post<Invoice>(API_ROUTES.billing.invoiceCancel(invoiceId), {reason}),
     receiptDataUri: (invoiceId: number, signal?: AbortSignal) =>
         fetchApiBase64DataUri(API_ROUTES.billing.invoiceReceipt(invoiceId), 'application/pdf', signal),
+    sendInvoiceEmail: (invoiceId: number) =>
+        apiClient.post<InvoiceEmailDispatchResult>(API_ROUTES.billing.sendInvoiceEmail(invoiceId)),
 };
 
 /** VietQR / NAPAS 247 transfers: bank webhook reconciles automatically once the transfer note matches. */

@@ -1,17 +1,9 @@
 import React, {useMemo, useState} from 'react';
 import {RefreshControl, ScrollView, StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Bell, Cpu, History, Radio, Wrench} from 'lucide-react-native';
-import {
-    AppText,
-    Card,
-    ChipGroup,
-    CONTENT_WIDTH,
-    EmptyState,
-    ErrorState,
-    LoadingState,
-    SectionTitle,
-} from '@/components/ui';
+import {AppText, Card, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState, SectionTitle} from '@/components/ui';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {FleetStationCard, FleetUavCard, RepairOrderCard} from '@/components/uav/FleetAssetCards';
@@ -37,6 +29,7 @@ export function FleetMaintenanceScreen() {
     const {can} = useAuth();
     const toast = useToast();
     const router = useRouter();
+    const insets = useSafeAreaInsets();
     const {unreadCount} = useNotifications();
 
     const [tab, setTab] = useState<FleetTab>('uavs');
@@ -111,7 +104,11 @@ export function FleetMaintenanceScreen() {
 
             <ScrollView
                 contentInsetAdjustmentBehavior="automatic"
-                contentContainerStyle={styles.content}
+                automaticallyAdjustsScrollIndicatorInsets
+                directionalLockEnabled
+                alwaysBounceHorizontal={false}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={[styles.content, {paddingBottom: insets.bottom + spacing.xl}]}
                 keyboardShouldPersistTaps="handled"
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => void handleRefresh()} tintColor={colors.primary}/>}>
                 <ChipGroup<FleetTab>
@@ -179,16 +176,18 @@ export function FleetMaintenanceScreen() {
                             />
                         )}
 
-                        <MobileUav3DViewerCard
-                            key={selectedProfile?.uavId ?? 'default-uav'}
-                            serialNumber={selectedProfile?.serialNumber ?? uavs[0]?.serialNumber ?? 'UAV-350-RTK'}
-                            modelName={selectedProfile?.model ?? uavs[0]?.model ?? 'DJI Matrice 350 RTK'}
-                            airframeClass={selectedProfile?.airframeClass ?? 'QUADCOPTER_RTK'}
-                            altitudeM={activeSample?.altitudeAglMeters ?? 85}
-                            speedMps={activeSample?.groundSpeedMs ?? 12.4}
-                            batteryPct={activeSample?.batteryPct ?? selectedProfile?.batteryStateOfHealthPct ?? 88}
-                            yawDeg={activeSample?.headingDeg ?? 45}
-                        />
+                        {(selectedProfile || uavs[0]) && (
+                            <MobileUav3DViewerCard
+                                key={selectedProfile?.uavId ?? uavs[0]?.id ?? 'uav-3d'}
+                                serialNumber={selectedProfile?.serialNumber ?? uavs[0]!.serialNumber}
+                                modelName={selectedProfile?.model ?? uavs[0]!.model}
+                                airframeClass={selectedProfile?.airframeClass ?? 'QUADCOPTER_RTK'}
+                                altitudeM={activeSample?.altitudeAglMeters ?? 0}
+                                speedMps={activeSample?.groundSpeedMs ?? 0}
+                                batteryPct={activeSample?.batteryPct ?? selectedProfile?.batteryStateOfHealthPct ?? 0}
+                                yawDeg={activeSample?.headingDeg ?? 0}
+                            />
+                        )}
                     </>
                 )}
 

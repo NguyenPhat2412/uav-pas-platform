@@ -34,6 +34,7 @@ export const ROOTS = [
     'types/marketplace/marketplace.types.ts',
     'types/catalog',
     'types/dashboard',
+    'types/i18n/i18n.types.ts',
     'types/maintenance/maintenance.types.ts',
     'types/notification',
     'types/profile',
@@ -53,8 +54,10 @@ export const ROOTS = [
     'forms/mission/permit-form.ts',
     'forms/notification/notification-policy-form.ts',
     'forms/profile',
+    'forms/project/project-form.ts',
     'lib/api/routes.ts',
     'lib/api/messages.ts',
+    'lib/marketplace/service-categories.ts',
     'lib/format.ts',
     'lib/query',
     'hooks/airspace/query-keys.ts',
@@ -63,6 +66,7 @@ export const ROOTS = [
     'hooks/dashboard/query-keys.ts',
     'hooks/media/query-keys.ts',
     'hooks/profile/query-keys.ts',
+    'hooks/project/query-keys.ts',
     'hooks/support/query-keys.ts',
     'hooks/training/query-keys.ts',
     'hooks/weather/query-keys.ts',
@@ -87,6 +91,7 @@ export const ROOTS = [
     'messages/sections/opsMissions',
     // The assistant's texts (admin.assistant.*) live in the admin section on the web too.
     'messages/sections/admin',
+    'messages/sections/publicSite',
 ];
 
 /** Web-only modules left out on purpose; lines that import or re-export them are dropped from the copies. */

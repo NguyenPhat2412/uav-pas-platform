@@ -116,6 +116,15 @@ export interface NetworkStatusValue {
     reopen: () => void;
 }
 
+export function setDevSimulatedOffline(offline: boolean, dismissed = true): void {
+    if (typeof __DEV__ !== 'undefined' && !__DEV__) return;
+    store.netDisconnected = offline;
+    store.reason = 'network';
+    store.isOffline = offline;
+    store.dismissed = offline ? dismissed : false;
+    emit();
+}
+
 /** Reactive field network status driven by native NetInfo reachability events + live API transport status. */
 export function useNetworkStatus(): NetworkStatusValue {
     const [, forceRender] = useState(0);

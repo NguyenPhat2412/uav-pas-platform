@@ -59,7 +59,7 @@ test('mobile marketplace: dynamic site-info parser and all Seller Studio + Escro
     assert.equal(defaults.platformFeeRate, 0.1);
     assert.equal(defaults.minPayoutVnd, 100_000);
     assert.equal(defaults.defaultServiceRadiusKm, 100);
-    assert.equal(defaults.rfqEnabled, true);
+    assert.equal(defaults.rfqEnabled, false);
     assert.equal(defaults.invoiceDueDays, 7);
     const parsed = parseSiteInfo({
         settings: {
@@ -84,7 +84,8 @@ test('mobile marketplace: dynamic site-info parser and all Seller Studio + Escro
 test('mobile ios-design-review: HIG touch targets, NativeTabs clearance, Vietnamese glyph safety, and Bento glass layout', () => {
     const uiIndex = read('components/ui/index.tsx');
     assert.match(uiIndex, /const isTabRoot =/);
-    assert.match(uiIndex, /isTabRoot \? 128 : spacing\.xl/);
+    assert.match(uiIndex, /contentInsetAdjustmentBehavior=\{isTabRoot \? 'automatic' : 'never'\}/);
+    assert.doesNotMatch(uiIndex, /isTabRoot \? 128/);
     assert.doesNotMatch(uiIndex, /badgeText:\s*\{[^}]*flexShrink:\s*1/);
 
     const launcher = read('components/assistant/AssistantLauncher.tsx');
@@ -101,7 +102,7 @@ test('mobile ios-design-review: HIG touch targets, NativeTabs clearance, Vietnam
 
     const missionList = read('components/mission/MissionListScreen.tsx');
     assert.match(missionList, /HeaderIconButton/);
-    assert.match(missionList, /insets\.bottom \+ 116/);
+    assert.match(missionList, /insets\.bottom \+ spacing\.xl/);
 
     const providerListings = read('components/marketplace/provider/ProviderListingsScreen.tsx');
     assert.match(providerListings, /showCreate \? X : Plus/);
@@ -132,4 +133,37 @@ test('cross-platform Web ↔ Mobile sync: WebSocket invalidates live state and 4
     const missionHooks = read('hooks/mission/useCustomerMissions.ts');
     assert.match(missionHooks, /cancel:\s*useMutation\(\{[^}]*onSettled:/);
     assert.match(missionHooks, /upsertReview:\s*useMutation\(\{[\s\S]*?onSettled:/);
+});
+
+test('mobile 60-30-10 Shopee-style two-sided marketplace: Guest browse, zero floating bubbles, sticky checkout & 3-step wizard', () => {
+    const tokens = read('styles/tokens.ts');
+    assert.match(tokens, /customerCanvas:\s*'#f8fafc'/);
+    assert.match(tokens, /slate900:\s*'#0f172a'/);
+    assert.match(tokens, /primary:\s*'#ab2523'/);
+
+    const rootEntry = read('app/index.tsx');
+    assert.match(rootEntry, /'\/customer\/home'/);
+
+    const customerLayout = read('app/customer/_layout.tsx');
+    assert.doesNotMatch(customerLayout, /<AssistantLauncher\/>/);
+    assert.doesNotMatch(customerLayout, /<PulsingSupportLauncher/);
+    assert.match(customerLayout, /PRIVATE_CUSTOMER_ROUTE/);
+
+    const homeScreen = read('components/home/HomeScreen.tsx');
+    assert.match(homeScreen, /MarketplaceSearchHero/);
+    assert.match(homeScreen, /ServiceCategoryShowcase/);
+    assert.match(homeScreen, /OrderStatusBarCard/);
+    assert.match(homeScreen, /ProjectPackagePromoCard/);
+    assert.match(homeScreen, /MarketplaceListingGrid/);
+
+    const detailScreen = read('components/marketplace/catalog/MarketplaceListingDetailScreen.tsx');
+    assert.match(detailScreen, /ListingStickyActionBar/);
+
+    const missionForm = read('components/mission/MissionFormScreen.tsx');
+    assert.match(missionForm, /MissionCheckoutStepper/);
+    assert.match(missionForm, /MissionCheckoutSummaryCard/);
+
+    const accountScreen = read('components/profile/AccountScreen.tsx');
+    assert.match(accountScreen, /sellerCenterCard/);
+    assert.match(accountScreen, /GuestPromptCard/);
 });

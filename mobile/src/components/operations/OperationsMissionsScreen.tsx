@@ -1,6 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {Stack, useRouter} from 'expo-router';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Bell, CalendarClock, CheckCircle2, ChevronRight, ClipboardList, Clock, Cpu, MapPin, Megaphone, ShieldCheck, Star, Store} from 'lucide-react-native';
 import {AppText, Badge, Card, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState, SectionTitle, TextField} from '@/components/ui';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
@@ -112,6 +113,7 @@ export function OperationsMissionsScreen() {
     const {t, formatNumber} = useI18n();
     const {user} = useAuth();
     const router = useRouter();
+    const insets = useSafeAreaInsets();
     const {unreadCount} = useNotifications();
     const [filter, setFilter] = useState<OpsMissionFilter>('assigned');
     const [search, setSearch] = useState('');
@@ -175,7 +177,11 @@ export function OperationsMissionsScreen() {
                     data={missions}
                     keyExtractor={item => String(item.id)}
                     contentInsetAdjustmentBehavior="automatic"
-                    contentContainerStyle={styles.list}
+                    automaticallyAdjustsScrollIndicatorInsets
+                    directionalLockEnabled
+                    alwaysBounceHorizontal={false}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={[styles.list, {paddingBottom: insets.bottom + spacing.xl}]}
                     keyboardShouldPersistTaps="handled"
                     ListHeaderComponent={
                         <View style={styles.headerBlock}>

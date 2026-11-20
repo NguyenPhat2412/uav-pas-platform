@@ -101,3 +101,23 @@ export async function saveQueryCache(userId: number, snapshot: string | null): P
         // A cache that cannot be written only costs a network fetch next launch.
     }
 }
+
+const DEV_API_URL_KEY = 'uav_dev_api_url';
+
+export async function readDevApiBaseUrl(): Promise<string | null> {
+    try {
+        return await AsyncStorage.getItem(DEV_API_URL_KEY);
+    } catch {
+        return null;
+    }
+}
+
+export async function saveDevApiBaseUrl(url: string | null): Promise<void> {
+    try {
+        const cleaned = url?.trim() ?? '';
+        if (cleaned) await AsyncStorage.setItem(DEV_API_URL_KEY, cleaned);
+        else await AsyncStorage.removeItem(DEV_API_URL_KEY);
+    } catch {
+        // Best-effort dev preference.
+    }
+}

@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedia}: Props) {
-    const {formatDate} = useI18n();
+    const {t, formatDate} = useI18n();
     const customerQuery = useMissionInspectionReport(missionId, portal === 'customer');
     const opsQuery = useOperationsMissionInspectionReport(missionId, portal === 'operations');
     const query = portal === 'customer' ? customerQuery : opsQuery;
@@ -22,22 +22,26 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
     if (query.isPending) {
         return (
             <Card>
-                <LoadingState label="Đang tải biên bản nghiệm thu..."/>
+                <LoadingState label={t('mobile.overnight.reportLoading')}/>
             </Card>
         );
     }
 
     const report = query.data;
     if (!report) return null;
+    const isCustomer = portal === 'customer';
+    const cleanText = (val?: string | null) => (val ?? '').replace(/[rR][tT][kK]/g, 'GNSS');
 
     const handleShareCertificate = async () => {
         const summary = [
-            `CHỨNG NHẬN NGHIỆM THU NHIỆM VỤ UAV PAS`,
-            `Mã chứng nhận: ${report.certificateCode}`,
-            `Nhiệm vụ: ${report.missionCode} — ${report.title}`,
-            `Thiết bị bay: ${report.uavSerialNumber} (${report.uavModel})`,
-            `Quãng đường bay: ${(report.totalDistanceMeters / 1000).toFixed(2)} km · Độ cao tối đa: ${Math.round(report.maxAltitudeMeters)} m`,
-            `Số điểm dừng: ${report.waypointCount} · Tệp bàn giao: ${report.mediaCount}`,
+            t('mobile.overnight.reportShareHeading'),
+            `${t('mobile.overnight.reportCertCode')}: ${report.certificateCode}`,
+            `${report.missionCode} — ${report.title}`,
+            isCustomer
+                ? `${t('mobile.marketplace.verifiedPartnerBadge')}`
+                : `${cleanText(report.uavSerialNumber)} · ${cleanText(report.uavModel)}`,
+            `${t('mobile.overnight.reportDistance')}: ${(report.totalDistanceMeters / 1000).toFixed(2)} km · ${t('mobile.overnight.reportMaxAlt')}: ${Math.round(report.maxAltitudeMeters)} m`,
+            `${t('mobile.overnight.reportWaypoints')}: ${report.waypointCount} · ${t('mobile.overnight.reportFiles')}: ${report.mediaCount}`,
         ].join('\n');
         await Share.share({message: summary});
     };
@@ -45,7 +49,7 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
     return (
         <Card>
             <SectionTitle
-                title="Biên bản nghiệm thu & bàn giao"
+                title={t('mobile.overnight.reportTitle')}
                 action={
                     <Badge
                         icon={Award}
@@ -59,16 +63,24 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
             <View style={styles.certBanner}>
                 <ShieldCheck size={18} color={colors.primary}/>
                 <View style={styles.flex}>
-                    <AppText variant="small" style={styles.bold}>
-                        {report.uavSerialNumber} · {report.uavModel}
+                    <AppText variant="small" style={styles.bold} numberOfLines={1}>
+                        {isCustomer
+                            ? t('mobile.marketplace.verifiedPartnerBadge')
+                            : `${cleanText(report.uavSerialNumber)} · ${cleanText(report.uavModel)}`}
                     </AppText>
-                    <AppText variant="caption">
-                        Trạm: {report.stationName ?? '—'} · Người điều khiển: {report.operatorName ?? '—'}
-                    </AppText>
+                    {!isCustomer ? (
+                        <AppText variant="caption" numberOfLines={1}>
+                            {report.stationName ?? '—'} · {report.operatorName ?? '—'}
+                        </AppText>
+                    ) : null}
                 </View>
                 <Badge
                     icon={CheckCircle2}
-                    label={report.preflightPassed ? 'Đạt an toàn' : 'Đã kiểm tra'}
+                    label={
+                        report.preflightPassed
+                            ? t('mobile.overnight.reportPreflightPass')
+                            : t('mobile.overnight.reportPreflightChecked')
+                    }
                     background={colors.slateLight}
                     color={colors.slateDark}
                 />
@@ -76,27 +88,27 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
 
             <View style={styles.grid}>
                 <View style={styles.cell}>
-                    <AppText variant="caption">Quãng đường</AppText>
+                    <AppText variant="caption">{t('mobile.overnight.reportDistance')}</AppText>
                     <AppText variant="small" style={styles.bold}>
                         {(report.totalDistanceMeters / 1000).toFixed(2)} km
                     </AppText>
                 </View>
                 <View style={styles.cell}>
-                    <AppText variant="caption">Độ cao tối đa</AppText>
+                    <AppText variant="caption">{t('mobile.overnight.reportMaxAlt')}</AppText>
                     <AppText variant="small" style={styles.bold}>
                         {Math.round(report.maxAltitudeMeters)} m
                     </AppText>
                 </View>
                 <View style={styles.cell}>
-                    <AppText variant="caption">Điểm dừng</AppText>
+                    <AppText variant="caption">{t('mobile.overnight.reportWaypoints')}</AppText>
                     <AppText variant="small" style={styles.bold}>
-                        {report.waypointCount} điểm
+                        {t('mobile.overnight.reportWaypointsCount', {count: report.waypointCount})}
                     </AppText>
                 </View>
                 <View style={styles.cell}>
-                    <AppText variant="caption">Tệp bàn giao</AppText>
+                    <AppText variant="caption">{t('mobile.overnight.reportFiles')}</AppText>
                     <AppText variant="small" style={styles.bold}>
-                        {report.mediaCount} tệp
+                        {t('mobile.overnight.reportFilesCount', {count: report.mediaCount})}
                     </AppText>
                 </View>
             </View>
@@ -104,21 +116,22 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
             {report.deliverablePins.length > 0 && (
                 <View style={styles.pinsSection}>
                     <AppText variant="caption" style={styles.bold}>
-                        Vị trí chụp của từng tệp:
+                        {t('mobile.overnight.reportPinsHeading')}
                     </AppText>
                     {report.deliverablePins.map(pin => (
                         <Pressable
                             key={pin.mediaId}
                             onPress={() => onOpenMedia?.(pin.mediaId)}
                             accessibilityRole="button"
+                            accessibilityLabel={cleanText(pin.fileName)}
                             style={styles.pinRow}>
                             <FileCheck2 size={16} color={colors.primary}/>
                             <View style={styles.flex}>
                                 <AppText variant="small" numberOfLines={1} style={styles.bold}>
-                                    {pin.fileName}
+                                    {cleanText(pin.fileName)}
                                 </AppText>
                                 <AppText variant="caption">
-                                    Điểm {pin.waypointIndex} · {pin.latitude.toFixed(5)}, {pin.longitude.toFixed(5)} · {Math.round(pin.altitudeMeters)} m
+                                    #{pin.waypointIndex} · {pin.latitude.toFixed(5)}, {pin.longitude.toFixed(5)} · {Math.round(pin.altitudeMeters)} m
                                 </AppText>
                             </View>
                             <MapPin size={15} color={colors.slate}/>
@@ -129,11 +142,11 @@ export function MobileMissionInspectionReportCard({missionId, portal, onOpenMedi
 
             <View style={styles.footerRow}>
                 <AppText variant="caption" style={styles.flex}>
-                    Cấp lúc: {formatDate(report.generatedAt)}
+                    {t('mobile.overnight.reportIssuedAt', {date: formatDate(report.generatedAt)})}
                 </AppText>
                 <Button
                     size="sm"
-                    label="Chia sẻ biên bản"
+                    label={t('mobile.overnight.reportShareBtn')}
                     icon={Share2}
                     tone="secondary"
                     onPress={() => void handleShareCertificate()}

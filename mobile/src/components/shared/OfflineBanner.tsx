@@ -28,7 +28,11 @@ export function OfflineBanner() {
             accessibilityLiveRegion="assertive"
             style={styles.banner}>
             <StatusIcon size={16} color={colors.danger}/>
-            <Text numberOfLines={1} style={[styles.text, scale !== 1 ? {fontSize: Math.round(font.small * scale)} : null]}>
+            <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.75}
+                style={[styles.text, scale !== 1 ? {fontSize: Math.round(font.small * scale)} : null]}>
                 {label}
             </Text>
         </Pressable>

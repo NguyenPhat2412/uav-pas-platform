@@ -32,8 +32,11 @@ type NotificationsModule = typeof import('expo-notifications');
 
 let foregroundHandlerConfigured = false;
 
+const HAS_NATIVE_PUSH_TOKENS =
+    Platform.OS !== 'web' && requireOptionalNativeModule('ExpoPushTokenManager') != null;
+
 function loadNotifications(): NotificationsModule | null {
-    if (Platform.OS === 'web') return null;
+    if (!HAS_NATIVE_PUSH_TOKENS) return null;
     try {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const mod = require('expo-notifications') as NotificationsModule;

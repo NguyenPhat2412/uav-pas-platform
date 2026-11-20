@@ -2,6 +2,10 @@ import React, {useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {ArrowDownToLine, Receipt, Wallet} from 'lucide-react-native';
 import {
+    IllustrativeBadge,
+    IllustrativeFooterNote,
+} from '@/components/shared/IllustrativeDisclaimer';
+import {
     AppText,
     Badge,
     Button,
@@ -39,7 +43,7 @@ export function ProviderWalletScreen() {
     const [amountInput, setAmountInput] = useState('');
     const [note, setNote] = useState('');
 
-    if (walletQuery.isPending) {
+    if (walletQuery.isPending && !walletQuery.data) {
         return (
             <Screen>
                 <LoadingState/>
@@ -102,8 +106,13 @@ export function ProviderWalletScreen() {
             onRefresh={() => void walletQuery.refetch()}
             refreshing={walletQuery.isRefetching}>
             <GlassSurface style={styles.heroGlass} fallback={styles.heroFallback}>
-                <AppText variant="caption">{t('mobile.provider.availableBalance')}</AppText>
-                <AppText variant="display" style={styles.price}>
+                <View style={styles.rowBetween}>
+                    <AppText variant="caption" numberOfLines={1}>
+                        {t('mobile.provider.availableBalance')}
+                    </AppText>
+                    <IllustrativeBadge/>
+                </View>
+                <AppText variant="display" style={styles.price} numberOfLines={1} adjustsFontSizeToFit>
                     {formatVndCompact(available)}
                 </AppText>
                 <View style={styles.row}>
@@ -123,7 +132,7 @@ export function ProviderWalletScreen() {
                 <AppText variant="caption">
                     {t('mobile.provider.feeBanner', {fee: feePct})}
                     {wallet?.bankName
-                        ? ` · ${wallet.bankName} (${wallet.bankAccountNumber ?? ''})`
+                        ? ` · ${wallet.bankName}${wallet.bankAccountNumber ? ` · ${wallet.bankAccountNumber}` : ''}`
                         : ''}
                 </AppText>
             </GlassSurface>
@@ -137,6 +146,7 @@ export function ProviderWalletScreen() {
                             <Pressable
                                 key={val}
                                 accessibilityRole="button"
+                                accessibilityLabel={formatVndCompact(val)}
                                 onPress={() => setAmountInput(String(val))}
                                 style={[styles.chip, active && styles.chipActive]}>
                                 <ScaledText
@@ -241,6 +251,7 @@ export function ProviderWalletScreen() {
                     </Card>
                 ))
             )}
+            <IllustrativeFooterNote/>
         </Screen>
     );
 }
