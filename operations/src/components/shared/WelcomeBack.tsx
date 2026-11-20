@@ -2,6 +2,7 @@
 
 import {useEffect} from 'react';
 import {useAuth} from '@/providers/AuthContext';
+import {sanitizeEntityName} from '@/forms/marketplace/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import {claimWelcome} from '@/lib/welcome-flag';
@@ -13,7 +14,7 @@ import {claimWelcome} from '@/lib/welcome-flag';
 export function WelcomeBack() {
     const {user, isAuthenticated} = useAuth();
     const {t} = useI18n();
-    const name = user?.fullName || user?.username;
+    const name = sanitizeEntityName(user?.fullName || user?.username);
 
     useEffect(() => {
         if (!isAuthenticated || !user?.id || !name || !claimWelcome(user.id)) return;

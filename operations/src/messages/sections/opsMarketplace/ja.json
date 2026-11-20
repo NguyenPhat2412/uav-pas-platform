@@ -1,0 +1,342 @@
+{
+  "opsMarketplace": {
+    "common": {
+      "illustrationBadge": "参考表示",
+      "illustrativeFooterNote": "本プラットフォームの料金および取引は学術演習向けの参考表示です。",
+      "fabMenuLabel": "AIアシスタント・サポート",
+      "fabAiAssistant": "AIアシスタント",
+      "fabLiveSupport": "顧客チャット対応",
+      "retry": "再試行",
+      "loading": "読み込み中…",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "edit": "編集",
+      "create": "新規作成",
+      "back": "戻る",
+      "next": "次へ",
+      "requiredOnboardingTitle": "パートナープロフィール未登録",
+      "requiredOnboardingDesc": "3ステップのパートナー登録を完了すると、機体・エンジニア登録や案件受注が可能になります。",
+      "goToOnboarding": "パートナー登録"
+    },
+    "studio": {
+      "badge": "機隊パートナー · UAV PAS",
+      "tabs": {
+        "onboarding": "パートナー登録",
+        "fleet": "UAV機隊",
+        "pilots": "エンジニア",
+        "listings": "出品サービス",
+        "orders": "受注案件",
+        "wallet": "精算ウォレット"
+      },
+      "verification": {
+        "DRAFT": "下書き",
+        "PENDING_REVIEW": "審査待ち",
+        "VERIFIED": "認証済み",
+        "REJECTED": "要修正",
+        "SUSPENDED": "一時停止"
+      }
+    },
+    "onboarding": {
+      "title": "機隊パートナー登録",
+      "subtitle": "3つのステップを完了して UAV PAS から案件を受注しましょう。",
+      "steps": {
+        "profile": "1. 基本情報",
+        "documents": "2. 証明書類",
+        "area": "3. 提供エリア"
+      },
+      "statusCard": {
+        "pendingTitle": "審査担当による確認待ちです",
+        "pendingDesc": "審査中も証明書類や提供エリアの更新が可能です。",
+        "verifiedTitle": "認証済みパートナー機隊",
+        "verifiedDesc": "プラットフォームからの案件配分を受けられます。",
+        "rejectedTitle": "追加情報の提出が必要です",
+        "draftTitle": "3ステップを完了して審査を申請してください",
+        "reviewNote": "審査メモ: {note}",
+        "rating": "評価",
+        "completed": "完了案件"
+      },
+      "fields": {
+        "displayName": "機隊名・事業者名",
+        "displayNamePlaceholder": "例: 北部測量ドローン機隊",
+        "providerType": "区分",
+        "typeCompany": "法人・機隊チーム",
+        "typeIndividual": "個人エンジニア",
+        "taxOrIdNumber": "税番号・身分証番号",
+        "flightLicenseNumber": "操縦ライセンス番号",
+        "contactPhone": "連絡先電話番号",
+        "bio": "機隊・機材の紹介",
+        "bioPlaceholder": "保有UAVモデル、センサー、現場実績など…",
+        "province": "主要拠点の省・市",
+        "provincePlaceholder": "ハノイ、ダナン、ホーチミン市…",
+        "serviceRadiusKm": "対応半径 (km)",
+        "bankName": "精算受取銀行",
+        "bankAccountNumber": "口座番号",
+        "bankAccountHolder": "口座名義"
+      },
+      "documents": {
+        "title": "資格・証明書類",
+        "subtitle": "事業登録証、操縦技能証明、機体登録書類を添付してください。",
+        "type": "書類種別",
+        "docTitle": "書類名",
+        "docTitlePlaceholder": "例: UAV操縦技能証明A級",
+        "docNumber": "証明書番号",
+        "fileUrl": "証憑ファイルURL",
+        "add": "書類を追加",
+        "empty": "添付書類はまだありません。ステップ1を保存後に追加できます。",
+        "saveFirstHint": "ステップ1で「次へ」を押して基本情報を保存してから書類を追加してください。",
+        "types": {
+          "BUSINESS_LICENSE": "事業登録証明書",
+          "IDENTITY_CARD": "代表者身分証",
+          "PILOT_CERTIFICATE": "操縦エンジニア証明書",
+          "UAV_REGISTRATION": "UAV機体シリアル登録",
+          "FLIGHT_OPERATION_PERMIT": "飛行許可書",
+          "INSURANCE_POLICY": "賠償責任保険証券",
+          "PLATFORM_FEE_AGREEMENT": "手数料・精算規約同意書",
+          "TAX_SETTLEMENT_DOSSIER": "税務・口座登録書類"
+        },
+        "status": {
+          "PENDING": "確認待ち",
+          "APPROVED": "承認済み",
+          "REJECTED": "要再提出"
+        }
+      },
+      "actions": {
+        "saveDraft": "下書き保存",
+        "saveAndNext": "保存して次へ",
+        "submitReview": "審査を申請",
+        "submitting": "送信中…",
+        "savedDraft": "下書きを保存しました。",
+        "submitted": "パートナー審査を申請しました！",
+        "errorMissing": "機隊名と主要拠点の省・市を入力してください。",
+        "errorUrl": "ファイルURLは http:// または https:// で始めてください。"
+      }
+    },
+    "fleet": {
+      "title": "UAV機隊・操縦エンジニア",
+      "subtitle": "各UAVとエンジニアの待機・飛行中・整備中ステータスをカードで管理します。",
+      "filter": {
+        "ALL": "すべて",
+        "READY": "待機",
+        "FLYING": "飛行中",
+        "MAINTENANCE": "整備中"
+      },
+      "status": {
+        "READY": "待機",
+        "FLYING": "飛行中",
+        "MAINTENANCE": "整備中"
+      },
+      "uavs": {
+        "title": "UAV機隊",
+        "add": "UAVを追加",
+        "edit": "UAVを編集",
+        "empty": "登録されたUAVはありません。",
+        "model": "モデル名",
+        "modelPlaceholder": "例: Matrice 350",
+        "serialNumber": "シリアル番号",
+        "serialPlaceholder": "例: SN-M350-01",
+        "manufacturer": "メーカー",
+        "manufacturerPlaceholder": "例: DJI Enterprise",
+        "status": "状態",
+        "setReady": "待機",
+        "setFlying": "飛行中",
+        "setMaintenance": "整備中"
+      },
+      "pilots": {
+        "title": "操縦エンジニア",
+        "add": "エンジニア追加",
+        "edit": "エンジニア編集",
+        "empty": "登録されたエンジニアはいません。",
+        "fullName": "氏名",
+        "fullNamePlaceholder": "例: グエン・ヴァン・アン",
+        "phone": "電話番号",
+        "email": "メールアドレス",
+        "licenseNumber": "ライセンス番号",
+        "licensePlaceholder": "例: VN-PILOT-01",
+        "specialization": "専門分野",
+        "specializationPlaceholder": "例: LiDAR測量、空撮",
+        "assignedUav": "担当UAV",
+        "noUav": "未割当",
+        "status": "状態",
+        "missionsDone": "{count}回飛行"
+      }
+    },
+    "listings": {
+      "title": "出品サービス",
+      "subtitle": "標準テンプレートから1ステップで作成、または内容を編集・一時停止できます。",
+      "templatesTitle": "UAV PAS 標準テンプレートから作成",
+      "templatesEmpty": "利用可能なテンプレートがありません。",
+      "useTemplate": "このテンプレートを使う",
+      "customCreate": "カスタム作成",
+      "myListingsTitle": "作成済みサービス一覧",
+      "empty": "出品サービスがありません。上のテンプレートから作成してください。",
+      "status": {
+        "DRAFT": "下書き",
+        "PENDING_REVIEW": "審査待ち",
+        "PUBLISHED": "公開中",
+        "PAUSED": "一時停止",
+        "REJECTED": "却下"
+      },
+      "types": {
+        "FLIGHT_SERVICE": "飛行パッケージ",
+        "WET_LEASE": "機体＋エンジニア",
+        "DRY_LEASE": "機材レンタル"
+      },
+      "pricing": {
+        "PER_HECTARE": "ha",
+        "PER_HOUR": "時間",
+        "PER_DAY": "日",
+        "PER_PACKAGE": "一式"
+      },
+      "fields": {
+        "title": "サービス名",
+        "summary": "概要",
+        "listingType": "提供形態",
+        "pricingModel": "課金単位",
+        "basePriceVnd": "基本単価 (VND)",
+        "minBookingUnits": "最小数量",
+        "province": "主要エリア",
+        "serviceRadiusKm": "対応半径 (km)",
+        "equipmentSpecs": "使用機材",
+        "deliverablesSummary": "納品物",
+        "deliveryHours": "納品目安 (時間)",
+        "coverImageUrl": "カバー画像URL"
+      },
+      "actions": {
+        "createFromTemplate": "テンプレートから作成・申請",
+        "saveDraft": "下書き保存",
+        "submitReview": "保存して審査申請",
+        "pause": "一時停止",
+        "resume": "再開",
+        "edit": "編集",
+        "delete": "削除",
+        "bookings": "{count}件",
+        "moderationNote": "審査メモ: {note}"
+      }
+    },
+    "orders": {
+      "title": "受注案件",
+      "subtitle": "案件の受諾・辞退、エンジニアとUAVの割当、飛行シミュレーション開始、納品を行います。",
+      "tabs": {
+        "PENDING_ACCEPT": "受諾待ち",
+        "WAITING_FLIGHT": "飛行予定",
+        "IN_FLIGHT": "飛行中",
+        "DELIVERED": "納品済み"
+      },
+      "empty": "該当する案件はありません。",
+      "sourcePlatformFleet": "担当機隊: {name}",
+      "sourcePlatformPending": "機隊手配待ち",
+      "sourceInternal": "直轄運航チーム",
+      "conflicts": {
+        "UAV_TIME_CONFLICT": "この機体は同じ時間帯の別案件に既に割り当てられています。",
+        "OPERATOR_TIME_CONFLICT": "この操縦エンジニアは同じ時間帯の別案件に既に割り当てられています。",
+        "UAV_IN_USE": "この機体は現在別のフライトを実施中です。",
+        "NO_UAV_AVAILABLE": "この時間帯に利用可能な空き機体がありません。"
+      },
+      "card": {
+        "code": "案件 #{code}",
+        "schedule": "予定日時",
+        "location": "場所",
+        "price": "参考金額",
+        "assignedUav": "担当UAV",
+        "assignedPilot": "担当エンジニア",
+        "unassigned": "未選択",
+        "selectUav": "UAVを選択",
+        "selectPilot": "エンジニアを選択",
+        "accept": "受諾する",
+        "reject": "辞退",
+        "rejectReasonPlaceholder": "辞退理由（スケジュール都合、天候など）",
+        "confirmReject": "辞退を確定",
+        "assign": "割当を保存",
+        "startSimulation": "飛行シミュレーション開始",
+        "openSimulation": "シミュレーション画面",
+        "openDetail": "詳細・納品ファイル",
+        "handoverNote": "納品メモ・成果物リンク",
+        "handoverPlaceholder": "調査結果や添付ファイルの要約を入力…",
+        "equipmentCondition": "飛行後の機材状態",
+        "equipmentConditionDefault": "異常なし",
+        "completeOrder": "完了・納品する"
+      }
+    },
+    "simulation": {
+      "orderBannerBadge": "案件連動シミュレーション",
+      "orderCode": "案件 #{code}",
+      "backToOrders": "受注一覧へ",
+      "orderDetail": "案件詳細",
+      "linkStatus": "通信リンク",
+      "linkOnline": "良好 · オンライン",
+      "failsafeTitle": "安全制御 (フェイルセーフ)",
+      "failsafeRth": "緊急帰還",
+      "failsafeHold": "ホバリング保持",
+      "failsafeLand": "即時着陸"
+    },
+    "wallet": {
+      "title": "精算ウォレット・売上明細",
+      "subtitle": "機隊の精算残高および支払履歴を確認します。",
+      "readOnlyNotice": "閲覧専用 — 以下に表示される残高・売上・出金履歴はすべてデモンストレーション用の参考数値です。",
+      "cards": {
+        "available": "利用可能残高",
+        "escrowHeld": "エスクロー保留中",
+        "pendingPayout": "精算処理中",
+        "totalEarned": "累計売上"
+      },
+      "bankSection": {
+        "title": "精算受取口座",
+        "empty": "受取口座が未設定です。",
+        "updateLink": "パートナー登録で更新"
+      },
+      "transactions": {
+        "title": "取引履歴",
+        "empty": "取引履歴はありません。",
+        "gross": "総額",
+        "fee": "手数料",
+        "net": "純額"
+      },
+      "payouts": {
+        "title": "精算履歴",
+        "empty": "精算履歴はありません。",
+        "status": {
+          "PENDING": "処理待ち",
+          "PAID": "振込済み",
+          "REJECTED": "却下"
+        }
+      }
+    },
+    "home": {
+      "todayOrders": "本日の案件",
+      "readyUavs": "待機UAV",
+      "inFlightOrders": "飛行中",
+      "pendingAccept": "受諾待ち",
+      "shortcutsTitle": "クイックメニュー",
+      "viewDetails": "詳細を見る",
+      "liveFlights": "接続中のフライト",
+      "batteryLabel": "電池",
+      "signalStable": "通信良好",
+      "signalChecking": "通信確認中",
+      "noActiveFlight": "現在実行中の模擬フライトはありません。"
+    },
+    "pilotToday": {
+      "badge": "操縦エンジニア",
+      "title": "本日の担当タスク",
+      "subtitle": "飛行前チェックリストの確認、シミュレーション開始、納品ファイルのアップロードを行います。",
+      "tabs": {
+        "ACTIVE": "実施予定",
+        "IN_FLIGHT": "飛行中",
+        "COMPLETED": "完了済み"
+      },
+      "empty": "現在このタブに割り当てられたミッションはありません。",
+      "preflightToggle": "飛行前チェックリスト",
+      "startSimulation": "飛行シミュレーション開始",
+      "openSimulation": "シミュレーション画面",
+      "completeToggle": "完了・納品",
+      "uploadDeliverable": "納品ファイルをアップロード",
+      "uploading": "アップロード中…",
+      "uploadedFiles": "アップロード済み ({count})",
+      "handoverNote": "納品結果メモ",
+      "handoverPlaceholder": "飛行結果と納品データの概要を入力…",
+      "equipmentCondition": "飛行後の機材状態",
+      "equipmentConditionDefault": "飛行後異常なし",
+      "submitComplete": "完了を確定"
+    }
+  }
+}

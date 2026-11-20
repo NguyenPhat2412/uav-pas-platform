@@ -62,10 +62,10 @@ test('UavTelemetryHud and Kv260EdgeStatusCard show reported values only', () => 
     const hudContent = readFileSync(hudPath, 'utf8');
     assert.match(hudContent, /altitudeAglMeters/, 'should display Altitude AGL');
     assert.match(hudContent, /batteryPct/, 'should display Battery %');
-    assert.match(hudContent, /opsShared\.sar\.hud\.rtk\./, 'should display RTK fix status');
+    assert.match(hudContent, /opsShared\.sar\.hud\.rtk\./, 'should display GNSS positioning status');
     assert.match(hudContent, /telemetry\.stale/, 'should flag stale telemetry');
     const opsSharedVi = JSON.parse(readFileSync(atRoot('src/messages/sections/opsShared/vi.json'), 'utf8'));
-    assert.match(opsSharedVi.opsShared.sar.hud.rtk.FIXED, /RTK FIX/, 'vi catalog should label RTK fix status');
+    assert.match(opsSharedVi.opsShared.sar.hud.rtk.FIXED, /Định vị ổn định/, 'vi catalog should label GNSS positioning status');
 
     const kv260Content = readFileSync(kv260Path, 'utf8');
     assert.match(kv260Content, /task\.dpuUtilization/, 'should monitor DPU utilization');

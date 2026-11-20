@@ -99,7 +99,13 @@
     "audit": "Nhật ký",
     "training": "Đào tạo & SOP UAV",
     "weather": "Thời tiết bay",
-    "simulation": "Mô phỏng bay"
+    "simulation": "Mô phỏng bay",
+    "providerOnboarding": "Đăng ký đối tác",
+    "providerFleet": "Đội UAV đối tác",
+    "providerPilots": "Kỹ sư điều khiển",
+    "providerListings": "Dịch vụ của tôi",
+    "providerOrders": "Đơn được giao",
+    "providerWallet": "Ví đối soát"
   },
   "adminNavGroups": {
     "overview": "Tổng quan",
@@ -115,6 +121,16 @@
     "security": "Bảo mật",
     "infrastructure": "Hạ tầng"
   },
+  "adminNavSubGroups": {
+    "operationsPulse": "Điều hành & Hỗ trợ",
+    "airspaceWeather": "Bản đồ & Không phận",
+    "catalogPlans": "Danh mục & Gói cước",
+    "marketplace3p": "Đối tác đội bay",
+    "billingLedger": "Đối soát & Sổ cái",
+    "rbacGovernance": "Phân quyền & Vai trò",
+    "runtimeOps": "Máy chủ & Triển khai",
+    "dataComms": "Lưu trữ, Dữ liệu & Email"
+  },
   "adminNav": {
     "dashboard": "Tổng quan",
     "users": "Người dùng",
@@ -129,12 +145,16 @@
     "reports": "Báo cáo & thống kê",
     "webhooks": "Webhook & sự kiện",
     "settings": "Cấu hình hệ thống",
+    "translations": "Ngôn ngữ hệ thống (i18n)",
     "auditLogs": "Nhật ký quản trị",
     "notifications": "Thông báo",
     "supportInbox": "Tin nhắn hỗ trợ",
     "fleetMap": "Bản đồ đội bay",
     "uavs": "Đội UAV",
     "services": "Danh mục dịch vụ",
+    "marketplaceProviders": "Duyệt đối tác KYC",
+    "marketplaceListings": "Kiểm duyệt tin đăng",
+    "billingPayouts": "Giải ngân đối tác",
     "systemHealth": "Sức khỏe hệ thống",
     "aiRouter": "AI Router",
     "aiConversations": "Nhật ký hội thoại AI",
@@ -166,7 +186,7 @@
     "badge": "Precision Flight Control v4.2",
     "heading": "Chào mừng đến với UAV PAS",
     "desc": "Nền tảng chỉ huy, điều hành bay tự động và giám sát dữ liệu viễn thám thời gian thực chuẩn công nghiệp cho hệ thống thiết bị bay không người lái chuyên dụng.",
-    "telemetry": "Telemetry Hoạt động • RTK Sẵn sàng",
+    "telemetry": "Telemetry Hoạt động • GNSS Sẵn sàng",
     "cert": "Chứng nhận ISO/IEC 27001"
   },
   "auth": {
@@ -272,14 +292,14 @@
     "title": "Trung tâm điều hành nhiệm vụ UAV PAS",
     "edition": "TRUNG TÂM ĐIỀU HÀNH",
     "realtimeBadge": "Giám sát trực tuyến",
-    "syncRtk": "Đồng bộ RTK",
+    "syncRtk": "Đồng bộ GNSS",
     "openMap": "Mở bản đồ điều hành",
     "officers": "Điều hành viên",
     "chargingStations": "Trạm sạc",
     "readyFleet": "UAV sẵn sàng",
     "sensors": "Hệ cảm biến",
     "flightHours": "Tổng giờ bay",
-    "broadbandActive": "Băng rộng 5G RTK hoạt động",
+    "broadbandActive": "Băng rộng 5G GNSS hoạt động",
     "kpiFleet": "Đội bay UAV",
     "kpiFleetReady": "{count} thiết bị sẵn sàng",
     "kpiSuccessRate": "Tỷ lệ hoàn thành",
@@ -287,7 +307,7 @@
     "kpiStationEnergy": "Năng lượng dự trữ trạm",
     "kpiSolar": "Đang sạc năng lượng mặt trời",
     "kpiLatency": "Độ trễ kết nối",
-    "kpiRtkPrecision": "Độ chính xác RTK",
+    "kpiRtkPrecision": "Độ chính xác GNSS",
     "fleetTableTitle": "Trạng thái sẵn sàng đội bay UAV",
     "activeDevices": "5 thiết bị đang hoạt động",
     "thDevice": "Thiết bị / Model",
@@ -304,7 +324,7 @@
     "thCodeName": "Mã trạm & Tên gọi",
     "thConnection": "Đường truyền",
     "thAddress": "Địa chỉ lắp đặt",
-    "thCoords": "Tọa độ GPS RTK",
+    "thCoords": "Tọa độ GPS GNSS",
     "hangarTitle": "Nhà chứa UAV 3D & Radar kiểm soát",
     "battery": "Pin",
     "altitude": "Độ cao mặt đất",
@@ -607,7 +627,7 @@
       "subtitle": "Bản sao số 3D của công trình hoặc khu vực, dựng từ ảnh UAV, giúp kiểm tra hiện trạng, đo đạc và giám sát từ xa mà không cần ra hiện trường.",
       "capture": {
         "title": "Bay chụp",
-        "body": "UAV bay theo lưới và vòng quanh công trình, chụp ảnh chồng phủ cao kèm toạ độ GPS/RTK."
+        "body": "UAV bay theo lưới và vòng quanh công trình, chụp ảnh chồng phủ cao kèm toạ độ GPS/GNSS."
       },
       "process": {
         "title": "Dựng mô hình",
@@ -705,7 +725,7 @@
       "heading": "Hướng",
       "waypoint": "Điểm",
       "toHome": "Cách điểm xuất phát",
-      "rtk": "Định vị RTK",
+      "rtk": "Định vị GNSS",
       "airspace": "Cảnh báo vùng trời",
       "wind": "Gió / Tốc độ"
     },
@@ -993,7 +1013,7 @@
       "checks": {
         "airframe": "Khung thân, càng đáp & cánh quạt nguyên vẹn, khóa chặt",
         "battery": "Điện áp các cell pin cân bằng, nhiệt độ ổn định (≥ 25%)",
-        "gnss": "Tín hiệu GNSS / RTK đạt trạng thái khóa ổn định, la bàn không nhiễu",
+        "gnss": "Tín hiệu GNSS đạt trạng thái khóa ổn định, la bàn không nhiễu",
         "weather": "Tốc độ gió, tầm nhìn và lượng mưa tại hiện trường nằm trong ngưỡng an toàn",
         "airspace": "Hành lang bay thông thoáng, giấy phép bay / NOTAM đã đối chiếu hợp lệ"
       },
@@ -1001,7 +1021,7 @@
       "satellites": "Số vệ tinh GNSS",
       "windMs": "Gió hiện trường (m/s)",
       "notes": "Ghi chú kiểm tra hiện trường",
-      "notesPlaceholder": "Tình trạng RTK, chướng ngại vật mới phát sinh hoặc lưu ý cất cánh...",
+      "notesPlaceholder": "Tình trạng GNSS, chướng ngại vật mới phát sinh hoặc lưu ý cất cánh...",
       "signButton": "Ký xác nhận biên bản tiền bay",
       "signing": "Đang lưu biên bản...",
       "savedToast": "Đã lưu biên bản kiểm tra an toàn tiền bay."

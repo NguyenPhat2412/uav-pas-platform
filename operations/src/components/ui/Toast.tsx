@@ -11,7 +11,7 @@ export type {ToastItem, ToastOptions, ToastType, ToastViewportProps};
 export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewportProps) {
     return (
         <div
-            className="fixed top-5 right-5 z-[999999] flex flex-col gap-3 pointer-events-none max-w-sm sm:max-w-md w-[calc(100vw-2.5rem)] sm:w-96"
+            className="fixed top-4 left-4 right-4 sm:top-5 sm:left-auto sm:right-5 z-[999999] flex flex-col gap-3 pointer-events-none max-w-[calc(100vw-2rem)] sm:max-w-md w-auto sm:w-96"
             aria-live="polite"
             aria-atomic="true"
         >
@@ -52,8 +52,8 @@ export function ToastViewport({toasts, onDismiss, onPause, onResume}: ToastViewp
                         </div>
 
                         <div className="flex-1 min-w-0 pr-1">
-                            <div className="flex items-center gap-2 mb-1">
-                                <h4 className="text-sm font-bold text-slate-900 leading-snug truncate">
+                            <div className="flex items-start gap-2 mb-1">
+                                <h4 className="text-sm font-bold text-slate-900 leading-snug break-words">
                                     {item.title ||
                                         (item.type === 'success'
                                             ? 'Thành công'

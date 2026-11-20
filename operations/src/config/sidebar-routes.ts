@@ -396,7 +396,20 @@ export const OPERATIONS_SIDEBAR_ROUTES: SidebarRouteItem<OperationsNavGroup>[] =
         key: 'overview',
         group: 'command',
         icon: LayoutDashboard,
-        permission: 'DASHBOARD_VIEW',
+    },
+    {
+        href: '/operations/provider/onboarding',
+        key: 'providerOnboarding',
+        defaultLabel: 'Đăng ký đối tác',
+        group: 'command',
+        icon: ShieldCheck,
+    },
+    {
+        href: '/operations/provider/wallet',
+        key: 'providerWallet',
+        defaultLabel: 'Ví đối soát',
+        group: 'command',
+        icon: CreditCard,
     },
     {
         href: '/operations/sar-cockpit',
@@ -423,6 +436,13 @@ export const OPERATIONS_SIDEBAR_ROUTES: SidebarRouteItem<OperationsNavGroup>[] =
 
     // Nhóm: Điều phối nhiệm vụ (missions)
     {
+        href: '/operations/provider/orders',
+        key: 'providerOrders',
+        defaultLabel: 'Đơn được giao',
+        group: 'missions',
+        icon: Package,
+    },
+    {
         href: '/operations/dispatch/missions',
         key: 'dispatchMissions',
         group: 'missions',
@@ -440,6 +460,27 @@ export const OPERATIONS_SIDEBAR_ROUTES: SidebarRouteItem<OperationsNavGroup>[] =
     },
 
     // Nhóm: Trạm & Đội bay (assets)
+    {
+        href: '/operations/provider/fleet',
+        key: 'providerFleet',
+        defaultLabel: 'Đội UAV đối tác',
+        group: 'assets',
+        icon: PlaneTakeoff,
+    },
+    {
+        href: '/operations/provider/pilots',
+        key: 'providerPilots',
+        defaultLabel: 'Kỹ sư điều khiển',
+        group: 'assets',
+        icon: Users,
+    },
+    {
+        href: '/operations/provider/listings',
+        key: 'providerListings',
+        defaultLabel: 'Dịch vụ của tôi',
+        group: 'assets',
+        icon: Boxes,
+    },
     {
         href: '/operations/stations',
         key: 'stations',

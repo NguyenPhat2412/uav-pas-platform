@@ -165,7 +165,7 @@ export function DataTable<T extends { id: number }>({
                                 {group.headers.map(header => (
                                     <th
                                         key={header.id}
-                                        className={density === 'compact' ? 'px-3 py-2' : 'px-4 py-3'}
+                                        className={density === 'compact' ? 'px-3 py-2 whitespace-nowrap' : 'px-4 py-3 whitespace-nowrap'}
                                         aria-sort={
                                             header.column.getIsSorted() === 'asc'
                                                 ? 'ascending'
@@ -177,7 +177,7 @@ export function DataTable<T extends { id: number }>({
                                         {header.isPlaceholder ? null : header.column.getCanSort() ? (
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center gap-1 font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900 cursor-pointer"
+                                                className="inline-flex items-center gap-1 whitespace-nowrap font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900 cursor-pointer"
                                                 onClick={header.column.getToggleSortingHandler()}
                                                 aria-label={t('console.table.sort', {column: String(header.column.columnDef.header)})}
                                             >

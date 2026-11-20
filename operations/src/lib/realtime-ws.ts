@@ -86,6 +86,13 @@ export type OperationsRealtimeFrame =
           unreadCount: number;
           screenPopup?: boolean;
           desktopOs?: boolean;
+      }
+    | {
+          type: 'ORDER_UPDATED';
+          timestamp?: string;
+          missionId: number;
+          status: string;
+          statusGroup?: string;
       };
 
 type FrameListener = (frame: OperationsRealtimeFrame) => void;

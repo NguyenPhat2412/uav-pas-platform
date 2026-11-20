@@ -1,0 +1,342 @@
+{
+  "opsMarketplace": {
+    "common": {
+      "illustrationBadge": "minh hoạ",
+      "illustrativeFooterNote": "Giá và giao dịch trên nền tảng là minh hoạ phục vụ đồ án.",
+      "fabMenuLabel": "Trợ lý và Hỗ trợ",
+      "fabAiAssistant": "Trợ lý AI",
+      "fabLiveSupport": "Tin nhắn khách hàng",
+      "retry": "Thử lại",
+      "loading": "Đang tải dữ liệu…",
+      "save": "Lưu",
+      "cancel": "Huỷ",
+      "delete": "Xoá",
+      "edit": "Sửa",
+      "create": "Tạo mới",
+      "back": "Quay lại",
+      "next": "Tiếp tục",
+      "requiredOnboardingTitle": "Chưa đăng ký hồ sơ đội bay",
+      "requiredOnboardingDesc": "Hoàn tất đăng ký đối tác 3 bước để khai báo đội bay, tạo dịch vụ và nhận đơn.",
+      "goToOnboarding": "Đăng ký đối tác"
+    },
+    "studio": {
+      "badge": "Kênh Đội bay · UAV PAS",
+      "tabs": {
+        "onboarding": "Đăng ký",
+        "fleet": "Đội UAV",
+        "pilots": "Kỹ sư",
+        "listings": "Dịch vụ",
+        "orders": "Đơn giao",
+        "wallet": "Ví đối soát"
+      },
+      "verification": {
+        "DRAFT": "Bản nháp",
+        "PENDING_REVIEW": "Chờ duyệt",
+        "VERIFIED": "Đã xác minh",
+        "REJECTED": "Cần bổ sung",
+        "SUSPENDED": "Tạm ngưng"
+      }
+    },
+    "onboarding": {
+      "title": "Đăng ký Đối tác Đội bay",
+      "subtitle": "Hoàn tất 3 bước để nhận đơn bay từ nền tảng UAV PAS.",
+      "steps": {
+        "profile": "1. Hồ sơ",
+        "documents": "2. Giấy tờ",
+        "area": "3. Khu vực"
+      },
+      "statusCard": {
+        "pendingTitle": "Hồ sơ đang chờ Ban quản trị duyệt",
+        "pendingDesc": "Bạn vẫn có thể cập nhật giấy tờ hoặc khu vực phục vụ trong lúc chờ thẩm định.",
+        "verifiedTitle": "Đội bay đã được xác minh đối tác",
+        "verifiedDesc": "Đội bay của bạn đủ điều kiện nhận đơn tự động từ nền tảng.",
+        "rejectedTitle": "Hồ sơ cần bổ sung thông tin",
+        "draftTitle": "Hoàn tất 3 bước để gửi duyệt đối tác",
+        "reviewNote": "Ghi chú thẩm định: {note}",
+        "rating": "Đánh giá",
+        "completed": "Đơn hoàn tất"
+      },
+      "fields": {
+        "displayName": "Tên đội bay / Đơn vị",
+        "displayNamePlaceholder": "VD: Đội bay Khảo sát Miền Bắc",
+        "providerType": "Loại hình",
+        "typeCompany": "Doanh nghiệp / Đội bay",
+        "typeIndividual": "Kỹ sư cá nhân",
+        "taxOrIdNumber": "Mã số thuế / CCCD",
+        "flightLicenseNumber": "Số chứng chỉ điều khiển",
+        "contactPhone": "Số điện thoại điều phối",
+        "bio": "Giới thiệu đội bay & thiết bị",
+        "bioPlaceholder": "Mô tả dòng UAV, cảm biến và kinh nghiệm thực địa…",
+        "province": "Tỉnh / Thành phố đặt trạm chính",
+        "provincePlaceholder": "Hà Nội, Đà Nẵng, TP. Hồ Chí Minh…",
+        "serviceRadiusKm": "Bán kính phục vụ (km)",
+        "bankName": "Ngân hàng nhận đối soát",
+        "bankAccountNumber": "Số tài khoản",
+        "bankAccountHolder": "Chủ tài khoản"
+      },
+      "documents": {
+        "title": "Giấy tờ xác minh năng lực",
+        "subtitle": "Đính kèm giấy phép kinh doanh, chứng chỉ điều khiển và đăng ký tàu bay.",
+        "type": "Loại giấy tờ",
+        "docTitle": "Tên giấy tờ",
+        "docTitlePlaceholder": "VD: Chứng chỉ điều khiển UAV hạng A",
+        "docNumber": "Số hiệu",
+        "fileUrl": "Liên kết tệp minh chứng",
+        "add": "Thêm giấy tờ",
+        "empty": "Chưa có giấy tờ đính kèm. Bạn có thể lưu bước 1 rồi thêm giấy tờ tại đây.",
+        "saveFirstHint": "Nhấn Tiếp tục ở Bước 1 để khởi tạo hồ sơ trước khi đính kèm giấy tờ.",
+        "types": {
+          "BUSINESS_LICENSE": "Giấy đăng ký doanh nghiệp",
+          "IDENTITY_CARD": "CCCD người đại diện",
+          "PILOT_CERTIFICATE": "Chứng chỉ kỹ sư điều khiển",
+          "UAV_REGISTRATION": "Đăng ký số serial UAV",
+          "FLIGHT_OPERATION_PERMIT": "Giấy phép khai thác bay",
+          "INSURANCE_POLICY": "Bảo hiểm trách nhiệm bay",
+          "PLATFORM_FEE_AGREEMENT": "Phụ lục biểu phí đối soát",
+          "TAX_SETTLEMENT_DOSSIER": "Hồ sơ thuế & ngân hàng"
+        },
+        "status": {
+          "PENDING": "Chờ duyệt",
+          "APPROVED": "Hợp lệ",
+          "REJECTED": "Cần sửa"
+        }
+      },
+      "actions": {
+        "saveDraft": "Lưu nháp",
+        "saveAndNext": "Lưu & sang bước tiếp",
+        "submitReview": "Gửi duyệt đối tác",
+        "submitting": "Đang gửi…",
+        "savedDraft": "Đã lưu bản nháp hồ sơ đối tác.",
+        "submitted": "Đã gửi hồ sơ đối tác chờ duyệt!",
+        "errorMissing": "Vui lòng nhập Tên đội bay và Tỉnh/Thành phố phục vụ.",
+        "errorUrl": "Liên kết tệp phải bắt đầu bằng http:// hoặc https://."
+      }
+    },
+    "fleet": {
+      "title": "Đội UAV & Kỹ sư điều khiển",
+      "subtitle": "Quản lý trạng thái sẵn sàng, đang bay hoặc bảo trì của từng UAV và kỹ sư.",
+      "filter": {
+        "ALL": "Tất cả",
+        "READY": "Sẵn sàng",
+        "FLYING": "Đang bay",
+        "MAINTENANCE": "Bảo trì"
+      },
+      "status": {
+        "READY": "Sẵn sàng",
+        "FLYING": "Đang bay",
+        "MAINTENANCE": "Bảo trì"
+      },
+      "uavs": {
+        "title": "Đội UAV",
+        "add": "Thêm UAV",
+        "edit": "Sửa UAV",
+        "empty": "Chưa có UAV nào trong đội bay.",
+        "model": "Model UAV",
+        "modelPlaceholder": "VD: Matrice 350",
+        "serialNumber": "Số Serial",
+        "serialPlaceholder": "VD: SN-M350-01",
+        "manufacturer": "Hãng sản xuất",
+        "manufacturerPlaceholder": "VD: DJI Enterprise",
+        "status": "Trạng thái",
+        "setReady": "Sẵn sàng",
+        "setFlying": "Đang bay",
+        "setMaintenance": "Bảo trì"
+      },
+      "pilots": {
+        "title": "Kỹ sư điều khiển",
+        "add": "Thêm kỹ sư",
+        "edit": "Sửa kỹ sư",
+        "empty": "Chưa có kỹ sư điều khiển nào.",
+        "fullName": "Họ và tên kỹ sư",
+        "fullNamePlaceholder": "VD: Nguyễn Văn An",
+        "phone": "Số điện thoại",
+        "email": "Email tài khoản",
+        "licenseNumber": "Mã chứng chỉ bay",
+        "licensePlaceholder": "VD: VN-PILOT-01",
+        "specialization": "Chuyên môn",
+        "specializationPlaceholder": "VD: Khảo sát LiDAR, Quay chụp",
+        "assignedUav": "UAV phụ trách",
+        "noUav": "Chưa gán UAV",
+        "status": "Trạng thái",
+        "missionsDone": "{count} chuyến"
+      }
+    },
+    "listings": {
+      "title": "Dịch vụ của tôi",
+      "subtitle": "Chọn nhanh từ mẫu chuẩn của nền tảng hoặc tuỳ chỉnh dịch vụ của đội bay.",
+      "templatesTitle": "Tạo nhanh từ mẫu dịch vụ UAV PAS",
+      "templatesEmpty": "Chưa có mẫu dịch vụ nào từ hệ thống.",
+      "useTemplate": "Dùng mẫu này",
+      "customCreate": "Tạo dịch vụ tự chọn",
+      "myListingsTitle": "Danh sách dịch vụ đã tạo",
+      "empty": "Bạn chưa đăng dịch vụ nào. Chọn một mẫu phía trên để tạo trong 1 bước.",
+      "status": {
+        "DRAFT": "Bản nháp",
+        "PENDING_REVIEW": "Chờ duyệt",
+        "PUBLISHED": "Đang mở",
+        "PAUSED": "Tạm dừng",
+        "REJECTED": "Từ chối"
+      },
+      "types": {
+        "FLIGHT_SERVICE": "Bay trọn gói",
+        "WET_LEASE": "UAV kèm kỹ sư",
+        "DRY_LEASE": "Thuê thiết bị"
+      },
+      "pricing": {
+        "PER_HECTARE": "ha",
+        "PER_HOUR": "giờ",
+        "PER_DAY": "ngày",
+        "PER_PACKAGE": "gói"
+      },
+      "fields": {
+        "title": "Tên dịch vụ",
+        "summary": "Mô tả ngắn",
+        "listingType": "Loại dịch vụ",
+        "pricingModel": "Đơn vị tính",
+        "basePriceVnd": "Đơn giá (VNĐ)",
+        "minBookingUnits": "Số lượng tối thiểu",
+        "province": "Khu vực chính",
+        "serviceRadiusKm": "Bán kính (km)",
+        "equipmentSpecs": "Thiết bị sử dụng",
+        "deliverablesSummary": "Kết quả bàn giao",
+        "deliveryHours": "Thời gian bàn giao (giờ)",
+        "coverImageUrl": "Ảnh bìa (URL)"
+      },
+      "actions": {
+        "createFromTemplate": "Tạo từ mẫu & gửi duyệt",
+        "saveDraft": "Lưu nháp",
+        "submitReview": "Lưu & gửi duyệt",
+        "pause": "Tạm dừng",
+        "resume": "Mở lại",
+        "edit": "Sửa",
+        "delete": "Xoá",
+        "bookings": "{count} đơn",
+        "moderationNote": "Ghi chú duyệt: {note}"
+      }
+    },
+    "orders": {
+      "title": "Đơn được giao",
+      "subtitle": "Nhận đơn từ nền tảng, phân công kỹ sư + UAV, khởi động bay mô phỏng và bàn giao kết quả.",
+      "tabs": {
+        "PENDING_ACCEPT": "Chờ nhận",
+        "WAITING_FLIGHT": "Chờ bay",
+        "IN_FLIGHT": "Đang bay",
+        "DELIVERED": "Đã bàn giao"
+      },
+      "empty": "Không có đơn nào trong mục này.",
+      "sourcePlatformFleet": "Đội bay đối tác: {name}",
+      "sourcePlatformPending": "Chờ điều phối đội bay",
+      "sourceInternal": "Đội bay điều phối",
+      "conflicts": {
+        "UAV_TIME_CONFLICT": "Thiết bị bay đã được phân công cho đơn khác trùng khung giờ.",
+        "OPERATOR_TIME_CONFLICT": "Kỹ sư đã được phân công cho đơn khác trùng khung giờ.",
+        "UAV_IN_USE": "Thiết bị bay hiện đang thực hiện một chuyến bay khác.",
+        "NO_UAV_AVAILABLE": "Không còn thiết bị bay trống trong khung giờ này."
+      },
+      "card": {
+        "code": "Mã đơn #{code}",
+        "schedule": "Lịch bay",
+        "location": "Khu vực",
+        "price": "Giá trị minh hoạ",
+        "assignedUav": "UAV phân công",
+        "assignedPilot": "Kỹ sư điều khiển",
+        "unassigned": "Chưa chọn",
+        "selectUav": "Chọn UAV",
+        "selectPilot": "Chọn kỹ sư",
+        "accept": "Nhận đơn",
+        "reject": "Từ chối",
+        "rejectReasonPlaceholder": "Lý do từ chối (bận lịch, thời tiết…)",
+        "confirmReject": "Xác nhận từ chối",
+        "assign": "Lưu phân công",
+        "startSimulation": "Bắt đầu bay mô phỏng",
+        "openSimulation": "Màn bay mô phỏng",
+        "openDetail": "Chi tiết & Tệp bàn giao",
+        "handoverNote": "Biên bản & liên kết tài liệu bàn giao",
+        "handoverPlaceholder": "Nhập kết quả khảo sát, số lượng tệp ảnh/bản đồ bàn giao…",
+        "equipmentCondition": "Tình trạng thiết bị sau bay",
+        "equipmentConditionDefault": "An toàn sau bay",
+        "completeOrder": "Hoàn thành & Bàn giao"
+      }
+    },
+    "simulation": {
+      "orderBannerBadge": "Bay mô phỏng theo đơn",
+      "orderCode": "Đơn #{code}",
+      "backToOrders": "Về đơn được giao",
+      "orderDetail": "Chi tiết đơn",
+      "linkStatus": "Liên kết điều khiển",
+      "linkOnline": "Ổn định · Trực tuyến",
+      "failsafeTitle": "Bảo vệ an toàn (Fail-safe)",
+      "failsafeRth": "RTH khẩn cấp",
+      "failsafeHold": "Giữ vị trí",
+      "failsafeLand": "Hạ cánh ngay"
+    },
+    "wallet": {
+      "title": "Ví Đối soát & Doanh thu",
+      "subtitle": "Thông tin số dư đối soát và lịch sử thanh toán của đội bay.",
+      "readOnlyNotice": "Chế độ chỉ hiển thị — Toàn bộ số dư, doanh thu và khoản giải ngân dưới đây là số liệu minh hoạ.",
+      "cards": {
+        "available": "Số dư khả dụng",
+        "escrowHeld": "Đang tạm giữ",
+        "pendingPayout": "Chờ đối soát",
+        "totalEarned": "Tổng doanh thu"
+      },
+      "bankSection": {
+        "title": "Tài khoản ngân hàng đối soát",
+        "empty": "Chưa khai báo tài khoản ngân hàng.",
+        "updateLink": "Cập nhật tại Hồ sơ đối tác"
+      },
+      "transactions": {
+        "title": "Biến động số dư",
+        "empty": "Chưa có giao dịch đối soát nào.",
+        "gross": "Tổng",
+        "fee": "Phí sàn",
+        "net": "Thực nhận"
+      },
+      "payouts": {
+        "title": "Lịch sử giải ngân",
+        "empty": "Chưa có đợt giải ngân nào.",
+        "status": {
+          "PENDING": "Chờ duyệt",
+          "PAID": "Đã chuyển",
+          "REJECTED": "Từ chối"
+        }
+      }
+    },
+    "home": {
+      "todayOrders": "Đơn hôm nay",
+      "readyUavs": "UAV sẵn sàng",
+      "inFlightOrders": "Đang bay",
+      "pendingAccept": "Chờ nhận",
+      "shortcutsTitle": "Thao tác đội bay",
+      "viewDetails": "Xem chi tiết",
+      "liveFlights": "Chuyến đang kết nối",
+      "batteryLabel": "Pin",
+      "signalStable": "Tín hiệu ổn định",
+      "signalChecking": "Đang kiểm tra tín hiệu",
+      "noActiveFlight": "Hiện không có chuyến bay mô phỏng đang chạy."
+    },
+    "pilotToday": {
+      "badge": "Kỹ sư điều khiển",
+      "title": "Việc hôm nay của tôi",
+      "subtitle": "Kiểm tra an toàn trước bay, khởi động bay mô phỏng và tải tài liệu bàn giao.",
+      "tabs": {
+        "ACTIVE": "Cần thực hiện",
+        "IN_FLIGHT": "Đang bay",
+        "COMPLETED": "Đã bàn giao"
+      },
+      "empty": "Hiện chưa có nhiệm vụ nào được phân công cho bạn trong mục này.",
+      "preflightToggle": "Checklist trước bay",
+      "startSimulation": "Bắt đầu bay mô phỏng",
+      "openSimulation": "Màn bay mô phỏng",
+      "completeToggle": "Hoàn thành & Bàn giao",
+      "uploadDeliverable": "Tải tài liệu bàn giao",
+      "uploading": "Đang tải tệp lên…",
+      "uploadedFiles": "Tệp đã tải lên ({count})",
+      "handoverNote": "Ghi chú kết quả bàn giao",
+      "handoverPlaceholder": "Nhập tóm tắt kết quả chuyến bay và dữ liệu bàn giao…",
+      "equipmentCondition": "Tình trạng thiết bị sau bay",
+      "equipmentConditionDefault": "Hoạt động tốt sau bay",
+      "submitComplete": "Xác nhận hoàn thành"
+    }
+  }
+}

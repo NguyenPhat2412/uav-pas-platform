@@ -1,244 +1,258 @@
 'use client';
 
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import Link from 'next/link';
 import {
-    Activity,
+    ArrowUpRight,
+    Bell,
     Boxes,
+    CheckCircle2,
+    ClipboardList,
+    Clock,
+    CloudSun,
+    CreditCard,
     Crosshair,
-    FileKey2,
-    MapPinned,
+    Gamepad2,
     PlaneTakeoff,
-    RadioTower,
-    Settings2,
     ShieldCheck,
-    Plus,
-    Users
+    Users,
 } from 'lucide-react';
 import {useRouter} from 'next/navigation';
 import {AppShell} from '@/components/layout/AppShell';
-import {KpiCard, StatusBadge, UavLoader} from '@/components/ui';
+import {UavLoader} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
 import {useOperationsOverview} from '@/hooks/dashboard/useOperationsOverview';
+import {
+    useMyProviderFleet,
+    useProviderOrders,
+} from '@/hooks/marketplace/useMarketplace';
+import {
+    classifySellerOrderTab,
+    normalizeUavStatusCardKey,
+} from '@/forms/marketplace/marketplace-forms';
 import {useCollection} from '@/hooks/useCollection';
 import {useFleetTelemetry} from '@/hooks/uav/useTelemetry';
-import {toStationSlug, toUavSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/providers/I18nContext';
 
-const quickActions = [
-    {icon: Settings2, labelKey: 'opsMissions.overview.quick.stations', href: "/operations/stations"},
-    {icon: Activity, labelKey: 'opsMissions.overview.quick.dispatch', href: "/operations/dispatch/missions"},
-    {icon: PlaneTakeoff, labelKey: 'opsMissions.overview.quick.uavs', href: "/operations/uavs"},
-    {icon: FileKey2, labelKey: 'opsMissions.overview.quick.media', href: "/operations/media"},
-];
+const SHOP_SHORTCUTS = [
+    {icon: ClipboardList, key: 'orders', href: '/operations/provider/orders'},
+    {icon: PlaneTakeoff, key: 'fleet', href: '/operations/provider/fleet'},
+    {icon: Users, key: 'pilots', href: '/operations/provider/pilots'},
+    {icon: Boxes, key: 'listings', href: '/operations/provider/listings'},
+    {icon: Gamepad2, key: 'simulation', href: '/operations/simulation', navKey: 'operationsNav.simulation'},
+    {icon: CreditCard, key: 'wallet', href: '/operations/provider/wallet'},
+    {icon: ShieldCheck, key: 'onboarding', href: '/operations/provider/onboarding'},
+    {icon: CloudSun, key: 'weather', href: '/operations/weather', navKey: 'operationsNav.weather'},
+    {icon: ClipboardList, key: 'assignedMissions', href: '/operations/assigned-missions', navKey: 'operationsNav.assignedMissions'},
+    {icon: Bell, key: 'notifications', href: '/operations/notifications', navKey: 'operationsNav.notifications'},
+] as const;
 
 export default function HomePage() {
     const router = useRouter();
-    const {user, isAuthenticated, isLoading, can} = useAuth();
+    const {user, isAuthenticated, isLoading} = useAuth();
     const {t, formatNumber} = useI18n();
-    const count = (value?: number) => value == null ? '—' : formatNumber(value);
-    const canReadSummary = can('DASHBOARD_VIEW');
-    const canReadMissions = can('DASHBOARD_MISSION');
-    const canReadUavs = can('UAV_VIEW');
     const {summary, missions, error} = useOperationsOverview();
+
+    const providerFleetQuery = useMyProviderFleet(isAuthenticated);
+    const providerOrdersQuery = useProviderOrders(isAuthenticated);
     const uavsQuery = useCollection('uavs');
-    const stationsQuery = useCollection('stations');
-    const [selectedUavId, setSelectedUavId] = useState<number | null>(null);
     const fleetTelemetry = useFleetTelemetry();
+
     useEffect(() => {
-        if (!isLoading && !isAuthenticated) router.replace("/operations/login");
+        if (!isLoading && !isAuthenticated) router.replace('/operations/login');
     }, [isAuthenticated, isLoading, router]);
-    if (isLoading || !isAuthenticated || !user) return <UavLoader fullScreen label={t('opsMissions.overview.authenticating')}/>;
 
-    const fleet = uavsQuery.data ?? [];
-    const uavList = fleet.slice(0, 6);
-    const activeUav = uavList.find(u => u.id === selectedUavId) ?? uavList[0];
+    if (isLoading || !isAuthenticated || !user) {
+        return <UavLoader fullScreen label={t('opsMissions.overview.authenticating')}/>;
+    }
+
+    const providerOrders = providerOrdersQuery.data ?? [];
+    const providerUavs = providerFleetQuery.data?.uavs ?? [];
+    const internalUavs = uavsQuery.data ?? [];
+
+    const todayIso = new Date().toISOString().slice(0, 10);
+    const todayOrdersCount = providerOrders.length
+        ? providerOrders.filter(o => (o.requestedDate ?? '').startsWith(todayIso)).length || providerOrders.length
+        : (missions?.totalMissions ?? 0);
+
+    const readyUavsCount = providerUavs.length
+        ? providerUavs.filter(u => normalizeUavStatusCardKey(u.status) === 'READY').length
+        : (summary?.availableUavs ?? internalUavs.filter(u => u.status === 'AVAILABLE').length);
+
+    const inFlightOrdersCount = providerOrders.length
+        ? providerOrders.filter(o => classifySellerOrderTab(o) === 'IN_FLIGHT').length
+        : (missions?.inProgressMissions ?? internalUavs.filter(u => u.status === 'IN_USE').length);
+
+    const pendingAcceptCount = providerOrders.length
+        ? providerOrders.filter(o => classifySellerOrderTab(o) === 'PENDING_ACCEPT').length
+        : (missions?.pendingMissions ?? 0);
+
     const fixes = fleetTelemetry.data ?? [];
-    const live = fixes.filter(f => !f.stale);
-    const activeFix = activeUav ? fixes.find(f => f.uavId === activeUav.id) ?? null : null;
-    const statusCount = (status: string) => fleet.filter(u => u.status === status).length;
+    const activeFix = fixes.find(f => !f.stale) ?? fixes[0] ?? null;
 
-    return <AppShell activeResource="overview">
-        <div className="flex w-full flex-col gap-4">
-            <div className="flex justify-end">
-                <Link href="/operations/dispatch/missions"
-                      className="inline-flex min-h-9 items-center gap-1.5 rounded-control bg-primary px-3.5 text-[13px] font-bold text-primary-foreground transition hover:bg-primary-hover">
-                    <Plus size={15} aria-hidden="true"/>{t('opsMissions.overview.openDispatch')}</Link>
+    const topStats = [
+        {
+            label: t('opsMarketplace.home.todayOrders'),
+            value: formatNumber(todayOrdersCount),
+            icon: ClipboardList,
+            href: '/operations/provider/orders',
+            highlight: false,
+        },
+        {
+            label: t('opsMarketplace.home.readyUavs'),
+            value: formatNumber(readyUavsCount),
+            icon: CheckCircle2,
+            href: '/operations/provider/fleet',
+            highlight: false,
+        },
+        {
+            label: t('opsMarketplace.home.inFlightOrders'),
+            value: formatNumber(inFlightOrdersCount),
+            icon: PlaneTakeoff,
+            href: '/operations/simulation',
+            highlight: true,
+        },
+        {
+            label: t('opsMarketplace.home.pendingAccept'),
+            value: formatNumber(pendingAcceptCount),
+            icon: Clock,
+            href: '/operations/provider/orders',
+            highlight: pendingAcceptCount > 0,
+        },
+    ];
+
+    return (
+        <AppShell activeResource="overview">
+            <div className="flex w-full flex-col gap-5 p-4 sm:p-6">
+                {error && (
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">
+                        {t('opsMissions.overview.partialError')}
+                    </div>
+                )}
+
+                {/* 4 Ô số liệu chính: Icon + Số -> Bấm sang trang chi tiết riêng */}
+                <section
+                    className="grid grid-cols-2 gap-3.5 lg:grid-cols-4"
+                    aria-label={t('opsMissions.overview.summary.label')}
+                >
+                    {topStats.map(stat => {
+                        const Icon = stat.icon;
+                        return (
+                            <Link
+                                key={stat.label}
+                                href={stat.href}
+                                className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-2xs transition-colors hover:border-primary"
+                            >
+                                <div className="flex items-center justify-between gap-2">
+                                    <span
+                                        className={`inline-flex h-11 w-11 items-center justify-center rounded-xl ${
+                                            stat.highlight
+                                                ? 'bg-primary text-white'
+                                                : 'bg-uav-red-light text-primary'
+                                        }`}
+                                    >
+                                        <Icon size={20} aria-hidden="true"/>
+                                    </span>
+                                    <ArrowUpRight
+                                        size={16}
+                                        className="text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary"
+                                        aria-hidden="true"
+                                    />
+                                </div>
+                                <div className="mt-3">
+                                    <strong className="block text-2xl font-bold tracking-tight text-slate-900 tabular-nums">
+                                        {stat.value}
+                                    </strong>
+                                    <span className="mt-0.5 block line-clamp-2 break-words text-xs font-semibold leading-snug text-slate-500">
+                                        {stat.label}
+                                    </span>
+                                </div>
+                            </Link>
+                        );
+                    })}
+                </section>
+
+                {/* Lưới Icon Thao tác nhanh kiểu Shopee (4-5 cột, nhãn 1-2 từ) */}
+                <section className="rounded-2xl border border-slate-200 bg-white p-5">
+                    <div className="mb-4 flex items-center justify-between gap-2">
+                        <h2 className="m-0 text-base font-semibold text-slate-900">
+                            {t('opsMarketplace.home.shortcutsTitle')}
+                        </h2>
+                        <Link
+                            href="/operations/provider/orders"
+                            className="inline-flex items-center gap-1 text-xs font-semibold whitespace-nowrap text-primary hover:underline"
+                        >
+                            <span>{t('opsMarketplace.home.viewDetails')}</span>
+                            <ArrowUpRight size={13} aria-hidden="true"/>
+                        </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+                        {SHOP_SHORTCUTS.map(item => {
+                            const Icon = item.icon;
+                            const label = 'navKey' in item && item.navKey
+                                ? t(item.navKey)
+                                : t(`opsMarketplace.studio.tabs.${item.key}`);
+                            return (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className="group flex min-h-24 flex-col items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/60 p-3 text-center transition-colors hover:border-primary hover:bg-uav-red-light/50"
+                                >
+                                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-uav-red-light text-primary transition-transform group-hover:scale-105">
+                                        <Icon size={20} aria-hidden="true"/>
+                                    </span>
+                                    <span className="max-w-full line-clamp-2 break-words text-xs font-semibold leading-snug text-slate-800 group-hover:text-primary">
+                                        {label}
+                                    </span>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                </section>
+
+                {/* Khối tóm tắt trạng thái bay gọn nhẹ + liên kết sang trang chi tiết */}
+                <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5">
+                    <div className="flex items-center gap-3">
+                        <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-uav-red-light text-primary">
+                            <Crosshair size={20} aria-hidden="true"/>
+                        </span>
+                        <div>
+                            <h3 className="m-0 text-sm font-semibold text-slate-900">
+                                {t('opsMarketplace.home.liveFlights')}:{' '}
+                                <span className="tabular-nums text-primary">
+                                    {formatNumber(fixes.filter(f => !f.stale).length)}
+                                </span>
+                            </h3>
+                            <p className="m-0 mt-0.5 text-xs text-slate-500">
+                                {activeFix
+                                    ? `${t('opsMarketplace.home.batteryLabel')}: ${activeFix.batteryPct ?? '—'}% · ${
+                                          activeFix.stale
+                                              ? t('opsMarketplace.home.signalChecking')
+                                              : t('opsMarketplace.home.signalStable')
+                                      }`
+                                    : t('opsMarketplace.home.noActiveFlight')}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                            href="/operations/simulation"
+                            className="inline-flex min-h-10 items-center gap-1.5 rounded-control bg-primary px-4 text-xs font-semibold whitespace-nowrap text-white hover:bg-primary-hover"
+                        >
+                            <Gamepad2 size={15} aria-hidden="true"/>
+                            {t('operationsNav.simulation')}
+                        </Link>
+                        <Link
+                            href="/operations/uavs"
+                            className="inline-flex min-h-10 items-center gap-1.5 rounded-control border border-slate-200 px-3.5 text-xs font-semibold whitespace-nowrap text-slate-700 hover:border-primary hover:text-primary"
+                        >
+                            {t('opsMissions.overview.hud.openFleet')}
+                        </Link>
+                    </div>
+                </section>
             </div>
-            {(error || uavsQuery.isError || stationsQuery.isError) && <div
-                className="rounded-panel border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{t('opsMissions.overview.partialError')}</div>}
-            {canReadSummary && (
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5" aria-label={t('opsMissions.overview.summary.label')}>
-                    {/* One widget per dashboard area (BR-23): a card shows only with its own permission. */}
-                    {can('DASHBOARD_USER') && <KpiCard label={t('opsMissions.overview.summary.users')} value={count(summary?.totalUsers)} icon={<Users size={18}/>} tone="blue"/>}
-                    {can('DASHBOARD_STATION') && <KpiCard label={t('opsMissions.overview.summary.stations')} value={count(summary?.totalStations)} icon={<MapPinned size={18}/>} tone="red"/>}
-                    {can('DASHBOARD_UAV') && <KpiCard label={t('opsMissions.overview.summary.availableUavs')} value={count(summary?.availableUavs)} icon={<PlaneTakeoff size={18}/>} tone="blue"/>}
-                    {can('DASHBOARD_INVENTORY') && <KpiCard label={t('opsMissions.overview.summary.equipment')} value={count(summary?.totalEquipmentUnits)} icon={<Boxes size={18}/>} tone="amber"/>}
-                    {can('AUDIT_VIEW') && <KpiCard label={t('opsMissions.overview.summary.auditEvents')} value={count(summary?.totalAuditEvents)} icon={<Activity size={18}/>} tone="slate"/>}
-                </div>
-            )}
-            <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(340px,1fr)]">
-                <div className="flex min-w-0 flex-col gap-4">
-                    {canReadMissions && <div className="min-w-0 rounded-panel border border-border bg-card">
-                        <div className="flex min-h-[56px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4">
-                            <h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.missions.title')}</h2>
-                            <Link href="/operations/dispatch/missions"
-                                  className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">{t('opsMissions.overview.missions.openList')}</Link></div>
-                        <div className="grid grid-cols-2 gap-px bg-slate-100 sm:grid-cols-4">
-                            <MissionMetric label={t('opsMissions.overview.missions.total')} value={count(missions?.totalMissions)}
-                                           icon={<Activity size={15}/>}/>
-                            <MissionMetric label={t('opsMissions.overview.missions.inProgress')} value={count(missions?.inProgressMissions)}
-                                           icon={<RadioTower size={15}/>} tone="blue"/>
-                            <MissionMetric label={t('opsMissions.overview.missions.completed')} value={count(missions?.completedMissions)}
-                                           icon={<ShieldCheck size={15}/>} tone="blue"/>
-                            <MissionMetric label={t('opsMissions.overview.missions.failed')} value={count(missions?.failedMissions)}
-                                           icon={<Activity size={15}/>} tone="red"/>
-                        </div>
-                        <div
-                            className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-4 py-3 text-xs">
-                            <span className="text-slate-500">{t('opsMissions.overview.missions.pending')} <strong
-                                className="text-slate-800">{count(missions?.pendingMissions)}</strong></span><span
-                            className="text-slate-500">{t('opsMissions.overview.missions.ready')} <strong
-                            className="text-slate-800">{count(missions?.readyMissions)}</strong></span><Link
-                            href="/operations/dispatch/missions" className="font-semibold text-primary hover:underline">{t('opsMissions.overview.openDispatch')}</Link></div>
-                    </div>}
-                    <div className="min-w-0 rounded-panel border border-border bg-card">
-                        <div className="flex min-h-[56px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4">
-                            <h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.fleet.title')}</h2>
-                            <Link href="/operations/uavs"
-                                  className="text-xs font-semibold text-primary hover:underline">{t('opsMissions.overview.fleet.viewAll')}</Link></div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full min-w-[560px] border-separate border-spacing-0 text-sm">
-                                <thead>
-                                <tr>
-                                    <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-background px-4 py-3 text-left text-xs font-semibold text-muted">{t('opsMissions.overview.fleet.asset')}</th>
-                                    <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-background px-4 py-3 text-left text-xs font-semibold text-muted">{t('opsMissions.overview.fleet.status')}</th>
-                                    <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-background px-4 py-3 text-left text-xs font-semibold text-muted">{t('opsMissions.overview.fleet.station')}</th>
-                                    <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-background px-4 py-3 text-left text-xs font-semibold text-muted">{t('opsMissions.overview.fleet.manufacturer')}</th>
-                                    <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-background px-4 py-3 text-left text-xs font-semibold text-muted">{t('opsMissions.overview.fleet.actions')}</th>
-                                </tr>
-                                </thead>
-                                <tbody className="divide-y divide-border">{!uavList.length && <tr>
-                                    <td colSpan={5} className="px-4 py-3.5 text-muted">{t('opsMissions.overview.fleet.empty')}</td>
-                                </tr>}{uavList.map(uav => <tr key={uav.id} onClick={() => setSelectedUavId(uav.id)}
-                                                              className={`cursor-pointer transition ${activeUav?.id === uav.id ? 'bg-red-50/50' : 'hover:bg-slate-50'}`}>
-                                    <td className="px-4 py-3.5 align-middle text-foreground">
-                                        <div className="font-semibold text-foreground">{uav.model}</div>
-                                        <div className="mt-0.5 block text-xs text-muted">{uav.serialNumber}</div>
-                                    </td>
-                                    <td className="px-4 py-3.5 align-middle text-foreground"><StatusBadge status={uav.status}/></td>
-                                    <td className="px-4 py-3.5 align-middle text-foreground">{uav.stationName || t('opsMissions.overview.fleet.unassigned')}</td>
-                                    <td className="px-4 py-3.5 align-middle text-foreground">{uav.manufacturer}</td>
-                                    <td className="px-4 py-3.5 align-middle text-foreground"><Link href={`/operations/uavs?uav=${toUavSlug(uav)}`}
-                                              className="text-xs font-semibold text-primary hover:underline">{t('opsMissions.overview.fleet.details')}</Link></td>
-                                </tr>)}</tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex min-w-0 flex-col justify-between rounded-panel border border-border bg-card p-4">
-                    <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-3">
-                        <div className="flex items-center gap-2">
-                            <Crosshair size={16} className="text-primary"/>
-                            <div>
-                                <h3 className="text-sm font-bold text-slate-900">{activeUav?.model ?? t('opsMissions.overview.hud.noUav')}</h3>
-                                <span
-                                    className="tabular-nums text-[11px] text-slate-500">{activeUav?.serialNumber ?? '—'} · {activeUav?.stationName || t('opsMissions.overview.hud.noStation')}</span>
-                            </div>
-                        </div>
-                        <StatusBadge status={activeUav?.status ?? 'UNKNOWN'}/>
-                    </div>
-                    <div className="grid grid-cols-2 divide-x divide-y divide-slate-200 overflow-hidden rounded-control bg-slate-50/80">
-                        <HudValue label={t('opsMissions.overview.hud.battery')} value={activeFix?.batteryPct != null ? `${activeFix.batteryPct}%` : '—'}
-                                  tone={activeFix?.batteryPct != null && activeFix.batteryPct <= 25 ? 'text-primary' : undefined}/>
-                        <HudValue label={t('opsMissions.overview.hud.altitude')} value={activeFix?.altitudeAglMeters != null ? `${formatNumber(Math.round(activeFix.altitudeAglMeters))} m` : '—'}/>
-                        <HudValue label={t('opsMissions.overview.hud.speed')} value={activeFix?.groundSpeedMs != null ? `${formatNumber(Math.round(activeFix.groundSpeedMs * 10) / 10)} m/s` : '—'}/>
-                        <HudValue label="RTK" value={activeFix?.rtkStatus ?? '—'}/>
-                    </div>
-                    <p className={`mb-0 mt-2 text-[11px] ${!activeFix ? 'text-slate-500' : activeFix.stale ? 'text-amber-700' : 'text-uav-blue'}`}>
-                        {!activeUav ? t('opsMissions.overview.hud.noUav')
-                            : !activeFix ? t('opsMissions.overview.hud.noTelemetry')
-                                : t(activeFix.stale ? 'opsMissions.overview.hud.staleFix' : 'opsMissions.overview.hud.liveFix',
-                                    {seconds: formatNumber(activeFix.ageSeconds), lat: activeFix.latitude.toFixed(5), lng: activeFix.longitude.toFixed(5)})}
-                    </p>
-                    <dl className="m-0 mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-slate-200 pt-3 text-xs sm:grid-cols-3">
-                        <FleetCount label={t('opsMissions.overview.hud.liveCount')} value={canReadUavs ? `${formatNumber(live.length)}/${formatNumber(fleet.length)}` : '—'}/>
-                        <FleetCount label={t('opsMissions.overview.hud.available')} value={count(statusCount('AVAILABLE'))}/>
-                        <FleetCount label={t('opsMissions.overview.hud.flying')} value={count(statusCount('IN_USE'))}/>
-                        <FleetCount label={t('opsMissions.overview.hud.assigned')} value={count(statusCount('ASSIGNED'))}/>
-                        <FleetCount label={t('opsMissions.overview.hud.maintenance')} value={count(statusCount('MAINTENANCE'))}/>
-                        <FleetCount label={t('opsMissions.overview.hud.lowBattery')} value={count(live.filter(f => f.batteryPct != null && f.batteryPct <= 25).length)}/>
-                    </dl>
-                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 text-xs">
-                        <Link href="/operations/sar-cockpit" className="font-semibold text-primary hover:underline">{t('opsMissions.overview.hud.openSar')}</Link>
-                        <Link href="/operations/uavs"
-                              className="inline-flex items-center font-semibold text-slate-600 hover:text-slate-900">{t('opsMissions.overview.hud.openFleet')}</Link>
-                    </div>
-                </div>
-            </section>
-            <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(340px,1fr)]">
-                <div className="min-w-0 rounded-panel border border-border bg-card">
-                    <div className="flex min-h-[56px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4">
-                        <h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.stations.title')}</h2>
-                        <Link href="/operations/stations"
-                              className="text-xs font-semibold text-primary hover:underline">{t('opsMissions.overview.stations.manage')}</Link></div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full min-w-[560px] border-separate border-spacing-0 text-sm">
-                            <thead>
-                            <tr>
-                                <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-background px-4 py-3 text-left text-xs font-semibold text-muted">{t('opsMissions.overview.stations.station')}</th>
-                                <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-background px-4 py-3 text-left text-xs font-semibold text-muted">{t('opsMissions.overview.stations.status')}</th>
-                                <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-background px-4 py-3 text-left text-xs font-semibold text-muted">{t('opsMissions.overview.stations.address')}</th>
-                                <th className="sticky top-0 z-10 whitespace-nowrap border-b border-border bg-background px-4 py-3 text-left text-xs font-semibold text-muted">{t('opsMissions.overview.stations.coordinates')}</th>
-                            </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border">{(stationsQuery.data ?? []).slice(0, 6).map(station => <tr key={station.id} className="transition-colors hover:bg-background">
-                                <td className="px-4 py-3.5 align-middle font-semibold text-foreground"><Link href={`/operations/stations?station=${toStationSlug(station)}`} className="hover:text-primary hover:underline">{station.code}</Link><span
-                                    className="mt-0.5 block font-normal text-xs text-muted">{station.name}</span></td>
-                                <td className="px-4 py-3.5 align-middle text-foreground"><StatusBadge status={station.status}/></td>
-                                <td className="px-4 py-3.5 align-middle text-foreground">{station.address || '—'}</td>
-                                <td className="px-4 py-3.5 align-middle text-foreground">{station.latitude != null && station.longitude != null ? String(station.latitude) + ', ' + String(station.longitude) : '—'}</td>
-                            </tr>)}</tbody>
-                        </table>
-                    </div>
-                </div>
-                <div className="flex min-w-0 flex-col rounded-panel border border-border bg-card">
-                    <div className="flex min-h-[56px] flex-wrap items-center justify-between gap-4 border-b border-border px-6 py-4">
-                        <h2 className="text-[17px] font-bold tracking-tight text-foreground">{t('opsMissions.overview.quickActions.title')}</h2>
-                    </div>
-                    <div className="grid flex-1 grid-cols-2 gap-3 p-4">{quickActions.map(({icon: Icon, labelKey, href}) => <Link
-                        key={href} href={href}
-                        className="group flex min-h-[96px] flex-col justify-between rounded-control bg-slate-50/80 p-3.5 transition hover:bg-uav-red-light/70"><span
-                        className="text-slate-500 group-hover:text-primary"><Icon size={18}/></span><span
-                        className="text-xs font-semibold text-slate-800 group-hover:text-primary">{t(labelKey)}</span></Link>)}</div>
-                </div>
-            </section>
-        </div>
-    </AppShell>;
-}
-
-function HudValue({label, value, tone}: { label: string; value: string; tone?: string }) {
-    return <div className="bg-white p-3">
-        <span className="block text-[11px] font-semibold text-slate-500">{label}</span>
-        <strong className={`mt-0.5 block text-lg tabular-nums ${tone ?? 'text-slate-900'}`}>{value}</strong>
-    </div>;
-}
-
-function FleetCount({label, value}: { label: string; value: string }) {
-    return <div className="min-w-0">
-        <dt className="truncate text-slate-500">{label}</dt>
-        <dd className="m-0 font-bold tabular-nums text-slate-900">{value}</dd>
-    </div>;
-}
-
-function MissionMetric({label, value, icon, tone = 'slate'}: {
-    label: string;
-    value: string;
-    icon: React.ReactNode;
-    tone?: 'slate' | 'blue' | 'red'
-}) {
-    const colors = {slate: 'text-slate-500', blue: 'text-uav-blue', red: 'text-rose-600'};
-    return <div className="bg-white p-4">
-        <div className={`mb-2 flex items-center gap-2 text-xs font-semibold ${colors[tone]}`}>{icon}{label}</div>
-        <strong className="text-2xl tracking-tight text-slate-900">{value}</strong></div>;
+        </AppShell>
+    );
 }

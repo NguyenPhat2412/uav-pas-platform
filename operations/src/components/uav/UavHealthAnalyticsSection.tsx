@@ -11,8 +11,8 @@ export interface UavHealthAnalyticsSectionProps {
 
 const AIRFRAME_BADGE: Record<string, {labelVi: string; labelEn: string; tone: string}> = {
     QUADCOPTER_RTK: {
-        labelVi: '4-Rotor RTK Survey',
-        labelEn: '4-Rotor RTK Survey',
+        labelVi: '4-Rotor GNSS Survey',
+        labelEn: '4-Rotor GNSS Survey',
         tone: 'border-sky-200 bg-sky-50 text-sky-800',
     },
     HEXACOPTER_SAR: {
@@ -123,11 +123,11 @@ export function UavHealthAnalyticsSection({onSelectUav}: UavHealthAnalyticsSecti
                         <table className="w-full border-collapse text-left text-xs">
                             <thead>
                                 <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-600">
-                                    <th className="px-3 py-2.5">{isEn ? 'UAV / 3D Airframe' : 'Thiết bị / Khung thân 3D'}</th>
-                                    <th className="px-3 py-2.5">{isEn ? 'Health & SOH' : 'Sức khỏe & Pin SOH'}</th>
-                                    <th className="px-3 py-2.5">{isEn ? 'Flight Hours & Cycles' : 'Giờ bay & Chu kỳ Pin'}</th>
-                                    <th className="px-3 py-2.5">{isEn ? 'Next Service' : 'Hạn Bảo dưỡng'}</th>
-                                    <th className="px-3 py-2.5">{isEn ? 'Engineering Recommendation' : 'Khuyến nghị Kỹ thuật'}</th>
+                                    <th className="px-3 py-2.5 whitespace-nowrap">{isEn ? 'UAV / 3D Airframe' : 'Thiết bị / Khung thân 3D'}</th>
+                                    <th className="px-3 py-2.5 whitespace-nowrap">{isEn ? 'Health & SOH' : 'Sức khỏe & Pin SOH'}</th>
+                                    <th className="px-3 py-2.5 whitespace-nowrap">{isEn ? 'Flight Hours & Cycles' : 'Giờ bay & Chu kỳ Pin'}</th>
+                                    <th className="px-3 py-2.5 whitespace-nowrap">{isEn ? 'Next Service' : 'Hạn Bảo dưỡng'}</th>
+                                    <th className="px-3 py-2.5 whitespace-nowrap">{isEn ? 'Engineering Recommendation' : 'Khuyến nghị Kỹ thuật'}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 bg-white">

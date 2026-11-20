@@ -3,6 +3,7 @@
 import {useState} from 'react';
 import {Award, CheckCircle2, Clock, Download, FileCheck2, Layers, MapPin, Printer, ShieldCheck, SlidersHorizontal} from 'lucide-react';
 import {Button} from '@/components/ui';
+import {sanitizeMarketplaceText} from '@/forms/marketplace/marketplace-forms';
 import {useMissionInspectionReport} from '@/hooks/mission/useCustomerMissions';
 import {useI18n} from '@/providers/I18nContext';
 
@@ -87,7 +88,7 @@ export function MissionInspectionReportCard({
                             </span>
                         </div>
                         <p className="m-0 mt-0.5 text-xs text-muted">
-                            {report.locationName ?? report.title} · {report.uavModel || 'Enterprise RTK'} ({report.uavSerialNumber || 'RTK'}) ·{' '}
+                            {sanitizeMarketplaceText(report.locationName ?? report.title)} · {sanitizeMarketplaceText(report.uavModel || 'Enterprise GNSS')} ({sanitizeMarketplaceText(report.uavSerialNumber || 'GNSS')}) ·{' '}
                             {isEn ? 'Permit' : 'Giấy phép'}: {report.permitReference ?? report.permitStatus}
                         </p>
                     </div>
@@ -119,7 +120,7 @@ export function MissionInspectionReportCard({
                         </span>
                         <div className="mt-1 flex items-baseline gap-1.5 tabular-nums">
                             <strong className="text-lg font-extrabold text-slate-900">{qualityScorePct}%</strong>
-                            <span className="text-xs font-semibold text-slate-600">ISO/RTK</span>
+                            <span className="text-xs font-semibold text-slate-600">ISO/GNSS</span>
                         </div>
                     </div>
                     <div className="rounded-panel border border-slate-200 bg-slate-50/70 p-3">
@@ -206,7 +207,7 @@ export function MissionInspectionReportCard({
                                     </text>
                                     <rect x="370" y="118" width="74" height="42" rx="4" fill="#f59e0b" fillOpacity="0.22" stroke="#fbbf24" strokeWidth="1.8" />
                                     <text x="374" y="112" fill="#fde68a" fontSize="10" fontFamily="monospace">
-                                        RTK-ROI #2
+                                        GNSS-ROI #2
                                     </text>
 
                                     <g clipPath={`inset(0 ${100 - splitPct}% 0 0)`}>
@@ -230,7 +231,7 @@ export function MissionInspectionReportCard({
                                     {isEn ? 'BASELINE PASS' : 'BẢN GỐC (TRƯỚC)'}
                                 </span>
                                 <span className="pointer-events-none absolute top-2 right-2.5 rounded bg-sky-950/90 px-2 py-0.5 font-mono text-[10px] font-bold text-sky-300">
-                                    {isEn ? 'INSPECTION PASS (RTK)' : 'BẢN NGHIỆM THU (SAU)'}
+                                    {isEn ? 'INSPECTION PASS (GNSS)' : 'BẢN NGHIỆM THU (SAU)'}
                                 </span>
                             </div>
                         </div>
@@ -251,8 +252,8 @@ export function MissionInspectionReportCard({
                             />
                             <p className="m-0 text-xs text-slate-600">
                                 {isEn
-                                    ? `RTK orthomosaic alignment verified across ${report.waypointCount} waypoints.`
-                                    : `Đã đồng bộ lưới tọa độ RTK qua ${report.waypointCount} điểm mốc khảo sát.`}
+                                    ? `GNSS orthomosaic alignment verified across ${report.waypointCount} waypoints.`
+                                    : `Đã đồng bộ lưới tọa độ GNSS qua ${report.waypointCount} điểm mốc khảo sát.`}
                             </p>
                         </div>
                     </div>
@@ -262,7 +263,7 @@ export function MissionInspectionReportCard({
                             <div className="flex items-center justify-between gap-2">
                                 <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-900">
                                     <Layers size={14} className="text-uav-blue" />
-                                    {isEn ? 'Geotagged Deliverable Pins (RTK EXIF)' : 'Danh mục Tệp Bàn giao gắn Tọa độ Geotag'}
+                                    {isEn ? 'Geotagged Deliverable Pins (GNSS EXIF)' : 'Danh mục Tệp Bàn giao gắn Tọa độ Geotag'}
                                 </span>
                                 <span className="text-xs font-semibold text-slate-500">
                                     {pins.length} {isEn ? 'pins' : 'điểm'}
@@ -292,7 +293,7 @@ export function MissionInspectionReportCard({
                                                 <div className="min-w-0 flex-1">
                                                     <div className="flex items-center gap-1.5 font-bold text-slate-900">
                                                         <FileCheck2 size={13} className="shrink-0 text-uav-blue" />
-                                                        <span className="truncate">{pin.fileName}</span>
+                                                        <span className="truncate">{sanitizeMarketplaceText(pin.fileName)}</span>
                                                     </div>
                                                     <div className="mt-0.5 flex flex-wrap items-center gap-2 font-mono text-[11px] text-slate-500">
                                                         <span className="inline-flex items-center gap-0.5">

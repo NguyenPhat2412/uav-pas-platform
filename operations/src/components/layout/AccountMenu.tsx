@@ -5,6 +5,7 @@ import {Briefcase, ChevronDown, LogOut, Radar, Settings, ShieldCheck, UserRound}
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {Avatar} from '@/components/shared/Avatar';
+import {sanitizeEntityName} from '@/forms/marketplace/marketplace-forms';
 import {displayLabel} from '@/lib/presentation';
 import {canUsePortal} from '@/utils/auth/portal';
 import {resolvePortalHref} from '@/utils/auth/auth-entry';
@@ -19,7 +20,7 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
     const {user, logout, can} = useAuth();
     const {t} = useI18n();
     const {open, setOpen, close, root, trigger} = useDropdownMenu();
-    const name = user?.fullName || user?.username || t('shell.dutyOfficer');
+    const name = sanitizeEntityName(user?.fullName || user?.username || t('shell.dutyOfficer'));
     return (
         <div ref={root} className="relative">
             <button
@@ -59,10 +60,10 @@ export function AccountMenu({portal}: { portal: 'admin' | 'operations' }) {
                             </span>
                         </div>
                     </div>
-                    {user && portal === 'admin' && (
+                    {user && (
                         <Link
                             role="menuitem"
-                            href="/admin/profile"
+                            href={portal === 'admin' ? '/admin/profile' : '/operations/profile'}
                             onClick={close}
                             className="flex items-center gap-2.5 rounded-control px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                         >

@@ -1,8 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import React, {useMemo, useState} from 'react';
-import {Radio, ScrollText} from 'lucide-react';
+import {ArrowLeft, ExternalLink, PlaneTakeoff, Radio, ScrollText, ShieldAlert, Wifi} from 'lucide-react';
 import {Button, Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
 import type {DrawMode} from '@/components/simulation/SimulationMap';
 import {SimulationRunHistoryCard} from '@/components/simulation/SimulationRunHistoryCard';
@@ -11,6 +12,7 @@ import {SimulationTargetCard} from '@/components/simulation/SimulationTargetCard
 import {SimulationTelemetryHud} from '@/components/simulation/SimulationTelemetryHud';
 import {UavModelViewer} from '@/components/visuals/UavModelViewer';
 import {useAirspaceZones} from '@/hooks/airspace/useAirspace';
+import {useProviderOrders} from '@/hooks/marketplace/useMarketplace';
 import {useMissions} from '@/hooks/mission/useOperationsMissions';
 import {useSimulationMutations, useSimulationRuns, useSimulations} from '@/hooks/simulation/useSimulation';
 import {useUavs} from '@/hooks/uav/useUavs';
@@ -46,20 +48,29 @@ function errorText(error: unknown, fallback: string) {
 
 /**
  * Console for simulated flights & digital mission rehearsals: plan a route or a survey area, overlay active
- * civil airspace & NOTAM zones, tune wind vectors & time scale, inject RTK/battery faults live, and audit
+ * civil airspace & NOTAM zones, tune wind vectors & time scale, inject GNSS/battery faults live, and audit
  * persisted rehearsal history.
  */
-export function SimulationConsole() {
+export function SimulationConsole({initialMissionId}: { initialMissionId?: number } = {}) {
     const {t, formatNumber, formatDate} = useI18n();
-    const {can, permissionsReady} = useAuth();
-    const canFly = can('UAV_UPDATE');
+    const {can, permissionsReady, isAuthenticated} = useAuth();
+    const canFly = can('UAV_UPDATE') || can('MISSION_UPDATE') || can('UAV_VIEW');
     const canViewMissions = permissionsReady && (can('MISSION_VIEW') || can('MISSION_VIEW_ALL'));
 
     const uavs = useUavs(0);
     const sims = useSimulations();
     const runs = useSimulationRuns();
     const airspace = useAirspaceZones(true);
-    const {missions} = useMissions(undefined, canViewMissions);
+    const {missions: opsMissions} = useMissions(undefined, canViewMissions);
+    const providerOrdersQuery = useProviderOrders(isAuthenticated);
+    const missions = useMemo(() => {
+        const byId = new Map<number, (typeof opsMissions)[number]>();
+        for (const m of opsMissions) byId.set(m.id, m);
+        for (const m of providerOrdersQuery.data ?? []) {
+            if (!byId.has(m.id)) byId.set(m.id, m);
+        }
+        return Array.from(byId.values());
+    }, [opsMissions, providerOrdersQuery.data]);
     const {start, rehearseMission, command, stop, surveyPlan} = useSimulationMutations();
 
     const fleet = useMemo(() => uavs.data?.content ?? [], [uavs.data]);
@@ -69,9 +80,21 @@ export function SimulationConsole() {
         const parsed = raw ? Number(raw) : NaN;
         return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : null;
     });
-    const [selectedMissionId, setSelectedMissionId] = useState<number | ''>('');
+    const [selectedMissionId, setSelectedMissionId] = useState<number | ''>(() => {
+        if (initialMissionId && Number.isSafeInteger(initialMissionId) && initialMissionId > 0) {
+            return initialMissionId;
+        }
+        if (typeof window === 'undefined') return '';
+        const raw = new URLSearchParams(window.location.search).get('missionId');
+        const parsed = raw ? Number(raw) : NaN;
+        return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : '';
+    });
 
-    const uavId = picked ?? sims.data?.[0]?.uavId ?? fleet[0]?.id ?? null;
+    const boundMission = useMemo(
+        () => (selectedMissionId !== '' ? missions.find(m => m.id === selectedMissionId) ?? null : null),
+        [missions, selectedMissionId],
+    );
+    const uavId = picked ?? boundMission?.uavId ?? sims.data?.[0]?.uavId ?? fleet[0]?.id ?? null;
     const selectedUav = fleet.find(u => u.id === uavId) ?? null;
     const active: SimulationState | null = sims.data?.find(s => s.uavId === uavId) ?? null;
 
@@ -160,7 +183,7 @@ export function SimulationConsole() {
                     <p className="m-0 mt-1 text-xs text-slate-500">{t('simulation.subtitle')}</p>
                 </div>
                 {!!sims.data?.length && (
-                    <div className="flex flex-wrap gap-1.5" aria-label={t('simulation.running')}>
+                    <div className="flex max-w-full min-w-0 flex-wrap gap-1.5" aria-label={t('simulation.running')}>
                         {sims.data.map(s => (
                             <Button
                                 key={s.uavId}
@@ -170,18 +193,100 @@ export function SimulationConsole() {
                                 onClick={() => setPicked(s.uavId)}
                                 leftIcon={<Radio size={12} aria-hidden="true"/>}
                                 className={cn(
-                                    'h-7 rounded-badge px-2.5 text-[11px] font-bold',
+                                    'h-7 max-w-full shrink min-w-0 rounded-badge px-2.5 text-[11px] font-bold',
                                     s.uavId === uavId
                                         ? 'border-primary bg-uav-red-light text-primary hover:bg-uav-red-light'
                                         : 'bg-card text-slate-600',
                                 )}
                             >
-                                {s.uavCode}{s.missionCode ? ` · ${s.missionCode}` : ''}
+                                <span className="truncate">
+                                    {s.uavCode}{s.missionCode ? ` · ${s.missionCode}` : ''}
+                                </span>
                             </Button>
                         ))}
                     </div>
                 )}
             </header>
+
+            {selectedMissionId !== '' && (
+                <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xs">
+                    <div className="flex flex-wrap items-center gap-3 min-w-0">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-uav-red-light px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-primary">
+                            <PlaneTakeoff size={13} aria-hidden="true"/>
+                            {t('opsMarketplace.simulation.orderBannerBadge')}
+                        </span>
+                        <strong className="truncate text-sm font-semibold text-slate-900">
+                            {boundMission
+                                ? `${boundMission.code} · ${boundMission.title}`
+                                : t('opsMarketplace.simulation.orderCode', {code: selectedMissionId})}
+                        </strong>
+                        <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium whitespace-nowrap text-slate-700">
+                            <Wifi size={12} className="text-primary" aria-hidden="true"/>
+                            {t('opsMarketplace.simulation.linkStatus')}:{' '}
+                            {active
+                                ? `${num(active.link.averageLatencyMs)} ms · ${num(active.batteryPct)}%`
+                                : t('opsMarketplace.simulation.linkOnline')}
+                        </span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                        {active && canFly ? (
+                            <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label={t('opsMarketplace.simulation.failsafeTitle')}>
+                                <button
+                                    type="button"
+                                    disabled={busy}
+                                    onClick={() => send(active.mode === 'HOLD' ? 'RESUME' : 'PAUSE')}
+                                    className="inline-flex min-h-9 items-center gap-1 rounded-control border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold whitespace-nowrap text-slate-800 hover:bg-slate-100"
+                                >
+                                    {t('opsMarketplace.simulation.failsafeHold')}
+                                </button>
+                                <button
+                                    type="button"
+                                    disabled={busy}
+                                    onClick={() => send('RETURN_TO_HOME')}
+                                    className="inline-flex min-h-9 items-center gap-1 rounded-control bg-primary px-3 text-xs font-semibold whitespace-nowrap text-white hover:bg-primary-hover"
+                                >
+                                    <ShieldAlert size={13} aria-hidden="true"/>
+                                    {t('opsMarketplace.simulation.failsafeRth')}
+                                </button>
+                                <button
+                                    type="button"
+                                    disabled={busy}
+                                    onClick={() => send('LAND')}
+                                    className="inline-flex min-h-9 items-center gap-1 rounded-control border border-rose-200 bg-rose-50 px-2.5 text-xs font-semibold whitespace-nowrap text-danger hover:bg-rose-100"
+                                >
+                                    {t('opsMarketplace.simulation.failsafeLand')}
+                                </button>
+                            </div>
+                        ) : canFly ? (
+                            <Button
+                                type="button"
+                                size="sm"
+                                disabled={busy}
+                                onClick={launchMissionRehearsal}
+                            >
+                                <PlaneTakeoff size={14} className="mr-1 inline" aria-hidden="true"/>
+                                {t('opsMarketplace.orders.card.startSimulation')}
+                            </Button>
+                        ) : null}
+
+                        <Link
+                            href="/operations/provider/orders"
+                            className="inline-flex min-h-9 items-center gap-1 rounded-control border border-slate-200 px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 hover:border-primary hover:text-primary"
+                        >
+                            <ArrowLeft size={13} aria-hidden="true"/>
+                            {t('opsMarketplace.simulation.backToOrders')}
+                        </Link>
+                        <Link
+                            href={`/operations/missions/${selectedMissionId}`}
+                            className="inline-flex min-h-9 items-center gap-1 rounded-control border border-slate-200 px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 hover:border-primary hover:text-primary"
+                        >
+                            <span>{t('opsMarketplace.simulation.orderDetail')}</span>
+                            <ExternalLink size={12} aria-hidden="true"/>
+                        </Link>
+                    </div>
+                </section>
+            )}
 
             <div className="grid gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
                 <aside className="space-y-4">
@@ -247,8 +352,8 @@ export function SimulationConsole() {
                         />
                     </div>
                     <UavModelViewer
-                        serial={selectedUav?.serialNumber ?? active?.uavCode ?? 'UAV-350-RTK'}
-                        model={selectedUav?.model ?? 'Enterprise RTK Quadcopter'}
+                        serial={selectedUav?.serialNumber ?? active?.uavCode ?? 'UAV-350-GNSS'}
+                        model={selectedUav?.model ?? 'Enterprise GNSS Quadcopter'}
                         status={active && active.mode !== 'LANDED' ? 'IN_USE' : (selectedUav?.status ?? 'AVAILABLE')}
                     />
                     {active && (
