@@ -20,6 +20,7 @@ const OFFICIAL_TITLE_I18N: Record<string, {vi: string; ja: string}> = {
     'area inspection': {vi: 'Khảo sát & kiểm tra khu vực bằng UAV', ja: 'UAVエリア点検・測量'},
     '3d mapping': {vi: 'Lập bản đồ 3D & bình đồ trực giao UAV', ja: 'UAV 3Dマッピング・オルソ作成'},
     'equipment rental': {vi: 'Cho thuê thiết bị bay UAV chuyên dụng', ja: '業務用UAV機材レンタル'},
+    'basic uav rental': {vi: 'Cho thuê thiết bị bay UAV tiêu chuẩn', ja: '標準UAV機材レンタル'},
 };
 
 const MISSION_FALLBACK_PHOTO: Record<string, string> = {

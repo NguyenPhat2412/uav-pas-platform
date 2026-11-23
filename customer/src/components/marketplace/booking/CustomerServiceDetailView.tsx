@@ -5,26 +5,22 @@ import Link from 'next/link';
 import {useSearchParams} from 'next/navigation';
 import {CheckCircle2, ChevronLeft, ChevronRight, Clock3, Layers, MapPin, Navigation, ShieldCheck, Star} from 'lucide-react';
 import {PageGuard} from '@/components/customer/CustomerLayout';
-import {resolveListingPhoto} from '@/components/marketplace/catalog/MarketplaceListingCard';
+import {localizeOfficialListingTitle, resolveListingPhoto} from '@/components/marketplace/catalog/MarketplaceListingCard';
 import {ServiceCategoryIcon} from '@/components/marketplace/shop/ServiceCategoryIcon';
 import {ProjectSubscriptionWizardDialog} from '@/components/marketplace/booking/ProjectSubscriptionWizardDialog';
 import {Alert, Button} from '@/components/ui';
 import {formatVndCompact, listingTypeLabel, pricingUnitLabel} from '@/forms/marketplace/marketplace-forms';
-import {resolveListingBadge, sanitizeMarketplaceName, sanitizeMarketplaceText} from '@/forms/project/project-form';
+import {resolveListingBadge, sanitizeMarketplaceText} from '@/forms/project/project-form';
 import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplace';
 import {iconNameForMissionType} from '@/lib/marketplace/service-categories';
 import {useI18n} from '@/providers/I18nContext';
 
 export default function CustomerServiceDetailPage({slug}: { slug: string }) {
-    return (
-        <PageGuard>
-            <CustomerServiceDetailView slug={slug}/>
-        </PageGuard>
-    );
+    return <PageGuard><CustomerServiceDetailView slug={slug}/></PageGuard>;
 }
 
 function CustomerServiceDetailView({slug}: { slug: string }) {
-    const {t} = useI18n();
+    const {t, locale} = useI18n();
     const searchParams = useSearchParams();
     const initialSubscribe = searchParams.get('subscribe') === '1';
     const initialUnitsParam = Number(searchParams.get('units') || '');
@@ -74,8 +70,8 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
         );
     }
 
-    const cleanTitle = sanitizeMarketplaceName(listing.title);
-    const cover = resolveListingPhoto(listing);
+    const cleanTitle = localizeOfficialListingTitle(listing.title, locale);
+    const cover = resolveListingPhoto(listing, true);
     const slides = cover
         ? [
               cover,
@@ -195,9 +191,11 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
                             </div>
                             <span className="inline-flex items-center gap-1 rounded-badge bg-amber-50 px-2.5 py-1 text-xs font-bold whitespace-nowrap text-amber-700">
                                 <Star size={13} className="fill-amber-400 text-amber-500" aria-hidden="true"/>
-                                {badge.reviewCount > 0
-                                    ? `${badge.ratingAvg.toFixed(1)} (${badge.reviewCount})`
-                                    : t('publicSite.catalog.newListing')}
+                                {reviews.length > 0
+                                    ? `${badge.ratingAvg.toFixed(1)} (${reviews.length})`
+                                    : badge.reviewCount > 0
+                                        ? t('marketplaceShop.providerRatingBadge', {rating: badge.ratingAvg.toFixed(1), count: badge.reviewCount})
+                                        : t('publicSite.catalog.newListing')}
                             </span>
                         </div>
                     </div>
@@ -243,7 +241,9 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
                         {t('marketplaceShop.reviewsHeading')} ({reviews.length})
                     </h2>
                     {reviews.length === 0 ? (
-                        <p className="m-0 mt-2 text-xs text-slate-500">{t('marketplaceShop.reviewsEmpty')}</p>
+                        <p className="m-0 mt-2 text-xs text-slate-500">
+                            {badge.reviewCount > 0 ? t('marketplaceShop.reviewsEmptyWithProviderRating', {rating: badge.ratingAvg.toFixed(1), count: badge.reviewCount}) : t('marketplaceShop.reviewsEmpty')}
+                        </p>
                     ) : (
                         <div className="mt-3 divide-y divide-slate-100">
                             {reviews.map(rev => (
@@ -255,9 +255,7 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
                                             {rev.overallRating ?? 5}/5
                                         </span>
                                     </div>
-                                    {rev.comment && (
-                                        <p className="m-0 mt-1 text-xs leading-relaxed text-slate-600">{rev.comment}</p>
-                                    )}
+                                    {rev.comment && <p className="m-0 mt-1 text-xs leading-relaxed text-slate-600">{rev.comment}</p>}
                                 </article>
                             ))}
                         </div>
@@ -265,8 +263,8 @@ function CustomerServiceDetailView({slug}: { slug: string }) {
                 </section>
             </div>
 
-            {/* Pinned Bottom CTA Bar */}
-            <div className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur-xs lg:left-[220px]">
+            {/* Pinned Bottom CTA Bar (extra right padding clears the floating support launcher) */}
+            <div className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-200 bg-white/95 py-3 pr-18 pl-4 backdrop-blur-xs sm:pr-20 lg:left-[220px]">
                 <div className="mx-auto flex max-w-5xl items-center justify-between gap-3">
                     <div className="min-w-0 tabular-nums">
                         <span className="block text-[11px] leading-tight text-slate-500 sm:text-xs">

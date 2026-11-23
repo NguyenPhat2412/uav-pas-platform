@@ -517,7 +517,9 @@ export function permissionLabel(code: string, description?: string): string {
         MEDIA_VIEW: 'Xem tệp',
         MEDIA_UPLOAD: 'Tải tệp lên',
         MEDIA_DOWNLOAD: 'Tải tệp xuống',
-        MEDIA_DELETE: 'Xóa tệp'
+        MEDIA_DELETE: 'Xóa tệp',
+        MARKETPLACE_MODERATE: 'Kiểm duyệt sàn & đối tác UAV',
+        PAYOUT_MANAGE: 'Quản lý đối soát & giải ngân đối tác'
     };
     if (activeLocale !== 'vi') return permissionTranslations[activeLocale][code] ?? description ?? code;
     return labels[code] ?? description ?? code;
@@ -544,7 +546,8 @@ const permissionTranslations: Record<'en' | 'ja', Record<string, string>> = {
         INVENTORY_VIEW: 'View inventory', INVENTORY_ITEM_CREATE: 'Create equipment', INVENTORY_ITEM_UPDATE: 'Edit equipment',
         INVENTORY_STOCK_IN: 'Stock in', INVENTORY_STOCK_OUT: 'Stock out', INVENTORY_RESERVE: 'Reserve equipment',
         INVENTORY_RELEASE: 'Release equipment', INVENTORY_TRANSFER: 'Transfer equipment', INVENTORY_HISTORY_VIEW: 'View stock history',
-        MEDIA_VIEW: 'View files', MEDIA_UPLOAD: 'Upload files', MEDIA_DOWNLOAD: 'Download files', MEDIA_DELETE: 'Delete files'
+        MEDIA_VIEW: 'View files', MEDIA_UPLOAD: 'Upload files', MEDIA_DOWNLOAD: 'Download files', MEDIA_DELETE: 'Delete files',
+        MARKETPLACE_MODERATE: 'Moderate marketplace & UAV partners', PAYOUT_MANAGE: 'Manage partner settlements & payouts'
     },
     ja: {
         MISSION_STATUS_UPDATE: 'ミッション状態の更新', MISSION_MEDIA_VIEW: 'ミッションファイルの閲覧',
@@ -564,7 +567,8 @@ const permissionTranslations: Record<'en' | 'ja', Record<string, string>> = {
         UAV_MAINTENANCE_UPDATE: '整備の更新', INVENTORY_VIEW: '機材在庫の閲覧', INVENTORY_ITEM_CREATE: '機材の作成', INVENTORY_ITEM_UPDATE: '機材の編集',
         INVENTORY_STOCK_IN: '入庫', INVENTORY_STOCK_OUT: '出庫', INVENTORY_RESERVE: '機材の確保', INVENTORY_RELEASE: '確保の解除',
         INVENTORY_TRANSFER: 'ステーション間の移動', INVENTORY_HISTORY_VIEW: '在庫履歴の閲覧', MEDIA_VIEW: 'ファイルの閲覧',
-        MEDIA_UPLOAD: 'ファイルのアップロード', MEDIA_DOWNLOAD: 'ファイルのダウンロード', MEDIA_DELETE: 'ファイルの削除'
+        MEDIA_UPLOAD: 'ファイルのアップロード', MEDIA_DOWNLOAD: 'ファイルのダウンロード', MEDIA_DELETE: 'ファイルの削除',
+        MARKETPLACE_MODERATE: 'マーケットプレイス・パートナー審査', PAYOUT_MANAGE: 'パートナー精算・出金管理'
     },
 };
 

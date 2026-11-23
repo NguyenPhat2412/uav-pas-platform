@@ -3,10 +3,10 @@ import type {Portal} from '@/types/auth/auth.types';
 
 export type {Portal};
 
-// ROLE_PILOT is the self-registration default and carries fleet owner / control engineer access in Operations.
+// ROLE_PILOT is the self-registration default and carries the customer permission set (Provider Studio lives in Customer).
 const portalRoles: Record<Portal, readonly string[]> = {
     admin: ['ROLE_ADMIN'],
-    operations: ['ROLE_ADMIN', 'ROLE_COMMANDER', 'ROLE_OPERATOR', 'ROLE_PILOT'],
+    operations: ['ROLE_ADMIN', 'ROLE_COMMANDER', 'ROLE_OPERATOR'],
     customer: ['ROLE_ADMIN', 'ROLE_COMMANDER', 'ROLE_OPERATOR', 'ROLE_PILOT'],
 };
 

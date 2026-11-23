@@ -121,3 +121,17 @@ test('EXP-1, EXP-2, EXP-3, and EXP-4 are wired cleanly with event tracking', () 
     assert.match(hero, /heroTrustEscrow/);
     assert.match(hero, /hero_cta_click/);
 });
+
+test('RBAC & UI E2E regressions: Operations blocks ROLE_PILOT, Basic UAV Rental localized, Admin permission labels exist', () => {
+    const opsPortal = fs.readFileSync(path.join(repoRoot, 'operations/src/utils/auth/portal.ts'), 'utf8');
+    const opsRolesLine = opsPortal.match(/operations:\s*\[[^\]]+\]/)?.[0] ?? '';
+    assert.ok(opsRolesLine.length > 0, 'operations portalRoles line must exist');
+    assert.doesNotMatch(opsRolesLine, /ROLE_PILOT/, 'ROLE_PILOT customer accounts must not access Operations portal');
+
+    const card = read('src/components/marketplace/catalog/MarketplaceListingCard.tsx');
+    assert.match(card, /'basic uav rental'/);
+
+    const adminPres = fs.readFileSync(path.join(repoRoot, 'admin/src/lib/presentation.ts'), 'utf8');
+    assert.match(adminPres, /MARKETPLACE_MODERATE:/);
+    assert.match(adminPres, /PAYOUT_MANAGE:/);
+});
