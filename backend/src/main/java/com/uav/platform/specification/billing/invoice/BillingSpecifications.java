@@ -1,5 +1,6 @@
 package com.uav.platform.specification.billing.invoice;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.billing.PaymentTransaction;
 import com.uav.platform.entity.billing.ServicePlan;
@@ -8,8 +9,6 @@ import com.uav.platform.enums.billing.InvoiceStatus;
 
 import jakarta.persistence.criteria.JoinType;
 
-import org.springframework.data.jpa.domain.Specification;
-
 import java.time.LocalDateTime;
 import java.util.Locale;
 
@@ -17,32 +16,32 @@ public final class BillingSpecifications {
 
     private BillingSpecifications() {}
 
-    public static Specification<Invoice> belongsToUser(Long userId) {
+    public static HibernateSpecification<Invoice> belongsToUser(Long userId) {
         return (root, query, cb) ->
                 userId == null ? null : cb.equal(root.get("user").get("id"), userId);
     }
 
-    public static Specification<Invoice> hasStatus(InvoiceStatus status) {
+    public static HibernateSpecification<Invoice> hasStatus(InvoiceStatus status) {
         return (root, query, cb) -> status == null ? null : cb.equal(root.get("status"), status);
     }
 
-    public static Specification<ServicePlan> isActive(Boolean active) {
+    public static HibernateSpecification<ServicePlan> isActive(Boolean active) {
         return (root, query, cb) -> active == null ? null : cb.equal(root.get("active"), active);
     }
 
-    public static Specification<UserQuota> quotaForUser(Long userId) {
+    public static HibernateSpecification<UserQuota> quotaForUser(Long userId) {
         return (root, query, cb) ->
                 userId == null ? null : cb.equal(root.get("user").get("id"), userId);
     }
 
-    public static Specification<PaymentTransaction> transactionStatus(String status) {
+    public static HibernateSpecification<PaymentTransaction> transactionStatus(String status) {
         return (root, query, cb) ->
                 status == null || status.isBlank()
                         ? null
                         : cb.equal(root.get("status"), status.trim().toUpperCase(Locale.ROOT));
     }
 
-    public static Specification<PaymentTransaction> transactionGateway(String gateway) {
+    public static HibernateSpecification<PaymentTransaction> transactionGateway(String gateway) {
         return (root, query, cb) ->
                 gateway == null || gateway.isBlank()
                         ? null
@@ -50,23 +49,25 @@ public final class BillingSpecifications {
                                 root.get("gatewayName"), gateway.trim().toUpperCase(Locale.ROOT));
     }
 
-    public static Specification<PaymentTransaction> transactionCreatedFrom(LocalDateTime from) {
+    public static HibernateSpecification<PaymentTransaction> transactionCreatedFrom(
+            LocalDateTime from) {
         return (root, query, cb) ->
                 from == null ? null : cb.greaterThanOrEqualTo(root.get("createdAt"), from);
     }
 
-    public static Specification<PaymentTransaction> transactionCreatedBefore(LocalDateTime before) {
+    public static HibernateSpecification<PaymentTransaction> transactionCreatedBefore(
+            LocalDateTime before) {
         return (root, query, cb) ->
                 before == null ? null : cb.lessThan(root.get("createdAt"), before);
     }
 
-    public static Specification<PaymentTransaction> transactionInvoice(Long invoiceId) {
+    public static HibernateSpecification<PaymentTransaction> transactionInvoice(Long invoiceId) {
         return (root, query, cb) ->
                 invoiceId == null ? null : cb.equal(root.get("invoice").get("id"), invoiceId);
     }
 
     /** Matches transaction code, invoice code, or the customer's username, email or full name. */
-    public static Specification<PaymentTransaction> transactionKeyword(String keyword) {
+    public static HibernateSpecification<PaymentTransaction> transactionKeyword(String keyword) {
         return (root, query, cb) -> {
             if (keyword == null || keyword.isBlank()) return null;
             String like =

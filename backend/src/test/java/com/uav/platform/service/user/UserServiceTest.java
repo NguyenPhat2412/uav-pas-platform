@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.user.account.RoleUpdateRequest;
 import com.uav.platform.dto.request.user.account.UserQueryRequest;
 import com.uav.platform.dto.response.user.account.UserResponse;
@@ -12,7 +14,6 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.user.account.UserServiceImpl;
 import com.uav.platform.service.user.account.UserService;
 
@@ -27,7 +28,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +36,7 @@ import java.util.Optional;
 @DisplayName("UserService Pagination & Sorting Unit Tests")
 class UserServiceTest {
 
-    @Mock private UserRepository userRepository;
+    @Mock private IUserDao userRepository;
 
     private UserService userService;
 
@@ -54,7 +54,7 @@ class UserServiceTest {
         user2.setId(2L);
 
         Page<AppUser> userPage = new PageImpl<>(List.of(user1, user2));
-        when(userRepository.findAll(any(Specification.class), any(Pageable.class)))
+        when(userRepository.findAll(any(HibernateSpecification.class), any(Pageable.class)))
                 .thenReturn(userPage);
 
         PageResponse<UserResponse> response =
@@ -65,7 +65,7 @@ class UserServiceTest {
         assertEquals("pilot_01", response.content().get(0).username());
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
-        verify(userRepository).findAll(any(Specification.class), captor.capture());
+        verify(userRepository).findAll(any(HibernateSpecification.class), captor.capture());
 
         Pageable captured = captor.getValue();
         assertEquals(0, captured.getPageNumber());
@@ -79,14 +79,14 @@ class UserServiceTest {
     @DisplayName("getUsers with invalid sortBy should fall back to createdAt")
     void getUsers_InvalidSort_FallsBackToCreatedAt() {
         Page<AppUser> emptyPage = new PageImpl<>(List.of());
-        when(userRepository.findAll(any(Specification.class), any(Pageable.class)))
+        when(userRepository.findAll(any(HibernateSpecification.class), any(Pageable.class)))
                 .thenReturn(emptyPage);
 
         userService.getUsers(
                 new UserQueryRequest(0, 10, "invalid_column_injection", "desc", null, null));
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
-        verify(userRepository).findAll(any(Specification.class), captor.capture());
+        verify(userRepository).findAll(any(HibernateSpecification.class), captor.capture());
 
         Sort.Order order = captor.getValue().getSort().getOrderFor("createdAt");
         assertNotNull(order, "Should fall back to createdAt for unknown sort fields");
@@ -97,13 +97,13 @@ class UserServiceTest {
     @DisplayName("getUsers with keyword and role should pass sanitized parameters")
     void getUsers_WithKeywordAndRole() {
         Page<AppUser> emptyPage = new PageImpl<>(List.of());
-        when(userRepository.findAll(any(Specification.class), any(Pageable.class)))
+        when(userRepository.findAll(any(HibernateSpecification.class), any(Pageable.class)))
                 .thenReturn(emptyPage);
 
         userService.getUsers(
                 new UserQueryRequest(0, 10, "createdAt", "desc", "  pilot  ", UserRole.ROLE_PILOT));
 
-        verify(userRepository).findAll(any(Specification.class), any(Pageable.class));
+        verify(userRepository).findAll(any(HibernateSpecification.class), any(Pageable.class));
     }
 
     @Test

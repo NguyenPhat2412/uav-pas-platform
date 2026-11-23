@@ -3,11 +3,11 @@ package com.uav.platform.service.impl.user.account;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.auth.IRefreshTokenDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.user.account.PasswordChangeRequest;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.auth.RefreshTokenRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,8 +18,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Optional;
 
 class PasswordChangeServiceTest {
-    private final UserRepository users = mock(UserRepository.class);
-    private final RefreshTokenRepository tokens = mock(RefreshTokenRepository.class);
+    private final IUserDao users = mock(IUserDao.class);
+    private final IRefreshTokenDao tokens = mock(IRefreshTokenDao.class);
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(4);
     private final PasswordChangeServiceImpl service =
             new PasswordChangeServiceImpl(users, encoder, tokens, mock(AuditLogService.class));

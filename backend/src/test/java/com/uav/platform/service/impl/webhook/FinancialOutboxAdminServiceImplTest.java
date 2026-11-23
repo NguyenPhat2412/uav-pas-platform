@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.webhook.IFinancialOutboxDao;
 import com.uav.platform.entity.webhook.FinancialOutboxEvent;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.webhook.FinancialOutboxRepository;
 import com.uav.platform.service.audit.AuditLogService;
 
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 class FinancialOutboxAdminServiceImplTest {
-    private final FinancialOutboxRepository repo = mock(FinancialOutboxRepository.class);
+    private final IFinancialOutboxDao repo = mock(IFinancialOutboxDao.class);
     private final AuditLogService audit = mock(AuditLogService.class);
     private final FinancialOutboxAdminServiceImpl service =
             new FinancialOutboxAdminServiceImpl(repo, audit);

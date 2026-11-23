@@ -1,8 +1,8 @@
 package com.uav.platform.service.impl.media;
 
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.MissionMediaRepository;
-import com.uav.platform.repository.mission.MissionRepository;
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionMediaDao;
 import com.uav.platform.service.media.MediaCleanupService;
 import com.uav.platform.service.media.MediaUploadPolicy;
 import com.uav.platform.service.media.ObjectStorageService;
@@ -25,18 +25,18 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 public class MediaCleanupServiceImpl implements MediaCleanupService {
-    private final MediaAssetRepository assets;
-    private final MissionRepository missions;
-    private final MissionMediaRepository links;
+    private final IMediaAssetDao assets;
+    private final IMissionDao missions;
+    private final IMissionMediaDao links;
     private final ObjectStorageService storage;
     private final EntityManager entityManager;
     private final TransactionTemplate transactions;
     private final boolean enabled;
 
     public MediaCleanupServiceImpl(
-            MediaAssetRepository assets,
-            MissionRepository missions,
-            MissionMediaRepository links,
+            IMediaAssetDao assets,
+            IMissionDao missions,
+            IMissionMediaDao links,
             ObjectStorageService storage,
             EntityManager entityManager,
             PlatformTransactionManager manager,

@@ -40,6 +40,12 @@ export const adminMarketplaceApi = {
     },
     moderateProvider: (id: number, payload: ProviderModerationInput) =>
         apiClient.patch<AdminProviderProfile>(API_ROUTES.adminMarketplace.moderateProvider(id), payload),
+    moderateProviderDocument: (
+        providerId: number,
+        docId: number,
+        payload: { status: 'PENDING' | 'APPROVED' | 'REJECTED'; reviewerNote?: string },
+    ) =>
+        apiClient.patch(API_ROUTES.adminMarketplace.moderateProviderDocument(providerId, docId), payload),
 
     listListings: (
         params: { status?: ListingModerationStatus | ''; keyword?: string; page?: number; size?: number },

@@ -2,6 +2,12 @@ package com.uav.platform.service.impl.training.course;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.training.ITrainingAssetDao;
+import com.uav.platform.dao.training.ITrainingDocumentDao;
+import com.uav.platform.dao.training.ITrainingLessonDao;
+import com.uav.platform.dao.training.ITrainingLessonProgressDao;
+import com.uav.platform.dao.training.IUserTrainingProgressDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.media.ObjectStream;
 import com.uav.platform.dto.record.training.course.TrainingCourseState;
 import com.uav.platform.dto.request.training.course.UpdateLessonProgressRequest;
@@ -20,12 +26,6 @@ import com.uav.platform.enums.training.TrainingAssetStatus;
 import com.uav.platform.enums.training.TrainingLessonType;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.training.TrainingAssetRepository;
-import com.uav.platform.repository.training.TrainingDocumentRepository;
-import com.uav.platform.repository.training.TrainingLessonProgressRepository;
-import com.uav.platform.repository.training.TrainingLessonRepository;
-import com.uav.platform.repository.training.UserTrainingProgressRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.AuthCookieHelper;
 import com.uav.platform.service.impl.training.catalog.TrainingServiceImpl;
 import com.uav.platform.service.media.ObjectStorageService;
@@ -76,24 +76,24 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
     private static final Set<String> VALID_PORTALS = Set.of("CUSTOMER", "OPERATIONS", "ADMIN");
     private static final int STREAM_BUFFER_SIZE = 65_536;
 
-    private final TrainingDocumentRepository documents;
-    private final TrainingLessonRepository lessons;
-    private final TrainingLessonProgressRepository lessonProgress;
-    private final UserTrainingProgressRepository courseProgress;
-    private final TrainingAssetRepository assets;
-    private final UserRepository users;
+    private final ITrainingDocumentDao documents;
+    private final ITrainingLessonDao lessons;
+    private final ITrainingLessonProgressDao lessonProgress;
+    private final IUserTrainingProgressDao courseProgress;
+    private final ITrainingAssetDao assets;
+    private final IUserDao users;
     private final TrainingMediaUrls mediaUrls;
     private final PermissionService permissionService;
     private final ObjectStorageService storage;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public TrainingCourseServiceImpl(
-            TrainingDocumentRepository documents,
-            TrainingLessonRepository lessons,
-            TrainingLessonProgressRepository lessonProgress,
-            UserTrainingProgressRepository courseProgress,
-            TrainingAssetRepository assets,
-            UserRepository users,
+            ITrainingDocumentDao documents,
+            ITrainingLessonDao lessons,
+            ITrainingLessonProgressDao lessonProgress,
+            IUserTrainingProgressDao courseProgress,
+            ITrainingAssetDao assets,
+            IUserDao users,
             TrainingMediaUrls mediaUrls) {
         this(
                 documents,
@@ -109,12 +109,12 @@ public class TrainingCourseServiceImpl implements TrainingCourseService {
 
     @Autowired
     public TrainingCourseServiceImpl(
-            TrainingDocumentRepository documents,
-            TrainingLessonRepository lessons,
-            TrainingLessonProgressRepository lessonProgress,
-            UserTrainingProgressRepository courseProgress,
-            TrainingAssetRepository assets,
-            UserRepository users,
+            ITrainingDocumentDao documents,
+            ITrainingLessonDao lessons,
+            ITrainingLessonProgressDao lessonProgress,
+            IUserTrainingProgressDao courseProgress,
+            ITrainingAssetDao assets,
+            IUserDao users,
             TrainingMediaUrls mediaUrls,
             PermissionService permissionService,
             ObjectStorageService storage) {

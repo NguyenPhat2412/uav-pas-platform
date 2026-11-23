@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.infrastructure.TlsCertificateInfo;
 import com.uav.platform.dto.response.infrastructure.BackupStatusResponse;
 import com.uav.platform.dto.response.infrastructure.DatabaseStatusResponse;
@@ -13,7 +14,6 @@ import com.uav.platform.dto.response.infrastructure.EmailStatusResponse;
 import com.uav.platform.dto.response.infrastructure.EmailTestResponse;
 import com.uav.platform.dto.response.infrastructure.StorageStatusResponse;
 import com.uav.platform.entity.user.AppUser;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.auth.verification.AuthMailService;
 import com.uav.platform.service.infrastructure.TlsCertificateService;
 import com.uav.platform.service.media.ObjectStorageService;
@@ -91,7 +91,7 @@ class InfrastructureNoSecretsTest {
         ObjectProvider<JavaMailSender> provider = mock(ObjectProvider.class);
         when(provider.getIfAvailable()).thenReturn(sender);
         when(provider.getObject()).thenReturn(sender);
-        UserRepository users = mock(UserRepository.class);
+        IUserDao users = mock(IUserDao.class);
         AppUser user = mock(AppUser.class);
         when(user.getEmail()).thenReturn("operator.admin@example.org");
         when(users.findByUsername("admin")).thenReturn(Optional.of(user));

@@ -12,6 +12,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.training.ITrainingAssetDao;
+import com.uav.platform.dao.training.ITrainingDocumentDao;
+import com.uav.platform.dao.training.ITrainingLessonDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.storage.files.AdminFileQueryRequest;
 import com.uav.platform.dto.response.storage.files.AdminFileResponse;
 import com.uav.platform.dto.response.storage.files.AdminFileSummaryResponse;
@@ -33,12 +39,6 @@ import com.uav.platform.enums.training.TrainingLessonType;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.training.TrainingAssetRepository;
-import com.uav.platform.repository.training.TrainingDocumentRepository;
-import com.uav.platform.repository.training.TrainingLessonRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.media.ObjectStorageService;
 import com.uav.platform.service.storage.files.AdminFileService;
@@ -74,12 +74,12 @@ import java.util.stream.Collectors;
         })
 class AdminFileIntegrationTest {
     @Autowired AdminFileService service;
-    @Autowired MediaAssetRepository media;
-    @Autowired TrainingAssetRepository trainingAssets;
-    @Autowired TrainingDocumentRepository courses;
-    @Autowired TrainingLessonRepository lessons;
-    @Autowired UserRepository users;
-    @Autowired MissionRepository missions;
+    @Autowired IMediaAssetDao media;
+    @Autowired ITrainingAssetDao trainingAssets;
+    @Autowired ITrainingDocumentDao courses;
+    @Autowired ITrainingLessonDao lessons;
+    @Autowired IUserDao users;
+    @Autowired IMissionDao missions;
     @Autowired JdbcTemplate db;
     @Autowired WebApplicationContext context;
     @MockitoBean ObjectStorageService storage;

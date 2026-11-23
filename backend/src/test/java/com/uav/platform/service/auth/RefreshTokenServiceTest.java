@@ -4,12 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.auth.IRefreshTokenDao;
 import com.uav.platform.entity.auth.RefreshToken;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.auth.ClientKind;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.auth.RefreshTokenRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.auth.session.AuthSessionLock;
 import com.uav.platform.service.auth.session.RefreshTokenService;
@@ -34,7 +34,7 @@ import java.util.Optional;
 @DisplayName("RefreshTokenService Unit Tests")
 class RefreshTokenServiceTest {
 
-    @Mock private RefreshTokenRepository refreshTokenRepository;
+    @Mock private IRefreshTokenDao refreshTokenRepository;
 
     @Mock private JwtTokenProvider jwtTokenProvider;
 

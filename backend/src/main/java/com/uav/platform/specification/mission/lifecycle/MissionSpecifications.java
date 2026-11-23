@@ -1,6 +1,7 @@
 package com.uav.platform.specification.mission.lifecycle;
 
 import com.uav.platform.common.util.OrderStatusGroups;
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.dto.record.mission.lifecycle.MissionFilter;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.mission.MissionReview;
@@ -10,22 +11,20 @@ import com.uav.platform.enums.mission.MissionType;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Subquery;
 
-import org.springframework.data.jpa.domain.Specification;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Locale;
 
 /**
- * Specification Factory for Mission entity according to Clean Architecture and DDD. Provides
+ * HibernateSpecification Factory for Mission entity according to Clean Architecture and DDD. Provides
  * atomic, composable specifications with null-safe semantics.
  */
 public final class MissionSpecifications {
 
     private MissionSpecifications() {}
 
-    public static Specification<Mission> hasKeyword(String keyword) {
+    public static HibernateSpecification<Mission> hasKeyword(String keyword) {
         return (root, query, cb) -> {
             if (keyword == null || keyword.isBlank()) {
                 return null;
@@ -40,36 +39,36 @@ public final class MissionSpecifications {
         };
     }
 
-    public static Specification<Mission> hasStatus(MissionStatus status) {
+    public static HibernateSpecification<Mission> hasStatus(MissionStatus status) {
         return (root, query, cb) -> status == null ? null : cb.equal(root.get("status"), status);
     }
 
-    public static Specification<Mission> hasStatusIn(Collection<MissionStatus> statuses) {
+    public static HibernateSpecification<Mission> hasStatusIn(Collection<MissionStatus> statuses) {
         return (root, query, cb) ->
                 (statuses == null || statuses.isEmpty()) ? null : root.get("status").in(statuses);
     }
 
-    public static Specification<Mission> hasMissionType(MissionType missionType) {
+    public static HibernateSpecification<Mission> hasMissionType(MissionType missionType) {
         return (root, query, cb) ->
                 missionType == null ? null : cb.equal(root.get("missionType"), missionType);
     }
 
-    public static Specification<Mission> belongsToStation(Long stationId) {
+    public static HibernateSpecification<Mission> belongsToStation(Long stationId) {
         return (root, query, cb) ->
                 stationId == null ? null : cb.equal(root.get("station").get("id"), stationId);
     }
 
-    public static Specification<Mission> belongsToProject(Long projectId) {
+    public static HibernateSpecification<Mission> belongsToProject(Long projectId) {
         return (root, query, cb) ->
                 projectId == null ? null : cb.equal(root.get("project").get("id"), projectId);
     }
 
-    public static Specification<Mission> belongsToProvider(Long providerId) {
+    public static HibernateSpecification<Mission> belongsToProvider(Long providerId) {
         return (root, query, cb) ->
                 providerId == null ? null : cb.equal(root.get("provider").get("id"), providerId);
     }
 
-    public static Specification<Mission> hasStatusGroup(String rawGroup) {
+    public static HibernateSpecification<Mission> hasStatusGroup(String rawGroup) {
         String group = OrderStatusGroups.normalizeGroupParam(rawGroup);
         if (group == null) {
             return (root, query, cb) -> null;
@@ -108,21 +107,21 @@ public final class MissionSpecifications {
                 };
     }
 
-    public static Specification<Mission> hasOperator(Long operatorId) {
+    public static HibernateSpecification<Mission> hasOperator(Long operatorId) {
         return (root, query, cb) ->
                 operatorId == null ? null : cb.equal(root.get("operator").get("id"), operatorId);
     }
 
-    public static Specification<Mission> hasCustomer(Long customerId) {
+    public static HibernateSpecification<Mission> hasCustomer(Long customerId) {
         return (root, query, cb) ->
                 customerId == null ? null : cb.equal(root.get("customer").get("id"), customerId);
     }
 
-    public static Specification<Mission> requestedOn(LocalDate date) {
+    public static HibernateSpecification<Mission> requestedOn(LocalDate date) {
         return (root, query, cb) -> date == null ? null : cb.equal(root.get("requestedDate"), date);
     }
 
-    public static Specification<Mission> overlappingUav(
+    public static HibernateSpecification<Mission> overlappingUav(
             Long uavId,
             Collection<MissionStatus> excluded,
             LocalDateTime start,
@@ -141,7 +140,7 @@ public final class MissionSpecifications {
         };
     }
 
-    public static Specification<Mission> overlappingOperator(
+    public static HibernateSpecification<Mission> overlappingOperator(
             Long operatorId,
             Collection<MissionStatus> excluded,
             LocalDateTime start,
@@ -160,13 +159,13 @@ public final class MissionSpecifications {
         };
     }
 
-    public static Specification<Mission> filtered(MissionFilter filter, Long ownerId) {
+    public static HibernateSpecification<Mission> filtered(MissionFilter filter, Long ownerId) {
         if (filter == null && ownerId == null) {
             return (root, query, cb) -> null;
         }
         MissionFilter f = filter == null ? MissionFilter.empty() : filter;
         Long effectiveCustomerId = ownerId != null ? ownerId : f.customerId();
-        return Specification.where(hasCustomer(effectiveCustomerId))
+        return HibernateSpecification.where(hasCustomer(effectiveCustomerId))
                 .and(hasStatus(f.status()))
                 .and(hasMissionType(f.missionType()))
                 .and(belongsToStation(f.stationId()))

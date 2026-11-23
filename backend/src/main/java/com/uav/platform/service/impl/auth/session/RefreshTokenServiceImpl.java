@@ -1,10 +1,10 @@
 package com.uav.platform.service.impl.auth.session;
 
+import com.uav.platform.dao.auth.IRefreshTokenDao;
 import com.uav.platform.entity.auth.RefreshToken;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.auth.ClientKind;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.auth.RefreshTokenRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.auth.session.AuthSessionLock;
 import com.uav.platform.service.auth.session.RefreshTokenService;
@@ -30,7 +30,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final IRefreshTokenDao refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthSessionLock sessionLock;
     private final EntityManager entityManager;

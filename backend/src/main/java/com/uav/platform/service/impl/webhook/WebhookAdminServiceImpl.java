@@ -1,6 +1,8 @@
 package com.uav.platform.service.impl.webhook;
 
 import com.uav.platform.common.util.SecureTokens;
+import com.uav.platform.dao.webhook.IWebhookDeliveryLogDao;
+import com.uav.platform.dao.webhook.IWebhookSubscriptionDao;
 import com.uav.platform.dto.response.webhook.WebhookDeliveryLogResponse;
 import com.uav.platform.dto.response.webhook.WebhookSecretRotationResponse;
 import com.uav.platform.entity.webhook.WebhookDeliveryLog;
@@ -8,8 +10,6 @@ import com.uav.platform.entity.webhook.WebhookSubscription;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.webhook.WebhookMapper;
-import com.uav.platform.repository.webhook.WebhookDeliveryLogRepository;
-import com.uav.platform.repository.webhook.WebhookSubscriptionRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.webhook.WebhookAdminService;
 
@@ -26,8 +26,8 @@ import java.time.LocalDateTime;
 public class WebhookAdminServiceImpl implements WebhookAdminService {
     static final String SECRET_PREFIX = "whsec_";
 
-    private final WebhookSubscriptionRepository subscriptions;
-    private final WebhookDeliveryLogRepository deliveries;
+    private final IWebhookSubscriptionDao subscriptions;
+    private final IWebhookDeliveryLogDao deliveries;
     private final WebhookMapper mapper;
     private final AuditLogService audit;
 

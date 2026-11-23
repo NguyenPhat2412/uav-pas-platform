@@ -31,6 +31,8 @@ public interface MarketplaceProviderService {
 
     ProviderProfileResponse upsertMyProfile(ProviderOnboardingRequest request, String username);
 
+    ProviderProfileResponse submitForVerification(String username);
+
     ProviderDocumentResponse addDocument(ProviderDocumentCreateRequest request, String username);
 
     void deleteDocument(Long documentId, String username);

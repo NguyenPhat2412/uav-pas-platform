@@ -3,14 +3,14 @@ package com.uav.platform.service.reporting;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.sar.*;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.sar.*;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.impl.reporting.ReportServiceImpl;
 import com.uav.platform.service.permission.PermissionService;
@@ -26,25 +26,25 @@ class ReportTruthTest {
     void anonymousAccessFailsClosed() {
         var service =
                 new ReportServiceImpl(
-                        mock(MissionRepository.class),
-                        mock(UavRepository.class),
-                        mock(StationRepository.class),
-                        mock(SarMissionRepository.class),
-                        mock(AiDetectionRepository.class));
+                        mock(IMissionDao.class),
+                        mock(IUavDao.class),
+                        mock(IStationDao.class),
+                        mock(ISarMissionDao.class),
+                        mock(IAiDetectionDao.class));
         assertThrows(SystemException.class, () -> service.getOperationsSummary(null));
     }
 
     @Test
     void plannedDurationIncludesVisibleDraftCancelledCompletedAndCsvNamesFacts() {
-        var missions = mock(MissionRepository.class);
+        var missions = mock(IMissionDao.class);
         var perms = mock(PermissionService.class);
-        var detections = mock(AiDetectionRepository.class);
+        var detections = mock(IAiDetectionDao.class);
         var service =
                 new ReportServiceImpl(
                         missions,
-                        mock(UavRepository.class),
-                        mock(StationRepository.class),
-                        mock(SarMissionRepository.class),
+                        mock(IUavDao.class),
+                        mock(IStationDao.class),
+                        mock(ISarMissionDao.class),
                         detections,
                         perms);
         var owner = new AppUser("owner", "a@example.test", "hash", null, UserStatus.ACTIVE);

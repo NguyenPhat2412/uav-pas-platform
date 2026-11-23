@@ -8,6 +8,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.uav.platform.dao.settings.ISystemConfigurationDao;
+import com.uav.platform.dao.storage.IStorageDriveNodeDao;
+import com.uav.platform.dao.storage.IStorageDriveObjectDao;
 import com.uav.platform.dto.record.media.ObjectMetadata;
 import com.uav.platform.dto.record.media.ObjectStream;
 import com.uav.platform.dto.record.storage.pool.DriveUploadedFile;
@@ -17,9 +20,6 @@ import com.uav.platform.entity.storage.StorageDriveNode;
 import com.uav.platform.entity.storage.StorageDriveObject;
 import com.uav.platform.enums.storage.DriveAuthType;
 import com.uav.platform.enums.storage.DriveNodeHealth;
-import com.uav.platform.repository.settings.SystemConfigurationRepository;
-import com.uav.platform.repository.storage.StorageDriveNodeRepository;
-import com.uav.platform.repository.storage.StorageDriveObjectRepository;
 import com.uav.platform.service.impl.media.HybridObjectStorageServiceImpl;
 import com.uav.platform.service.impl.media.S3CompatibleStorageService;
 import com.uav.platform.service.impl.storage.pool.GoogleDriveClientOperations;
@@ -43,16 +43,16 @@ class StoragePoolAndAllocationTest {
 
     private static final long GB = 1024L * 1024L * 1024L;
 
-    private StorageDriveNodeRepository driveNodes;
-    private StorageDriveObjectRepository driveObjects;
-    private SystemConfigurationRepository settings;
+    private IStorageDriveNodeDao driveNodes;
+    private IStorageDriveObjectDao driveObjects;
+    private ISystemConfigurationDao settings;
     private StorageAllocationOperations allocator;
 
     @BeforeEach
     void setUp() {
-        driveNodes = mock(StorageDriveNodeRepository.class);
-        driveObjects = mock(StorageDriveObjectRepository.class);
-        settings = mock(SystemConfigurationRepository.class);
+        driveNodes = mock(IStorageDriveNodeDao.class);
+        driveObjects = mock(IStorageDriveObjectDao.class);
+        settings = mock(ISystemConfigurationDao.class);
         allocator =
                 new StorageAllocationOperations(
                         driveNodes,

@@ -1,8 +1,8 @@
 package com.uav.platform.service.impl.auth.session;
 
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.auth.session.AuthSessionLock;
 
 import jakarta.persistence.EntityManager;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @Transactional(propagation = Propagation.MANDATORY)
 @RequiredArgsConstructor
 public class AuthSessionLockServiceImpl implements AuthSessionLock {
-    private final UserRepository users;
+    private final IUserDao users;
     private final EntityManager entityManager;
 
     @Override

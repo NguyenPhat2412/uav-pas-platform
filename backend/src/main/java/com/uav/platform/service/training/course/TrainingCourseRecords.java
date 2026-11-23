@@ -2,13 +2,13 @@ package com.uav.platform.service.training.course;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.training.ITrainingLessonDao;
+import com.uav.platform.dao.training.ITrainingLessonProgressDao;
+import com.uav.platform.dao.training.ITrainingLessonProgressDao.LearnerLessonCounts;
+import com.uav.platform.dao.training.IUserTrainingProgressDao;
 import com.uav.platform.entity.training.TrainingDocument;
 import com.uav.platform.entity.training.TrainingLesson;
 import com.uav.platform.entity.training.UserTrainingProgress;
-import com.uav.platform.repository.training.TrainingLessonProgressRepository;
-import com.uav.platform.repository.training.TrainingLessonProgressRepository.LearnerLessonCounts;
-import com.uav.platform.repository.training.TrainingLessonRepository;
-import com.uav.platform.repository.training.UserTrainingProgressRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,9 +36,9 @@ public class TrainingCourseRecords {
 
     private static final ObjectMapper JSON = new ObjectMapper();
 
-    private final TrainingLessonRepository lessons;
-    private final TrainingLessonProgressRepository lessonProgress;
-    private final UserTrainingProgressRepository courseProgress;
+    private final ITrainingLessonDao lessons;
+    private final ITrainingLessonProgressDao lessonProgress;
+    private final IUserTrainingProgressDao courseProgress;
 
     /**
      * Recomputes every learner's record of these courses after their active lesson set changed (a lesson was

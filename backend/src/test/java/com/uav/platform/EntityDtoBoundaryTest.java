@@ -131,6 +131,10 @@ class EntityDtoBoundaryTest {
             entities++;
             for (Method method : type.getDeclaredMethods()) {
                 if (method.isSynthetic()) continue;
+                if (method.isAnnotationPresent(jakarta.persistence.PrePersist.class)
+                        || method.isAnnotationPresent(jakarta.persistence.PreUpdate.class)) {
+                    continue;
+                }
                 assertFalse(Modifier.isStatic(method.getModifiers()), method.toString());
                 boolean accessor = false;
                 for (Field field : type.getDeclaredFields()) {

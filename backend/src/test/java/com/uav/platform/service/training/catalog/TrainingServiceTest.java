@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.training.ITrainingDocumentDao;
+import com.uav.platform.dao.training.ITrainingLessonDao;
+import com.uav.platform.dao.training.ITrainingLessonProgressDao;
+import com.uav.platform.dao.training.IUserTrainingProgressDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.training.catalog.UpdateTrainingProgressRequest;
 import com.uav.platform.dto.response.training.catalog.TrainingDocumentResponse;
 import com.uav.platform.dto.response.training.catalog.TrainingOverviewResponse;
@@ -14,11 +19,6 @@ import com.uav.platform.entity.training.UserTrainingProgress;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.training.TrainingDocumentRepository;
-import com.uav.platform.repository.training.TrainingLessonProgressRepository;
-import com.uav.platform.repository.training.TrainingLessonRepository;
-import com.uav.platform.repository.training.UserTrainingProgressRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.training.catalog.TrainingServiceImpl;
 import com.uav.platform.service.permission.PermissionService;
 
@@ -34,20 +34,20 @@ import java.util.Optional;
 @DisplayName("TrainingService Unit Tests")
 class TrainingServiceTest {
 
-    private TrainingDocumentRepository trainingDocumentRepository;
-    private UserTrainingProgressRepository userTrainingProgressRepository;
-    private UserRepository userRepository;
-    private TrainingLessonRepository lessonRepository;
-    private TrainingLessonProgressRepository lessonProgressRepository;
+    private ITrainingDocumentDao trainingDocumentRepository;
+    private IUserTrainingProgressDao userTrainingProgressRepository;
+    private IUserDao userRepository;
+    private ITrainingLessonDao lessonRepository;
+    private ITrainingLessonProgressDao lessonProgressRepository;
     private TrainingServiceImpl trainingService;
 
     @BeforeEach
     void setUp() {
-        trainingDocumentRepository = mock(TrainingDocumentRepository.class);
-        userTrainingProgressRepository = mock(UserTrainingProgressRepository.class);
-        userRepository = mock(UserRepository.class);
-        lessonRepository = mock(TrainingLessonRepository.class);
-        lessonProgressRepository = mock(TrainingLessonProgressRepository.class);
+        trainingDocumentRepository = mock(ITrainingDocumentDao.class);
+        userTrainingProgressRepository = mock(IUserTrainingProgressDao.class);
+        userRepository = mock(IUserDao.class);
+        lessonRepository = mock(ITrainingLessonDao.class);
+        lessonProgressRepository = mock(ITrainingLessonProgressDao.class);
         trainingService =
                 new TrainingServiceImpl(
                         trainingDocumentRepository,

@@ -10,18 +10,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.i18n.IUiTranslationDao;
 import com.uav.platform.dto.request.i18n.UpsertUiTranslationRequest;
 import com.uav.platform.dto.response.i18n.PublicLocaleBundleResponse;
 import com.uav.platform.dto.response.i18n.UiTranslationRowResponse;
 import com.uav.platform.entity.i18n.UiTranslation;
-import com.uav.platform.repository.i18n.UiTranslationRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.i18n.UiTranslationServiceImpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.time.LocalDateTime;
@@ -31,13 +31,13 @@ import java.util.Optional;
 
 class UiTranslationServiceTest {
 
-    private UiTranslationRepository repository;
+    private IUiTranslationDao repository;
     private AuditLogService auditLogService;
     private UiTranslationServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        repository = mock(UiTranslationRepository.class);
+        repository = mock(IUiTranslationDao.class);
         auditLogService = mock(AuditLogService.class);
         service = new UiTranslationServiceImpl(repository, auditLogService);
     }
@@ -128,7 +128,7 @@ class UiTranslationServiceTest {
         ja.setTranslationKey("publicSite.header.marketplace");
         ja.setMessageText("UAVマーケットプレイス");
 
-        when(repository.findAll(any(Specification.class), any(Sort.class)))
+        when(repository.findAll(any(HibernateSpecification.class), any(Sort.class)))
                 .thenReturn(List.of(vi, en, ja));
         when(repository.findByTranslationKeyIn(anyList())).thenReturn(List.of(vi, en, ja));
 

@@ -5,13 +5,13 @@ import static com.uav.platform.common.constant.SecurityConstants.BEARER_PREFIX;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.notification.IPushDeviceTokenDao;
 import com.uav.platform.dto.record.notification.delivery.NotificationDeliveryPayload;
 import com.uav.platform.dto.request.notification.delivery.RegisterPushTokenRequest;
 import com.uav.platform.dto.response.notification.delivery.PushTokenResponse;
 import com.uav.platform.entity.notification.PushDeviceToken;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.notification.NotificationType;
-import com.uav.platform.repository.notification.PushDeviceTokenRepository;
 import com.uav.platform.service.auth.verification.AuthMailService;
 import com.uav.platform.service.auth.verification.EmailDomainPolicyService;
 import com.uav.platform.service.billing.invoice.InvoiceMailService;
@@ -70,7 +70,7 @@ public class NotificationDeliveryOperations {
                     NotificationType.PAYMENT);
 
     private final ObjectMapper json = new ObjectMapper();
-    private final PushDeviceTokenRepository pushTokenRepository;
+    private final IPushDeviceTokenDao pushTokenRepository;
     private final ObjectProvider<AuthMailService> authMailProvider;
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final ExecutorService defaultExecutor;
@@ -93,7 +93,7 @@ public class NotificationDeliveryOperations {
 
     @Autowired
     public NotificationDeliveryOperations(
-            @Autowired(required = false) PushDeviceTokenRepository pushTokenRepository,
+            @Autowired(required = false) IPushDeviceTokenDao pushTokenRepository,
             @Autowired(required = false) ObjectProvider<AuthMailService> authMailProvider,
             @Autowired(required = false) ObjectProvider<JavaMailSender> mailSenderProvider,
             @Value("${app.push.enabled:false}") boolean pushEnabled,

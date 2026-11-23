@@ -3,11 +3,11 @@ package com.uav.platform.service.permission;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.role.IRoleTemplatePermissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.role.RoleTemplatePermissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +23,9 @@ import java.util.UUID;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class Phase1AccessIntegrationTest {
     @LocalServerPort int port;
-    @Autowired UserRepository users;
+    @Autowired IUserDao users;
     @Autowired PasswordEncoder encoder;
-    @Autowired RoleTemplatePermissionRepository templatePermissions;
+    @Autowired IRoleTemplatePermissionDao templatePermissions;
     final ObjectMapper json = new ObjectMapper();
     final HttpClient http = HttpClient.newHttpClient();
     AppUser admin, pilot;

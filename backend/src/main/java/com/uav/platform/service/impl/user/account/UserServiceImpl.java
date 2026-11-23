@@ -2,6 +2,8 @@ package com.uav.platform.service.impl.user.account;
 
 import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.user.account.RoleUpdateRequest;
 import com.uav.platform.dto.request.user.account.UserQueryRequest;
 import com.uav.platform.dto.response.user.account.UserResponse;
@@ -10,7 +12,6 @@ import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.user.account.UserMapper;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.auth.session.SessionTerminationService;
 import com.uav.platform.service.permission.PermissionService;
@@ -23,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,26 +45,26 @@ public class UserServiceImpl implements UserService {
                     "createdAt",
                     "updatedAt");
 
-    private final UserRepository userRepository;
+    private final IUserDao userRepository;
     private final AuditLogService auditLogService;
     private final com.uav.platform.security.AccessRecoveryGuard recovery;
     private final UserMapper userMapper;
     private ObjectProvider<PermissionService> permissions;
     private SessionTerminationService sessionTermination;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(IUserDao userRepository) {
         this(userRepository, null);
     }
 
     public UserServiceImpl(
-            UserRepository userRepository,
+            IUserDao userRepository,
             @org.springframework.beans.factory.annotation.Autowired(required = false)
                     AuditLogService auditLogService) {
         this(userRepository, auditLogService, null);
     }
 
     public UserServiceImpl(
-            UserRepository userRepository,
+            IUserDao userRepository,
             AuditLogService auditLogService,
             com.uav.platform.security.AccessRecoveryGuard recovery) {
         this(
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
     @org.springframework.beans.factory.annotation.Autowired
     public UserServiceImpl(
-            UserRepository userRepository,
+            IUserDao userRepository,
             AuditLogService auditLogService,
             com.uav.platform.security.AccessRecoveryGuard recovery,
             UserMapper userMapper) {
@@ -124,8 +124,8 @@ public class UserServiceImpl implements UserService {
 
         Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by(sortDirection, safeSortBy));
 
-        Specification<AppUser> spec =
-                Specification.where(UserSpecifications.hasKeyword(keyword))
+        HibernateSpecification<AppUser> spec =
+                HibernateSpecification.where(UserSpecifications.hasKeyword(keyword))
                         .and(UserSpecifications.hasRole(role))
                         .and(UserSpecifications.hasStatus(request.status()));
         Page<AppUser> userPage = userRepository.findAll(spec, pageable);

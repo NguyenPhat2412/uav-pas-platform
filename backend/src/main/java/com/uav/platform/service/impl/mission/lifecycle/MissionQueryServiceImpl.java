@@ -1,6 +1,12 @@
 package com.uav.platform.service.impl.mission.lifecycle;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IMissionReviewDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.mission.lifecycle.MissionFilter;
 import com.uav.platform.dto.response.mission.dispatch.MissionAvailabilityResponse;
 import com.uav.platform.dto.response.mission.lifecycle.MissionEventResponse;
@@ -13,12 +19,6 @@ import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.mapper.mission.lifecycle.MissionEventMapper;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.MissionReviewRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.mission.dispatch.MissionResourceService;
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.mission.lifecycle.MissionQueryService;
@@ -41,28 +41,28 @@ import java.util.Set;
 @Service
 @Transactional(readOnly = true)
 public class MissionQueryServiceImpl implements MissionQueryService {
-    private final MissionRepository missions;
-    private final UserRepository users;
+    private final IMissionDao missions;
+    private final IUserDao users;
     private final PermissionService permissions;
-    private final MissionEventRepository events;
-    private final StationRepository stations;
-    private final UavRepository uavs;
+    private final IMissionEventDao events;
+    private final IStationDao stations;
+    private final IUavDao uavs;
     private final MissionAccessService access;
     private final MissionResourceService resources;
     private final MissionMapper missionMapper;
     private final MissionEventMapper missionEventMapper;
 
     @Autowired(required = false)
-    private MissionReviewRepository reviews;
+    private IMissionReviewDao reviews;
 
     @Autowired
     public MissionQueryServiceImpl(
-            MissionRepository missions,
-            UserRepository users,
+            IMissionDao missions,
+            IUserDao users,
             PermissionService permissions,
-            MissionEventRepository events,
-            StationRepository stations,
-            UavRepository uavs,
+            IMissionEventDao events,
+            IStationDao stations,
+            IUavDao uavs,
             MissionAccessService access,
             MissionResourceService resources,
             MissionMapper missionMapper,

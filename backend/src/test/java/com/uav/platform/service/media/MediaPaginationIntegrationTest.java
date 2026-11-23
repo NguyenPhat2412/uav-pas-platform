@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.media.IMediaAssetDao;
 import com.uav.platform.entity.media.MediaAsset;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.user.AppUser;
@@ -11,7 +12,6 @@ import com.uav.platform.enums.media.MediaType;
 import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.media.MediaAssetRepository;
 import com.uav.platform.service.impl.media.MediaAssetOperations;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.impl.station.StationOperations;
@@ -51,7 +51,7 @@ import java.util.*;
 class MediaPaginationIntegrationTest {
     @Autowired MediaService service;
     @Autowired MediaAccessService access;
-    @Autowired MediaAssetRepository assets;
+    @Autowired IMediaAssetDao assets;
     @Autowired EntityManager entityManager;
     @Autowired EntityManagerFactory entityManagerFactory;
     @Autowired JdbcTemplate db;

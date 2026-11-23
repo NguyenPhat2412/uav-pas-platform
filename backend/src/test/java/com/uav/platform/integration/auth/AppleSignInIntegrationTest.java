@@ -10,11 +10,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.auth.oauth.AppleIdentity;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.auth.oauth.AppleIdTokenService;
 
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,7 @@ import java.util.UUID;
                 "spring.datasource.url=jdbc:h2:mem:uav_apple_signin;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
 class AppleSignInIntegrationTest {
     @Autowired WebApplicationContext context;
-    @Autowired UserRepository users;
+    @Autowired IUserDao users;
     @MockitoBean AppleIdTokenService apple;
 
     @Test

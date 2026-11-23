@@ -66,6 +66,7 @@ function OnboardingContent({profile}: { profile: ProviderProfile | null }) {
         <div className="mx-auto max-w-5xl space-y-6">
             <ProviderKycReadinessCard
                 profile={profile}
+                providerType={form.providerType}
                 platformFeeRate={platformFeeRate}
                 step1Done={step1Done}
                 step2Done={step2Done}
@@ -156,6 +157,7 @@ function OnboardingContent({profile}: { profile: ProviderProfile | null }) {
 
             <ProviderDocumentsSection
                 profile={profile}
+                providerType={form.providerType}
                 isAdding={addDocument.isPending}
                 onAddDocument={doc => addDocument.mutateAsync(doc)}
                 onDeleteDocument={id => deleteDocument.mutate(id)}

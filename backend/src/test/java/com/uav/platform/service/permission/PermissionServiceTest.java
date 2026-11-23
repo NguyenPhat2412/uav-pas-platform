@@ -4,12 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.uav.platform.dao.permission.IPermissionDao;
+import com.uav.platform.dao.permission.IUserPermissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.permission.PermissionRepository;
-import com.uav.platform.repository.permission.UserPermissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.permission.PermissionServiceImpl;
 
@@ -21,8 +21,8 @@ import java.util.List;
 class PermissionServiceTest {
     @Test
     void commanderGetsUavManagementByDefault() {
-        UserRepository users = mock(UserRepository.class);
-        UserPermissionRepository assignments = mock(UserPermissionRepository.class);
+        IUserDao users = mock(IUserDao.class);
+        IUserPermissionDao assignments = mock(IUserPermissionDao.class);
         AppUser user =
                 new AppUser(
                         "commander",
@@ -37,7 +37,7 @@ class PermissionServiceTest {
         when(users.findByUsername("commander")).thenReturn(java.util.Optional.of(user));
         PermissionService service =
                 new PermissionServiceImpl(
-                        mock(PermissionRepository.class),
+                        mock(IPermissionDao.class),
                         assignments,
                         users,
                         mock(AuditLogService.class));
@@ -50,7 +50,7 @@ class PermissionServiceTest {
 
     @Test
     void commanderCanListOpenAndCancelMissionsByDefault() {
-        UserRepository users = mock(UserRepository.class);
+        IUserDao users = mock(IUserDao.class);
         AppUser user =
                 new AppUser(
                         "commander2",
@@ -65,8 +65,8 @@ class PermissionServiceTest {
         when(users.findByUsername("commander2")).thenReturn(java.util.Optional.of(user));
         PermissionService service =
                 new PermissionServiceImpl(
-                        mock(PermissionRepository.class),
-                        mock(UserPermissionRepository.class),
+                        mock(IPermissionDao.class),
+                        mock(IUserPermissionDao.class),
                         users,
                         mock(AuditLogService.class));
         var auth =

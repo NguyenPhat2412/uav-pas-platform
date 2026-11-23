@@ -1,6 +1,10 @@
 package com.uav.platform.service.impl.billing.quota;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.billing.IUserQuotaDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.billing.quota.UpdateQuotaRequest;
 import com.uav.platform.dto.response.billing.quota.UserQuotaResponse;
 import com.uav.platform.entity.billing.ServicePlan;
@@ -10,10 +14,6 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.billing.invoice.BillingMapper;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.billing.UserQuotaRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.billing.quota.QuotaService;
 
 import lombok.RequiredArgsConstructor;
@@ -56,11 +56,11 @@ public class QuotaServiceImpl implements QuotaService {
     /** Upper bound on cycles advanced in one refresh (100 years of monthly cycles). */
     private static final int MAX_CYCLES_PER_REFRESH = 1200;
 
-    private final UserQuotaRepository quotaRepository;
-    private final ServicePlanRepository planRepository;
-    private final UserRepository userRepository;
+    private final IUserQuotaDao quotaRepository;
+    private final IServicePlanDao planRepository;
+    private final IUserDao userRepository;
     private final BillingMapper billingMapper;
-    private final MissionRepository missionRepository;
+    private final IMissionDao missionRepository;
     private final PlatformTransactionManager transactionManager;
 
     @Value("${app.billing.quota-rollover-enabled:true}")

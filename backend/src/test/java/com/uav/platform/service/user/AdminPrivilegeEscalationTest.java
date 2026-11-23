@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.auth.IRefreshTokenDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.user.account.AdminCreateUserRequest;
 import com.uav.platform.dto.request.user.account.PasswordChangeRequest;
 import com.uav.platform.dto.request.user.account.PasswordResetRequest;
@@ -13,8 +15,6 @@ import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.user.account.UserMapper;
-import com.uav.platform.repository.auth.RefreshTokenRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.auth.session.SessionTerminationService;
 import com.uav.platform.service.impl.user.account.AdminPrivilegeOperations;
@@ -33,7 +33,7 @@ import java.util.Optional;
 
 /** USER_MANAGE must not be a path to administrator power; credential changes end sessions. */
 class AdminPrivilegeEscalationTest {
-    final UserRepository users = mock(UserRepository.class);
+    final IUserDao users = mock(IUserDao.class);
     final PermissionService permissions = mock(PermissionService.class);
     final SessionTerminationService sessions = mock(SessionTerminationService.class);
     final UserServiceImpl userService = new UserServiceImpl(users);
@@ -43,7 +43,7 @@ class AdminPrivilegeEscalationTest {
                     userService,
                     mock(PasswordEncoder.class),
                     mock(AuditLogService.class),
-                    mock(RefreshTokenRepository.class),
+                    mock(IRefreshTokenDao.class),
                     Mappers.getMapper(UserMapper.class));
 
     AdminPrivilegeEscalationTest() {
@@ -205,7 +205,7 @@ class AdminPrivilegeEscalationTest {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(4);
         AppUser pilot = users.findById(3L).orElseThrow();
         pilot.setPasswordHash(encoder.encode("Current-Pass-1"));
-        RefreshTokenRepository refresh = mock(RefreshTokenRepository.class);
+        IRefreshTokenDao refresh = mock(IRefreshTokenDao.class);
         PasswordChangeServiceImpl change =
                 new PasswordChangeServiceImpl(users, encoder, refresh, mock(AuditLogService.class));
         change.setSessionTermination(sessions);

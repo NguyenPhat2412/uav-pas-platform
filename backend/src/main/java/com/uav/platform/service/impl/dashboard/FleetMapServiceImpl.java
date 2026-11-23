@@ -1,5 +1,9 @@
 package com.uav.platform.service.impl.dashboard;
 
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
 import com.uav.platform.dto.response.dashboard.FleetMapResponse;
 import com.uav.platform.dto.response.dashboard.FleetMapResponse.ActiveMission;
 import com.uav.platform.dto.response.dashboard.FleetMapResponse.StationPin;
@@ -10,15 +14,11 @@ import com.uav.platform.entity.station.Station;
 import com.uav.platform.entity.uav.Uav;
 import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.uav.UavStatus;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.service.dashboard.FleetMapService;
 import com.uav.platform.service.uav.TelemetryService;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,9 +37,9 @@ public class FleetMapServiceImpl implements FleetMapService {
                     MissionStatus.RESOURCE_RESERVED,
                     MissionStatus.CONFIRMED);
 
-    private final UavRepository uavs;
-    private final StationRepository stations;
-    private final MissionRepository missions;
+    private final IUavDao uavs;
+    private final IStationDao stations;
+    private final IMissionDao missions;
     private final TelemetryService telemetry;
 
     @Override
@@ -53,7 +53,7 @@ public class FleetMapServiceImpl implements FleetMapService {
         Map<Long, Mission> active =
                 activeMissionByUav(
                         missions.findAll(
-                                (Specification<Mission>)
+                                (HibernateSpecification<Mission>)
                                         (r, q, cb) ->
                                                 cb.and(
                                                         cb.isNotNull(r.get("uav")),

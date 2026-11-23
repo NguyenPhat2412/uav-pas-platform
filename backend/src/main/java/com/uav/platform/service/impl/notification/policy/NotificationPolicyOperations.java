@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.notification.policy;
 
+import com.uav.platform.dao.notification.INotificationModulePolicyDao;
+import com.uav.platform.dao.notification.IUserNotificationPreferenceDao;
 import com.uav.platform.dto.record.notification.policy.EffectiveNotificationChannels;
 import com.uav.platform.dto.response.notification.policy.NotificationModulePolicyResponse;
 import com.uav.platform.dto.response.notification.policy.UserNotificationModulePreferenceResponse;
@@ -8,8 +10,6 @@ import com.uav.platform.entity.notification.UserNotificationPreference;
 import com.uav.platform.enums.notification.NotificationModuleCode;
 import com.uav.platform.enums.notification.NotificationSeverity;
 import com.uav.platform.enums.notification.NotificationType;
-import com.uav.platform.repository.notification.NotificationModulePolicyRepository;
-import com.uav.platform.repository.notification.UserNotificationPreferenceRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,8 +25,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class NotificationPolicyOperations {
 
-    private final NotificationModulePolicyRepository policyRepository;
-    private final UserNotificationPreferenceRepository preferenceRepository;
+    private final INotificationModulePolicyDao policyRepository;
+    private final IUserNotificationPreferenceDao preferenceRepository;
 
     public static NotificationModuleCode resolveModuleCode(
             NotificationType type, String referenceType) {

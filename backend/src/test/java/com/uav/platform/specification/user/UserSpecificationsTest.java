@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
@@ -16,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -71,7 +71,7 @@ class UserSpecificationsTest {
         when(cb.and(any(), any())).thenReturn(predicate);
         when(cb.or(any(Predicate[].class))).thenReturn(predicate);
 
-        Specification<AppUser> spec = UserSpecifications.hasKeyword("admin");
+        HibernateSpecification<AppUser> spec = UserSpecifications.hasKeyword("admin");
         Predicate result = spec.toPredicate(root, query, cb);
 
         assertThat(result).isSameAs(predicate);

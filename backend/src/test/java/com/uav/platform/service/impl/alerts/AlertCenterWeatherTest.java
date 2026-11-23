@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.devicekey.IDeviceApiKeyDao;
 import com.uav.platform.dto.response.alerts.AdminAlertResponse;
 import com.uav.platform.dto.response.weather.WeatherAssessmentResponse;
 import com.uav.platform.enums.weather.FlightClearanceLevel;
-import com.uav.platform.repository.devicekey.DeviceApiKeyRepository;
 import com.uav.platform.service.dashboard.SystemHealthService;
 import com.uav.platform.service.settings.SystemConfigService;
 import com.uav.platform.service.weather.WeatherService;
@@ -59,7 +59,7 @@ class AlertCenterWeatherTest {
         return new AlertCenterServiceImpl(
                 db,
                 mock(SystemConfigService.class),
-                mock(DeviceApiKeyRepository.class),
+                mock(IDeviceApiKeyDao.class),
                 health,
                 provider);
     }
@@ -140,7 +140,7 @@ class AlertCenterWeatherTest {
                                 new AlertCenterServiceImpl(
                                         db,
                                         mock(SystemConfigService.class),
-                                        mock(DeviceApiKeyRepository.class),
+                                        mock(IDeviceApiKeyDao.class),
                                         health))
                         .isEmpty());
         verifyNoInteractions(weather);

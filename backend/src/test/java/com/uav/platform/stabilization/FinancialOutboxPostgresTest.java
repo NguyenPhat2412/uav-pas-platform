@@ -3,6 +3,7 @@ package com.uav.platform.stabilization;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.webhook.IFinancialOutboxDao;
 import com.uav.platform.dto.request.billing.invoice.*;
 import com.uav.platform.dto.request.billing.plan.*;
 import com.uav.platform.dto.request.billing.quota.*;
@@ -10,7 +11,6 @@ import com.uav.platform.dto.request.billing.reconciliation.*;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.permission.PermissionCode;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.webhook.FinancialOutboxRepository;
 import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
 import com.uav.platform.service.impl.webhook.FinancialOutboxServiceImpl;
 import com.uav.platform.service.impl.webhook.WebhookServiceImpl;
@@ -62,16 +62,16 @@ class FinancialOutboxPostgresTest {
     @Autowired JdbcTemplate db;
     @Autowired BillingServiceImpl billing;
     @Autowired FinancialOutboxService outbox;
-    @Autowired FinancialOutboxRepository events;
+    @Autowired IFinancialOutboxDao events;
     @Autowired WebhookServiceImpl hooks;
     @Autowired NotificationService notifications;
     @Autowired PlatformTransactionManager manager;
-    @Autowired com.uav.platform.repository.user.UserRepository users;
+    @Autowired com.uav.platform.dao.user.IUserDao users;
     @Autowired com.uav.platform.service.permission.PermissionService permissions;
-    @Autowired com.uav.platform.repository.billing.InvoiceRepository invoices;
-    @Autowired com.uav.platform.repository.webhook.WebhookDeliveryLogRepository logs;
+    @Autowired com.uav.platform.dao.billing.IInvoiceDao invoices;
+    @Autowired com.uav.platform.dao.webhook.IWebhookDeliveryLogDao logs;
 
-    @Autowired com.uav.platform.repository.webhook.WebhookSubscriptionRepository subscriptions;
+    @Autowired com.uav.platform.dao.webhook.IWebhookSubscriptionDao subscriptions;
 
     @BeforeEach
     void reset() {

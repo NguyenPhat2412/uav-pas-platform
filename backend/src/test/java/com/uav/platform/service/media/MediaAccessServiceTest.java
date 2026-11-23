@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
 import com.uav.platform.entity.mission.*;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.*;
@@ -12,10 +16,6 @@ import com.uav.platform.enums.media.*;
 import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.service.impl.media.MediaAccessServiceImpl;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.permission.PermissionService;
@@ -30,7 +30,7 @@ class MediaAccessServiceTest {
     @Test
     void missionMediaAccessRequiresMissionVisibilityAndPermission() {
         PermissionService permissions = mock(PermissionService.class);
-        MissionRepository missions = mock(MissionRepository.class);
+        IMissionDao missions = mock(IMissionDao.class);
         AppUser owner =
                 new AppUser(
                         "owner",
@@ -59,9 +59,9 @@ class MediaAccessServiceTest {
                 new MediaAccessServiceImpl(
                         permissions,
                         missions,
-                        mock(StationRepository.class),
-                        mock(UavRepository.class),
-                        mock(EquipmentRepository.class));
+                        mock(IStationDao.class),
+                        mock(IUavDao.class),
+                        mock(IEquipmentDao.class));
         assertThrows(
                 org.springframework.security.access.AccessDeniedException.class,
                 () -> service.requireLink("MISSION", "10", "other", false));

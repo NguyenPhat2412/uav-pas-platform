@@ -61,4 +61,20 @@ public class WebhookSubscription {
         this.eventsSubscribed = eventsSubscribed;
         this.isActive = true;
     }
+
+    @PrePersist
+    void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (this.createdAt == null) {
+            this.createdAt = now;
+        }
+        if (this.updatedAt == null) {
+            this.updatedAt = now;
+        }
+    }
+
+    @PreUpdate
+    void onPersist() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

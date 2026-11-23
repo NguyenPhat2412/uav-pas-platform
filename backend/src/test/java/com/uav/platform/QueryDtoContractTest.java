@@ -10,12 +10,13 @@ import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
 import com.uav.platform.controller.maintenance.MaintenanceController;
 import com.uav.platform.controller.user.account.UserController;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.maintenance.MaintenanceScheduleQueryRequest;
 import com.uav.platform.dto.request.maintenance.RepairOrderQueryRequest;
 import com.uav.platform.enums.maintenance.DueStatus;
 import com.uav.platform.enums.maintenance.RepairStatus;
 import com.uav.platform.error.GlobalExceptionHandler;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.user.account.UserServiceImpl;
 import com.uav.platform.service.maintenance.MaintenanceService;
 
@@ -25,19 +26,18 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /** HTTP query behavior must survive structural changes without changing binding or defaults. */
 class QueryDtoContractTest {
-    private UserRepository users;
+    private IUserDao users;
     private MockMvc mvc;
 
     @BeforeEach
     void setup() {
-        users = mock(UserRepository.class);
-        when(users.findAll(any(Specification.class), any(Pageable.class)))
+        users = mock(IUserDao.class);
+        when(users.findAll(any(HibernateSpecification.class), any(Pageable.class)))
                 .thenAnswer(call -> Page.empty(call.getArgument(1, Pageable.class)));
         mvc =
                 MockMvcBuilders.standaloneSetup(new UserController(new UserServiceImpl(users)))
@@ -95,7 +95,7 @@ class QueryDtoContractTest {
 
     private Pageable capturedPage() {
         var captor = ArgumentCaptor.forClass(Pageable.class);
-        verify(users).findAll(any(Specification.class), captor.capture());
+        verify(users).findAll(any(HibernateSpecification.class), captor.capture());
         return captor.getValue();
     }
 

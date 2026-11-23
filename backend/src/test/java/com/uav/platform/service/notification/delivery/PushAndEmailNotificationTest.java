@@ -12,6 +12,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 import com.uav.platform.controller.notification.inbox.NotificationController;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IPaymentTransactionDao;
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEquipmentReservationDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.notification.INotificationDao;
+import com.uav.platform.dao.notification.IPushDeviceTokenDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.mission.dispatch.MissionResourceRedispatchRequest;
 import com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest;
 import com.uav.platform.dto.request.notification.delivery.RegisterPushTokenRequest;
@@ -30,16 +40,6 @@ import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.mapper.billing.invoice.BillingMapper;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
 import com.uav.platform.mapper.notification.inbox.NotificationMapper;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.PaymentTransactionRepository;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.mission.MissionEquipmentReservationRepository;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.notification.NotificationRepository;
-import com.uav.platform.repository.notification.PushDeviceTokenRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.auth.verification.AuthMailService;
 import com.uav.platform.service.auth.verification.EmailDomainPolicyService;
@@ -89,9 +89,9 @@ class PushAndEmailNotificationTest {
 
     private final ObjectMapper json = new ObjectMapper();
     private HttpServer expoServer;
-    private NotificationRepository notificationRepository;
-    private PushDeviceTokenRepository pushTokenRepository;
-    private UserRepository userRepository;
+    private INotificationDao notificationRepository;
+    private IPushDeviceTokenDao pushTokenRepository;
+    private IUserDao userRepository;
     private JavaMailSender mailSender;
     private AuthMailService authMailService;
     private NotificationDeliveryOperations deliveryOperations;
@@ -106,9 +106,9 @@ class PushAndEmailNotificationTest {
     @BeforeEach
     @SuppressWarnings("unchecked")
     void setUp() {
-        notificationRepository = mock(NotificationRepository.class);
-        pushTokenRepository = mock(PushDeviceTokenRepository.class);
-        userRepository = mock(UserRepository.class);
+        notificationRepository = mock(INotificationDao.class);
+        pushTokenRepository = mock(IPushDeviceTokenDao.class);
+        userRepository = mock(IUserDao.class);
         mailSender = mock(JavaMailSender.class);
 
         when(mailSender.createMimeMessage())
@@ -362,17 +362,16 @@ class PushAndEmailNotificationTest {
         MissionEventService missionEvents = mock(MissionEventService.class);
         when(missionEvents.deliversNotifications()).thenReturn(false);
         MissionResourceService resources = mock(MissionResourceService.class);
-        MissionEquipmentReservationRepository reservations =
-                mock(MissionEquipmentReservationRepository.class);
+        IMissionEquipmentReservationDao reservations = mock(IMissionEquipmentReservationDao.class);
 
         MissionDispatchServiceImpl dispatch =
                 new MissionDispatchServiceImpl(
                         null,
-                        mock(MissionRepository.class),
+                        mock(IMissionDao.class),
                         mock(PermissionService.class),
                         mock(AuditLogService.class),
-                        mock(MissionEventRepository.class),
-                        mock(StationRepository.class),
+                        mock(IMissionEventDao.class),
+                        mock(IStationDao.class),
                         mock(InventoryService.class),
                         reservations,
                         access,
@@ -406,19 +405,19 @@ class PushAndEmailNotificationTest {
                 commander);
 
         // 2. BillingServiceImpl: completePayment (via confirmBankTransfer) notifies customer
-        InvoiceRepository invoiceRepo = mock(InvoiceRepository.class);
-        PaymentTransactionRepository paymentRepo = mock(PaymentTransactionRepository.class);
+        IInvoiceDao invoiceRepo = mock(IInvoiceDao.class);
+        IPaymentTransactionDao paymentRepo = mock(IPaymentTransactionDao.class);
         PermissionService billingPerms = mock(PermissionService.class);
         org.springframework.jdbc.core.JdbcTemplate jdbc =
                 mock(org.springframework.jdbc.core.JdbcTemplate.class);
 
         BillingServiceImpl billing =
                 new BillingServiceImpl(
-                        mock(ServicePlanRepository.class),
+                        mock(IServicePlanDao.class),
                         invoiceRepo,
                         paymentRepo,
                         userRepository,
-                        mock(MissionRepository.class),
+                        mock(IMissionDao.class),
                         billingPerms,
                         null,
                         null,

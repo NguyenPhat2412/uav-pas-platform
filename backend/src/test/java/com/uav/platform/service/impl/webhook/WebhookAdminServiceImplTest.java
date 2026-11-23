@@ -4,12 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.webhook.IWebhookDeliveryLogDao;
+import com.uav.platform.dao.webhook.IWebhookSubscriptionDao;
 import com.uav.platform.entity.webhook.WebhookDeliveryLog;
 import com.uav.platform.entity.webhook.WebhookSubscription;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.webhook.WebhookMapper;
-import com.uav.platform.repository.webhook.WebhookDeliveryLogRepository;
-import com.uav.platform.repository.webhook.WebhookSubscriptionRepository;
 import com.uav.platform.service.audit.AuditLogService;
 
 import org.junit.jupiter.api.Test;
@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Optional;
 
 class WebhookAdminServiceImplTest {
-    private final WebhookSubscriptionRepository subs = mock(WebhookSubscriptionRepository.class);
-    private final WebhookDeliveryLogRepository logs = mock(WebhookDeliveryLogRepository.class);
+    private final IWebhookSubscriptionDao subs = mock(IWebhookSubscriptionDao.class);
+    private final IWebhookDeliveryLogDao logs = mock(IWebhookDeliveryLogDao.class);
     private final AuditLogService audit = mock(AuditLogService.class);
     private final WebhookMapper mapper = Mappers.getMapper(WebhookMapper.class);
     private final WebhookAdminServiceImpl service =

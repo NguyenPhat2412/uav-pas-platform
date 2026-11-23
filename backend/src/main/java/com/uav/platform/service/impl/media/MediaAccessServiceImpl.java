@@ -1,12 +1,12 @@
 package com.uav.platform.service.impl.media;
 
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
 import com.uav.platform.entity.media.MediaAsset;
 import com.uav.platform.enums.media.*;
 import com.uav.platform.enums.media.MediaVisibility;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.media.MediaAccessService;
 import com.uav.platform.service.permission.PermissionService;
@@ -23,13 +23,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MediaAccessServiceImpl implements MediaAccessService {
     private final PermissionService permissions;
-    private final MissionRepository missions;
-    private final StationRepository stations;
-    private final UavRepository uavs;
-    private final EquipmentRepository equipment;
+    private final IMissionDao missions;
+    private final IStationDao stations;
+    private final IUavDao uavs;
+    private final IEquipmentDao equipment;
 
     @Override
-    public org.springframework.data.jpa.domain.Specification<MediaAsset> readableBy(String actor) {
+    public com.uav.platform.dao.base.HibernateSpecification<MediaAsset> readableBy(String actor) {
         if (actor == null) return (root, query, cb) -> cb.disjunction();
         var auth = UsernamePasswordAuthenticationToken.authenticated(actor, null, List.of());
         var scope =

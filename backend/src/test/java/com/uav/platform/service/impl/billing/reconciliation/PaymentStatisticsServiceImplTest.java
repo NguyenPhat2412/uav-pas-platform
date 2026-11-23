@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IPaymentTransactionDao;
 import com.uav.platform.dto.response.billing.reconciliation.PaymentStatisticsResponse;
 import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.billing.PaymentTransaction;
@@ -13,8 +15,6 @@ import com.uav.platform.entity.billing.ServicePlan;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.billing.InvoiceStatus;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.PaymentTransactionRepository;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,8 +28,8 @@ class PaymentStatisticsServiceImplTest {
     private static final LocalDate END = LocalDate.of(2026, 11, 30);
     private static final LocalDateTime NOW = LocalDateTime.of(2026, 11, 30, 12, 0);
 
-    private final InvoiceRepository invoices = mock(InvoiceRepository.class);
-    private final PaymentTransactionRepository payments = mock(PaymentTransactionRepository.class);
+    private final IInvoiceDao invoices = mock(IInvoiceDao.class);
+    private final IPaymentTransactionDao payments = mock(IPaymentTransactionDao.class);
     private final PaymentStatisticsServiceImpl service =
             new PaymentStatisticsServiceImpl(invoices, payments);
 

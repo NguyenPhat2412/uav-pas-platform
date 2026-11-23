@@ -1,6 +1,10 @@
 package com.uav.platform.service.impl.assistant;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.assistant.IAssistantAttachmentDao;
+import com.uav.platform.dao.assistant.IAssistantConversationDao;
+import com.uav.platform.dao.assistant.IAssistantMessageDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.assistant.ChatImage;
 import com.uav.platform.dto.record.assistant.ChatThread;
 import com.uav.platform.dto.response.assistant.AssistantAttachmentResponse;
@@ -15,10 +19,6 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.assistant.AssistantAttachmentRepository;
-import com.uav.platform.repository.assistant.AssistantConversationRepository;
-import com.uav.platform.repository.assistant.AssistantMessageRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.assistant.AssistantConversationService;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.specification.assistant.AssistantConversationSpecifications;
@@ -42,11 +42,11 @@ import java.util.stream.Collectors;
 public class AssistantConversationServiceImpl implements AssistantConversationService {
     static final int TITLE_LENGTH = 80;
 
-    private final AssistantConversationRepository conversations;
-    private final AssistantMessageRepository messages;
-    private final UserRepository users;
+    private final IAssistantConversationDao conversations;
+    private final IAssistantMessageDao messages;
+    private final IUserDao users;
     private final AuditLogService audit;
-    private final AssistantAttachmentRepository attachments;
+    private final IAssistantAttachmentDao attachments;
 
     /** Portals a role may chat from; mirrors the frontend portal guards. */
     static Set<String> portalsFor(UserRole role) {

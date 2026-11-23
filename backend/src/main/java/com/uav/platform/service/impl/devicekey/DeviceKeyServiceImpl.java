@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.devicekey;
 
+import com.uav.platform.dao.devicekey.IDeviceApiKeyDao;
+import com.uav.platform.dao.uav.IUavDao;
 import com.uav.platform.dto.record.devicekey.DevicePrincipal;
 import com.uav.platform.dto.request.devicekey.CreateDeviceKeyRequest;
 import com.uav.platform.dto.response.devicekey.CreatedDeviceKeyResponse;
@@ -10,8 +12,6 @@ import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.devicekey.DeviceKeyScope;
 import com.uav.platform.enums.devicekey.DeviceKeyStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.devicekey.DeviceApiKeyRepository;
-import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.devicekey.DeviceKeyService;
 
@@ -37,8 +37,8 @@ public class DeviceKeyServiceImpl implements DeviceKeyService {
     /** last_used_at is refreshed at most once per window to keep the hot path write-free. */
     static final Duration TOUCH_INTERVAL = Duration.ofMinutes(1);
 
-    private final DeviceApiKeyRepository keys;
-    private final UavRepository uavs;
+    private final IDeviceApiKeyDao keys;
+    private final IUavDao uavs;
     private final AuditLogService audit;
 
     @Override

@@ -14,6 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.controller.user.profile.UserProfileController;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IUserQuotaDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.notification.IPushDeviceTokenDao;
+import com.uav.platform.dao.permission.IUserPermissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.user.account.AccountDeletionRequest;
 import com.uav.platform.dto.response.user.account.AccountDeletionPolicyResponse;
 import com.uav.platform.entity.user.AppUser;
@@ -23,12 +29,6 @@ import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.UserQuotaRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.notification.PushDeviceTokenRepository;
-import com.uav.platform.repository.permission.UserPermissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.auth.session.AuthSessionLock;
 import com.uav.platform.service.auth.session.RefreshTokenService;
@@ -58,19 +58,19 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class AccountDeletionServiceTest {
 
-    @Mock private UserRepository userRepository;
+    @Mock private IUserDao userRepository;
     @Mock private AuthSessionLock sessionLock;
     @Mock private AuditLogService auditLogService;
     @Mock private SystemConfigService systemConfigService;
-    @Mock private MissionRepository missionRepository;
-    @Mock private InvoiceRepository invoiceRepository;
+    @Mock private IMissionDao missionRepository;
+    @Mock private IInvoiceDao invoiceRepository;
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private SessionRevocationService sessionRevocationService;
     @Mock private SessionTerminationService sessionTerminationService;
     @Mock private RefreshTokenService refreshTokenService;
-    @Mock private PushDeviceTokenRepository pushDeviceTokenRepository;
-    @Mock private UserPermissionRepository userPermissionRepository;
-    @Mock private UserQuotaRepository userQuotaRepository;
+    @Mock private IPushDeviceTokenDao pushDeviceTokenRepository;
+    @Mock private IUserPermissionDao userPermissionRepository;
+    @Mock private IUserQuotaDao userQuotaRepository;
 
     private final Map<String, String> settings = new HashMap<>();
     private UserProfileServiceImpl service;

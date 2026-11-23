@@ -1,5 +1,8 @@
 package com.uav.platform.service.impl.billing.plan;
 
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.billing.IUserQuotaDao;
 import com.uav.platform.dto.response.billing.plan.PlanStatsResponse;
 import com.uav.platform.dto.response.billing.plan.PlanStatsResponse.InvoiceBucket;
 import com.uav.platform.dto.response.billing.plan.PlanStatsResponse.MonthRow;
@@ -8,9 +11,6 @@ import com.uav.platform.dto.response.billing.plan.PlanStatsResponse.PlanRow;
 import com.uav.platform.dto.response.billing.plan.PlanStatsResponse.Summary;
 import com.uav.platform.entity.billing.ServicePlan;
 import com.uav.platform.enums.billing.InvoiceStatus;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.billing.UserQuotaRepository;
 import com.uav.platform.service.billing.plan.PlanStatisticsService;
 
 import lombok.RequiredArgsConstructor;
@@ -46,9 +46,9 @@ public class PlanStatisticsServiceImpl implements PlanStatisticsService {
 
     private static final BigDecimal TWELVE = BigDecimal.valueOf(12);
 
-    private final ServicePlanRepository plans;
-    private final UserQuotaRepository quotas;
-    private final InvoiceRepository invoices;
+    private final IServicePlanDao plans;
+    private final IUserQuotaDao quotas;
+    private final IInvoiceDao invoices;
 
     @Override
     @Transactional(readOnly = true)

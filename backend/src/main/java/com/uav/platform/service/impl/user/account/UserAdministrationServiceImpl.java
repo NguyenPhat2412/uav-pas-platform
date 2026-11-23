@@ -4,6 +4,9 @@ import static com.uav.platform.common.constant.TimeConstants.DATE_TIME_MINUTE;
 
 import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.common.util.PhoneNumbers;
+import com.uav.platform.dao.auth.IRefreshTokenDao;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.user.account.AdminCreateUserRequest;
 import com.uav.platform.dto.request.user.account.BulkLockRequest;
 import com.uav.platform.dto.request.user.account.PasswordResetRequest;
@@ -15,8 +18,6 @@ import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.user.account.UserMapper;
-import com.uav.platform.repository.auth.RefreshTokenRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.auth.session.SessionTerminationService;
 import com.uav.platform.service.permission.PermissionService;
@@ -29,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,11 +43,11 @@ import java.util.List;
 public class UserAdministrationServiceImpl implements UserAdministrationService {
     private static final int EXPORT_LIMIT = 5000;
 
-    private final UserRepository userRepository;
+    private final IUserDao userRepository;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final AuditLogService auditLogService;
-    private final RefreshTokenRepository refreshTokens;
+    private final IRefreshTokenDao refreshTokens;
     private final UserMapper userMapper;
     private ObjectProvider<PermissionService> permissions;
     private SessionTerminationService sessionTermination;
@@ -165,8 +165,8 @@ public class UserAdministrationServiceImpl implements UserAdministrationService 
     @Override
     @Transactional(readOnly = true)
     public String exportCsv(String keyword, UserRole role, UserStatus status) {
-        Specification<AppUser> spec =
-                Specification.where(UserSpecifications.hasKeyword(keyword))
+        HibernateSpecification<AppUser> spec =
+                HibernateSpecification.where(UserSpecifications.hasKeyword(keyword))
                         .and(UserSpecifications.hasRole(role))
                         .and(UserSpecifications.hasStatus(status));
         StringBuilder csv =

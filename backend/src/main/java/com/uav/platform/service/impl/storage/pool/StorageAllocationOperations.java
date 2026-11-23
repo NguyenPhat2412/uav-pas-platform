@@ -2,13 +2,13 @@ package com.uav.platform.service.impl.storage.pool;
 
 import com.uav.platform.common.util.Hashing;
 import com.uav.platform.config.routes.ApiRoutes;
+import com.uav.platform.dao.settings.ISystemConfigurationDao;
+import com.uav.platform.dao.storage.IStorageDriveNodeDao;
 import com.uav.platform.entity.settings.SystemConfiguration;
 import com.uav.platform.entity.storage.StorageDriveNode;
 import com.uav.platform.enums.storage.DriveAllocationStrategy;
 import com.uav.platform.enums.storage.DriveNodeHealth;
 import com.uav.platform.enums.storage.StorageBackendMode;
-import com.uav.platform.repository.settings.SystemConfigurationRepository;
-import com.uav.platform.repository.storage.StorageDriveNodeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,16 +42,16 @@ public class StorageAllocationOperations {
     public static final String KEY_OAUTH_CLIENT_SECRET_ENC =
             "storage.google_oauth_client_secret_enc";
 
-    private final StorageDriveNodeRepository driveNodes;
-    private final SystemConfigurationRepository settings;
+    private final IStorageDriveNodeDao driveNodes;
+    private final ISystemConfigurationDao settings;
     private final String signingSecret;
     private final String fallbackPublicUrl;
     private final AtomicLong roundRobinSeq = new AtomicLong();
 
     @Autowired
     public StorageAllocationOperations(
-            StorageDriveNodeRepository driveNodes,
-            SystemConfigurationRepository settings,
+            IStorageDriveNodeDao driveNodes,
+            ISystemConfigurationDao settings,
             @Value("${app.jwt.secret:uav-pas-dev-storage-signing-secret}") String signingSecret,
             @Value("${app.public-url:http://localhost:8080}") String fallbackPublicUrl) {
         this.driveNodes = driveNodes;

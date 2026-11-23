@@ -3,6 +3,9 @@ package com.uav.platform.stabilization;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.*;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.media.MediaUploadRequest;
 import com.uav.platform.entity.media.MediaAsset;
 import com.uav.platform.entity.mission.*;
@@ -12,9 +15,6 @@ import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.*;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.media.MediaCleanupServiceImpl;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.media.*;
@@ -78,11 +78,11 @@ class MediaLifecyclePostgresMinioTest {
 
     @Autowired MediaService media;
     @Autowired MediaCleanupService cleanup;
-    @Autowired MediaAssetRepository assets;
-    @Autowired MissionRepository missions;
+    @Autowired IMediaAssetDao assets;
+    @Autowired IMissionDao missions;
     @Autowired com.uav.platform.service.mission.lifecycle.MissionService missionService;
-    @Autowired MissionMediaRepository links;
-    @Autowired UserRepository users;
+    @Autowired IMissionMediaDao links;
+    @Autowired IUserDao users;
     @Autowired JdbcTemplate db;
     @MockitoSpyBean ObjectStorageService storage;
     @Autowired jakarta.persistence.EntityManager entityManager;

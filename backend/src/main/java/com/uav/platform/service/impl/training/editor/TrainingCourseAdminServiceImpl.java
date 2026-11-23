@@ -2,6 +2,9 @@ package com.uav.platform.service.impl.training.editor;
 
 import static com.uav.platform.common.constant.MediaConstants.APPLICATION_PDF;
 
+import com.uav.platform.dao.training.ITrainingAssetDao;
+import com.uav.platform.dao.training.ITrainingDocumentDao;
+import com.uav.platform.dao.training.ITrainingLessonDao;
 import com.uav.platform.dto.record.media.ObjectMetadata;
 import com.uav.platform.dto.request.training.editor.CreateTrainingAssetRequest;
 import com.uav.platform.dto.request.training.editor.UpdateCourseCoverRequest;
@@ -18,9 +21,6 @@ import com.uav.platform.entity.training.TrainingLessonSlide;
 import com.uav.platform.enums.training.TrainingAssetStatus;
 import com.uav.platform.enums.training.TrainingLessonType;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.training.TrainingAssetRepository;
-import com.uav.platform.repository.training.TrainingDocumentRepository;
-import com.uav.platform.repository.training.TrainingLessonRepository;
 import com.uav.platform.service.impl.training.course.TrainingCourseServiceImpl;
 import com.uav.platform.service.media.ObjectStorageService;
 import com.uav.platform.service.training.course.TrainingCourseRecords;
@@ -69,9 +69,9 @@ public class TrainingCourseAdminServiceImpl implements TrainingCourseAdminServic
     /** Signature lifetime of an upload URL; the upload itself must start within it. */
     static final Duration UPLOAD_VALIDITY = Duration.ofMinutes(30);
 
-    private final TrainingDocumentRepository documents;
-    private final TrainingLessonRepository lessons;
-    private final TrainingAssetRepository assets;
+    private final ITrainingDocumentDao documents;
+    private final ITrainingLessonDao lessons;
+    private final ITrainingAssetDao assets;
     private final ObjectStorageService storage;
     private final TrainingMediaUrls mediaUrls;
     private final TrainingCourseRecords records;

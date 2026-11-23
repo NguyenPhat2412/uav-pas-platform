@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.auth.IAuthOtpTokenDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.auth.session.RegisterRequest;
 import com.uav.platform.dto.request.auth.verification.ForgotPasswordRequest;
 import com.uav.platform.dto.request.auth.verification.ResendOtpRequest;
@@ -19,8 +21,6 @@ import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.auth.session.AuthMapper;
 import com.uav.platform.mapper.user.account.UserMapper;
-import com.uav.platform.repository.auth.AuthOtpTokenRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.auth.session.SessionTerminationService;
 import com.uav.platform.service.auth.verification.AuthMailService;
@@ -38,8 +38,8 @@ import java.util.OptionalLong;
 
 /** Email OTP, 2FA and reset flows must never open a session without the right factor. */
 class AuthOtpHardeningTest {
-    final UserRepository users = mock(UserRepository.class);
-    final AuthOtpTokenRepository tokens = mock(AuthOtpTokenRepository.class);
+    final IUserDao users = mock(IUserDao.class);
+    final IAuthOtpTokenDao tokens = mock(IAuthOtpTokenDao.class);
     final PasswordEncoder encoder = mock(PasswordEncoder.class);
     final JwtTokenProvider jwt = mock(JwtTokenProvider.class);
     final AuthMailService mail = mock(AuthMailService.class);

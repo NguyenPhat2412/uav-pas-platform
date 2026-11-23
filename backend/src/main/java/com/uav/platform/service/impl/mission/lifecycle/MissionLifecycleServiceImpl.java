@@ -1,5 +1,11 @@
 package com.uav.platform.service.impl.mission.lifecycle;
 
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IMissionMediaDao;
+import com.uav.platform.dao.mission.IMissionPreflightLogDao;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
 import com.uav.platform.dto.request.airspace.AirspaceCheckRequest;
 import com.uav.platform.dto.request.mission.catalog.*;
 import com.uav.platform.dto.request.mission.dispatch.*;
@@ -22,12 +28,6 @@ import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.weather.FlightClearanceLevel;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionMediaRepository;
-import com.uav.platform.repository.mission.MissionPreflightLogRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
 import com.uav.platform.service.airspace.AirspaceService;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.mission.flightplan.FlightPlanOperations;
@@ -50,12 +50,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class MissionLifecycleServiceImpl implements MissionLifecycleService {
-    private final MissionRepository missions;
-    private final ServiceOfferingRepository services;
+    private final IMissionDao missions;
+    private final IServiceOfferingDao services;
     private final AuditLogService audit;
-    private final MissionEventRepository events;
+    private final IMissionEventDao events;
     private final com.uav.platform.service.billing.quota.QuotaService quotaService;
-    private final MissionMediaRepository missionMedia;
+    private final IMissionMediaDao missionMedia;
     private final MissionAccessService access;
     private final MissionEventService missionEvents;
     private final MissionResourceService resources;
@@ -69,21 +69,20 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     private ObjectProvider<AirspaceService> airspace;
 
     @Autowired(required = false)
-    private ObjectProvider<MediaAssetRepository> mediaAssets;
+    private ObjectProvider<IMediaAssetDao> mediaAssets;
 
     @Autowired(required = false)
     private ObjectProvider<NotificationService> notifications;
 
     @Autowired(required = false)
-    private ObjectProvider<MissionPreflightLogRepository> preflightLogs;
+    private ObjectProvider<IMissionPreflightLogDao> preflightLogs;
 
     /** Optional so focused mission tests run without the billing module. */
     @Autowired(required = false)
     private ObjectProvider<com.uav.platform.service.billing.invoice.BillingService> invoices;
 
     @Autowired(required = false)
-    private com.uav.platform.repository.marketplace.MarketplaceListingRepository
-            marketplaceListings;
+    private com.uav.platform.dao.marketplace.IMarketplaceListingDao marketplaceListings;
 
     @Autowired(required = false)
     private com.uav.platform.service.marketplace.escrow.MarketplaceEscrowService marketplaceEscrow;
@@ -102,7 +101,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         this.airspace = airspace;
     }
 
-    public void setMediaAssets(ObjectProvider<MediaAssetRepository> mediaAssets) {
+    public void setMediaAssets(ObjectProvider<IMediaAssetDao> mediaAssets) {
         this.mediaAssets = mediaAssets;
     }
 
@@ -121,7 +120,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         if (billingService != null) billingService.cancelOpenMissionInvoices(mission, why);
     }
 
-    public void setPreflightLogs(ObjectProvider<MissionPreflightLogRepository> preflightLogs) {
+    public void setPreflightLogs(ObjectProvider<IMissionPreflightLogDao> preflightLogs) {
         this.preflightLogs = preflightLogs;
     }
 
@@ -130,12 +129,12 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     }
 
     public MissionLifecycleServiceImpl(
-            MissionRepository missions,
-            ServiceOfferingRepository services,
+            IMissionDao missions,
+            IServiceOfferingDao services,
             AuditLogService audit,
-            MissionEventRepository events,
+            IMissionEventDao events,
             com.uav.platform.service.billing.quota.QuotaService quotaService,
-            MissionMediaRepository missionMedia,
+            IMissionMediaDao missionMedia,
             MissionAccessService access,
             MissionEventService missionEvents,
             MissionResourceService resources,
@@ -158,12 +157,12 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
 
     @Autowired
     public MissionLifecycleServiceImpl(
-            MissionRepository missions,
-            ServiceOfferingRepository services,
+            IMissionDao missions,
+            IServiceOfferingDao services,
             AuditLogService audit,
-            MissionEventRepository events,
+            IMissionEventDao events,
             com.uav.platform.service.billing.quota.QuotaService quotaService,
-            MissionMediaRepository missionMedia,
+            IMissionMediaDao missionMedia,
             MissionAccessService access,
             MissionEventService missionEvents,
             MissionResourceService resources,
@@ -942,7 +941,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     }
 
     private void requirePreflightClearance(Mission mission) {
-        MissionPreflightLogRepository repo =
+        IMissionPreflightLogDao repo =
                 preflightLogs == null ? null : preflightLogs.getIfAvailable();
         if (repo == null || mission.getId() == null) {
             if (preflightSignoffRequired) {
@@ -1070,7 +1069,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
 
     private void validatePermitMedia(
             Mission mission, Long permitMediaId, Authentication authentication) {
-        MediaAssetRepository repo = mediaAssets == null ? null : mediaAssets.getIfAvailable();
+        IMediaAssetDao repo = mediaAssets == null ? null : mediaAssets.getIfAvailable();
         if (repo == null) return;
         MediaAsset asset =
                 repo.findById(permitMediaId)

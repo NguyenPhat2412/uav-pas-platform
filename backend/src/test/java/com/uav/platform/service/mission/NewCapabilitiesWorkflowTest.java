@@ -9,6 +9,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.uav.platform.controller.mission.flightplan.FlightSiteController;
 import com.uav.platform.controller.mission.lifecycle.MissionController;
 import com.uav.platform.controller.reporting.AdminSlaIntelligenceController;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.maintenance.IRepairOrderDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEquipmentReservationDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IMissionMediaDao;
+import com.uav.platform.dao.mission.IMissionPreflightLogDao;
+import com.uav.platform.dao.mission.IMissionReviewDao;
+import com.uav.platform.dao.mission.ISavedFlightSiteDao;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.uav.IUavTelemetryDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.airspace.AirspaceCheckRequest;
 import com.uav.platform.dto.request.airspace.AirspaceZoneUpsertRequest;
 import com.uav.platform.dto.request.mission.dispatch.MissionResourceRedispatchRequest;
@@ -53,20 +68,6 @@ import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.maintenance.RepairOrderRepository;
-import com.uav.platform.repository.mission.MissionEquipmentReservationRepository;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionMediaRepository;
-import com.uav.platform.repository.mission.MissionPreflightLogRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.MissionReviewRepository;
-import com.uav.platform.repository.mission.SavedFlightSiteRepository;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.uav.UavTelemetryRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.airspace.AirspaceService;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.billing.quota.QuotaService;
@@ -90,7 +91,6 @@ import com.uav.platform.service.reporting.SlaIntelligenceService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -278,8 +278,8 @@ class NewCapabilitiesWorkflowTest {
 
     @Test
     void savedFlightSitesSupportCreateListLimitAndOwnershipDelete() throws Exception {
-        SavedFlightSiteRepository repo = mock(SavedFlightSiteRepository.class);
-        UserRepository userRepo = mock(UserRepository.class);
+        ISavedFlightSiteDao repo = mock(ISavedFlightSiteDao.class);
+        IUserDao userRepo = mock(IUserDao.class);
         MissionAccessService access = mock(MissionAccessService.class);
         AuditLogService audit = mock(AuditLogService.class);
 
@@ -360,17 +360,16 @@ class NewCapabilitiesWorkflowTest {
     @Test
     @SuppressWarnings("unchecked")
     void extendedMissionWorkflowCoversCloneReviewPreflightLogbookAndSmartDispatch() {
-        MissionRepository missions = mock(MissionRepository.class);
-        MissionEventRepository events = mock(MissionEventRepository.class);
-        MissionReviewRepository reviews = mock(MissionReviewRepository.class);
-        MissionPreflightLogRepository preflightLogs = mock(MissionPreflightLogRepository.class);
-        MissionEquipmentReservationRepository reservations =
-                mock(MissionEquipmentReservationRepository.class);
-        StationRepository stations = mock(StationRepository.class);
-        UavRepository uavs = mock(UavRepository.class);
-        UavTelemetryRepository telemetry = mock(UavTelemetryRepository.class);
-        EquipmentRepository equipmentRepo = mock(EquipmentRepository.class);
-        UserRepository users = mock(UserRepository.class);
+        IMissionDao missions = mock(IMissionDao.class);
+        IMissionEventDao events = mock(IMissionEventDao.class);
+        IMissionReviewDao reviews = mock(IMissionReviewDao.class);
+        IMissionPreflightLogDao preflightLogs = mock(IMissionPreflightLogDao.class);
+        IMissionEquipmentReservationDao reservations = mock(IMissionEquipmentReservationDao.class);
+        IStationDao stations = mock(IStationDao.class);
+        IUavDao uavs = mock(IUavDao.class);
+        IUavTelemetryDao telemetry = mock(IUavTelemetryDao.class);
+        IEquipmentDao equipmentRepo = mock(IEquipmentDao.class);
+        IUserDao users = mock(IUserDao.class);
         MissionAccessService access = mock(MissionAccessService.class);
         MissionLifecycleService lifecycle = mock(MissionLifecycleService.class);
         MissionDispatchService dispatch = mock(MissionDispatchService.class);
@@ -382,7 +381,7 @@ class NewCapabilitiesWorkflowTest {
         PermissionService permissions = mock(PermissionService.class);
         ObjectProvider<AirspaceService> airspaceProvider = mock(ObjectProvider.class);
         ObjectProvider<NotificationService> notificationProvider = mock(ObjectProvider.class);
-        RepairOrderRepository repairs = mock(RepairOrderRepository.class);
+        IRepairOrderDao repairs = mock(IRepairOrderDao.class);
 
         MissionExtendedWorkflowServiceImpl service =
                 new MissionExtendedWorkflowServiceImpl(
@@ -511,7 +510,7 @@ class NewCapabilitiesWorkflowTest {
         assertEquals(94, preflight.measuredBatteryPct());
 
         // 4. Operator logbook
-        when(missions.findAll(any(Specification.class), any(Sort.class)))
+        when(missions.findAll(any(HibernateSpecification.class), any(Sort.class)))
                 .thenReturn(List.of(source));
         when(preflightLogs.findByMissionIdIn(anyCollection())).thenReturn(List.of());
         when(reviews.findByMissionIdIn(anyCollection())).thenReturn(List.of());
@@ -596,14 +595,14 @@ class NewCapabilitiesWorkflowTest {
     @Test
     void slaIntelligenceComputesTurnaroundLeaderboardPredictiveMaintenanceAndServesEndpoint()
             throws Exception {
-        MissionRepository missions = mock(MissionRepository.class);
-        MissionEventRepository events = mock(MissionEventRepository.class);
-        MissionReviewRepository reviews = mock(MissionReviewRepository.class);
-        MissionPreflightLogRepository preflights = mock(MissionPreflightLogRepository.class);
-        UavRepository uavs = mock(UavRepository.class);
-        UavTelemetryRepository telemetry = mock(UavTelemetryRepository.class);
-        RepairOrderRepository repairs = mock(RepairOrderRepository.class);
-        UserRepository users = mock(UserRepository.class);
+        IMissionDao missions = mock(IMissionDao.class);
+        IMissionEventDao events = mock(IMissionEventDao.class);
+        IMissionReviewDao reviews = mock(IMissionReviewDao.class);
+        IMissionPreflightLogDao preflights = mock(IMissionPreflightLogDao.class);
+        IUavDao uavs = mock(IUavDao.class);
+        IUavTelemetryDao telemetry = mock(IUavTelemetryDao.class);
+        IRepairOrderDao repairs = mock(IRepairOrderDao.class);
+        IUserDao users = mock(IUserDao.class);
         PermissionService permissions = mock(PermissionService.class);
 
         Authentication adminAuth = auth("admin", "DASHBOARD_VIEW", "MISSION_VIEW_ALL");
@@ -727,17 +726,16 @@ class NewCapabilitiesWorkflowTest {
     @SuppressWarnings("unchecked")
     void
             preflightSafetyGateBlocksUncClearedStartEnforcesThresholdsAndInvalidatesOnHardwareChange() {
-        MissionRepository missions = mock(MissionRepository.class);
-        MissionEventRepository events = mock(MissionEventRepository.class);
-        MissionReviewRepository reviews = mock(MissionReviewRepository.class);
-        MissionPreflightLogRepository preflightLogs = mock(MissionPreflightLogRepository.class);
-        MissionEquipmentReservationRepository reservations =
-                mock(MissionEquipmentReservationRepository.class);
-        StationRepository stations = mock(StationRepository.class);
-        UavRepository uavs = mock(UavRepository.class);
-        UavTelemetryRepository telemetry = mock(UavTelemetryRepository.class);
-        EquipmentRepository equipmentRepo = mock(EquipmentRepository.class);
-        UserRepository users = mock(UserRepository.class);
+        IMissionDao missions = mock(IMissionDao.class);
+        IMissionEventDao events = mock(IMissionEventDao.class);
+        IMissionReviewDao reviews = mock(IMissionReviewDao.class);
+        IMissionPreflightLogDao preflightLogs = mock(IMissionPreflightLogDao.class);
+        IMissionEquipmentReservationDao reservations = mock(IMissionEquipmentReservationDao.class);
+        IStationDao stations = mock(IStationDao.class);
+        IUavDao uavs = mock(IUavDao.class);
+        IUavTelemetryDao telemetry = mock(IUavTelemetryDao.class);
+        IEquipmentDao equipmentRepo = mock(IEquipmentDao.class);
+        IUserDao users = mock(IUserDao.class);
         MissionAccessService access = mock(MissionAccessService.class);
         MissionLifecycleService lifecycleMock = mock(MissionLifecycleService.class);
         MissionDispatchService dispatchMock = mock(MissionDispatchService.class);
@@ -850,18 +848,17 @@ class NewCapabilitiesWorkflowTest {
         MissionLifecycleServiceImpl lifecycle =
                 new MissionLifecycleServiceImpl(
                         missions,
-                        mock(ServiceOfferingRepository.class),
+                        mock(IServiceOfferingDao.class),
                         audit,
                         events,
                         quota,
-                        mock(MissionMediaRepository.class),
+                        mock(IMissionMediaDao.class),
                         access,
                         missionEvents,
                         resources,
                         billing,
                         mapper);
-        ObjectProvider<MissionPreflightLogRepository> preflightProvider =
-                mock(ObjectProvider.class);
+        ObjectProvider<IMissionPreflightLogDao> preflightProvider = mock(ObjectProvider.class);
         when(preflightProvider.getIfAvailable()).thenReturn(preflightLogs);
         ReflectionTestUtils.setField(lifecycle, "preflightLogs", preflightProvider);
 
@@ -993,17 +990,16 @@ class NewCapabilitiesWorkflowTest {
         assertTrue(candidatesExpr.contains("MISSION_ASSIGN_UAV"));
 
         // 2. upsertReview() on internal mission (customer == null) falls back to admin actor
-        MissionRepository missions = mock(MissionRepository.class);
-        MissionEventRepository events = mock(MissionEventRepository.class);
-        MissionReviewRepository reviews = mock(MissionReviewRepository.class);
-        MissionPreflightLogRepository preflightLogs = mock(MissionPreflightLogRepository.class);
-        MissionEquipmentReservationRepository reservations =
-                mock(MissionEquipmentReservationRepository.class);
-        StationRepository stations = mock(StationRepository.class);
-        UavRepository uavs = mock(UavRepository.class);
-        UavTelemetryRepository telemetry = mock(UavTelemetryRepository.class);
-        EquipmentRepository equipmentRepo = mock(EquipmentRepository.class);
-        UserRepository users = mock(UserRepository.class);
+        IMissionDao missions = mock(IMissionDao.class);
+        IMissionEventDao events = mock(IMissionEventDao.class);
+        IMissionReviewDao reviews = mock(IMissionReviewDao.class);
+        IMissionPreflightLogDao preflightLogs = mock(IMissionPreflightLogDao.class);
+        IMissionEquipmentReservationDao reservations = mock(IMissionEquipmentReservationDao.class);
+        IStationDao stations = mock(IStationDao.class);
+        IUavDao uavs = mock(IUavDao.class);
+        IUavTelemetryDao telemetry = mock(IUavTelemetryDao.class);
+        IEquipmentDao equipmentRepo = mock(IEquipmentDao.class);
+        IUserDao users = mock(IUserDao.class);
         MissionAccessService access = mock(MissionAccessService.class);
         MissionLifecycleService lifecycle = mock(MissionLifecycleService.class);
         MissionDispatchService dispatch = mock(MissionDispatchService.class);
@@ -1015,7 +1011,7 @@ class NewCapabilitiesWorkflowTest {
         PermissionService permissions = mock(PermissionService.class);
         ObjectProvider<AirspaceService> airspaceProvider = mock(ObjectProvider.class);
         ObjectProvider<NotificationService> notificationProvider = mock(ObjectProvider.class);
-        RepairOrderRepository repairs = mock(RepairOrderRepository.class);
+        IRepairOrderDao repairs = mock(IRepairOrderDao.class);
 
         MissionExtendedWorkflowServiceImpl service =
                 new MissionExtendedWorkflowServiceImpl(
@@ -1142,18 +1138,17 @@ class NewCapabilitiesWorkflowTest {
     @Test
     @SuppressWarnings("unchecked")
     void targetedQueriesAvoidFullTableScansAndUseActualCompletedFlightDuration() {
-        MissionRepository missions = mock(MissionRepository.class);
-        MissionEventRepository events = mock(MissionEventRepository.class);
-        MissionReviewRepository reviews = mock(MissionReviewRepository.class);
-        MissionPreflightLogRepository preflights = mock(MissionPreflightLogRepository.class);
-        MissionEquipmentReservationRepository reservations =
-                mock(MissionEquipmentReservationRepository.class);
-        StationRepository stations = mock(StationRepository.class);
-        UavRepository uavs = mock(UavRepository.class);
-        UavTelemetryRepository telemetry = mock(UavTelemetryRepository.class);
-        EquipmentRepository equipmentRepo = mock(EquipmentRepository.class);
-        RepairOrderRepository repairs = mock(RepairOrderRepository.class);
-        UserRepository users = mock(UserRepository.class);
+        IMissionDao missions = mock(IMissionDao.class);
+        IMissionEventDao events = mock(IMissionEventDao.class);
+        IMissionReviewDao reviews = mock(IMissionReviewDao.class);
+        IMissionPreflightLogDao preflights = mock(IMissionPreflightLogDao.class);
+        IMissionEquipmentReservationDao reservations = mock(IMissionEquipmentReservationDao.class);
+        IStationDao stations = mock(IStationDao.class);
+        IUavDao uavs = mock(IUavDao.class);
+        IUavTelemetryDao telemetry = mock(IUavTelemetryDao.class);
+        IEquipmentDao equipmentRepo = mock(IEquipmentDao.class);
+        IRepairOrderDao repairs = mock(IRepairOrderDao.class);
+        IUserDao users = mock(IUserDao.class);
         MissionAccessService access = mock(MissionAccessService.class);
         MissionResourceService resources = mock(MissionResourceService.class);
         PermissionService permissions = mock(PermissionService.class);

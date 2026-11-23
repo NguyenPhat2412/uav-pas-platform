@@ -58,6 +58,7 @@ export const PORTAL_META: Record<
             BVLOS_DISPATCH: 'Điều phối BVLOS & Telemetry',
             EMERGENCY_SAR: 'Ứng cứu SAR & Khẩn cấp',
             MAINTENANCE_LOGISTICS: 'Bảo dưỡng & Kho thiết bị',
+            PROVIDER_ONBOARDING: 'Hồ sơ & Xác minh Đối tác',
         },
     },
     ADMIN: {
@@ -70,6 +71,7 @@ export const PORTAL_META: Record<
             INFRA_TELEMETRY: 'Hạ tầng AI Router & Webhook',
             AI_ROUTER_GOVERNANCE: 'Điều phối AI Router',
             WEBHOOK_BILLING_AUDIT: 'Kiểm toán Webhook & Billing',
+            PROVIDER_ONBOARDING: 'Quy trình Thẩm định Đối tác',
         },
     },
 };
@@ -140,6 +142,7 @@ export const TRAINING_CATEGORY_ICONS: Record<string, LucideIcon> = {
     INFRA_TELEMETRY: Server,
     AI_ROUTER_GOVERNANCE: Router,
     WEBHOOK_BILLING_AUDIT: Webhook,
+    PROVIDER_ONBOARDING: ShieldCheck,
 };
 
 export {GraduationCap as TrainingDefaultCategoryIcon};

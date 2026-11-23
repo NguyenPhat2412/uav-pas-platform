@@ -2,11 +2,11 @@ package com.uav.platform.transport.websocket;
 
 import static com.uav.platform.common.constant.SecurityConstants.ANONYMOUS_USER;
 
+import com.uav.platform.dao.support.ISupportThreadDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.realtime.RealtimeSessionPrincipal;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.support.SupportThreadRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.permission.PermissionService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,9 +34,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RealtimeHandshakeInterceptor implements HandshakeInterceptor {
 
-    private final UserRepository userRepository;
+    private final IUserDao userRepository;
     private final PermissionService permissionService;
-    private final SupportThreadRepository supportThreadRepository;
+    private final ISupportThreadDao supportThreadRepository;
 
     @Override
     public boolean beforeHandshake(

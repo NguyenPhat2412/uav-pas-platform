@@ -1,6 +1,8 @@
 package com.uav.platform.service.impl.station;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.station.IStationDao;
 import com.uav.platform.dto.request.station.StationRequest;
 import com.uav.platform.dto.response.station.StationResponse;
 import com.uav.platform.entity.station.Station;
@@ -8,14 +10,12 @@ import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.station.StationStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.station.StationMapper;
-import com.uav.platform.repository.station.StationRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.station.StationService;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +25,7 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class StationServiceImpl implements StationService {
-    private final StationRepository repository;
+    private final IStationDao repository;
     private final AuditLogService audit;
     private final StationMapper stationMapper;
 
@@ -41,7 +41,7 @@ public class StationServiceImpl implements StationService {
             String search, StationStatus status, Pageable pageable) {
         String term =
                 search == null || search.isBlank() ? null : "%" + search.trim().toLowerCase() + "%";
-        Specification<Station> spec =
+        HibernateSpecification<Station> spec =
                 (root, query, cb) -> {
                     var where = cb.conjunction();
                     if (term != null) {

@@ -1,5 +1,14 @@
 package com.uav.platform.service.impl.dashboard;
 
+import com.uav.platform.dao.audit.IAuditLogDao;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IUserQuotaDao;
+import com.uav.platform.dao.maintenance.IMaintenanceScheduleDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
+import com.uav.platform.dao.webhook.IWebhookDeliveryLogDao;
 import com.uav.platform.dto.response.dashboard.AdminAnalyticsResponse;
 import com.uav.platform.dto.response.dashboard.AdminAnalyticsResponse.*;
 import com.uav.platform.entity.audit.AuditLog;
@@ -12,20 +21,11 @@ import com.uav.platform.entity.webhook.WebhookDeliveryLog;
 import com.uav.platform.enums.billing.InvoiceStatus;
 import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.uav.UavStatus;
-import com.uav.platform.repository.audit.AuditLogRepository;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.UserQuotaRepository;
-import com.uav.platform.repository.maintenance.MaintenanceScheduleRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.repository.webhook.WebhookDeliveryLogRepository;
 import com.uav.platform.service.dashboard.AdminAnalyticsService;
 import com.uav.platform.service.permission.PermissionService;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,14 +50,14 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
             EnumSet.of(MissionStatus.FAILED, MissionStatus.CANCELLED, MissionStatus.REJECTED);
     private static final int MAP_POINT_LIMIT = 500;
 
-    private final MissionRepository missions;
-    private final UavRepository uavs;
-    private final UserRepository users;
-    private final InvoiceRepository invoices;
-    private final UserQuotaRepository quotas;
-    private final MaintenanceScheduleRepository schedules;
-    private final AuditLogRepository audit;
-    private final WebhookDeliveryLogRepository webhookLogs;
+    private final IMissionDao missions;
+    private final IUavDao uavs;
+    private final IUserDao users;
+    private final IInvoiceDao invoices;
+    private final IUserQuotaDao quotas;
+    private final IMaintenanceScheduleDao schedules;
+    private final IAuditLogDao audit;
+    private final IWebhookDeliveryLogDao webhookLogs;
     private final PermissionService permissions;
 
     @Override
@@ -356,7 +356,7 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
             LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
             long stale =
                     missions.count(
-                            Specification.<Mission>where(
+                            HibernateSpecification.<Mission>where(
                                             (r, q, cb) ->
                                                     cb.equal(
                                                             r.get("status"),
@@ -374,7 +374,7 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
         if (billingVisible) {
             long overdueInvoices =
                     invoices.count(
-                            Specification.<Invoice>where(
+                            HibernateSpecification.<Invoice>where(
                                             (r, q, cb) ->
                                                     cb.equal(
                                                             r.get("status"), InvoiceStatus.PENDING))
@@ -441,7 +441,7 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
         };
     }
 
-    private static Specification<Mission> createdOrFinishedBetween(
+    private static HibernateSpecification<Mission> createdOrFinishedBetween(
             LocalDateTime start, LocalDateTime end) {
         return (r, q, cb) ->
                 cb.or(
@@ -453,7 +453,7 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
                                 cb.lessThan(r.get("updatedAt"), end)));
     }
 
-    private static Specification<Mission> createdBetweenMission(
+    private static HibernateSpecification<Mission> createdBetweenMission(
             LocalDateTime start, LocalDateTime end) {
         return (r, q, cb) ->
                 cb.and(
@@ -461,14 +461,16 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
                         cb.lessThan(r.get("createdAt"), end));
     }
 
-    private static Specification<AppUser> createdBetween(LocalDateTime start, LocalDateTime end) {
+    private static HibernateSpecification<AppUser> createdBetween(
+            LocalDateTime start, LocalDateTime end) {
         return (r, q, cb) ->
                 cb.and(
                         cb.greaterThanOrEqualTo(r.get("createdAt"), start),
                         cb.lessThan(r.get("createdAt"), end));
     }
 
-    private static Specification<Invoice> paidBetween(LocalDateTime start, LocalDateTime end) {
+    private static HibernateSpecification<Invoice> paidBetween(
+            LocalDateTime start, LocalDateTime end) {
         return (r, q, cb) ->
                 cb.and(
                         cb.equal(r.get("status"), InvoiceStatus.PAID),
@@ -476,21 +478,22 @@ public class AdminAnalyticsServiceImpl implements AdminAnalyticsService {
                         cb.lessThan(r.get("paidAt"), end));
     }
 
-    private static Specification<Invoice> createdOrPaidSince(LocalDateTime since) {
+    private static HibernateSpecification<Invoice> createdOrPaidSince(LocalDateTime since) {
         return (r, q, cb) ->
                 cb.or(
                         cb.greaterThanOrEqualTo(r.get("createdAt"), since),
                         cb.greaterThanOrEqualTo(r.get("paidAt"), since));
     }
 
-    private static Specification<AuditLog> auditBetween(LocalDateTime start, LocalDateTime end) {
+    private static HibernateSpecification<AuditLog> auditBetween(
+            LocalDateTime start, LocalDateTime end) {
         return (r, q, cb) ->
                 cb.and(
                         cb.greaterThanOrEqualTo(r.get("createdAt"), start),
                         cb.lessThan(r.get("createdAt"), end));
     }
 
-    private static Specification<WebhookDeliveryLog> attemptedBetween(
+    private static HibernateSpecification<WebhookDeliveryLog> attemptedBetween(
             LocalDateTime start, LocalDateTime end) {
         return (r, q, cb) ->
                 cb.and(

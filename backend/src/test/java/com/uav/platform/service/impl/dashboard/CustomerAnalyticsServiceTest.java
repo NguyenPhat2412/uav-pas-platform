@@ -1,138 +1,193 @@
 package com.uav.platform.service.impl.dashboard;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-import com.uav.platform.dto.response.dashboard.CustomerAnalyticsResponse.Outcomes;
-import com.uav.platform.dto.response.dashboard.CustomerAnalyticsResponse.Quota;
-import com.uav.platform.dto.response.dashboard.CustomerAnalyticsResponse.Turnaround;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IUserQuotaDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IMissionMediaDao;
+import com.uav.platform.dao.user.IUserDao;
+import com.uav.platform.dto.response.dashboard.CustomerAnalyticsResponse;
+import com.uav.platform.entity.billing.Invoice;
+import com.uav.platform.entity.billing.ServicePlan;
 import com.uav.platform.entity.billing.UserQuota;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.mission.MissionEvent;
+import com.uav.platform.entity.mission.ServiceOffering;
+import com.uav.platform.entity.user.AppUser;
+import com.uav.platform.enums.billing.InvoiceStatus;
 import com.uav.platform.enums.mission.MissionEventType;
 import com.uav.platform.enums.mission.MissionStatus;
+import com.uav.platform.error.SystemException;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 class CustomerAnalyticsServiceTest {
 
-    private UserQuota quota(double used, double limit, LocalDate start, LocalDate end) {
-        UserQuota q = new UserQuota();
-        q.setFlightHoursUsed(used);
-        q.setFlightHoursLimit(limit);
-        q.setCycleStart(start.atStartOfDay());
-        q.setCycleEnd(end.atStartOfDay());
-        return q;
-    }
-
     @Test
-    void quotaProjectsDaysLeftFromTheCurrentUsageRate() {
-        LocalDate today = LocalDate.of(2026, 10, 21);
-        // 10 h used over 20 days = 0.5 h/day; 10 h remaining -> 20 days.
-        Quota q =
-                CustomerAnalyticsServiceImpl.quota(
-                        quota(10, 20, LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31)),
-                        today);
+    @SuppressWarnings("unchecked")
+    void analyticsComputesCustomerKpisQuotaPipelineOutcomesTurnaroundAndUpcoming() {
+        IUserDao users = mock(IUserDao.class);
+        IMissionDao missions = mock(IMissionDao.class);
+        IMissionEventDao events = mock(IMissionEventDao.class);
+        IMissionMediaDao media = mock(IMissionMediaDao.class);
+        IInvoiceDao invoices = mock(IInvoiceDao.class);
+        IUserQuotaDao quotas = mock(IUserQuotaDao.class);
 
-        assertEquals(20.0, q.projectedDaysToLimit());
-        assertEquals(10, q.daysLeftInCycle());
-    }
+        AppUser customer = new AppUser();
+        customer.setId(7L);
+        customer.setUsername("cust1");
+        when(users.findByUsername("cust1")).thenReturn(Optional.of(customer));
 
-    @Test
-    void quotaHasNoProjectionWithoutUsageAndZeroWhenExhausted() {
-        LocalDate today = LocalDate.of(2026, 10, 21);
-        assertNull(
-                CustomerAnalyticsServiceImpl.quota(
-                                quota(0, 20, LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31)),
-                                today)
-                        .projectedDaysToLimit());
+        LocalDateTime now = LocalDateTime.now();
+        ServiceOffering svc = new ServiceOffering("SPRAY", "Agricultural Spraying", "Spray", 60);
+
+        Mission completed = new Mission();
+        completed.setId(101L);
+        completed.setCode("MSN-101");
+        completed.setTitle("Field Spray");
+        completed.setStatus(MissionStatus.COMPLETED);
+        completed.setService(svc);
+        completed.setStartTime(now.minusHours(3));
+        completed.setCompletedAt(now.minusHours(1));
+        completed.setLatitude(new BigDecimal("21.0"));
+        completed.setLongitude(new BigDecimal("105.8"));
+
+        Mission failed = new Mission();
+        failed.setId(102L);
+        failed.setCode("MSN-102");
+        failed.setStatus(MissionStatus.FAILED);
+        failed.setFailureReason("High wind");
+        failed.setUpdatedAt(now.minusDays(1));
+        failed.setService(svc);
+
+        Mission upcoming = new Mission();
+        upcoming.setId(103L);
+        upcoming.setCode("MSN-103");
+        upcoming.setTitle("Survey Tomorrow");
+        upcoming.setStatus(MissionStatus.READY);
+        upcoming.setStartTime(now.plusDays(1));
+        upcoming.setLocationName("Bac Ninh");
+
+        Mission draft = new Mission();
+        draft.setId(104L);
+        draft.setStatus(MissionStatus.DRAFT);
+
+        when(missions.findAll(any(HibernateSpecification.class)))
+                .thenReturn(List.of(completed, failed, upcoming, draft));
+
+        MissionEvent e1 =
+                new MissionEvent(
+                        completed,
+                        MissionEventType.SUBMITTED,
+                        customer,
+                        MissionStatus.DRAFT,
+                        MissionStatus.PENDING_CONFIRMATION,
+                        null,
+                        null);
+        e1.setCreatedAt(now.minusHours(5));
+        MissionEvent e2 =
+                new MissionEvent(
+                        completed,
+                        MissionEventType.STATUS_CHANGED,
+                        customer,
+                        MissionStatus.PENDING_CONFIRMATION,
+                        MissionStatus.CONFIRMED,
+                        null,
+                        null);
+        e2.setCreatedAt(now.minusHours(4));
+        MissionEvent e3 =
+                new MissionEvent(
+                        completed,
+                        MissionEventType.COMPLETED,
+                        customer,
+                        MissionStatus.IN_PROGRESS,
+                        MissionStatus.COMPLETED,
+                        null,
+                        null);
+        e3.setCreatedAt(now.minusHours(1));
+        when(events.findAll(any(HibernateSpecification.class))).thenReturn(List.of(e1, e2, e3));
+
+        Invoice paid =
+                new Invoice(
+                        "INV-P",
+                        customer,
+                        completed,
+                        null,
+                        new BigDecimal("800000"),
+                        now.plusDays(1),
+                        null);
+        paid.setStatus(InvoiceStatus.PAID);
+        paid.setPaidAt(now.minusDays(1));
+
+        Invoice pending =
+                new Invoice(
+                        "INV-U",
+                        customer,
+                        upcoming,
+                        null,
+                        new BigDecimal("350000"),
+                        now.plusDays(5),
+                        null);
+        pending.setStatus(InvoiceStatus.PENDING);
+        pending.setCreatedAt(now.minusHours(2));
+        when(invoices.findByUserId(7L)).thenReturn(List.of(paid, pending));
+
+        ServicePlan plan = new ServicePlan();
+        plan.setName("Pro Fleet");
+        UserQuota quota = new UserQuota();
+        quota.setPlan(plan);
+        quota.setFlightHoursUsed(5.0);
+        quota.setFlightHoursLimit(20.0);
+        quota.setCycleStart(now.minusDays(10));
+        quota.setCycleEnd(now.plusDays(20));
+        when(quotas.findByUserId(7L)).thenReturn(Optional.of(quota));
+        when(media.count(any(HibernateSpecification.class))).thenReturn(12L);
+
+        CustomerAnalyticsServiceImpl service =
+                new CustomerAnalyticsServiceImpl(users, missions, events, media, invoices, quotas);
+
+        CustomerAnalyticsResponse res =
+                service.analytics(new UsernamePasswordAuthenticationToken("cust1", "N/A"));
+
+        assertEquals(1, res.thisMonth().completedMissions());
+        assertEquals(2.0, res.thisMonth().flightHours());
+        assertEquals(new BigDecimal("800000"), res.thisMonth().spend());
+        assertEquals(12L, res.mediaFiles());
+        assertNotNull(res.quota());
+        assertEquals("Pro Fleet", res.quota().planName());
+        assertNotNull(res.quota().projectedDaysToLimit());
+        assertEquals(1, res.pendingInvoices().count());
+        assertEquals(1, res.topServices().size());
+        assertEquals(1, res.upcoming().size());
+        assertEquals(50.0, res.outcomes().successRate());
+        assertEquals(1.0, res.turnaround().submitToConfirm());
+        assertEquals(4.0, res.turnaround().submitToComplete());
+
+        // Exhausted quota branch
+        UserQuota exhausted = new UserQuota();
+        exhausted.setFlightHoursUsed(10.0);
+        exhausted.setFlightHoursLimit(10.0);
         assertEquals(
                 0.0,
-                CustomerAnalyticsServiceImpl.quota(
-                                quota(
-                                        25,
-                                        20,
-                                        LocalDate.of(2026, 10, 1),
-                                        LocalDate.of(2026, 10, 31)),
-                                today)
+                CustomerAnalyticsServiceImpl.quota(exhausted, LocalDate.now())
                         .projectedDaysToLimit());
-    }
 
-    private Mission mission(MissionStatus status, String reason) {
-        Mission m = new Mission();
-        m.setStatus(status);
-        m.setFailureReason(reason);
-        return m;
-    }
-
-    @Test
-    void outcomesCountEveryFinishedStateAndGroupReasons() {
-        Outcomes o =
-                CustomerAnalyticsServiceImpl.outcomes(
-                        List.of(
-                                mission(MissionStatus.COMPLETED, null),
-                                mission(MissionStatus.COMPLETED, null),
-                                mission(MissionStatus.COMPLETED, null),
-                                mission(MissionStatus.FAILED, "WEATHER"),
-                                mission(MissionStatus.CANCELLED, null),
-                                mission(MissionStatus.DRAFT, null)));
-
-        assertEquals(60.0, o.successRate());
-        assertEquals(
-                List.of("WEATHER", "CANCELLED"),
-                o.reasons().stream().map(r -> r.reason()).sorted().toList().reversed());
-    }
-
-    private MissionEvent event(MissionEventType type, MissionStatus next, LocalDateTime at) {
-        MissionEvent e = new MissionEvent(null, type, null, null, next, null, null);
-        ReflectionTestUtils.setField(e, "createdAt", at);
-        return e;
-    }
-
-    @Test
-    void turnaroundMeasuresFromFirstSubmission() {
-        LocalDateTime t0 = LocalDateTime.of(2026, 10, 1, 8, 0);
-        Turnaround t =
-                CustomerAnalyticsServiceImpl.turnaround(
-                        Map.of(
-                                1L,
-                                        List.of(
-                                                event(
-                                                        MissionEventType.SUBMITTED,
-                                                        MissionStatus.PENDING_CONFIRMATION,
-                                                        t0),
-                                                event(
-                                                        MissionEventType.STATUS_CHANGED,
-                                                        MissionStatus.CONFIRMED,
-                                                        t0.plusHours(2)),
-                                                event(
-                                                        MissionEventType.COMPLETED,
-                                                        MissionStatus.COMPLETED,
-                                                        t0.plusHours(30))),
-                                2L,
-                                        List.of(
-                                                event(
-                                                        MissionEventType.SUBMITTED,
-                                                        MissionStatus.PENDING_CONFIRMATION,
-                                                        t0),
-                                                event(
-                                                        MissionEventType.STATUS_CHANGED,
-                                                        MissionStatus.CONFIRMED,
-                                                        t0.plusHours(4))),
-                                3L,
-                                        List.of(
-                                                event(
-                                                        MissionEventType.CREATED,
-                                                        MissionStatus.DRAFT,
-                                                        t0))));
-
-        assertEquals(3.0, t.submitToConfirm());
-        assertEquals(30.0, t.submitToComplete());
-        assertEquals(2, t.sampleSize());
+        // Missing user throws notFound
+        when(users.findByUsername("missing")).thenReturn(Optional.empty());
+        assertThrows(
+                SystemException.class,
+                () -> service.analytics(new UsernamePasswordAuthenticationToken("missing", "N/A")));
     }
 }

@@ -1,11 +1,11 @@
 package com.uav.platform.service.impl.infrastructure;
 
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.infrastructure.MailConnectionCheck;
 import com.uav.platform.dto.response.infrastructure.EmailStatusResponse;
 import com.uav.platform.dto.response.infrastructure.EmailTestResponse;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.auth.verification.AuthMailService;
 import com.uav.platform.service.infrastructure.MailDiagnosticsService;
 import com.uav.platform.service.infrastructure.MailOtpSettingsService;
@@ -56,7 +56,7 @@ public class MailDiagnosticsServiceImpl implements MailDiagnosticsService {
 
     private final AuthMailService authMail;
     private final ObjectProvider<JavaMailSender> senderProvider;
-    private final UserRepository users;
+    private final IUserDao users;
     private final String fromAddress;
     private final String host;
     private final String username;
@@ -79,7 +79,7 @@ public class MailDiagnosticsServiceImpl implements MailDiagnosticsService {
     public MailDiagnosticsServiceImpl(
             AuthMailService authMail,
             ObjectProvider<JavaMailSender> senderProvider,
-            UserRepository users,
+            IUserDao users,
             @Value("${app.mail.from:no-reply@uav.all1.vn}") String fromAddress,
             @Value("${spring.mail.host:}") String host,
             @Value("${spring.mail.username:}") String username,
@@ -90,7 +90,7 @@ public class MailDiagnosticsServiceImpl implements MailDiagnosticsService {
     MailDiagnosticsServiceImpl(
             AuthMailService authMail,
             ObjectProvider<JavaMailSender> senderProvider,
-            UserRepository users,
+            IUserDao users,
             String fromAddress,
             String host,
             String username,

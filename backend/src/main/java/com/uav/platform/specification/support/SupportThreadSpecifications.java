@@ -1,8 +1,7 @@
 package com.uav.platform.specification.support;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.support.SupportThread;
-
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Locale;
 
@@ -10,7 +9,7 @@ public final class SupportThreadSpecifications {
 
     private SupportThreadSpecifications() {}
 
-    public static Specification<SupportThread> withStatus(String status) {
+    public static HibernateSpecification<SupportThread> withStatus(String status) {
         return (root, query, cb) ->
                 status == null || status.isBlank()
                         ? cb.conjunction()
@@ -19,7 +18,7 @@ public final class SupportThreadSpecifications {
                                 status.trim().toUpperCase(Locale.ROOT));
     }
 
-    public static Specification<SupportThread> withTopic(String topic) {
+    public static HibernateSpecification<SupportThread> withTopic(String topic) {
         return (root, query, cb) ->
                 topic == null || topic.isBlank()
                         ? cb.conjunction()
@@ -27,14 +26,14 @@ public final class SupportThreadSpecifications {
                                 cb.upper(root.get("topic")), topic.trim().toUpperCase(Locale.ROOT));
     }
 
-    public static Specification<SupportThread> unreadOnly(Boolean unreadOnly) {
+    public static HibernateSpecification<SupportThread> unreadOnly(Boolean unreadOnly) {
         return (root, query, cb) ->
                 Boolean.TRUE.equals(unreadOnly)
                         ? cb.greaterThan(root.get("unreadForAdmin"), 0)
                         : cb.conjunction();
     }
 
-    public static Specification<SupportThread> matching(String q) {
+    public static HibernateSpecification<SupportThread> matching(String q) {
         return (root, query, cb) -> {
             if (q == null || q.isBlank()) {
                 return cb.conjunction();

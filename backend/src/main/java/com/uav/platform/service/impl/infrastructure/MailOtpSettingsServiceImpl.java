@@ -5,6 +5,10 @@ import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.AesGcmCipher;
 import com.uav.platform.common.util.Hashing;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.dao.auth.IAuthOtpTokenDao;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.infrastructure.IMailOtpSettingsDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.infrastructure.MailConnectionCheck;
 import com.uav.platform.dto.request.auth.verification.ForgotPasswordRequest;
 import com.uav.platform.dto.request.infrastructure.AdminOtpSupportRequest;
@@ -17,9 +21,6 @@ import com.uav.platform.entity.infrastructure.MailOtpSettings;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.auth.AuthOtpTokenRepository;
-import com.uav.platform.repository.infrastructure.MailOtpSettingsRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.auth.session.AuthRateLimitService;
 import com.uav.platform.service.auth.verification.AuthMailService;
@@ -37,7 +38,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.core.Authentication;
@@ -64,9 +64,9 @@ public class MailOtpSettingsServiceImpl implements MailOtpSettingsService {
     private static final Duration CACHE_TTL = Duration.ofSeconds(10);
     private static final String SMTP_TIMEOUT_MS = "10000";
 
-    private final MailOtpSettingsRepository repository;
-    private final AuthOtpTokenRepository otpTokenRepository;
-    private final UserRepository userRepository;
+    private final IMailOtpSettingsDao repository;
+    private final IAuthOtpTokenDao otpTokenRepository;
+    private final IUserDao userRepository;
     private final ObjectProvider<JavaMailSender> defaultMailSenderProvider;
     private final ObjectProvider<MailDiagnosticsService> mailDiagnosticsProvider;
     private final ObjectProvider<AuthOtpService> authOtpProvider;
@@ -113,9 +113,9 @@ public class MailOtpSettingsServiceImpl implements MailOtpSettingsService {
 
     @Autowired
     public MailOtpSettingsServiceImpl(
-            MailOtpSettingsRepository repository,
-            AuthOtpTokenRepository otpTokenRepository,
-            UserRepository userRepository,
+            IMailOtpSettingsDao repository,
+            IAuthOtpTokenDao otpTokenRepository,
+            IUserDao userRepository,
             @Autowired(required = false) ObjectProvider<JavaMailSender> defaultMailSenderProvider,
             @Autowired(required = false)
                     ObjectProvider<MailDiagnosticsService> mailDiagnosticsProvider,
@@ -553,7 +553,7 @@ public class MailOtpSettingsServiceImpl implements MailOtpSettingsService {
                 trimToNull(status) != null ? status.trim().toUpperCase(Locale.ROOT) : null;
         String normQuery = trimToNull(query) != null ? query.trim().toLowerCase(Locale.ROOT) : null;
 
-        Specification<AuthOtpToken> spec =
+        HibernateSpecification<AuthOtpToken> spec =
                 (root, cq, cb) -> {
                     if (cq != null
                             && cq.getResultType() != Long.class

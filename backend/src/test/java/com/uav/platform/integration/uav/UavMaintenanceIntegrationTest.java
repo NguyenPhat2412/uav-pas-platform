@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest;
 import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
 import com.uav.platform.dto.request.uav.UavRequest;
@@ -16,9 +19,6 @@ import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.mission.lifecycle.MissionService;
@@ -47,10 +47,10 @@ import java.util.concurrent.TimeUnit;
                 "spring.datasource.url=jdbc:h2:mem:uav_maintenance;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
 class UavMaintenanceIntegrationTest {
     @Autowired UavService uavs;
-    @Autowired ServicePlanRepository servicePlans;
+    @Autowired IServicePlanDao servicePlans;
     @Autowired MissionService missions;
-    @Autowired StationRepository stations;
-    @Autowired UserRepository users;
+    @Autowired IStationDao stations;
+    @Autowired IUserDao users;
     @Autowired JdbcTemplate db;
     @MockitoSpyBean AuditLogService audit;
     private Long uavId;

@@ -1,5 +1,6 @@
 package com.uav.platform.service.impl.billing.plan;
 
+import com.uav.platform.dao.billing.IServicePlanDao;
 import com.uav.platform.dto.request.billing.plan.ServicePlanRequest;
 import com.uav.platform.dto.request.billing.plan.ServicePlanUpdateRequest;
 import com.uav.platform.dto.response.billing.plan.ServicePlanResponse;
@@ -7,7 +8,6 @@ import com.uav.platform.entity.billing.ServicePlan;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.billing.invoice.BillingMapper;
-import com.uav.platform.repository.billing.ServicePlanRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.billing.plan.PlanAdministrationService;
 
@@ -24,7 +24,7 @@ import java.util.List;
 public class PlanAdministrationServiceImpl implements PlanAdministrationService {
     static final String PLAN_EXISTS = "Service plan code already exists";
 
-    private final ServicePlanRepository plans;
+    private final IServicePlanDao plans;
     private final BillingMapper mapper;
     private final AuditLogService audit;
 

@@ -19,10 +19,14 @@ import com.uav.platform.entity.marketplace.ProviderPayout;
 import com.uav.platform.entity.marketplace.ProviderPilot;
 import com.uav.platform.entity.marketplace.ProviderProfile;
 import com.uav.platform.entity.marketplace.WalletTransaction;
+import com.uav.platform.entity.media.MediaAsset;
 import com.uav.platform.entity.mission.MissionReview;
 import com.uav.platform.entity.uav.Uav;
 import com.uav.platform.enums.marketplace.ProviderVerificationStatus;
+import com.uav.platform.service.media.ObjectStorageService;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -31,17 +35,49 @@ import java.util.List;
 @Component
 public class MarketplaceMapper {
 
+    @Autowired(required = false)
+    private ObjectProvider<ObjectStorageService> objectStorage;
+
+    public void setObjectStorage(ObjectProvider<ObjectStorageService> objectStorage) {
+        this.objectStorage = objectStorage;
+    }
+
     public ProviderDocumentResponse toDocumentResponse(ProviderDocument doc) {
+        MediaAsset media = doc.getMediaAsset();
         return new ProviderDocumentResponse(
                 doc.getId(),
                 doc.getDocumentType(),
                 doc.getTitle(),
                 doc.getDocumentNumber(),
                 doc.getFileUrl(),
-                doc.getMediaAsset() != null ? doc.getMediaAsset().getId() : null,
+                media != null ? media.getId() : null,
+                resolveDocumentDownloadUrl(doc, media),
                 doc.getStatus(),
                 doc.getReviewerNote(),
-                doc.getCreatedAt());
+                doc.getCreatedAt(),
+                doc.getUpdatedAt());
+    }
+
+    private String resolveDocumentDownloadUrl(ProviderDocument doc, MediaAsset media) {
+        if (media != null
+                && !media.isDeleted()
+                && media.isConfirmed()
+                && media.getObjectKey() != null
+                && !media.getObjectKey().isBlank()
+                && objectStorage != null) {
+            ObjectStorageService storage = objectStorage.getIfAvailable();
+            if (storage != null) {
+                try {
+                    String signed = storage.createSignedDownloadUrl(media.getObjectKey());
+                    if (signed != null && !signed.isBlank()) {
+                        return signed;
+                    }
+                } catch (RuntimeException ignored) {
+                    // Fall back to direct fileUrl if storage signing is unavailable.
+                }
+            }
+        }
+        return doc.getFileUrl();
     }
 
     public ProviderProfileResponse toProfileResponse(

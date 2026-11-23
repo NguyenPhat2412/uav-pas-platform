@@ -3,10 +3,10 @@ package com.uav.platform.service.sar;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.sar.ISarMissionDao;
 import com.uav.platform.dto.request.sar.TelemetryEvaluateRequest;
 import com.uav.platform.entity.mission.Mission;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.sar.SarMissionRepository;
 import com.uav.platform.service.impl.sar.SarServiceImpl;
 import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
@@ -29,14 +29,14 @@ class SarAuthorizationTest {
     }
 
     void check(boolean exists) {
-        var missions = mock(MissionRepository.class);
+        var missions = mock(IMissionDao.class);
         var notices = mock(NotificationService.class);
         var hooks = mock(WebhookService.class);
         when(missions.findById(123L))
                 .thenReturn(exists ? Optional.of(mock(Mission.class)) : Optional.empty());
         var service =
                 new SarServiceImpl(
-                        mock(SarMissionRepository.class),
+                        mock(ISarMissionDao.class),
                         missions,
                         notices,
                         hooks,
@@ -72,7 +72,7 @@ class SarAuthorizationTest {
 
     @Test
     void assignedAndGlobalActorsRequireMatchingUavAndNeverClaimFlightCommand() {
-        var missions = mock(MissionRepository.class);
+        var missions = mock(IMissionDao.class);
         var notices = mock(NotificationService.class);
         var hooks = mock(WebhookService.class);
         var permissions = mock(PermissionService.class);
@@ -85,7 +85,7 @@ class SarAuthorizationTest {
         when(missions.findById(123L)).thenReturn(Optional.of(mission));
         var service =
                 new SarServiceImpl(
-                        mock(SarMissionRepository.class), missions, notices, hooks, permissions);
+                        mock(ISarMissionDao.class), missions, notices, hooks, permissions);
         var auth = UsernamePasswordAuthenticationToken.authenticated("assigned", "", List.of());
         var mismatch =
                 new TelemetryEvaluateRequest(

@@ -8,14 +8,14 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.support.ServicePlanTestData;
@@ -42,9 +42,9 @@ import java.util.concurrent.*;
         properties =
                 "spring.datasource.url=jdbc:h2:mem:draft_concurrency;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=10000")
 class MissionDraftConcurrencyIntegrationTest {
-    @Autowired ServicePlanRepository servicePlans;
+    @Autowired IServicePlanDao servicePlans;
     @Autowired MissionService missions;
-    @Autowired UserRepository users;
+    @Autowired IUserDao users;
     @Autowired WebApplicationContext context;
     @Autowired JdbcTemplate db;
     @MockitoSpyBean AuditLogService audit;

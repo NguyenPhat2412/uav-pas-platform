@@ -1,40 +1,40 @@
 package com.uav.platform.service.impl.audit;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.audit.IAuditLogDao;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.audit.AuditLogQueryRequest;
 import com.uav.platform.dto.response.audit.AuditLogResponse;
 import com.uav.platform.entity.audit.AuditLog;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.mapper.audit.AuditLogMapper;
-import com.uav.platform.repository.audit.AuditLogRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class AuditLogServiceImpl implements AuditLogService {
-    private final AuditLogRepository repository;
-    private final UserRepository users;
+    private final IAuditLogDao repository;
+    private final IUserDao users;
     private final AuditLogMapper auditLogMapper;
 
-    public AuditLogServiceImpl(AuditLogRepository repository) {
+    public AuditLogServiceImpl(IAuditLogDao repository) {
         this(repository, null);
     }
 
-    public AuditLogServiceImpl(AuditLogRepository repository, UserRepository users) {
+    public AuditLogServiceImpl(IAuditLogDao repository, IUserDao users) {
         this(repository, users, org.mapstruct.factory.Mappers.getMapper(AuditLogMapper.class));
     }
 
     @org.springframework.beans.factory.annotation.Autowired
     public AuditLogServiceImpl(
-            AuditLogRepository repository,
+            IAuditLogDao repository,
             @org.springframework.beans.factory.annotation.Autowired(required = false)
-                    UserRepository users,
+                    IUserDao users,
             AuditLogMapper auditLogMapper) {
         this.repository = repository;
         this.users = users;
@@ -74,7 +74,7 @@ public class AuditLogServiceImpl implements AuditLogService {
                 repository.findAll(filter(query), pageable), auditLogMapper::toResponse);
     }
 
-    static Specification<AuditLog> filter(AuditLogQueryRequest query) {
+    static HibernateSpecification<AuditLog> filter(AuditLogQueryRequest query) {
         return (root, criteria, cb) -> {
             java.util.List<jakarta.persistence.criteria.Predicate> where =
                     new java.util.ArrayList<>();

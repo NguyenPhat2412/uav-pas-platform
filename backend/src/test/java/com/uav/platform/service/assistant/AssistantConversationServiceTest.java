@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.assistant.IAssistantAttachmentDao;
+import com.uav.platform.dao.assistant.IAssistantConversationDao;
+import com.uav.platform.dao.assistant.IAssistantMessageDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.assistant.ChatImage;
 import com.uav.platform.dto.response.assistant.AssistantChatResponse;
 import com.uav.platform.entity.assistant.AssistantAttachment;
@@ -12,10 +16,6 @@ import com.uav.platform.entity.assistant.AssistantMessage;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.assistant.AssistantAttachmentRepository;
-import com.uav.platform.repository.assistant.AssistantConversationRepository;
-import com.uav.platform.repository.assistant.AssistantMessageRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.assistant.AssistantConversationServiceImpl;
 
@@ -27,12 +27,11 @@ import java.util.List;
 import java.util.Optional;
 
 class AssistantConversationServiceTest {
-    final AssistantConversationRepository conversations =
-            mock(AssistantConversationRepository.class);
-    final AssistantMessageRepository messages = mock(AssistantMessageRepository.class);
-    final UserRepository users = mock(UserRepository.class);
+    final IAssistantConversationDao conversations = mock(IAssistantConversationDao.class);
+    final IAssistantMessageDao messages = mock(IAssistantMessageDao.class);
+    final IUserDao users = mock(IUserDao.class);
     final AuditLogService audit = mock(AuditLogService.class);
-    final AssistantAttachmentRepository files = mock(AssistantAttachmentRepository.class);
+    final IAssistantAttachmentDao files = mock(IAssistantAttachmentDao.class);
     final AssistantConversationServiceImpl service =
             new AssistantConversationServiceImpl(conversations, messages, users, audit, files);
 

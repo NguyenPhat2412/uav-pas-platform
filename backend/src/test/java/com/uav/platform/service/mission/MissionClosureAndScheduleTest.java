@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.mission.*;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
 import com.uav.platform.dto.request.mission.lifecycle.MissionForceFailRequest;
 import com.uav.platform.entity.mission.*;
@@ -14,11 +19,6 @@ import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.mission.*;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.billing.quota.QuotaService;
 import com.uav.platform.service.impl.mission.lifecycle.MissionBillingServiceImpl;
@@ -45,7 +45,7 @@ import java.util.Optional;
 
 /** Force-fail by a commander, start window, cancel reason and schedule/quota validation. */
 class MissionClosureAndScheduleTest {
-    private final MissionEventRepository events = mock(MissionEventRepository.class);
+    private final IMissionEventDao events = mock(IMissionEventDao.class);
     private final AuditLogService audit = mock(AuditLogService.class);
 
     @Test
@@ -198,7 +198,7 @@ class MissionClosureAndScheduleTest {
         doThrow(SystemException.notFound("User not found: 5"))
                 .when(quotas)
                 .checkCanSchedule(eq(5L), anyDouble(), isNull());
-        MissionRepository missions = mock(MissionRepository.class);
+        IMissionDao missions = mock(IMissionDao.class);
         var lifecycle = lifecycle(quotas, missions);
         SystemException error =
                 assertThrows(
@@ -213,7 +213,7 @@ class MissionClosureAndScheduleTest {
         doThrow(SystemException.conflict("over", "QUOTA_FLIGHT_HOURS_EXCEEDED"))
                 .when(quotas)
                 .checkCanSchedule(5L, 3.0, null);
-        MissionRepository missions = mock(MissionRepository.class);
+        IMissionDao missions = mock(IMissionDao.class);
         SystemException error =
                 assertThrows(
                         SystemException.class,
@@ -240,10 +240,10 @@ class MissionClosureAndScheduleTest {
     }
 
     private TestLifecycle lifecycle(QuotaService quotas) {
-        return lifecycle(quotas, mock(MissionRepository.class));
+        return lifecycle(quotas, mock(IMissionDao.class));
     }
 
-    private TestLifecycle lifecycle(QuotaService quotas, MissionRepository missions) {
+    private TestLifecycle lifecycle(QuotaService quotas, IMissionDao missions) {
         MissionAccessService access = mock(MissionAccessService.class);
         AppUser customer = user("customer");
         customer.setId(5L);
@@ -259,18 +259,18 @@ class MissionClosureAndScheduleTest {
     /** Exposes the package-private start-window rule with an explicit clock. */
     static final class TestLifecycle extends MissionLifecycleServiceImpl {
         TestLifecycle(
-                MissionRepository missions,
+                IMissionDao missions,
                 QuotaService quotas,
                 MissionAccessService access,
                 MissionBillingService billing,
                 MissionMapper mapper) {
             super(
                     missions,
-                    mock(ServiceOfferingRepository.class),
+                    mock(IServiceOfferingDao.class),
                     mock(AuditLogService.class),
-                    mock(MissionEventRepository.class),
+                    mock(IMissionEventDao.class),
                     quotas,
-                    mock(MissionMediaRepository.class),
+                    mock(IMissionMediaDao.class),
                     access,
                     mock(MissionEventService.class),
                     mock(MissionResourceService.class),
@@ -284,25 +284,25 @@ class MissionClosureAndScheduleTest {
     }
 
     private MissionService service(Mission mission, String actor) {
-        MissionRepository missions = mock(MissionRepository.class);
+        IMissionDao missions = mock(IMissionDao.class);
         when(missions.findById(1L)).thenReturn(Optional.of(mission));
         when(missions.findByIdForUpdate(1L)).thenReturn(Optional.of(mission));
-        UserRepository users = mock(UserRepository.class);
+        IUserDao users = mock(IUserDao.class);
         when(users.findByUsername(actor)).thenReturn(Optional.of(user(actor)));
         PermissionService permissions = mock(PermissionService.class);
         when(permissions.has(any(), eq("MISSION_VIEW_ALL"))).thenReturn(true);
         return com.uav.platform.support.MissionServiceFixture.create(
                 missions,
-                mock(ServiceOfferingRepository.class),
+                mock(IServiceOfferingDao.class),
                 users,
                 permissions,
                 audit,
                 events,
-                mock(StationRepository.class),
-                mock(UavRepository.class),
-                mock(EquipmentRepository.class),
+                mock(IStationDao.class),
+                mock(IUavDao.class),
+                mock(IEquipmentDao.class),
                 mock(InventoryService.class),
-                mock(MissionEquipmentReservationRepository.class));
+                mock(IMissionEquipmentReservationDao.class));
     }
 
     private Mission inProgressWithUav() {

@@ -2,6 +2,12 @@ package com.uav.platform.service.impl.training.catalog;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.training.ITrainingAssetDao;
+import com.uav.platform.dao.training.ITrainingDocumentDao;
+import com.uav.platform.dao.training.ITrainingLessonDao;
+import com.uav.platform.dao.training.ITrainingLessonProgressDao;
+import com.uav.platform.dao.training.IUserTrainingProgressDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.training.catalog.UpdateTrainingProgressRequest;
 import com.uav.platform.dto.request.training.catalog.UpsertTrainingDocumentRequest;
 import com.uav.platform.dto.response.training.catalog.TrainingDocumentResponse;
@@ -14,12 +20,6 @@ import com.uav.platform.entity.training.UserTrainingProgress;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.training.TrainingAssetRepository;
-import com.uav.platform.repository.training.TrainingDocumentRepository;
-import com.uav.platform.repository.training.TrainingLessonProgressRepository;
-import com.uav.platform.repository.training.TrainingLessonRepository;
-import com.uav.platform.repository.training.UserTrainingProgressRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.AuthCookieHelper;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.training.catalog.TrainingService;
@@ -52,22 +52,22 @@ public class TrainingServiceImpl implements TrainingService {
 
     private static final Set<String> VALID_PORTALS = Set.of("CUSTOMER", "OPERATIONS", "ADMIN");
 
-    private final TrainingDocumentRepository trainingDocumentRepository;
-    private final UserTrainingProgressRepository userTrainingProgressRepository;
-    private final UserRepository userRepository;
-    private final TrainingLessonRepository lessonRepository;
-    private final TrainingLessonProgressRepository lessonProgressRepository;
+    private final ITrainingDocumentDao trainingDocumentRepository;
+    private final IUserTrainingProgressDao userTrainingProgressRepository;
+    private final IUserDao userRepository;
+    private final ITrainingLessonDao lessonRepository;
+    private final ITrainingLessonProgressDao lessonProgressRepository;
     private final PermissionService permissionService;
-    private final TrainingAssetRepository assetRepository;
+    private final ITrainingAssetDao assetRepository;
     private final TrainingMediaUrls mediaUrls;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public TrainingServiceImpl(
-            TrainingDocumentRepository trainingDocumentRepository,
-            UserTrainingProgressRepository userTrainingProgressRepository,
-            UserRepository userRepository,
-            TrainingLessonRepository lessonRepository,
-            TrainingLessonProgressRepository lessonProgressRepository) {
+            ITrainingDocumentDao trainingDocumentRepository,
+            IUserTrainingProgressDao userTrainingProgressRepository,
+            IUserDao userRepository,
+            ITrainingLessonDao lessonRepository,
+            ITrainingLessonProgressDao lessonProgressRepository) {
         this(
                 trainingDocumentRepository,
                 userTrainingProgressRepository,
@@ -81,13 +81,13 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Autowired
     public TrainingServiceImpl(
-            TrainingDocumentRepository trainingDocumentRepository,
-            UserTrainingProgressRepository userTrainingProgressRepository,
-            UserRepository userRepository,
-            TrainingLessonRepository lessonRepository,
-            TrainingLessonProgressRepository lessonProgressRepository,
+            ITrainingDocumentDao trainingDocumentRepository,
+            IUserTrainingProgressDao userTrainingProgressRepository,
+            IUserDao userRepository,
+            ITrainingLessonDao lessonRepository,
+            ITrainingLessonProgressDao lessonProgressRepository,
             PermissionService permissionService,
-            TrainingAssetRepository assetRepository,
+            ITrainingAssetDao assetRepository,
             TrainingMediaUrls mediaUrls) {
         this.trainingDocumentRepository = trainingDocumentRepository;
         this.userTrainingProgressRepository = userTrainingProgressRepository;

@@ -50,4 +50,11 @@ public class DeviceApiKey {
 
     @Column(name = "revoked_at")
     private LocalDateTime revokedAt;
+
+    @PrePersist
+    void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
 }

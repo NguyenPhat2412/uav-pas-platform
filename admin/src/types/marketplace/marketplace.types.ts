@@ -10,10 +10,19 @@ export interface AdminProviderDocument {
     title: string;
     documentNumber?: string | null;
     fileUrl?: string | null;
+    downloadUrl?: string | null;
     mediaAssetId?: number | null;
     status: string;
     reviewerNote?: string | null;
     createdAt?: string | null;
+    updatedAt?: string | null;
+}
+
+export type ProviderDocumentReviewStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export interface ProviderDocumentModerationInput {
+    status: ProviderDocumentReviewStatus;
+    reviewerNote?: string;
 }
 
 export interface AdminProviderProfile {

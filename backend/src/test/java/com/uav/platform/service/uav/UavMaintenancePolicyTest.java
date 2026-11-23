@@ -3,16 +3,16 @@ package com.uav.platform.service.uav;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.uav.IUavStatusHistoryDao;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.entity.uav.Uav;
 import com.uav.platform.entity.uav.UavStatusHistory;
 import com.uav.platform.enums.station.StationStatus;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.uav.UavStatusHistoryRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.impl.uav.UavOperations;
@@ -32,13 +32,13 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class UavMaintenancePolicyTest {
-    @Mock UavRepository repository;
-    @Mock StationRepository stations;
-    @Mock UavStatusHistoryRepository history;
+    @Mock IUavDao repository;
+    @Mock IStationDao stations;
+    @Mock IUavStatusHistoryDao history;
     @Mock AuditLogService audit;
-    @Mock MissionRepository missions;
+    @Mock IMissionDao missions;
     @Mock EntityManager entityManager;
-    @Mock com.uav.platform.repository.maintenance.RepairOrderRepository repairOrders;
+    @Mock com.uav.platform.dao.maintenance.IRepairOrderDao repairOrders;
 
     @org.mockito.Spy
     com.uav.platform.mapper.uav.UavMapper mapper =

@@ -2,6 +2,8 @@ package com.uav.platform.service.impl.mission.lifecycle;
 
 import com.uav.platform.common.util.OrderStatusGroups;
 import com.uav.platform.common.util.VietnamProvinceCoordinates;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionReviewDao;
 import com.uav.platform.dto.response.mission.lifecycle.OrderSummaryResponse;
 import com.uav.platform.dto.response.mission.lifecycle.OrderTrackingResponse;
 import com.uav.platform.dto.response.simulation.SimulationStateResponse;
@@ -9,8 +11,6 @@ import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.mission.MissionReview;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.mission.MissionStatus;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.MissionReviewRepository;
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.mission.lifecycle.OrderTrackingService;
 import com.uav.platform.service.simulation.SimulationService;
@@ -34,8 +34,8 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class OrderTrackingServiceImpl implements OrderTrackingService {
 
-    private final MissionRepository missions;
-    private final MissionReviewRepository reviews;
+    private final IMissionDao missions;
+    private final IMissionReviewDao reviews;
     private final MissionAccessService access;
 
     @Autowired(required = false)

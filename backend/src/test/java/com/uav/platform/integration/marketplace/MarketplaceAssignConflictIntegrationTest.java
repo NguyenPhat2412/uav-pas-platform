@@ -8,6 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.marketplace.IProviderProfileDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.marketplace.admin.ProviderModerationRequest;
 import com.uav.platform.dto.request.marketplace.provider.ProviderOnboardingRequest;
 import com.uav.platform.dto.request.marketplace.provider.ProviderPilotUpsertRequest;
@@ -27,9 +30,6 @@ import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.marketplace.ProviderProfileRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.marketplace.admin.MarketplaceAdminService;
 import com.uav.platform.service.marketplace.provider.MarketplaceProviderFleetService;
 import com.uav.platform.service.marketplace.provider.MarketplaceProviderService;
@@ -61,9 +61,9 @@ import java.util.UUID;
 class MarketplaceAssignConflictIntegrationTest {
 
     @Autowired WebApplicationContext context;
-    @Autowired UserRepository users;
-    @Autowired ProviderProfileRepository providers;
-    @Autowired MissionRepository missions;
+    @Autowired IUserDao users;
+    @Autowired IProviderProfileDao providers;
+    @Autowired IMissionDao missions;
     @Autowired MarketplaceProviderService providerService;
     @Autowired MarketplaceProviderFleetService fleetService;
     @Autowired MarketplaceAdminService adminService;

@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.uav.platform.controller.mission.catalog.ServiceOfferingController;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
 import com.uav.platform.entity.mission.ServiceOffering;
 import com.uav.platform.enums.audit.*;
 import com.uav.platform.enums.inventory.*;
@@ -12,19 +14,17 @@ import com.uav.platform.enums.media.*;
 import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
 class ServiceOfferingControllerTest {
     @Test
     void listQueriesOnlyActiveServicesWithSpecification() {
-        ServiceOfferingRepository repository = mock(ServiceOfferingRepository.class);
+        IServiceOfferingDao repository = mock(IServiceOfferingDao.class);
         ServiceOffering active = new ServiceOffering("MAPPING", "Mapping", null, 30);
-        when(repository.findAll(any(Specification.class))).thenReturn(List.of(active));
+        when(repository.findAll(any(HibernateSpecification.class))).thenReturn(List.of(active));
 
         var response =
                 new ServiceOfferingController(
@@ -33,13 +33,13 @@ class ServiceOfferingControllerTest {
                         .list();
 
         assertEquals(1, response.getBody().size());
-        verify(repository).findAll(any(Specification.class));
+        verify(repository).findAll(any(HibernateSpecification.class));
         verify(repository, never()).findAll();
     }
 
     @Test
     void invalidDurationIsRejectedBeforePersistence() {
-        var repository = mock(ServiceOfferingRepository.class);
+        var repository = mock(IServiceOfferingDao.class);
         var service =
                 new com.uav.platform.service.impl.mission.catalog.ServiceOfferingServiceImpl(
                         repository);
@@ -54,7 +54,7 @@ class ServiceOfferingControllerTest {
 
     @Test
     void duplicateCodeIsRejectedBeforePersistence() {
-        var repository = mock(ServiceOfferingRepository.class);
+        var repository = mock(IServiceOfferingDao.class);
         when(repository.findByCode("EXISTING"))
                 .thenReturn(
                         java.util.Optional.of(

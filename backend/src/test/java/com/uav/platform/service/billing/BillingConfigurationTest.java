@@ -3,9 +3,9 @@ package com.uav.platform.service.billing;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.settings.ISystemConfigurationDao;
 import com.uav.platform.dto.request.settings.UpdateConfigurationRequest;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.settings.SystemConfigurationRepository;
 import com.uav.platform.service.impl.settings.SystemConfigServiceImpl;
 import com.uav.platform.service.impl.settings.SystemConfigurationOperations;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 class BillingConfigurationTest {
     @Test
     void enablingWithoutPriceIsRejected() {
-        var repo = mock(SystemConfigurationRepository.class);
+        var repo = mock(ISystemConfigurationDao.class);
         var flag =
                 SystemConfigurationOperations.create(
                         "billing.auto_generate_invoice", "false", "BILLING", null, "SYSTEM");
@@ -36,7 +36,7 @@ class BillingConfigurationTest {
 
     @Test
     void nonPositiveOrMalformedRatesAreRejected() {
-        var repo = mock(SystemConfigurationRepository.class);
+        var repo = mock(ISystemConfigurationDao.class);
         var rate =
                 SystemConfigurationOperations.create(
                         "billing.hourly_rate_vnd", "", "BILLING", null, "SYSTEM");
@@ -56,7 +56,7 @@ class BillingConfigurationTest {
 
     @Test
     void hourlyRateMustBeWholeDong() {
-        var repo = mock(SystemConfigurationRepository.class);
+        var repo = mock(ISystemConfigurationDao.class);
         var rate =
                 SystemConfigurationOperations.create(
                         "billing.hourly_rate_vnd", "", "BILLING", null, "SYSTEM");

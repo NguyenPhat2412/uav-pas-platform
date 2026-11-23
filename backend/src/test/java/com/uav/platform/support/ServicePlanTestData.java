@@ -1,6 +1,6 @@
 package com.uav.platform.support;
 
-import com.uav.platform.repository.billing.ServicePlanRepository;
+import com.uav.platform.dao.billing.IServicePlanDao;
 import com.uav.platform.service.impl.billing.plan.ServicePlanOperations;
 
 import java.math.BigDecimal;
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 public final class ServicePlanTestData {
     private ServicePlanTestData() {}
 
-    public static void ensureBasicPlan(ServicePlanRepository plans) {
+    public static void ensureBasicPlan(IServicePlanDao plans) {
         if (plans.findByCode("BASIC").isEmpty()) {
             plans.save(
                     ServicePlanOperations.create(

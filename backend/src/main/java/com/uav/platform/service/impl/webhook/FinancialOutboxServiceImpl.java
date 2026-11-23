@@ -2,11 +2,11 @@ package com.uav.platform.service.impl.webhook;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.webhook.IFinancialOutboxDao;
 import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.webhook.FinancialOutboxEvent;
 import com.uav.platform.enums.notification.NotificationType;
-import com.uav.platform.repository.webhook.FinancialOutboxRepository;
 import com.uav.platform.service.billing.invoice.InvoiceMailService;
 import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.webhook.FinancialOutboxService;
@@ -34,7 +34,7 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
     /** After this many failed local attempts the event is FAILED and waits for an admin retry. */
     static final int MAX_ATTEMPTS = 8;
 
-    private final FinancialOutboxRepository events;
+    private final IFinancialOutboxDao events;
     private final NotificationService notifications;
     private final WebhookEventQueue webhooks;
     private final TransactionTemplate transaction;
@@ -59,7 +59,7 @@ public class FinancialOutboxServiceImpl implements FinancialOutboxService {
     private InvoiceMailService invoiceMailService;
 
     public FinancialOutboxServiceImpl(
-            FinancialOutboxRepository events,
+            IFinancialOutboxDao events,
             NotificationService notifications,
             WebhookEventQueue webhooks,
             PlatformTransactionManager manager) {

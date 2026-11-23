@@ -5,10 +5,10 @@ import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.uav.platform.dao.assistant.IAiRouterSettingsDao;
 import com.uav.platform.dto.response.security.SecretStatusResponse;
 import com.uav.platform.dto.response.security.SecurityWarningResponse;
 import com.uav.platform.entity.assistant.AiRouterSettings;
-import com.uav.platform.repository.assistant.AiRouterSettingsRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.impl.security.SecurityConfigStatusServiceImpl;
 
@@ -28,7 +28,7 @@ class SecurityConfigStatusServiceImplTest {
     private static final String MAIL_PASSWORD = "mail-pass-leak-check";
     private static final String AI_CIPHER = "cipher-text-must-not-leak";
 
-    private final AiRouterSettingsRepository aiRepo = mock(AiRouterSettingsRepository.class);
+    private final IAiRouterSettingsDao aiRepo = mock(IAiRouterSettingsDao.class);
     private final JwtTokenProvider jwt = mock(JwtTokenProvider.class);
 
     private SecurityConfigStatusServiceImpl service(MockEnvironment env) {

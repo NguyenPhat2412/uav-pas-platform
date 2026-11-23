@@ -1,13 +1,13 @@
 package com.uav.platform.service.impl.billing.reconciliation;
 
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.mission.IMissionDao;
 import com.uav.platform.dto.record.billing.reconciliation.PaymentAccountSettings;
 import com.uav.platform.dto.response.billing.invoice.InvoiceResponse;
 import com.uav.platform.dto.response.billing.reconciliation.BankTransferInstructionsResponse;
 import com.uav.platform.dto.response.billing.reconciliation.BankTransferStatusResponse;
 import com.uav.platform.enums.billing.InvoiceStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.service.billing.invoice.BillingService;
 import com.uav.platform.service.billing.reconciliation.BankTransferService;
 import com.uav.platform.service.billing.reconciliation.PaymentSettingsService;
@@ -23,14 +23,14 @@ import java.time.Duration;
 @Service
 public class BankTransferServiceImpl implements BankTransferService {
     private final BillingService billing;
-    private final ServicePlanRepository plans;
-    private final MissionRepository missions;
+    private final IServicePlanDao plans;
+    private final IMissionDao missions;
     private final PaymentSettingsService paymentSettings;
 
     public BankTransferServiceImpl(
             BillingService billing,
-            ServicePlanRepository plans,
-            MissionRepository missions,
+            IServicePlanDao plans,
+            IMissionDao missions,
             PaymentSettingsService paymentSettings) {
         this.billing = billing;
         this.plans = plans;

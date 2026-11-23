@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.specification.user.account.UserSpecifications;
@@ -16,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserSpecification Unit Tests")
@@ -43,7 +43,7 @@ class UserSpecificationsLegacyContractTest {
     @Test
     @DisplayName("filter with nulls should return null predicate")
     void filter_Nulls_ReturnsNull() {
-        Specification<AppUser> spec = UserSpecifications.filter(null, null);
+        HibernateSpecification<AppUser> spec = UserSpecifications.filter(null, null);
         Predicate result = spec.toPredicate(root, query, cb);
 
         assertNull(result);
@@ -65,7 +65,8 @@ class UserSpecificationsLegacyContractTest {
         when(cb.and(any(), any())).thenReturn(predicate);
         when(cb.or(any(Predicate[].class))).thenReturn(predicate);
 
-        Specification<AppUser> spec = UserSpecifications.filter("pilot", UserRole.ROLE_PILOT);
+        HibernateSpecification<AppUser> spec =
+                UserSpecifications.filter("pilot", UserRole.ROLE_PILOT);
         Predicate result = spec.toPredicate(root, query, cb);
 
         assertNotNull(result);

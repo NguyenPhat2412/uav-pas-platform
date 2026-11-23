@@ -5,6 +5,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IPaymentTransactionDao;
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.settings.ISystemConfigurationDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.billing.reconciliation.PaymentAccountSettings;
 import com.uav.platform.dto.request.billing.reconciliation.PaymentGatewayConfigUpdateRequest;
 import com.uav.platform.dto.response.billing.invoice.PaymentResponse;
@@ -13,12 +19,6 @@ import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.billing.InvoiceStatus;
 import com.uav.platform.enums.billing.PaymentMethod;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.PaymentTransactionRepository;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.settings.SystemConfigurationRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.billing.reconciliation.PaymentSettingsService;
 import com.uav.platform.service.impl.billing.invoice.BillingAdminServiceImpl;
 import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
@@ -37,19 +37,19 @@ class BillingPaymentGatewayTest {
 
     @Test
     void payInvoiceReturnsVietQrAwaitingTransferWhenBankAccountIsConfigured() {
-        InvoiceRepository invoiceRepository = mock(InvoiceRepository.class);
-        PaymentTransactionRepository paymentRepository = mock(PaymentTransactionRepository.class);
-        UserRepository userRepository = mock(UserRepository.class);
+        IInvoiceDao invoiceRepository = mock(IInvoiceDao.class);
+        IPaymentTransactionDao paymentRepository = mock(IPaymentTransactionDao.class);
+        IUserDao userRepository = mock(IUserDao.class);
         PermissionService permissions = mock(PermissionService.class);
         PaymentSettingsService paymentSettings = mock(PaymentSettingsService.class);
 
         BillingServiceImpl service =
                 new BillingServiceImpl(
-                        mock(ServicePlanRepository.class),
+                        mock(IServicePlanDao.class),
                         invoiceRepository,
                         paymentRepository,
                         userRepository,
-                        mock(MissionRepository.class),
+                        mock(IMissionDao.class),
                         permissions);
         service.setPaymentSettingsService(paymentSettings);
 
@@ -95,10 +95,10 @@ class BillingPaymentGatewayTest {
 
     @Test
     void adminPaymentGatewayConfigPersistsAllFiveBillingKeysAndBuildsSampleQr() {
-        PaymentTransactionRepository payments = mock(PaymentTransactionRepository.class);
+        IPaymentTransactionDao payments = mock(IPaymentTransactionDao.class);
         PaymentSettingsService paymentSettings = mock(PaymentSettingsService.class);
         SystemConfigService configService = mock(SystemConfigService.class);
-        SystemConfigurationRepository configRepo = mock(SystemConfigurationRepository.class);
+        ISystemConfigurationDao configRepo = mock(ISystemConfigurationDao.class);
         when(configRepo.findByConfigKey(any())).thenReturn(Optional.empty());
         when(paymentSettings.current())
                 .thenReturn(

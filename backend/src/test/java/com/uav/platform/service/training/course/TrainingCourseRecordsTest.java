@@ -5,14 +5,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.training.ITrainingLessonDao;
+import com.uav.platform.dao.training.ITrainingLessonProgressDao;
+import com.uav.platform.dao.training.ITrainingLessonProgressDao.LearnerLessonCounts;
+import com.uav.platform.dao.training.IUserTrainingProgressDao;
 import com.uav.platform.entity.training.TrainingDocument;
 import com.uav.platform.entity.training.TrainingLesson;
 import com.uav.platform.entity.training.UserTrainingProgress;
 import com.uav.platform.entity.user.AppUser;
-import com.uav.platform.repository.training.TrainingLessonProgressRepository;
-import com.uav.platform.repository.training.TrainingLessonProgressRepository.LearnerLessonCounts;
-import com.uav.platform.repository.training.TrainingLessonRepository;
-import com.uav.platform.repository.training.UserTrainingProgressRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,18 +27,18 @@ import java.util.Set;
 @DisplayName("Course records follow the active lesson set")
 class TrainingCourseRecordsTest {
 
-    private TrainingLessonRepository lessons;
-    private TrainingLessonProgressRepository lessonProgress;
-    private UserTrainingProgressRepository courseProgress;
+    private ITrainingLessonDao lessons;
+    private ITrainingLessonProgressDao lessonProgress;
+    private IUserTrainingProgressDao courseProgress;
     private TrainingCourseRecords records;
     private TrainingDocument course;
     private final List<UserTrainingProgress> saved = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
-        lessons = mock(TrainingLessonRepository.class);
-        lessonProgress = mock(TrainingLessonProgressRepository.class);
-        courseProgress = mock(UserTrainingProgressRepository.class);
+        lessons = mock(ITrainingLessonDao.class);
+        lessonProgress = mock(ITrainingLessonProgressDao.class);
+        courseProgress = mock(IUserTrainingProgressDao.class);
         records = new TrainingCourseRecords(lessons, lessonProgress, courseProgress);
         course = new TrainingDocument();
         course.setId(1L);

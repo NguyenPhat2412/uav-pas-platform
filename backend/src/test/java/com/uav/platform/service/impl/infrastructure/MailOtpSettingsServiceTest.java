@@ -9,6 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.uav.platform.controller.infrastructure.MailOtpAdminController;
+import com.uav.platform.dao.auth.IAuthOtpTokenDao;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.infrastructure.IMailOtpSettingsDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.infrastructure.MailConnectionCheck;
 import com.uav.platform.dto.request.auth.verification.ForgotPasswordRequest;
 import com.uav.platform.dto.request.auth.verification.VerifyOtpRequest;
@@ -24,9 +28,6 @@ import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.auth.session.AuthMapper;
 import com.uav.platform.mapper.user.account.UserMapper;
-import com.uav.platform.repository.auth.AuthOtpTokenRepository;
-import com.uav.platform.repository.infrastructure.MailOtpSettingsRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.auth.session.AuthRateLimitService;
@@ -42,7 +43,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -63,9 +63,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 class MailOtpSettingsServiceTest {
 
-    private MailOtpSettingsRepository repository;
-    private AuthOtpTokenRepository otpTokenRepository;
-    private UserRepository userRepository;
+    private IMailOtpSettingsDao repository;
+    private IAuthOtpTokenDao otpTokenRepository;
+    private IUserDao userRepository;
     private JavaMailSender envMailSender;
     private MailDiagnosticsService mailDiagnostics;
     private AuthOtpService authOtpService;
@@ -80,9 +80,9 @@ class MailOtpSettingsServiceTest {
     @BeforeEach
     @SuppressWarnings("unchecked")
     void setUp() {
-        repository = mock(MailOtpSettingsRepository.class);
-        otpTokenRepository = mock(AuthOtpTokenRepository.class);
-        userRepository = mock(UserRepository.class);
+        repository = mock(IMailOtpSettingsDao.class);
+        otpTokenRepository = mock(IAuthOtpTokenDao.class);
+        userRepository = mock(IUserDao.class);
         envMailSender = mock(JavaMailSender.class);
         mailDiagnostics = mock(MailDiagnosticsService.class);
         authOtpService = mock(AuthOtpService.class);
@@ -312,7 +312,7 @@ class MailOtpSettingsServiceTest {
         when(encoder.encode(anyString())).thenReturn("hashed-code");
         when(encoder.matches(eq("000000"), anyString())).thenReturn(false);
 
-        AuthOtpTokenRepository localTokens = mock(AuthOtpTokenRepository.class);
+        IAuthOtpTokenDao localTokens = mock(IAuthOtpTokenDao.class);
         AtomicReference<AuthOtpToken> issuedTokenRef = new AtomicReference<>();
         when(localTokens.findByEmailIgnoreCaseAndPurposeAndConsumedAtIsNull(
                         anyString(), anyString()))
@@ -407,7 +407,7 @@ class MailOtpSettingsServiceTest {
         tokenStore.add(activeToken);
         tokenStore.add(lockedToken);
 
-        when(otpTokenRepository.findAll(any(Specification.class), any(Pageable.class)))
+        when(otpTokenRepository.findAll(any(HibernateSpecification.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(tokenStore));
         when(otpTokenRepository.findById(101L)).thenReturn(Optional.of(activeToken));
         when(otpTokenRepository.saveAndFlush(any(AuthOtpToken.class)))

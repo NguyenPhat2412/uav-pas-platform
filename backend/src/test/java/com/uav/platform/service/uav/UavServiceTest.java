@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.maintenance.IRepairOrderDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.uav.IUavStatusHistoryDao;
 import com.uav.platform.dto.request.uav.UavRequest;
 import com.uav.platform.entity.uav.Uav;
 import com.uav.platform.enums.audit.*;
@@ -12,11 +17,6 @@ import com.uav.platform.enums.media.*;
 import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
-import com.uav.platform.repository.maintenance.RepairOrderRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.uav.UavStatusHistoryRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.uav.UavServiceImpl;
 
@@ -30,11 +30,11 @@ import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class UavServiceTest {
-    @Mock UavRepository repository;
-    @Mock StationRepository stations;
-    @Mock UavStatusHistoryRepository history;
-    @Mock MissionRepository missions;
-    @Mock RepairOrderRepository repairOrders;
+    @Mock IUavDao repository;
+    @Mock IStationDao stations;
+    @Mock IUavStatusHistoryDao history;
+    @Mock IMissionDao missions;
+    @Mock IRepairOrderDao repairOrders;
     @Mock AuditLogService audit;
 
     @org.mockito.Spy

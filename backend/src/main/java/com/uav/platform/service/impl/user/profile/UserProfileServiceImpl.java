@@ -3,6 +3,12 @@ package com.uav.platform.service.impl.user.profile;
 import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.common.util.Hashing;
 import com.uav.platform.common.util.PhoneNumbers;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IUserQuotaDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.notification.IPushDeviceTokenDao;
+import com.uav.platform.dao.permission.IUserPermissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.user.profile.UserProfileUpdateCommand;
 import com.uav.platform.dto.request.user.account.AccountDeletionRequest;
 import com.uav.platform.dto.request.user.profile.UserProfilePatchRequest;
@@ -15,12 +21,6 @@ import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.UserQuotaRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.notification.PushDeviceTokenRepository;
-import com.uav.platform.repository.permission.UserPermissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.auth.session.AuthSessionLock;
 import com.uav.platform.service.auth.session.RefreshTokenService;
@@ -70,20 +70,20 @@ public class UserProfileServiceImpl implements UserProfileService {
                     MissionStatus.FAILED,
                     MissionStatus.REJECTED);
 
-    private final UserRepository users;
+    private final IUserDao users;
     private final AuthSessionLock lock;
     private final AuditLogService audit;
 
     private SystemConfigService systemConfigService;
-    private MissionRepository missionRepository;
-    private InvoiceRepository invoiceRepository;
+    private IMissionDao missionRepository;
+    private IInvoiceDao invoiceRepository;
     private PasswordEncoder passwordEncoder;
     private SessionRevocationService sessionRevocationService;
     private SessionTerminationService sessionTerminationService;
     private RefreshTokenService refreshTokenService;
-    private PushDeviceTokenRepository pushDeviceTokenRepository;
-    private UserPermissionRepository userPermissionRepository;
-    private UserQuotaRepository userQuotaRepository;
+    private IPushDeviceTokenDao pushDeviceTokenRepository;
+    private IUserPermissionDao userPermissionRepository;
+    private IUserQuotaDao userQuotaRepository;
 
     @Autowired(required = false)
     public void setSystemConfigService(SystemConfigService systemConfigService) {
@@ -91,12 +91,12 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Autowired(required = false)
-    public void setMissionRepository(MissionRepository missionRepository) {
+    public void setMissionRepository(IMissionDao missionRepository) {
         this.missionRepository = missionRepository;
     }
 
     @Autowired(required = false)
-    public void setInvoiceRepository(InvoiceRepository invoiceRepository) {
+    public void setInvoiceRepository(IInvoiceDao invoiceRepository) {
         this.invoiceRepository = invoiceRepository;
     }
 
@@ -121,17 +121,17 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Autowired(required = false)
-    public void setPushDeviceTokenRepository(PushDeviceTokenRepository pushDeviceTokenRepository) {
+    public void setPushDeviceTokenRepository(IPushDeviceTokenDao pushDeviceTokenRepository) {
         this.pushDeviceTokenRepository = pushDeviceTokenRepository;
     }
 
     @Autowired(required = false)
-    public void setUserPermissionRepository(UserPermissionRepository userPermissionRepository) {
+    public void setUserPermissionRepository(IUserPermissionDao userPermissionRepository) {
         this.userPermissionRepository = userPermissionRepository;
     }
 
     @Autowired(required = false)
-    public void setUserQuotaRepository(UserQuotaRepository userQuotaRepository) {
+    public void setUserQuotaRepository(IUserQuotaDao userQuotaRepository) {
         this.userQuotaRepository = userQuotaRepository;
     }
 

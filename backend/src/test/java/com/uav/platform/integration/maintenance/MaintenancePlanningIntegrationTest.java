@@ -8,6 +8,9 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.maintenance.*;
 import com.uav.platform.dto.request.mission.catalog.*;
 import com.uav.platform.dto.request.mission.dispatch.*;
@@ -25,9 +28,6 @@ import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.maintenance.MaintenanceService;
@@ -61,10 +61,10 @@ import java.util.concurrent.*;
 class MaintenancePlanningIntegrationTest {
     @Autowired MaintenanceService service;
     @Autowired UavService uavs;
-    @Autowired ServicePlanRepository servicePlans;
+    @Autowired IServicePlanDao servicePlans;
     @Autowired MissionService missions;
-    @Autowired StationRepository stations;
-    @Autowired UserRepository users;
+    @Autowired IStationDao stations;
+    @Autowired IUserDao users;
     @Autowired WebApplicationContext context;
     @Autowired JdbcTemplate db;
     @MockitoSpyBean AuditLogService audit;

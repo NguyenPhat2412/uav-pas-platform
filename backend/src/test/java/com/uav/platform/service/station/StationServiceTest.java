@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.station.IStationDao;
 import com.uav.platform.dto.request.station.StationRequest;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.enums.audit.*;
@@ -14,7 +15,6 @@ import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.station.StationRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.impl.station.StationServiceImpl;
@@ -27,7 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class StationServiceTest {
-    @Mock StationRepository repository;
+    @Mock IStationDao repository;
     @Mock AuditLogService audit;
 
     @org.mockito.Spy

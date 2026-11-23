@@ -1,10 +1,10 @@
 package com.uav.platform.service.impl.mission.lifecycle;
 
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.entity.mission.*;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.permission.PermissionService;
 
@@ -20,8 +20,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MissionAccessServiceImpl implements MissionAccessService {
     private final jakarta.persistence.EntityManager entityManager;
-    private final MissionRepository missions;
-    private final UserRepository users;
+    private final IMissionDao missions;
+    private final IUserDao users;
     private final PermissionService permissions;
 
     @Override

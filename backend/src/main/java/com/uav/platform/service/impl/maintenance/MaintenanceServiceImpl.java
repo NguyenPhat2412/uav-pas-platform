@@ -3,6 +3,12 @@ package com.uav.platform.service.impl.maintenance;
 import static com.uav.platform.common.constant.TimeConstants.BUSINESS_ZONE;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.maintenance.IMaintenanceScheduleDao;
+import com.uav.platform.dao.maintenance.IRepairOrderDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.uav.IUavStatusHistoryDao;
 import com.uav.platform.dto.request.maintenance.*;
 import com.uav.platform.dto.response.maintenance.*;
 import com.uav.platform.entity.maintenance.MaintenanceSchedule;
@@ -18,11 +24,6 @@ import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.maintenance.MaintenanceMapper;
-import com.uav.platform.repository.maintenance.MaintenanceScheduleRepository;
-import com.uav.platform.repository.maintenance.RepairOrderRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.uav.UavStatusHistoryRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.notification.policy.NotificationBroadcastOperations;
 import com.uav.platform.service.impl.uav.UavOperations;
@@ -34,7 +35,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -57,11 +57,11 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                     MissionStatus.CANCELLED,
                     MissionStatus.REJECTED,
                     MissionStatus.FAILED);
-    private final MaintenanceScheduleRepository schedules;
-    private final RepairOrderRepository orders;
-    private final UavRepository uavs;
-    private final MissionRepository missions;
-    private final UavStatusHistoryRepository history;
+    private final IMaintenanceScheduleDao schedules;
+    private final IRepairOrderDao orders;
+    private final IUavDao uavs;
+    private final IMissionDao missions;
+    private final IUavStatusHistoryDao history;
     private final AuditLogService audit;
     private final EntityManager em;
     private final MaintenanceMapper maintenanceMapper;
@@ -76,7 +76,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         Long uavId = request.uavId();
         DueStatus dueStatus = request.dueStatus();
         LocalDate today = LocalDate.now(BUSINESS_ZONE);
-        Specification<MaintenanceSchedule> spec =
+        HibernateSpecification<MaintenanceSchedule> spec =
                 (r, q, b) -> {
                     var p = new java.util.ArrayList<jakarta.persistence.criteria.Predicate>();
                     if (uavId != null) p.add(b.equal(r.get("uav").get("id"), uavId));
@@ -134,7 +134,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             RepairOrderQueryRequest request, Pageable page) {
         Long uavId = request.uavId();
         RepairStatus status = request.status();
-        Specification<RepairOrder> spec =
+        HibernateSpecification<RepairOrder> spec =
                 (r, q, b) ->
                         b.and(
                                 uavId == null

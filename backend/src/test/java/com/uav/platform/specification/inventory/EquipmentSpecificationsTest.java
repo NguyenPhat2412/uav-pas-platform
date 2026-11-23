@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.inventory.Equipment;
 import com.uav.platform.entity.inventory.InventoryMovement;
 import com.uav.platform.enums.audit.*;
@@ -23,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Collections;
 import java.util.List;
@@ -79,7 +79,7 @@ class EquipmentSpecificationsTest {
         when(cb.like(any(), anyString())).thenReturn(predicate);
         when(cb.or(any(Predicate.class), any(Predicate.class))).thenReturn(predicate);
 
-        Specification<Equipment> spec = EquipmentSpecifications.hasKeyword("Battery");
+        HibernateSpecification<Equipment> spec = EquipmentSpecifications.hasKeyword("Battery");
         Predicate result = spec.toPredicate(root, query, cb);
 
         assertThat(result).isSameAs(predicate);

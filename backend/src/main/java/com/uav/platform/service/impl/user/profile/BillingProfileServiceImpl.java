@@ -1,13 +1,13 @@
 package com.uav.platform.service.impl.user.profile;
 
 import com.uav.platform.common.constant.CoreConstants;
+import com.uav.platform.dao.user.ICustomerBillingProfileDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.user.profile.BillingProfileRequest;
 import com.uav.platform.dto.response.user.profile.BillingProfileResponse;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.entity.user.CustomerBillingProfile;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.user.CustomerBillingProfileRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.auth.verification.EmailDomainPolicyService;
 import com.uav.platform.service.user.profile.BillingProfileService;
 
@@ -21,8 +21,8 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class BillingProfileServiceImpl implements BillingProfileService {
-    private final UserRepository users;
-    private final CustomerBillingProfileRepository profiles;
+    private final IUserDao users;
+    private final ICustomerBillingProfileDao profiles;
 
     @Override
     @Transactional(readOnly = true)

@@ -4,12 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.auth.IAuthOtpTokenDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.auth.verification.ForgotPasswordRequest;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.mapper.auth.session.AuthMapper;
 import com.uav.platform.mapper.user.account.UserMapper;
-import com.uav.platform.repository.auth.AuthOtpTokenRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.auth.verification.AuthMailService;
 import com.uav.platform.service.auth.verification.TotpService;
@@ -24,11 +24,11 @@ import java.util.Optional;
 /** A reset code echoed back to whoever asked would let anyone take over any account. */
 class OtpPreviewGuardTest {
     private AuthOtpServiceImpl service(boolean devPreview) {
-        UserRepository users = mock(UserRepository.class);
+        IUserDao users = mock(IUserDao.class);
         AppUser user = mock(AppUser.class);
         when(user.getEmail()).thenReturn("victim@gmail.com");
         when(users.findByEmail("victim@gmail.com")).thenReturn(Optional.of(user));
-        AuthOtpTokenRepository tokens = mock(AuthOtpTokenRepository.class);
+        IAuthOtpTokenDao tokens = mock(IAuthOtpTokenDao.class);
         when(tokens.findByEmailIgnoreCaseAndPurposeAndConsumedAtIsNull(anyString(), anyString()))
                 .thenReturn(List.of());
         PasswordEncoder encoder = mock(PasswordEncoder.class);

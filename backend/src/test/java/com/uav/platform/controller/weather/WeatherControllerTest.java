@@ -7,14 +7,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.weather.IWeatherObservationCacheDao;
+import com.uav.platform.dao.weather.IWeatherProviderSettingsDao;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.enums.station.StationStatus;
 import com.uav.platform.error.GlobalExceptionHandler;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.weather.WeatherObservationCacheRepository;
-import com.uav.platform.repository.weather.WeatherProviderSettingsRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.weather.FlightSafetyEvaluatorOperations;
 import com.uav.platform.service.impl.weather.WeatherCipherOperations;
@@ -40,18 +40,18 @@ import java.util.Optional;
 class WeatherControllerTest {
     private final UsernamePasswordAuthenticationToken admin =
             new UsernamePasswordAuthenticationToken("admin", "n/a", List.of());
-    private WeatherProviderSettingsRepository settings;
+    private IWeatherProviderSettingsDao settings;
     private MissionAccessService access;
-    private StationRepository stations;
+    private IStationDao stations;
     private MockMvc mvc;
 
     @BeforeEach
     void setUp() {
-        WeatherObservationCacheRepository cache = mock(WeatherObservationCacheRepository.class);
-        settings = mock(WeatherProviderSettingsRepository.class);
+        IWeatherObservationCacheDao cache = mock(IWeatherObservationCacheDao.class);
+        settings = mock(IWeatherProviderSettingsDao.class);
         SystemConfigService config = mock(SystemConfigService.class);
         access = mock(MissionAccessService.class);
-        stations = mock(StationRepository.class);
+        stations = mock(IStationDao.class);
         when(config.valueOrDefault(anyString(), anyString()))
                 .thenAnswer(call -> call.getArgument(1));
         when(settings.findById(1)).thenReturn(Optional.empty());
@@ -64,7 +64,7 @@ class WeatherControllerTest {
                         cache,
                         settings,
                         config,
-                        mock(ServiceOfferingRepository.class),
+                        mock(IServiceOfferingDao.class),
                         access,
                         stations,
                         mock(AuditLogService.class),

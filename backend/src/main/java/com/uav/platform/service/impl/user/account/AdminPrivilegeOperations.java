@@ -1,9 +1,9 @@
 package com.uav.platform.service.impl.user.account;
 
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.permission.PermissionService;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +22,7 @@ public final class AdminPrivilegeOperations {
     private AdminPrivilegeOperations() {}
 
     public static boolean isAdministrator(
-            String actor, UserRepository users, PermissionService permissions) {
+            String actor, IUserDao users, PermissionService permissions) {
         if (actor == null || actor.isBlank() || users == null) return false;
         AppUser account = users.findByUsername(actor).orElse(null);
         if (account == null
@@ -36,7 +36,7 @@ public final class AdminPrivilegeOperations {
     }
 
     public static void requireAdministrator(
-            String actor, UserRepository users, PermissionService permissions, String message) {
+            String actor, IUserDao users, PermissionService permissions, String message) {
         if (!isAdministrator(actor, users, permissions))
             throw SystemException.forbidden(message, CODE);
     }

@@ -2,6 +2,9 @@ package com.uav.platform.service.impl.billing.invoice;
 
 import static com.uav.platform.common.constant.TimeConstants.DATE_TIME_MINUTE;
 
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IPaymentTransactionDao;
+import com.uav.platform.dao.user.ICustomerBillingProfileDao;
 import com.uav.platform.dto.record.billing.invoice.InvoiceReceiptData;
 import com.uav.platform.dto.record.billing.reconciliation.PaymentAccountSettings;
 import com.uav.platform.dto.response.billing.invoice.InvoiceEmailDispatchResponse;
@@ -11,9 +14,6 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.entity.user.CustomerBillingProfile;
 import com.uav.platform.enums.billing.InvoiceStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.PaymentTransactionRepository;
-import com.uav.platform.repository.user.CustomerBillingProfileRepository;
 import com.uav.platform.service.auth.verification.AuthMailService;
 import com.uav.platform.service.auth.verification.EmailDomainPolicyService;
 import com.uav.platform.service.billing.invoice.InvoiceMailService;
@@ -50,9 +50,9 @@ import java.util.Properties;
 @Slf4j
 public class InvoiceMailServiceImpl implements InvoiceMailService {
 
-    private final InvoiceRepository invoiceRepository;
-    private final PaymentTransactionRepository paymentRepository;
-    private final CustomerBillingProfileRepository billingProfileRepository;
+    private final IInvoiceDao invoiceRepository;
+    private final IPaymentTransactionDao paymentRepository;
+    private final ICustomerBillingProfileDao billingProfileRepository;
     private final PaymentSettingsService paymentSettingsService;
     private final ObjectProvider<MailOtpSettingsService> mailOtpSettingsProvider;
     private final ObjectProvider<AuthMailService> authMailProvider;
@@ -64,9 +64,9 @@ public class InvoiceMailServiceImpl implements InvoiceMailService {
 
     @Autowired
     public InvoiceMailServiceImpl(
-            InvoiceRepository invoiceRepository,
-            @Autowired(required = false) PaymentTransactionRepository paymentRepository,
-            @Autowired(required = false) CustomerBillingProfileRepository billingProfileRepository,
+            IInvoiceDao invoiceRepository,
+            @Autowired(required = false) IPaymentTransactionDao paymentRepository,
+            @Autowired(required = false) ICustomerBillingProfileDao billingProfileRepository,
             @Autowired(required = false) PaymentSettingsService paymentSettingsService,
             @Autowired(required = false)
                     ObjectProvider<MailOtpSettingsService> mailOtpSettingsProvider,

@@ -1,15 +1,15 @@
 package com.uav.platform.service.impl.reporting;
 
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.sar.IAiDetectionDao;
+import com.uav.platform.dao.sar.ISarMissionDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
 import com.uav.platform.dto.response.reporting.OperationsReportResponse;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.uav.Uav;
 import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.uav.UavStatus;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.sar.AiDetectionRepository;
-import com.uav.platform.repository.sar.SarMissionRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.service.reporting.ReportService;
 
 import org.springframework.security.core.Authentication;
@@ -23,19 +23,19 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ReportServiceImpl implements ReportService {
 
-    private final MissionRepository missionRepository;
-    private final UavRepository uavRepository;
-    private final StationRepository stationRepository;
-    private final SarMissionRepository sarMissionRepository;
-    private final AiDetectionRepository aiDetectionRepository;
+    private final IMissionDao missionRepository;
+    private final IUavDao uavRepository;
+    private final IStationDao stationRepository;
+    private final ISarMissionDao sarMissionRepository;
+    private final IAiDetectionDao aiDetectionRepository;
     private final com.uav.platform.service.permission.PermissionService permissionService;
 
     public ReportServiceImpl(
-            MissionRepository missionRepository,
-            UavRepository uavRepository,
-            StationRepository stationRepository,
-            SarMissionRepository sarMissionRepository,
-            AiDetectionRepository aiDetectionRepository) {
+            IMissionDao missionRepository,
+            IUavDao uavRepository,
+            IStationDao stationRepository,
+            ISarMissionDao sarMissionRepository,
+            IAiDetectionDao aiDetectionRepository) {
         this(
                 missionRepository,
                 uavRepository,
@@ -47,11 +47,11 @@ public class ReportServiceImpl implements ReportService {
 
     @org.springframework.beans.factory.annotation.Autowired
     public ReportServiceImpl(
-            MissionRepository missionRepository,
-            UavRepository uavRepository,
-            StationRepository stationRepository,
-            SarMissionRepository sarMissionRepository,
-            AiDetectionRepository aiDetectionRepository,
+            IMissionDao missionRepository,
+            IUavDao uavRepository,
+            IStationDao stationRepository,
+            ISarMissionDao sarMissionRepository,
+            IAiDetectionDao aiDetectionRepository,
             @org.springframework.beans.factory.annotation.Autowired(required = false)
                     com.uav.platform.service.permission.PermissionService permissionService) {
         this.missionRepository = missionRepository;

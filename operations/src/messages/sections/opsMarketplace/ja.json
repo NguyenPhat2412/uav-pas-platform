@@ -51,10 +51,36 @@
         "verifiedTitle": "認証済みパートナー機隊",
         "verifiedDesc": "プラットフォームからの案件配分を受けられます。",
         "rejectedTitle": "追加情報の提出が必要です",
+        "suspendedTitle": "パートナーアカウントは一時停止中です",
+        "suspendedDesc": "許可証や運航品質の確認のため出品が一時非公開になっています。審査メモをご確認ください。",
         "draftTitle": "3ステップを完了して審査を申請してください",
         "reviewNote": "審査メモ: {note}",
         "rating": "評価",
         "completed": "完了案件"
+      },
+      "progress": {
+        "title": "パートナー認証プロセス（5ステップ）",
+        "nextStepLabel": "次のアクション:",
+        "nextDraft": "基本情報を入力し、必須書類を添付してステップ3から審査を申請してください。",
+        "nextPending": "管理者が提出書類を確認中です。必要に応じて書類を追加更新できます。",
+        "nextVerified": "認証と精算ウォレットが有効になりました。機体登録やサービス出品・受注を開始できます。",
+        "nextRejected": "下記の審査メモを確認し、指摘書類を更新してから再申請してください。",
+        "nextSuspended": "停止理由を確認のうえ、有効な許可証や保険書類を再提出してください。",
+        "step1": "1. 基本情報作成",
+        "step2": "2. 必須書類提出",
+        "step3": "3. 管理者審査",
+        "step4": "4. 認証・口座有効化",
+        "step5": "5. 案件受注開始",
+        "requiredSummary": "必須書類: {uploaded}/{total}"
+      },
+      "checklist": {
+        "title": "区分別 必要書類チェックリスト（必須 {uploaded}/{total}）",
+        "subtitle": "未提出の項目をクリックすると下の添付フォームに自動選択されます。",
+        "required": "必須",
+        "conditional": "条件付き",
+        "missing": "未提出",
+        "uploadNow": "選択して添付",
+        "reviewerFeedback": "審査コメント: {note}"
       },
       "fields": {
         "displayName": "機隊名・事業者名",
@@ -110,6 +136,32 @@
         "submitted": "パートナー審査を申請しました！",
         "errorMissing": "機隊名と主要拠点の省・市を入力してください。",
         "errorUrl": "ファイルURLは http:// または https:// で始めてください。"
+      },
+      "workflow": {
+        "title": "パートナー審査フロー・必須書類チェックリスト（4ステップ）",
+        "subtitle": "現在の審査段階と、提出済み・未提出の必要書類をひと目で確認できます。",
+        "currentBadge": "現在のステップ",
+        "doneBadge": "完了",
+        "blockedBadge": "要修正",
+        "encryptionHint": "本人確認情報・口座情報および提出ファイルは AES-256-GCM で保存時暗号化されます。",
+        "steps": {
+          "s1Title": "ステップ1 · 基本情報・書類添付",
+          "s1Desc": "機隊情報と対応エリアを入力し、法的・運航証明書類を添付します。",
+          "s2Title": "ステップ2 · 審査申請を送信",
+          "s2Desc": "ステップ3で「審査を申請」を押して管理者確認キューへ送信します。",
+          "s3Title": "ステップ3 · 管理者による照合",
+          "s3Desc": "管理者が書類番号・操縦資格・提出ファイルを照合して確認します。",
+          "s4Title": "ステップ4 · 承認有効化 / 補完",
+          "s4Desc": "承認後に案件受注が有効化されます。不備時は具体的な審査メモが届きます。"
+        },
+        "checklistTitle": "必須・推奨書類リスト ({done}/{total} 主要項目)",
+        "requiredTag": "必須",
+        "recommendedTag": "推奨",
+        "uploadedTag": "提出済 ({count})",
+        "missingTag": "未提出",
+        "uploadNow": "追加する",
+        "approvedLockedHint": "承認済みの書類は削除できません",
+        "reviewerNoteLabel": "審査メモ: {note}"
       }
     },
     "fleet": {

@@ -1,19 +1,19 @@
 package com.uav.platform.service.impl.mission.catalog;
 
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
 import com.uav.platform.dto.request.mission.catalog.ServiceOfferingRequest;
 import com.uav.platform.dto.request.mission.catalog.ServiceOfferingUpdateRequest;
 import com.uav.platform.dto.response.mission.catalog.ServiceOfferingResponse;
 import com.uav.platform.entity.mission.ServiceOffering;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.mission.catalog.ServiceOfferingMapper;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
 import com.uav.platform.service.mission.catalog.ServiceOfferingService;
 import com.uav.platform.specification.mission.catalog.ServiceOfferingSpecifications;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +22,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @org.springframework.beans.factory.annotation.Autowired)
 public class ServiceOfferingServiceImpl implements ServiceOfferingService {
-    private final ServiceOfferingRepository services;
+    private final IServiceOfferingDao services;
     private final ServiceOfferingMapper serviceOfferingMapper;
 
-    public ServiceOfferingServiceImpl(ServiceOfferingRepository services) {
+    public ServiceOfferingServiceImpl(IServiceOfferingDao services) {
         this(services, org.mapstruct.factory.Mappers.getMapper(ServiceOfferingMapper.class));
     }
 
@@ -33,7 +33,7 @@ public class ServiceOfferingServiceImpl implements ServiceOfferingService {
     @Transactional(readOnly = true)
     public List<ServiceOfferingResponse> list() {
         return services
-                .findAll(Specification.where(ServiceOfferingSpecifications.isActive()))
+                .findAll(HibernateSpecification.where(ServiceOfferingSpecifications.isActive()))
                 .stream()
                 .map(serviceOfferingMapper::toResponse)
                 .toList();

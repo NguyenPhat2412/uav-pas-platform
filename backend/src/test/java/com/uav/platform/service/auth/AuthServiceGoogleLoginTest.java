@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.uav.platform.common.constant.CoreConstants;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.auth.oauth.GoogleIdentity;
 import com.uav.platform.dto.request.auth.oauth.GoogleLoginRequest;
 import com.uav.platform.dto.request.auth.session.LoginRequest;
@@ -17,7 +18,6 @@ import com.uav.platform.enums.auth.AuthRateLimitAction;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.auth.oauth.GoogleIdTokenService;
 import com.uav.platform.service.auth.session.AuthRateLimitService;
@@ -45,7 +45,7 @@ class AuthServiceGoogleLoginTest {
     private static final String EMAIL = "jane.doe@example.com";
     private static final GoogleLoginRequest REQUEST = new GoogleLoginRequest("id-token");
 
-    @Mock private UserRepository userRepository;
+    @Mock private IUserDao userRepository;
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private JwtTokenProvider jwtTokenProvider;
     @Mock private AuthSessionLock sessionLock;

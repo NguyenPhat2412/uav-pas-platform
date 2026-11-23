@@ -1,14 +1,14 @@
 package com.uav.platform.service.impl.settings;
 
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
+import com.uav.platform.dao.training.ITrainingDocumentDao;
 import com.uav.platform.dto.response.settings.PublicDiscoveryResponse;
 import com.uav.platform.dto.response.settings.PublicDiscoveryResponse.PublicPlanItem;
 import com.uav.platform.dto.response.settings.PublicDiscoveryResponse.PublicServiceItem;
 import com.uav.platform.dto.response.settings.PublicDiscoveryResponse.PublicTrainingItem;
 import com.uav.platform.dto.response.settings.PublicSiteInfoResponse;
 import com.uav.platform.entity.billing.ServicePlan;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
-import com.uav.platform.repository.training.TrainingDocumentRepository;
 import com.uav.platform.service.settings.PublicDiscoveryService;
 import com.uav.platform.service.settings.SystemConfigService;
 
@@ -24,9 +24,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PublicDiscoveryServiceImpl implements PublicDiscoveryService {
 
-    private final ServiceOfferingRepository serviceOfferingRepository;
-    private final ServicePlanRepository servicePlanRepository;
-    private final TrainingDocumentRepository trainingDocumentRepository;
+    private final IServiceOfferingDao serviceOfferingRepository;
+    private final IServicePlanDao servicePlanRepository;
+    private final ITrainingDocumentDao trainingDocumentRepository;
     private final SystemConfigService systemConfigService;
 
     @Override

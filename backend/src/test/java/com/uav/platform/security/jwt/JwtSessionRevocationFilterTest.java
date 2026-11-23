@@ -5,10 +5,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.security.SessionRevocationService;
 
 import jakarta.servlet.FilterChain;
@@ -28,7 +28,7 @@ class JwtSessionRevocationFilterTest {
 
     private final JwtTokenProvider provider =
             new JwtTokenProvider("filter-revocation-test-secret-32-bytes-min!!", 600_000L);
-    private final UserRepository users = mock(UserRepository.class);
+    private final IUserDao users = mock(IUserDao.class);
     private final SessionRevocationService revocations = mock(SessionRevocationService.class);
     private final FilterChain chain = mock(FilterChain.class);
     private JwtAuthenticationFilter filter;

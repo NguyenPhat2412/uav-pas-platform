@@ -1,10 +1,10 @@
 package com.uav.platform.service.impl.billing.reconciliation;
 
+import com.uav.platform.dao.billing.IInvoiceDao;
 import com.uav.platform.dto.record.billing.reconciliation.PaymentAccountSettings;
 import com.uav.platform.dto.request.billing.reconciliation.SepayWebhookRequest;
 import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.InvoiceRepository;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -96,7 +96,7 @@ public final class SepayReconciliationOperations {
     }
 
     public static Optional<Invoice> resolveInvoice(
-            SepayWebhookRequest request, InvoiceRepository invoiceRepository) {
+            SepayWebhookRequest request, IInvoiceDao invoiceRepository) {
         if (request == null || invoiceRepository == null) {
             return Optional.empty();
         }

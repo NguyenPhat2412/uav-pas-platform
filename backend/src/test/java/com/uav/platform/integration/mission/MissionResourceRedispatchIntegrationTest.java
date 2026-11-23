@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.inventory.QuantityRequest;
 import com.uav.platform.dto.request.mission.catalog.*;
 import com.uav.platform.dto.request.mission.dispatch.*;
@@ -21,11 +26,6 @@ import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.inventory.InventoryService;
@@ -51,13 +51,13 @@ import java.util.concurrent.*;
         properties =
                 "spring.datasource.url=jdbc:h2:mem:resource_redispatch;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=10000")
 class MissionResourceRedispatchIntegrationTest {
-    @Autowired ServicePlanRepository servicePlans;
+    @Autowired IServicePlanDao servicePlans;
     @Autowired MissionService missions;
-    @Autowired UserRepository users;
-    @Autowired StationRepository stations;
-    @Autowired UavRepository uavs;
+    @Autowired IUserDao users;
+    @Autowired IStationDao stations;
+    @Autowired IUavDao uavs;
     @Autowired UavService uavService;
-    @Autowired EquipmentRepository equipment;
+    @Autowired IEquipmentDao equipment;
     @Autowired InventoryService inventory;
     @Autowired JdbcTemplate db;
     @MockitoSpyBean AuditLogService audit;

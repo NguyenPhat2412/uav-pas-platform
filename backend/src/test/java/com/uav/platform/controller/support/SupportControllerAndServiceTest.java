@@ -6,6 +6,10 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.uav.platform.dao.support.ISupportMessageDao;
+import com.uav.platform.dao.support.ISupportQuickReplyDao;
+import com.uav.platform.dao.support.ISupportThreadDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.entity.support.SupportMessage;
 import com.uav.platform.entity.support.SupportQuickReply;
@@ -15,10 +19,6 @@ import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.GlobalExceptionHandler;
-import com.uav.platform.repository.support.SupportMessageRepository;
-import com.uav.platform.repository.support.SupportQuickReplyRepository;
-import com.uav.platform.repository.support.SupportThreadRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.support.SupportServiceImpl;
 import com.uav.platform.service.notification.inbox.NotificationService;
 
@@ -39,10 +39,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 class SupportControllerAndServiceTest {
 
-    private SupportThreadRepository threads;
-    private SupportMessageRepository messages;
-    private SupportQuickReplyRepository quickReplies;
-    private UserRepository users;
+    private ISupportThreadDao threads;
+    private ISupportMessageDao messages;
+    private ISupportQuickReplyDao quickReplies;
+    private IUserDao users;
     private NotificationService notifications;
     private MockMvc mvc;
 
@@ -53,10 +53,10 @@ class SupportControllerAndServiceTest {
 
     @BeforeEach
     void setUp() {
-        threads = mock(SupportThreadRepository.class);
-        messages = mock(SupportMessageRepository.class);
-        quickReplies = mock(SupportQuickReplyRepository.class);
-        users = mock(UserRepository.class);
+        threads = mock(ISupportThreadDao.class);
+        messages = mock(ISupportMessageDao.class);
+        quickReplies = mock(ISupportQuickReplyDao.class);
+        users = mock(IUserDao.class);
         notifications = mock(NotificationService.class);
 
         when(threads.save(any()))

@@ -1,16 +1,15 @@
 package com.uav.platform.specification.audit;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.audit.AuditLog;
 import com.uav.platform.enums.audit.*;
 import com.uav.platform.enums.audit.AuditAction;
-
-import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
 
 /**
- * Atomic Specification factories for querying {@link AuditLog} entities.
+ * Atomic HibernateSpecification factories for querying {@link AuditLog} entities.
  * <p>
  * Follows DDD and Clean Architecture by decoupling query predicate construction
  * from data access repositories. All methods are null-safe and return {@code null}
@@ -25,7 +24,7 @@ public final class AuditLogSpecifications {
     /**
      * Case-insensitive keyword search matching actorUsername, entityType, entityId, or details.
      */
-    public static Specification<AuditLog> hasKeyword(String keyword) {
+    public static HibernateSpecification<AuditLog> hasKeyword(String keyword) {
         return (root, query, cb) -> {
             if (keyword == null || keyword.isBlank()) {
                 return null;
@@ -42,7 +41,7 @@ public final class AuditLogSpecifications {
     /**
      * Filters audit logs by actor username (case-insensitive).
      */
-    public static Specification<AuditLog> hasActor(String actorUsername) {
+    public static HibernateSpecification<AuditLog> hasActor(String actorUsername) {
         return (root, query, cb) -> {
             if (actorUsername == null || actorUsername.isBlank()) {
                 return null;
@@ -56,7 +55,7 @@ public final class AuditLogSpecifications {
     /**
      * Filters audit logs by actor user ID.
      */
-    public static Specification<AuditLog> hasActorUserId(Long actorUserId) {
+    public static HibernateSpecification<AuditLog> hasActorUserId(Long actorUserId) {
         return (root, query, cb) ->
                 actorUserId == null ? null : cb.equal(root.get("actorUserId"), actorUserId);
     }
@@ -64,14 +63,14 @@ public final class AuditLogSpecifications {
     /**
      * Filters audit logs by audit action enum.
      */
-    public static Specification<AuditLog> hasAction(AuditAction action) {
+    public static HibernateSpecification<AuditLog> hasAction(AuditAction action) {
         return (root, query, cb) -> action == null ? null : cb.equal(root.get("action"), action);
     }
 
     /**
      * Filters audit logs by affected target entity type (e.g. UAV, MISSION, USER).
      */
-    public static Specification<AuditLog> hasEntityType(String entityType) {
+    public static HibernateSpecification<AuditLog> hasEntityType(String entityType) {
         return (root, query, cb) -> {
             if (entityType == null || entityType.isBlank()) {
                 return null;
@@ -84,7 +83,7 @@ public final class AuditLogSpecifications {
     /**
      * Filters audit logs by target entity ID.
      */
-    public static Specification<AuditLog> hasEntityId(String entityId) {
+    public static HibernateSpecification<AuditLog> hasEntityId(String entityId) {
         return (root, query, cb) -> {
             if (entityId == null || entityId.isBlank()) {
                 return null;
@@ -96,7 +95,8 @@ public final class AuditLogSpecifications {
     /**
      * Filters audit logs created within a specific timestamp window [from, to].
      */
-    public static Specification<AuditLog> createdBetween(LocalDateTime from, LocalDateTime to) {
+    public static HibernateSpecification<AuditLog> createdBetween(
+            LocalDateTime from, LocalDateTime to) {
         return (root, query, cb) -> {
             if (from == null && to == null) {
                 return null;
@@ -115,14 +115,14 @@ public final class AuditLogSpecifications {
     /**
      * Composable composite filter for common audit log search scenarios.
      */
-    public static Specification<AuditLog> filter(
+    public static HibernateSpecification<AuditLog> filter(
             String actorUsername,
             AuditAction action,
             String entityType,
             String entityId,
             LocalDateTime from,
             LocalDateTime to) {
-        return Specification.where(hasActor(actorUsername))
+        return HibernateSpecification.where(hasActor(actorUsername))
                 .and(hasAction(action))
                 .and(hasEntityType(entityType))
                 .and(hasEntityId(entityId))

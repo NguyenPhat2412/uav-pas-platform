@@ -16,19 +16,19 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
- * Guards the source layout: layers (controller, service, repository, entity, dto, ...) sit beside
- * common and config, each split into one subpackage per feature.
+ * Guards the source layout: layers (controller, service, dao, entity, dto, ...) sit beside common
+ * and config, each split into one subpackage per feature.
  */
 class ArchitecturePackageTest {
     private static final Path MAIN_SOURCE = resolveMainSource();
     private static final Set<String> FEATURE_LAYERS =
             Set.of(
                     "controller",
+                    "dao",
                     "dto",
                     "entity",
                     "enums",
                     "mapper",
-                    "repository",
                     "service",
                     "specification",
                     "transport");
@@ -50,11 +50,6 @@ class ArchitecturePackageTest {
                 "Main sources must not reference com.uav_pass.local");
     }
 
-    /**
-     * Every request mapping takes its path from ApiRoutes, so one file lists every endpoint (and the
-     * security rules and tests that refer to them). A literal path, or a constant glued to a literal,
-     * fails here with the file and line to fix.
-     */
     @Test
     void controllerMappingsTakeTheirPathsFromApiRoutes() throws IOException {
         Pattern mapping =
@@ -65,7 +60,6 @@ class ArchitecturePackageTest {
             for (int i = 0; i < lines.size(); i++) {
                 Matcher found = mapping.matcher(lines.get(i));
                 while (found.find()) {
-                    // produces/consumes media types may stay literal; the path itself may not.
                     String path =
                             found.group("args")
                                     .replaceAll("(produces|consumes)\\s*=\\s*\"[^\"]*\"", "");
@@ -114,23 +108,42 @@ class ArchitecturePackageTest {
             }
             String name = file.getFileName().toString();
             boolean nested =
-                    "service".equals(layer) && "impl".equals(parts[4]) || "dto".equals(layer);
+                    ("service".equals(layer) || "dao".equals(layer)) && "impl".equals(parts[4])
+                            || "dto".equals(layer);
             assertTrue(
                     parts.length >= (nested ? 7 : 6),
-                    "Classes must be inside <layer>/<feature> (service/impl/<feature>, dto/<role>/<feature>): "
+                    "Classes must be inside <layer>/<feature> (service/impl/<feature>, dao/impl/<feature>, dto/<role>/<feature>): "
                             + relative);
             if (name.endsWith("Controller.java")) {
                 assertTrue(
                         "controller".equals(layer),
                         "Controllers must be in the controller package: " + relative);
             }
-            if (name.endsWith("Repository.java")) {
+            if (name.endsWith("Dao.java")
+                    && !"IGenericDao.java".equals(name)
+                    && !"HibernateGenericDao.java".equals(name)) {
                 assertTrue(
-                        "repository".equals(layer),
-                        "Repositories must be in the repository package: " + relative);
+                        name.startsWith("I") && "dao".equals(layer) && !"impl".equals(parts[4]),
+                        "DAO interfaces must follow I*Dao naming in dao/<feature>: " + relative);
                 assertTrue(
-                        Files.readString(file).contains("JpaSpecificationExecutor"),
-                        "Repositories must expose specification support: " + relative);
+                        Files.readString(file).contains("extends IGenericDao"),
+                        "DAO interfaces must extend IGenericDao: " + relative);
+            }
+            if (name.endsWith("DaoImpl.java")) {
+                assertTrue(
+                        "dao".equals(layer) && "impl".equals(parts[4]),
+                        "DAO implementations must be in dao/impl/<feature>: " + relative);
+                String source = Files.readString(file);
+                assertTrue(
+                        source.contains("extends HibernateGenericDao"),
+                        "DAO implementations must extend HibernateGenericDao: " + relative);
+                assertTrue(
+                        source.contains("@Repository"),
+                        "DAO implementations must be annotated with @Repository: " + relative);
+                assertTrue(
+                        source.contains("final EntityManager entityManager"),
+                        "DAO implementations must inject EntityManager via constructor: "
+                                + relative);
             }
             if (name.endsWith("Specifications.java")) {
                 assertTrue(
@@ -183,11 +196,37 @@ class ArchitecturePackageTest {
         for (Path file : javaFiles(MAIN_SOURCE).toList()) {
             if (!file.getFileName().toString().endsWith("Controller.java")) continue;
             String source = Files.readString(file);
-            for (String layer : List.of(".service.impl.", ".repository.", ".entity.", ".mapper.")) {
+            for (String layer :
+                    List.of(".service.impl.", ".dao.", ".repository.", ".entity.", ".mapper.")) {
                 assertFalse(
                         source.contains(layer),
                         "Controllers must use service contracts and DTOs: " + file);
             }
+        }
+    }
+
+    @Test
+    void persistenceLayerUsesHibernateDaosWithoutSpringDataRepositories() throws IOException {
+        assertFalse(
+                Files.exists(MAIN_SOURCE.resolve("com/uav/platform/repository")),
+                "The legacy Spring Data repository package must be removed in favor of Hibernate DAOs");
+        Path pom = MAIN_SOURCE.resolve("../../../pom.xml").normalize();
+        if (Files.isRegularFile(pom)) {
+            assertFalse(
+                    Files.readString(pom).contains("spring-boot-starter-data-jpa"),
+                    "pom.xml must not include spring-boot-starter-data-jpa");
+        }
+        for (Path file : javaFiles(MAIN_SOURCE).toList()) {
+            String source = Files.readString(file);
+            assertFalse(
+                    source.contains("JpaRepository"),
+                    "Main sources must not depend on Spring Data JpaRepository: " + file);
+            assertFalse(
+                    source.contains("org.springframework.data.jpa"),
+                    "Main sources must not import Spring Data JPA: " + file);
+            assertFalse(
+                    source.contains("com.uav.platform.repository"),
+                    "Main sources must not reference com.uav.platform.repository: " + file);
         }
     }
 

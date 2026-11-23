@@ -2,6 +2,8 @@ package com.uav.platform.stabilization;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.uav.platform.dao.permission.IUserPermissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.*;
 import com.uav.platform.enums.inventory.*;
@@ -12,8 +14,6 @@ import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.permission.UserPermissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.role.RoleTemplateService;
 import com.uav.platform.service.user.account.UserService;
@@ -37,9 +37,9 @@ class AccessRecoveryTest {
         p.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
     }
 
-    @Autowired UserRepository users;
+    @Autowired IUserDao users;
     @Autowired PermissionService permissions;
-    @Autowired UserPermissionRepository overrides;
+    @Autowired IUserPermissionDao overrides;
     @Autowired UserService userService;
     @Autowired RoleTemplateService templates;
     AppUser manager;

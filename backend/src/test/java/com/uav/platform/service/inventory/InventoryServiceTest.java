@@ -3,6 +3,9 @@ package com.uav.platform.service.inventory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.inventory.IInventoryMovementDao;
+import com.uav.platform.dao.station.IStationDao;
 import com.uav.platform.dto.request.inventory.QuantityRequest;
 import com.uav.platform.entity.inventory.Equipment;
 import com.uav.platform.enums.audit.*;
@@ -12,9 +15,6 @@ import com.uav.platform.enums.media.*;
 import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.inventory.InventoryMovementRepository;
-import com.uav.platform.repository.station.StationRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.inventory.EquipmentOperations;
 import com.uav.platform.service.impl.inventory.InventoryServiceImpl;
@@ -28,9 +28,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class InventoryServiceTest {
-    @Mock EquipmentRepository equipment;
-    @Mock InventoryMovementRepository movements;
-    @Mock StationRepository stations;
+    @Mock IEquipmentDao equipment;
+    @Mock IInventoryMovementDao movements;
+    @Mock IStationDao stations;
     @Mock AuditLogService audit;
 
     @org.mockito.Spy

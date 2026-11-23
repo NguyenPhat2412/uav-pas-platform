@@ -1,5 +1,10 @@
 package com.uav.platform.service.impl.sar;
 
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.sar.IAiDetectionDao;
+import com.uav.platform.dao.sar.IAiTaskDao;
+import com.uav.platform.dao.sar.ISarMissionDao;
 import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.dto.request.sar.AiTaskDispatchRequest;
 import com.uav.platform.dto.request.sar.AiTaskResultRequest;
@@ -15,11 +20,6 @@ import com.uav.platform.enums.sar.AiTaskStatus;
 import com.uav.platform.enums.sar.SarStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.sar.SarMapper;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.sar.AiDetectionRepository;
-import com.uav.platform.repository.sar.AiTaskRepository;
-import com.uav.platform.repository.sar.SarMissionRepository;
 import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.sar.AiService;
 import com.uav.platform.service.webhook.WebhookService;
@@ -37,21 +37,21 @@ import java.util.Map;
 @Transactional
 public class AiServiceImpl implements AiService {
 
-    private final AiTaskRepository aiTaskRepository;
-    private final AiDetectionRepository aiDetectionRepository;
-    private final MissionRepository missionRepository;
-    private final MediaAssetRepository mediaAssetRepository;
-    private final SarMissionRepository sarMissionRepository;
+    private final IAiTaskDao aiTaskRepository;
+    private final IAiDetectionDao aiDetectionRepository;
+    private final IMissionDao missionRepository;
+    private final IMediaAssetDao mediaAssetRepository;
+    private final ISarMissionDao sarMissionRepository;
     private final NotificationService notificationService;
     private final WebhookService webhookService;
     private final com.uav.platform.service.permission.PermissionService permissionService;
     private final SarMapper sarMapper;
 
     public AiServiceImpl(
-            AiTaskRepository aiTaskRepository,
-            AiDetectionRepository aiDetectionRepository,
-            MissionRepository missionRepository,
-            MediaAssetRepository mediaAssetRepository) {
+            IAiTaskDao aiTaskRepository,
+            IAiDetectionDao aiDetectionRepository,
+            IMissionDao missionRepository,
+            IMediaAssetDao mediaAssetRepository) {
         this(
                 aiTaskRepository,
                 aiDetectionRepository,
@@ -64,11 +64,11 @@ public class AiServiceImpl implements AiService {
     }
 
     public AiServiceImpl(
-            AiTaskRepository aiTaskRepository,
-            AiDetectionRepository aiDetectionRepository,
-            MissionRepository missionRepository,
-            MediaAssetRepository mediaAssetRepository,
-            SarMissionRepository sarMissionRepository,
+            IAiTaskDao aiTaskRepository,
+            IAiDetectionDao aiDetectionRepository,
+            IMissionDao missionRepository,
+            IMediaAssetDao mediaAssetRepository,
+            ISarMissionDao sarMissionRepository,
             NotificationService notificationService,
             WebhookService webhookService) {
         this(
@@ -83,11 +83,11 @@ public class AiServiceImpl implements AiService {
     }
 
     public AiServiceImpl(
-            AiTaskRepository aiTaskRepository,
-            AiDetectionRepository aiDetectionRepository,
-            MissionRepository missionRepository,
-            MediaAssetRepository mediaAssetRepository,
-            SarMissionRepository sarMissionRepository,
+            IAiTaskDao aiTaskRepository,
+            IAiDetectionDao aiDetectionRepository,
+            IMissionDao missionRepository,
+            IMediaAssetDao mediaAssetRepository,
+            ISarMissionDao sarMissionRepository,
             NotificationService notificationService,
             WebhookService webhookService,
             com.uav.platform.service.permission.PermissionService permissionService) {
@@ -105,11 +105,11 @@ public class AiServiceImpl implements AiService {
 
     @Autowired
     public AiServiceImpl(
-            AiTaskRepository aiTaskRepository,
-            AiDetectionRepository aiDetectionRepository,
-            MissionRepository missionRepository,
-            MediaAssetRepository mediaAssetRepository,
-            @Autowired(required = false) SarMissionRepository sarMissionRepository,
+            IAiTaskDao aiTaskRepository,
+            IAiDetectionDao aiDetectionRepository,
+            IMissionDao missionRepository,
+            IMediaAssetDao mediaAssetRepository,
+            @Autowired(required = false) ISarMissionDao sarMissionRepository,
             @Autowired(required = false) NotificationService notificationService,
             @Autowired(required = false) WebhookService webhookService,
             @Autowired(required = false)

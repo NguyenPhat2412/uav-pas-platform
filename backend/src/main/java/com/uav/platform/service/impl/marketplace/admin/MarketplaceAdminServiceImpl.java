@@ -3,11 +3,21 @@ package com.uav.platform.service.impl.marketplace.admin;
 import static com.uav.platform.specification.marketplace.catalog.MarketplaceSpecifications.*;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.marketplace.IMarketplaceListingDao;
+import com.uav.platform.dao.marketplace.IProviderDocumentDao;
+import com.uav.platform.dao.marketplace.IProviderPayoutDao;
+import com.uav.platform.dao.marketplace.IProviderProfileDao;
+import com.uav.platform.dao.marketplace.IProviderWalletDao;
+import com.uav.platform.dao.marketplace.IWalletTransactionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.marketplace.admin.ListingModerationRequest;
+import com.uav.platform.dto.request.marketplace.admin.ProviderDocumentModerationRequest;
 import com.uav.platform.dto.request.marketplace.admin.ProviderModerationRequest;
 import com.uav.platform.dto.request.marketplace.escrow.PayoutProcessRequest;
 import com.uav.platform.dto.response.marketplace.catalog.MarketplaceListingResponse;
 import com.uav.platform.dto.response.marketplace.escrow.ProviderPayoutResponse;
+import com.uav.platform.dto.response.marketplace.provider.ProviderDocumentResponse;
 import com.uav.platform.dto.response.marketplace.provider.ProviderProfileResponse;
 import com.uav.platform.entity.marketplace.MarketplaceListing;
 import com.uav.platform.entity.marketplace.ProviderDocument;
@@ -23,13 +33,6 @@ import com.uav.platform.enums.marketplace.ProviderVerificationStatus;
 import com.uav.platform.enums.marketplace.WalletTransactionType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.marketplace.provider.MarketplaceMapper;
-import com.uav.platform.repository.marketplace.MarketplaceListingRepository;
-import com.uav.platform.repository.marketplace.ProviderDocumentRepository;
-import com.uav.platform.repository.marketplace.ProviderPayoutRepository;
-import com.uav.platform.repository.marketplace.ProviderProfileRepository;
-import com.uav.platform.repository.marketplace.ProviderWalletRepository;
-import com.uav.platform.repository.marketplace.WalletTransactionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.marketplace.admin.MarketplaceAdminService;
 
@@ -38,7 +41,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,13 +53,13 @@ import java.util.List;
 @Transactional
 public class MarketplaceAdminServiceImpl implements MarketplaceAdminService {
 
-    private final ProviderProfileRepository providers;
-    private final ProviderDocumentRepository documents;
-    private final MarketplaceListingRepository listings;
-    private final ProviderWalletRepository wallets;
-    private final ProviderPayoutRepository payouts;
-    private final WalletTransactionRepository ledger;
-    private final UserRepository users;
+    private final IProviderProfileDao providers;
+    private final IProviderDocumentDao documents;
+    private final IMarketplaceListingDao listings;
+    private final IProviderWalletDao wallets;
+    private final IProviderPayoutDao payouts;
+    private final IWalletTransactionDao ledger;
+    private final IUserDao users;
     private final AuditLogService audit;
     private final MarketplaceMapper mapper;
 
@@ -92,8 +94,8 @@ public class MarketplaceAdminServiceImpl implements MarketplaceAdminService {
     @Transactional(readOnly = true)
     public PageResponse<ProviderProfileResponse> listProviders(
             ProviderVerificationStatus status, String keyword, Pageable pageable) {
-        Specification<ProviderProfile> spec =
-                Specification.allOf(providerStatus(status), providerKeyword(keyword));
+        HibernateSpecification<ProviderProfile> spec =
+                HibernateSpecification.allOf(providerStatus(status), providerKeyword(keyword));
         Pageable sorted =
                 PageRequest.of(
                         pageable.getPageNumber(),
@@ -118,6 +120,66 @@ public class MarketplaceAdminServiceImpl implements MarketplaceAdminService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<ProviderDocumentResponse> listProviderDocuments(Long providerId) {
+        if (!providers.existsById(providerId)) {
+            throw SystemException.notFound("PROVIDER_NOT_FOUND");
+        }
+        return documents.findByProviderIdOrderByCreatedAtDesc(providerId).stream()
+                .map(mapper::toDocumentResponse)
+                .toList();
+    }
+
+    @Override
+    public ProviderDocumentResponse moderateProviderDocument(
+            Long providerId,
+            Long documentId,
+            ProviderDocumentModerationRequest request,
+            String adminUsername) {
+        ProviderProfile provider =
+                providers
+                        .findById(providerId)
+                        .orElseThrow(() -> SystemException.notFound("PROVIDER_NOT_FOUND"));
+        ProviderDocument doc =
+                documents
+                        .findByIdAndProviderId(documentId, providerId)
+                        .orElseThrow(() -> SystemException.notFound("DOCUMENT_NOT_FOUND"));
+        String cleanNote = trimOrNull(request.reviewerNote());
+        if (request.status() == ProviderDocumentStatus.REJECTED && cleanNote == null) {
+            throw SystemException.badRequest(
+                            "Vui lòng nhập lý do từ chối tài liệu.", "REVIEWER_NOTE_REQUIRED")
+                    .at("reviewerNote");
+        }
+        doc.setStatus(request.status());
+        doc.setReviewerNote(truncate(cleanNote, 500));
+        ProviderDocument saved = documents.save(doc);
+        recordAudit(
+                adminUsername,
+                "PROVIDER_DOCUMENT",
+                saved.getId().toString(),
+                "providerId="
+                        + providerId
+                        + ",type="
+                        + saved.getDocumentType().name()
+                        + ",status="
+                        + saved.getStatus().name());
+        String detail =
+                saved.getTitle()
+                        + " ("
+                        + saved.getStatus().name()
+                        + ")"
+                        + (saved.getReviewerNote() != null ? " — " + saved.getReviewerNote() : "");
+        notifyProvider(
+                provider,
+                "Thẩm định hồ sơ pháp lý",
+                detail,
+                com.uav.platform.enums.notification.NotificationType.SYSTEM,
+                "PROVIDER",
+                provider.getId());
+        return mapper.toDocumentResponse(saved);
+    }
+
+    @Override
     public ProviderProfileResponse moderateProvider(
             Long providerId, ProviderModerationRequest request, String adminUsername) {
         ProviderProfile provider =
@@ -137,6 +199,9 @@ public class MarketplaceAdminServiceImpl implements MarketplaceAdminService {
             for (ProviderDocument doc : docs) {
                 if (doc.getStatus() == ProviderDocumentStatus.PENDING) {
                     doc.setStatus(ProviderDocumentStatus.APPROVED);
+                    if (provider.getReviewNote() != null) {
+                        doc.setReviewerNote(truncate(provider.getReviewNote(), 500));
+                    }
                     documents.save(doc);
                 }
             }
@@ -175,8 +240,9 @@ public class MarketplaceAdminServiceImpl implements MarketplaceAdminService {
     @Transactional(readOnly = true)
     public PageResponse<MarketplaceListingResponse> listListings(
             ListingModerationStatus status, String keyword, Pageable pageable) {
-        Specification<MarketplaceListing> spec =
-                Specification.allOf(listingModerationStatus(status), listingKeyword(keyword));
+        HibernateSpecification<MarketplaceListing> spec =
+                HibernateSpecification.allOf(
+                        listingModerationStatus(status), listingKeyword(keyword));
         Pageable sorted =
                 PageRequest.of(
                         pageable.getPageNumber(),
@@ -226,7 +292,8 @@ public class MarketplaceAdminServiceImpl implements MarketplaceAdminService {
     @Transactional(readOnly = true)
     public PageResponse<ProviderPayoutResponse> listPayouts(
             PayoutStatus status, Pageable pageable) {
-        Specification<ProviderPayout> spec = Specification.allOf(payoutStatus(status));
+        HibernateSpecification<ProviderPayout> spec =
+                HibernateSpecification.allOf(payoutStatus(status));
         Pageable sorted =
                 PageRequest.of(
                         pageable.getPageNumber(),
@@ -324,5 +391,10 @@ public class MarketplaceAdminServiceImpl implements MarketplaceAdminService {
     private static String trimOrNull(String value) {
         if (value == null || value.isBlank()) return null;
         return value.trim();
+    }
+
+    private static String truncate(String value, int maxLen) {
+        if (value == null || value.length() <= maxLen) return value;
+        return value.substring(0, maxLen);
     }
 }

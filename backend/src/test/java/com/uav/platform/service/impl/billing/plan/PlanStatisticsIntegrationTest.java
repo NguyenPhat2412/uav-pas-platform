@@ -6,6 +6,11 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.billing.IUserQuotaDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.response.billing.plan.PlanStatsResponse;
 import com.uav.platform.dto.response.billing.plan.PlanStatsResponse.MonthRow;
 import com.uav.platform.dto.response.billing.plan.PlanStatsResponse.PlanRow;
@@ -19,11 +24,6 @@ import com.uav.platform.enums.mission.MissionPriority;
 import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.billing.UserQuotaRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -48,12 +48,12 @@ import java.util.UUID;
 class PlanStatisticsIntegrationTest {
     private static final LocalDateTime NOW = LocalDateTime.of(2026, 3, 15, 10, 0);
 
-    @Autowired ServicePlanRepository plans;
-    @Autowired UserQuotaRepository quotas;
-    @Autowired InvoiceRepository invoices;
-    @Autowired UserRepository users;
+    @Autowired IServicePlanDao plans;
+    @Autowired IUserQuotaDao quotas;
+    @Autowired IInvoiceDao invoices;
+    @Autowired IUserDao users;
     @Autowired JdbcTemplate db;
-    @Autowired MissionRepository missionRepository;
+    @Autowired IMissionDao missionRepository;
     @Autowired WebApplicationContext context;
 
     private PlanStatisticsServiceImpl service;

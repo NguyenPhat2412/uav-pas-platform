@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.media.MediaAsset;
 import com.uav.platform.enums.audit.*;
 import com.uav.platform.enums.inventory.*;
@@ -20,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 
@@ -78,7 +78,7 @@ class MediaAssetSpecificationsTest {
         when(cb.like(any(), anyString())).thenReturn(predicate);
         when(cb.or(any(Predicate[].class))).thenReturn(predicate);
 
-        Specification<MediaAsset> spec = MediaAssetSpecifications.hasKeyword("flight_log");
+        HibernateSpecification<MediaAsset> spec = MediaAssetSpecifications.hasKeyword("flight_log");
         Predicate result = spec.toPredicate(root, query, cb);
 
         assertThat(result).isSameAs(predicate);
@@ -194,7 +194,8 @@ class MediaAssetSpecificationsTest {
     @Test
     @DisplayName("filter composite specification combines null-safe criteria")
     void filter_Composite_Tests() {
-        Specification<MediaAsset> spec = MediaAssetSpecifications.filter(null, null, null, null);
+        HibernateSpecification<MediaAsset> spec =
+                MediaAssetSpecifications.filter(null, null, null, null);
         assertThat(spec.toPredicate(root, query, cb)).isNull();
     }
 }

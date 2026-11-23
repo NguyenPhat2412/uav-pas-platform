@@ -51,10 +51,36 @@
         "verifiedTitle": "Đội bay đã được xác minh đối tác",
         "verifiedDesc": "Đội bay của bạn đủ điều kiện nhận đơn tự động từ nền tảng.",
         "rejectedTitle": "Hồ sơ cần bổ sung thông tin",
+        "suspendedTitle": "Tài khoản đối tác đang tạm ngưng",
+        "suspendedDesc": "Dịch vụ đang tạm ẩn để rà soát giấy phép hoặc chất lượng vận hành. Vui lòng xem ghi chú và liên hệ Ban quản trị.",
         "draftTitle": "Hoàn tất 3 bước để gửi duyệt đối tác",
         "reviewNote": "Ghi chú thẩm định: {note}",
         "rating": "Đánh giá",
         "completed": "Đơn hoàn tất"
+      },
+      "progress": {
+        "title": "Tiến trình xác minh đối tác (5 bước)",
+        "nextStepLabel": "Việc cần làm tiếp theo:",
+        "nextDraft": "Hoàn thiện hồ sơ đơn vị, nộp đủ giấy tờ bắt buộc và nhấn Gửi duyệt ở Bước 3.",
+        "nextPending": "Ban quản trị đang đối chiếu giấy tờ của bạn. Bạn vẫn có thể bổ sung tệp minh chứng nếu cần.",
+        "nextVerified": "Hồ sơ đã được xác minh và kích hoạt ví đối soát. Bạn có thể khai báo đội UAV, đăng dịch vụ và nhận đơn.",
+        "nextRejected": "Kiểm tra ghi chú thẩm định bên dưới, cập nhật các giấy tờ cần sửa rồi nhấn Gửi duyệt lại.",
+        "nextSuspended": "Kiểm tra lý do tạm ngưng và bổ sung giấy tờ còn hạn để Ban quản trị mở lại hoạt động.",
+        "step1": "1. Khởi tạo hồ sơ",
+        "step2": "2. Nộp giấy tờ",
+        "step3": "3. Chờ thẩm định",
+        "step4": "4. Xác minh & mở ví",
+        "step5": "5. Sẵn sàng nhận đơn",
+        "requiredSummary": "Giấy tờ bắt buộc: {uploaded}/{total}"
+      },
+      "checklist": {
+        "title": "Danh mục giấy tờ theo loại hình ({uploaded}/{total} bắt buộc)",
+        "subtitle": "Chọn bất kỳ mục còn thiếu nào để điền nhanh biểu mẫu đính kèm bên dưới.",
+        "required": "Bắt buộc",
+        "conditional": "Theo nhiệm vụ",
+        "missing": "Chưa nộp",
+        "uploadNow": "Chọn tải lên",
+        "reviewerFeedback": "Phản hồi thẩm định: {note}"
       },
       "fields": {
         "displayName": "Tên đội bay / Đơn vị",
@@ -110,6 +136,32 @@
         "submitted": "Đã gửi hồ sơ đối tác chờ duyệt!",
         "errorMissing": "Vui lòng nhập Tên đội bay và Tỉnh/Thành phố phục vụ.",
         "errorUrl": "Liên kết tệp phải bắt đầu bằng http:// hoặc https://."
+      },
+      "workflow": {
+        "title": "Quy trình xác minh đối tác & Danh mục giấy tờ (4 bước)",
+        "subtitle": "Theo dõi chính xác bước thẩm định hiện tại và kiểm tra nhanh giấy tờ đã nộp hoặc còn thiếu.",
+        "currentBadge": "Bước hiện tại",
+        "doneBadge": "Hoàn tất",
+        "blockedBadge": "Cần bổ sung",
+        "encryptionHint": "Thông tin định danh, tài khoản ngân hàng và tài liệu tải lên được mã hoá lưu trữ chuẩn AES-256-GCM.",
+        "steps": {
+          "s1Title": "Bước 1 · Khai báo & tải giấy tờ",
+          "s1Desc": "Nhập thông tin đội bay, khu vực phục vụ và đính kèm giấy tờ pháp lý.",
+          "s2Title": "Bước 2 · Gửi duyệt hồ sơ",
+          "s2Desc": "Nhấn Gửi duyệt đối tác ở bước 3 để chuyển hồ sơ vào hàng đợi thẩm định.",
+          "s3Title": "Bước 3 · Admin đối chiếu năng lực",
+          "s3Desc": "Quản trị viên đối chiếu số hiệu giấy tờ, chứng chỉ bay và tệp minh chứng.",
+          "s4Title": "Bước 4 · Kích hoạt / Bổ sung",
+          "s4Desc": "Hồ sơ hợp lệ được kích hoạt nhận đơn; nếu chưa đạt sẽ nhận ghi chú bổ sung."
+        },
+        "checklistTitle": "Danh mục giấy tờ bắt buộc & khuyến nghị ({done}/{total} nhóm chính)",
+        "requiredTag": "Bắt buộc",
+        "recommendedTag": "Khuyến nghị",
+        "uploadedTag": "Đã nộp ({count})",
+        "missingTag": "Còn thiếu",
+        "uploadNow": "Tải bổ sung",
+        "approvedLockedHint": "Giấy tờ đã được phê duyệt, không thể xoá",
+        "reviewerNoteLabel": "Ghi chú thẩm định: {note}"
       }
     },
     "fleet": {

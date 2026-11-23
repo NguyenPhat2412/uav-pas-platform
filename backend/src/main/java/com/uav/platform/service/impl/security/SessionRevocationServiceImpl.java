@@ -1,7 +1,7 @@
 package com.uav.platform.service.impl.security;
 
+import com.uav.platform.dao.security.ISessionRevocationDao;
 import com.uav.platform.entity.security.SessionRevocation;
-import com.uav.platform.repository.security.SessionRevocationRepository;
 import com.uav.platform.service.security.SessionRevocationService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SessionRevocationServiceImpl implements SessionRevocationService {
 
-    private final SessionRevocationRepository repository;
+    private final ISessionRevocationDao repository;
     private final Clock clock;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public SessionRevocationServiceImpl(SessionRevocationRepository repository) {
+    public SessionRevocationServiceImpl(ISessionRevocationDao repository) {
         this(repository, Clock.systemUTC());
     }
 

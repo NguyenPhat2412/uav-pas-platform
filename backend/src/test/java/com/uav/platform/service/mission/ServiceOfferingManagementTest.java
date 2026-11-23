@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.mission.IServiceOfferingDao;
 import com.uav.platform.dto.request.mission.catalog.ServiceOfferingUpdateRequest;
 import com.uav.platform.dto.response.mission.catalog.ServiceOfferingResponse;
 import com.uav.platform.entity.mission.ServiceOffering;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
 import com.uav.platform.service.impl.mission.catalog.ServiceOfferingOperations;
 import com.uav.platform.service.impl.mission.catalog.ServiceOfferingServiceImpl;
 
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 class ServiceOfferingManagementTest {
-    private final ServiceOfferingRepository repository = mock(ServiceOfferingRepository.class);
+    private final IServiceOfferingDao repository = mock(IServiceOfferingDao.class);
     private final ServiceOfferingServiceImpl service = new ServiceOfferingServiceImpl(repository);
 
     private ServiceOffering existing() {

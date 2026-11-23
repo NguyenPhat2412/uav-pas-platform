@@ -23,6 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.realtime.RealtimeSessionPrincipal;
 import com.uav.platform.dto.request.marketplace.admin.ListingModerationRequest;
 import com.uav.platform.dto.request.marketplace.admin.ProviderModerationRequest;
@@ -39,8 +41,6 @@ import com.uav.platform.enums.marketplace.ProviderType;
 import com.uav.platform.enums.marketplace.ProviderVerificationStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.marketplace.admin.MarketplaceAdminService;
 import com.uav.platform.service.marketplace.provider.MarketplaceProviderFleetService;
 import com.uav.platform.service.marketplace.provider.MarketplaceProviderService;
@@ -79,8 +79,8 @@ import java.util.UUID;
 class MarketplaceOrderFlowEndToEndIntegrationTest {
 
     @Autowired WebApplicationContext context;
-    @Autowired UserRepository users;
-    @Autowired ServiceOfferingRepository serviceOfferings;
+    @Autowired IUserDao users;
+    @Autowired IServiceOfferingDao serviceOfferings;
     @Autowired MarketplaceProviderService providerService;
     @Autowired MarketplaceProviderFleetService fleetService;
     @Autowired MarketplaceAdminService adminService;

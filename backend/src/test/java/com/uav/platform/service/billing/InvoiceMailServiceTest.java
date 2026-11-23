@@ -8,6 +8,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.uav.platform.controller.billing.invoice.BillingController;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IPaymentTransactionDao;
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.notification.INotificationDao;
+import com.uav.platform.dao.user.ICustomerBillingProfileDao;
+import com.uav.platform.dao.user.IUserDao;
+import com.uav.platform.dao.webhook.IFinancialOutboxDao;
 import com.uav.platform.dto.record.billing.reconciliation.PaymentAccountSettings;
 import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.entity.billing.Invoice;
@@ -24,14 +32,6 @@ import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.PaymentTransactionRepository;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.notification.NotificationRepository;
-import com.uav.platform.repository.user.CustomerBillingProfileRepository;
-import com.uav.platform.repository.user.UserRepository;
-import com.uav.platform.repository.webhook.FinancialOutboxRepository;
 import com.uav.platform.service.auth.verification.AuthMailService;
 import com.uav.platform.service.auth.verification.EmailDomainPolicyService;
 import com.uav.platform.service.billing.invoice.InvoiceMailService;
@@ -86,15 +86,15 @@ import java.util.Properties;
 
 class InvoiceMailServiceTest {
 
-    private InvoiceRepository invoiceRepository;
-    private PaymentTransactionRepository paymentRepository;
-    private CustomerBillingProfileRepository billingProfileRepository;
+    private IInvoiceDao invoiceRepository;
+    private IPaymentTransactionDao paymentRepository;
+    private ICustomerBillingProfileDao billingProfileRepository;
     private PaymentSettingsService paymentSettingsService;
     private JavaMailSender mailSender;
     private AuthMailService authMailService;
     private InvoiceMailServiceImpl invoiceMailService;
     private BillingServiceImpl billingService;
-    private UserRepository userRepository;
+    private IUserDao userRepository;
     private PermissionService permissions;
 
     private final Map<Long, Invoice> invoiceStore = new LinkedHashMap<>();
@@ -105,11 +105,11 @@ class InvoiceMailServiceTest {
     @BeforeEach
     @SuppressWarnings("unchecked")
     void setUp() {
-        invoiceRepository = mock(InvoiceRepository.class);
-        paymentRepository = mock(PaymentTransactionRepository.class);
-        billingProfileRepository = mock(CustomerBillingProfileRepository.class);
+        invoiceRepository = mock(IInvoiceDao.class);
+        paymentRepository = mock(IPaymentTransactionDao.class);
+        billingProfileRepository = mock(ICustomerBillingProfileDao.class);
         paymentSettingsService = mock(PaymentSettingsService.class);
-        userRepository = mock(UserRepository.class);
+        userRepository = mock(IUserDao.class);
         permissions = mock(PermissionService.class);
         mailSender = mock(JavaMailSender.class);
 
@@ -155,11 +155,11 @@ class InvoiceMailServiceTest {
 
         billingService =
                 new BillingServiceImpl(
-                        mock(ServicePlanRepository.class),
+                        mock(IServicePlanDao.class),
                         invoiceRepository,
                         paymentRepository,
                         userRepository,
-                        mock(MissionRepository.class),
+                        mock(IMissionDao.class),
                         permissions);
         ReflectionTestUtils.setField(
                 billingService, "billingProfileRepository", billingProfileRepository);
@@ -440,7 +440,7 @@ class InvoiceMailServiceTest {
 
         // Verify FinancialOutboxServiceImpl afterCommit on BOTH recordInvoiceIssued &
         // recordPaymentCompleted and resilience against SMTP failure
-        FinancialOutboxRepository outboxRepo = mock(FinancialOutboxRepository.class);
+        IFinancialOutboxDao outboxRepo = mock(IFinancialOutboxDao.class);
         NotificationService notifService = mock(NotificationService.class);
         WebhookEventQueue webhookQueue = mock(WebhookEventQueue.class);
         PlatformTransactionManager txManager = mock(PlatformTransactionManager.class);
@@ -511,7 +511,7 @@ class InvoiceMailServiceTest {
         delivery.useSynchronousExecutor();
         delivery.setInvoiceMailServiceProvider(invoiceMailProvider);
 
-        NotificationRepository notifRepo = mock(NotificationRepository.class);
+        INotificationDao notifRepo = mock(INotificationDao.class);
         when(notifRepo.save(any()))
                 .thenAnswer(
                         c -> {

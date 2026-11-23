@@ -2,6 +2,8 @@ package com.uav.platform.service.impl.webhook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uav.platform.common.util.Hashing;
+import com.uav.platform.dao.webhook.IWebhookDeliveryLogDao;
+import com.uav.platform.dao.webhook.IWebhookSubscriptionDao;
 import com.uav.platform.dto.record.webhook.QueueResult;
 import com.uav.platform.dto.request.webhook.WebhookSubscriptionRequest;
 import com.uav.platform.dto.request.webhook.WebhookTestDispatchRequest;
@@ -11,8 +13,6 @@ import com.uav.platform.dto.response.webhook.WebhookSubscriptionResponse;
 import com.uav.platform.entity.webhook.WebhookSubscription;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.webhook.WebhookMapper;
-import com.uav.platform.repository.webhook.WebhookDeliveryLogRepository;
-import com.uav.platform.repository.webhook.WebhookSubscriptionRepository;
 import com.uav.platform.service.webhook.WebhookEventQueue;
 import com.uav.platform.service.webhook.WebhookService;
 
@@ -49,8 +49,8 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
                 "Đã ghi nhận yêu cầu. Kiểm tra nhật ký để biết kết quả HTTP; chưa xác nhận bên nhận đã xử lý.");
     }
 
-    private final WebhookSubscriptionRepository subscriptionRepository;
-    private final WebhookDeliveryLogRepository deliveryLogRepository;
+    private final IWebhookSubscriptionDao subscriptionRepository;
+    private final IWebhookDeliveryLogDao deliveryLogRepository;
     private final ObjectMapper objectMapper;
     private final WebhookMapper webhookMapper;
 
@@ -85,8 +85,8 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
     }
 
     public WebhookServiceImpl(
-            WebhookSubscriptionRepository subscriptionRepository,
-            WebhookDeliveryLogRepository deliveryLogRepository,
+            IWebhookSubscriptionDao subscriptionRepository,
+            IWebhookDeliveryLogDao deliveryLogRepository,
             ObjectMapper objectMapper) {
         this(
                 subscriptionRepository,
@@ -97,8 +97,8 @@ public class WebhookServiceImpl implements WebhookService, WebhookEventQueue {
 
     @Autowired
     public WebhookServiceImpl(
-            WebhookSubscriptionRepository subscriptionRepository,
-            WebhookDeliveryLogRepository deliveryLogRepository,
+            IWebhookSubscriptionDao subscriptionRepository,
+            IWebhookDeliveryLogDao deliveryLogRepository,
             @Autowired(required = false) ObjectMapper objectMapper,
             WebhookMapper webhookMapper) {
         this.subscriptionRepository = subscriptionRepository;

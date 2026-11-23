@@ -4,12 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.user.ICustomerBillingProfileDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.user.profile.BillingProfileRequest;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.entity.user.CustomerBillingProfile;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.user.CustomerBillingProfileRepository;
-import com.uav.platform.repository.user.UserRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,9 +18,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Optional;
 
 class BillingProfileServiceTest {
-    private final UserRepository users = mock(UserRepository.class);
-    private final CustomerBillingProfileRepository profiles =
-            mock(CustomerBillingProfileRepository.class);
+    private final IUserDao users = mock(IUserDao.class);
+    private final ICustomerBillingProfileDao profiles = mock(ICustomerBillingProfileDao.class);
     private final BillingProfileServiceImpl service =
             new BillingProfileServiceImpl(users, profiles);
 

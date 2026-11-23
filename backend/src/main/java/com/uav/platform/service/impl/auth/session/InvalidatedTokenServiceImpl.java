@@ -1,7 +1,7 @@
 package com.uav.platform.service.impl.auth.session;
 
+import com.uav.platform.dao.auth.IInvalidatedTokenDao;
 import com.uav.platform.entity.auth.InvalidatedToken;
-import com.uav.platform.repository.auth.InvalidatedTokenRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.auth.session.InvalidatedTokenService;
 
@@ -21,7 +21,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class InvalidatedTokenServiceImpl implements InvalidatedTokenService {
 
-    private final InvalidatedTokenRepository invalidatedTokenRepository;
+    private final IInvalidatedTokenDao invalidatedTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override

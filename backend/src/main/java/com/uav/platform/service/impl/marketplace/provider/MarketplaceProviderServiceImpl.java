@@ -1,6 +1,21 @@
 package com.uav.platform.service.impl.marketplace.provider;
 
 import com.uav.platform.common.util.OrderStatusGroups;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.marketplace.IMarketplaceListingDao;
+import com.uav.platform.dao.marketplace.IMissionBidDao;
+import com.uav.platform.dao.marketplace.IProviderDocumentDao;
+import com.uav.platform.dao.marketplace.IProviderPayoutDao;
+import com.uav.platform.dao.marketplace.IProviderProfileDao;
+import com.uav.platform.dao.marketplace.IProviderWalletDao;
+import com.uav.platform.dao.marketplace.IWalletTransactionDao;
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.marketplace.catalog.MissionBidCreateRequest;
 import com.uav.platform.dto.request.marketplace.escrow.PayoutCreateRequest;
 import com.uav.platform.dto.request.marketplace.provider.MarketplaceListingUpsertRequest;
@@ -42,7 +57,9 @@ import com.uav.platform.enums.marketplace.MissionBidStatus;
 import com.uav.platform.enums.marketplace.PayoutStatus;
 import com.uav.platform.enums.marketplace.PricingModel;
 import com.uav.platform.enums.marketplace.ProviderDocumentStatus;
+import com.uav.platform.enums.marketplace.ProviderDocumentType;
 import com.uav.platform.enums.marketplace.ProviderOrderStatus;
+import com.uav.platform.enums.marketplace.ProviderType;
 import com.uav.platform.enums.marketplace.ProviderVerificationStatus;
 import com.uav.platform.enums.marketplace.WalletTransactionType;
 import com.uav.platform.enums.mission.MissionEventType;
@@ -51,21 +68,6 @@ import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.marketplace.provider.MarketplaceMapper;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.marketplace.MarketplaceListingRepository;
-import com.uav.platform.repository.marketplace.MissionBidRepository;
-import com.uav.platform.repository.marketplace.ProviderDocumentRepository;
-import com.uav.platform.repository.marketplace.ProviderPayoutRepository;
-import com.uav.platform.repository.marketplace.ProviderProfileRepository;
-import com.uav.platform.repository.marketplace.ProviderWalletRepository;
-import com.uav.platform.repository.marketplace.WalletTransactionRepository;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.settings.SystemConfigurationOperations;
 import com.uav.platform.service.marketplace.escrow.MarketplaceEscrowService;
@@ -99,21 +101,39 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     private static final Set<MissionStatus> OPEN_RFQ_STATUSES =
             Set.of(MissionStatus.DRAFT, MissionStatus.PENDING_CONFIRMATION);
 
-    private final UserRepository users;
-    private final ProviderProfileRepository providers;
-    private final ProviderDocumentRepository documents;
-    private final MarketplaceListingRepository listings;
-    private final ProviderWalletRepository wallets;
-    private final ProviderPayoutRepository payouts;
-    private final WalletTransactionRepository ledger;
-    private final MissionBidRepository bids;
-    private final ServiceOfferingRepository serviceOfferings;
-    private final MediaAssetRepository mediaAssets;
-    private final UavRepository uavs;
-    private final EquipmentRepository equipmentRepository;
-    private final MissionRepository missions;
-    private final MissionEventRepository missionEvents;
-    private final InvoiceRepository invoices;
+    private static final List<ProviderDocumentType> INDIVIDUAL_REQUIRED_DOCUMENTS =
+            List.of(
+                    ProviderDocumentType.IDENTITY_CARD,
+                    ProviderDocumentType.PILOT_CERTIFICATE,
+                    ProviderDocumentType.UAV_REGISTRATION,
+                    ProviderDocumentType.INSURANCE_POLICY,
+                    ProviderDocumentType.PLATFORM_FEE_AGREEMENT);
+
+    private static final List<ProviderDocumentType> COMPANY_REQUIRED_DOCUMENTS =
+            List.of(
+                    ProviderDocumentType.IDENTITY_CARD,
+                    ProviderDocumentType.BUSINESS_LICENSE,
+                    ProviderDocumentType.PILOT_CERTIFICATE,
+                    ProviderDocumentType.UAV_REGISTRATION,
+                    ProviderDocumentType.INSURANCE_POLICY,
+                    ProviderDocumentType.PLATFORM_FEE_AGREEMENT,
+                    ProviderDocumentType.TAX_SETTLEMENT_DOSSIER);
+
+    private final IUserDao users;
+    private final IProviderProfileDao providers;
+    private final IProviderDocumentDao documents;
+    private final IMarketplaceListingDao listings;
+    private final IProviderWalletDao wallets;
+    private final IProviderPayoutDao payouts;
+    private final IWalletTransactionDao ledger;
+    private final IMissionBidDao bids;
+    private final IServiceOfferingDao serviceOfferings;
+    private final IMediaAssetDao mediaAssets;
+    private final IUavDao uavs;
+    private final IEquipmentDao equipmentRepository;
+    private final IMissionDao missions;
+    private final IMissionEventDao missionEvents;
+    private final IInvoiceDao invoices;
     private final MissionAccessService missionAccess;
     private final MissionResourceService resources;
     private final MarketplaceEscrowService escrowService;
@@ -128,7 +148,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
             notifications;
 
     @org.springframework.beans.factory.annotation.Autowired(required = false)
-    private com.uav.platform.repository.marketplace.ProviderPilotRepository pilots;
+    private com.uav.platform.dao.marketplace.IProviderPilotDao pilots;
 
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     private com.uav.platform.service.simulation.SimulationService simulationService;
@@ -249,9 +269,61 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     }
 
     @Override
+    public ProviderProfileResponse submitForVerification(String username) {
+        ProviderProfile provider = requireOwnedProfile(username);
+        if (provider.getVerificationStatus() == ProviderVerificationStatus.SUSPENDED) {
+            throw SystemException.forbidden(
+                    "Tài khoản đối tác đang bị tạm đình chỉ, vui lòng liên hệ quản trị viên.",
+                    "PROVIDER_SUSPENDED");
+        }
+        if (provider.getVerificationStatus() == ProviderVerificationStatus.VERIFIED) {
+            throw SystemException.conflict(
+                    "Hồ sơ đối tác đã được xác minh (VERIFIED).", "PROVIDER_ALREADY_VERIFIED");
+        }
+        List<ProviderDocument> docs =
+                documents.findByProviderIdOrderByCreatedAtDesc(provider.getId());
+        List<ProviderDocumentType> requiredTypes =
+                provider.getProviderType() == ProviderType.COMPANY
+                        ? COMPANY_REQUIRED_DOCUMENTS
+                        : INDIVIDUAL_REQUIRED_DOCUMENTS;
+        Set<ProviderDocumentType> activeUploadedTypes =
+                docs.stream()
+                        .filter(d -> d.getStatus() != ProviderDocumentStatus.REJECTED)
+                        .map(ProviderDocument::getDocumentType)
+                        .collect(java.util.stream.Collectors.toSet());
+        List<String> missing =
+                requiredTypes.stream()
+                        .filter(t -> !activeUploadedTypes.contains(t))
+                        .map(Enum::name)
+                        .toList();
+        if (!missing.isEmpty()) {
+            throw SystemException.badRequest(
+                            "Thiếu hồ sơ pháp lý bắt buộc trước khi gửi thẩm định: "
+                                    + String.join(", ", missing),
+                            "REQUIRED_DOCUMENTS_MISSING")
+                    .at("documents");
+        }
+        provider.setVerificationStatus(ProviderVerificationStatus.PENDING_REVIEW);
+        ProviderProfile saved = providers.save(provider);
+        audit.record(
+                saved.getUser() != null ? saved.getUser().getId() : null,
+                username,
+                AuditAction.UPDATE,
+                "PROVIDER_PROFILE",
+                saved.getId().toString(),
+                "SUBMIT_VERIFICATION");
+        return mapper.toProfileResponse(saved, docs);
+    }
+
+    @Override
     public ProviderDocumentResponse addDocument(
             ProviderDocumentCreateRequest request, String username) {
-        ProviderProfile provider = requireMyProfile(username);
+        ProviderProfile provider = requireOwnedProfile(username);
+        if (provider.getVerificationStatus() == ProviderVerificationStatus.SUSPENDED) {
+            throw SystemException.forbidden(
+                    "Tài khoản đối tác đang bị tạm đình chỉ, không thể cập nhật hồ sơ.",
+                    "PROVIDER_SUSPENDED");
+        }
         String cleanUrl = validateOptionalHttpUrl(request.fileUrl(), "fileUrl");
         ProviderDocument doc = new ProviderDocument();
         doc.setProvider(provider);
@@ -287,11 +359,15 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
 
     @Override
     public void deleteDocument(Long documentId, String username) {
-        ProviderProfile provider = requireMyProfile(username);
+        ProviderProfile provider = requireOwnedProfile(username);
+        if (provider.getVerificationStatus() == ProviderVerificationStatus.SUSPENDED) {
+            throw SystemException.forbidden(
+                    "Tài khoản đối tác đang bị tạm đình chỉ, không thể xóa hồ sơ.",
+                    "PROVIDER_SUSPENDED");
+        }
         ProviderDocument doc =
                 documents
-                        .findById(documentId)
-                        .filter(d -> Objects.equals(d.getProvider().getId(), provider.getId()))
+                        .findByIdAndProviderId(documentId, provider.getId())
                         .orElseThrow(() -> SystemException.notFound("DOCUMENT_NOT_FOUND"));
         if (doc.getStatus() == ProviderDocumentStatus.APPROVED) {
             throw SystemException.conflict(
@@ -1065,6 +1141,16 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                 && provider.getUser() != null
                 && username != null
                 && username.equalsIgnoreCase(provider.getUser().getUsername());
+    }
+
+    private ProviderProfile requireOwnedProfile(String username) {
+        ProviderProfile profile = requireMyProfile(username);
+        if (!isFleetOwner(profile, username)) {
+            throw SystemException.forbidden(
+                    "Chỉ chủ đội bay mới có quyền thực hiện thao tác quản trị đội bay này.",
+                    "FLEET_OWNER_REQUIRED");
+        }
+        return profile;
     }
 
     private ProviderProfile requireOwnedVerifiedProfile(String username) {

@@ -3,6 +3,15 @@ package com.uav.platform.service.impl.marketplace.admin;
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.OrderStatusGroups;
 import com.uav.platform.common.util.VietnamProvinceCoordinates;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.marketplace.IMarketplaceListingDao;
+import com.uav.platform.dao.marketplace.IProviderProfileDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IMissionReviewDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.marketplace.admin.AutoDispatchRequest;
 import com.uav.platform.dto.request.marketplace.admin.ManualDispatchRequest;
 import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
@@ -27,14 +36,6 @@ import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.marketplace.MarketplaceListingRepository;
-import com.uav.platform.repository.marketplace.ProviderProfileRepository;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.MissionReviewRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.marketplace.admin.MarketplaceDispatchService;
 import com.uav.platform.service.notification.inbox.NotificationService;
@@ -50,7 +51,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,14 +66,14 @@ import java.util.Objects;
 @Transactional
 public class MarketplaceDispatchServiceImpl implements MarketplaceDispatchService {
 
-    private final MissionRepository missions;
-    private final MissionEventRepository missionEvents;
-    private final MissionReviewRepository reviews;
-    private final ProviderProfileRepository providers;
-    private final MarketplaceListingRepository listings;
-    private final UavRepository uavs;
-    private final InvoiceRepository invoices;
-    private final UserRepository users;
+    private final IMissionDao missions;
+    private final IMissionEventDao missionEvents;
+    private final IMissionReviewDao reviews;
+    private final IProviderProfileDao providers;
+    private final IMarketplaceListingDao listings;
+    private final IUavDao uavs;
+    private final IInvoiceDao invoices;
+    private final IUserDao users;
     private final AuditLogService audit;
     private final MissionMapper missionMapper;
 
@@ -86,7 +86,7 @@ public class MarketplaceDispatchServiceImpl implements MarketplaceDispatchServic
     @Override
     @Transactional(readOnly = true)
     public PageResponse<DispatchQueueItemResponse> listDispatchQueue(Pageable pageable) {
-        Specification<Mission> spec = pendingDispatchSpecification();
+        HibernateSpecification<Mission> spec = pendingDispatchSpecification();
         Pageable sorted =
                 PageRequest.of(
                         Math.max(0, pageable.getPageNumber()),
@@ -284,13 +284,13 @@ public class MarketplaceDispatchServiceImpl implements MarketplaceDispatchServic
                                 ProviderVerificationStatus.PENDING_REVIEW));
         long publishedListings =
                 listings.count(
-                        Specification.allOf(
+                        HibernateSpecification.allOf(
                                 MarketplaceSpecifications.listingNotDeleted(),
                                 MarketplaceSpecifications.listingModerationStatus(
                                         ListingModerationStatus.PUBLISHED)));
         long pendingListings =
                 listings.count(
-                        Specification.allOf(
+                        HibernateSpecification.allOf(
                                 MarketplaceSpecifications.listingNotDeleted(),
                                 MarketplaceSpecifications.listingModerationStatus(
                                         ListingModerationStatus.PENDING_REVIEW)));
@@ -432,7 +432,7 @@ public class MarketplaceDispatchServiceImpl implements MarketplaceDispatchServic
         return VietnamProvinceCoordinates.resolveForProvince(province);
     }
 
-    private static Specification<Mission> pendingDispatchSpecification() {
+    private static HibernateSpecification<Mission> pendingDispatchSpecification() {
         return (root, query, cb) ->
                 cb.and(
                         cb.equal(

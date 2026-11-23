@@ -1,5 +1,12 @@
 package com.uav.platform.service.impl.marketplace.escrow;
 
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.marketplace.IMarketplaceListingDao;
+import com.uav.platform.dao.marketplace.IProviderProfileDao;
+import com.uav.platform.dao.marketplace.IProviderWalletDao;
+import com.uav.platform.dao.marketplace.IWalletTransactionDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionReviewDao;
 import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.marketplace.MarketplaceListing;
 import com.uav.platform.entity.marketplace.ProviderProfile;
@@ -10,13 +17,6 @@ import com.uav.platform.entity.mission.MissionReview;
 import com.uav.platform.enums.billing.InvoiceStatus;
 import com.uav.platform.enums.marketplace.EscrowStatus;
 import com.uav.platform.enums.marketplace.WalletTransactionType;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.marketplace.MarketplaceListingRepository;
-import com.uav.platform.repository.marketplace.ProviderProfileRepository;
-import com.uav.platform.repository.marketplace.ProviderWalletRepository;
-import com.uav.platform.repository.marketplace.WalletTransactionRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.MissionReviewRepository;
 import com.uav.platform.service.marketplace.escrow.MarketplaceEscrowService;
 import com.uav.platform.service.settings.SystemConfigService;
 
@@ -36,13 +36,13 @@ public class MarketplaceEscrowServiceImpl implements MarketplaceEscrowService {
     public static final String PLATFORM_FEE_RATE_KEY = "marketplace.platform_fee_rate";
     private static final BigDecimal DEFAULT_FEE_RATE = new BigDecimal("0.10");
 
-    private final ProviderProfileRepository providers;
-    private final MarketplaceListingRepository listings;
-    private final ProviderWalletRepository wallets;
-    private final WalletTransactionRepository ledger;
-    private final InvoiceRepository invoices;
-    private final MissionRepository missions;
-    private final MissionReviewRepository reviews;
+    private final IProviderProfileDao providers;
+    private final IMarketplaceListingDao listings;
+    private final IProviderWalletDao wallets;
+    private final IWalletTransactionDao ledger;
+    private final IInvoiceDao invoices;
+    private final IMissionDao missions;
+    private final IMissionReviewDao reviews;
     private final SystemConfigService systemConfig;
 
     @Autowired(required = false)
@@ -77,13 +77,13 @@ public class MarketplaceEscrowServiceImpl implements MarketplaceEscrowService {
 
     @Autowired
     public MarketplaceEscrowServiceImpl(
-            ProviderProfileRepository providers,
-            MarketplaceListingRepository listings,
-            ProviderWalletRepository wallets,
-            WalletTransactionRepository ledger,
-            InvoiceRepository invoices,
-            MissionRepository missions,
-            MissionReviewRepository reviews,
+            IProviderProfileDao providers,
+            IMarketplaceListingDao listings,
+            IProviderWalletDao wallets,
+            IWalletTransactionDao ledger,
+            IInvoiceDao invoices,
+            IMissionDao missions,
+            IMissionReviewDao reviews,
             @Autowired(required = false) SystemConfigService systemConfig) {
         this.providers = providers;
         this.listings = listings;

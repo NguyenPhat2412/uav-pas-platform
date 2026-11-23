@@ -1,5 +1,15 @@
 package com.uav.platform.support;
 
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEquipmentReservationDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IMissionMediaDao;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.mission.catalog.*;
 import com.uav.platform.dto.request.mission.dispatch.*;
 import com.uav.platform.dto.request.mission.flightplan.*;
@@ -10,16 +20,6 @@ import com.uav.platform.dto.response.mission.flightplan.*;
 import com.uav.platform.dto.response.mission.lifecycle.*;
 import com.uav.platform.entity.mission.*;
 import com.uav.platform.enums.mission.*;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.MissionEquipmentReservationRepository;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionMediaRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.mission.catalog.*;
 import com.uav.platform.service.impl.mission.dispatch.*;
@@ -38,12 +38,12 @@ public final class MissionServiceFixture {
     private MissionServiceFixture() {}
 
     public static MissionServiceImpl create(
-            MissionRepository missions,
-            ServiceOfferingRepository services,
-            UserRepository users,
+            IMissionDao missions,
+            IServiceOfferingDao services,
+            IUserDao users,
             PermissionService permissions,
             AuditLogService audit,
-            MissionEventRepository events) {
+            IMissionEventDao events) {
         return create(
                 missions,
                 services,
@@ -63,17 +63,17 @@ public final class MissionServiceFixture {
     }
 
     public static MissionServiceImpl create(
-            MissionRepository missions,
-            ServiceOfferingRepository services,
-            UserRepository users,
+            IMissionDao missions,
+            IServiceOfferingDao services,
+            IUserDao users,
             PermissionService permissions,
             AuditLogService audit,
-            MissionEventRepository events,
-            StationRepository stations,
-            UavRepository uavs,
-            EquipmentRepository equipment,
+            IMissionEventDao events,
+            IStationDao stations,
+            IUavDao uavs,
+            IEquipmentDao equipment,
             InventoryService inventory,
-            MissionEquipmentReservationRepository reservations) {
+            IMissionEquipmentReservationDao reservations) {
         return create(
                 missions,
                 services,
@@ -93,19 +93,19 @@ public final class MissionServiceFixture {
     }
 
     public static MissionServiceImpl create(
-            MissionRepository missions,
-            ServiceOfferingRepository services,
-            UserRepository users,
+            IMissionDao missions,
+            IServiceOfferingDao services,
+            IUserDao users,
             PermissionService permissions,
             AuditLogService audit,
-            MissionEventRepository events,
-            StationRepository stations,
-            UavRepository uavs,
-            EquipmentRepository equipment,
+            IMissionEventDao events,
+            IStationDao stations,
+            IUavDao uavs,
+            IEquipmentDao equipment,
             InventoryService inventory,
-            MissionEquipmentReservationRepository reservations,
-            MediaAssetRepository mediaAssets,
-            MissionMediaRepository missionMedia,
+            IMissionEquipmentReservationDao reservations,
+            IMediaAssetDao mediaAssets,
+            IMissionMediaDao missionMedia,
             com.uav.platform.service.uav.UavService uavService) {
         return create(
                 missions,
@@ -126,19 +126,19 @@ public final class MissionServiceFixture {
     }
 
     public static MissionServiceImpl create(
-            MissionRepository missions,
-            ServiceOfferingRepository services,
-            UserRepository users,
+            IMissionDao missions,
+            IServiceOfferingDao services,
+            IUserDao users,
             PermissionService permissions,
             AuditLogService audit,
-            MissionEventRepository events,
-            StationRepository stations,
-            UavRepository uavs,
-            EquipmentRepository equipment,
+            IMissionEventDao events,
+            IStationDao stations,
+            IUavDao uavs,
+            IEquipmentDao equipment,
             InventoryService inventory,
-            MissionEquipmentReservationRepository reservations,
-            MediaAssetRepository mediaAssets,
-            MissionMediaRepository missionMedia,
+            IMissionEquipmentReservationDao reservations,
+            IMediaAssetDao mediaAssets,
+            IMissionMediaDao missionMedia,
             com.uav.platform.service.uav.UavService uavService,
             NotificationService notifications) {
         jakarta.persistence.EntityManager entityManager = null;

@@ -4,12 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.billing.IServicePlanDao;
 import com.uav.platform.dto.request.billing.plan.ServicePlanRequest;
 import com.uav.platform.dto.request.billing.plan.ServicePlanUpdateRequest;
 import com.uav.platform.entity.billing.ServicePlan;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.billing.invoice.BillingMapper;
-import com.uav.platform.repository.billing.ServicePlanRepository;
 import com.uav.platform.service.audit.AuditLogService;
 
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 class PlanAdministrationServiceTest {
-    private final ServicePlanRepository repository = mock(ServicePlanRepository.class);
+    private final IServicePlanDao repository = mock(IServicePlanDao.class);
     private final PlanAdministrationServiceImpl service =
             new PlanAdministrationServiceImpl(
                     repository,

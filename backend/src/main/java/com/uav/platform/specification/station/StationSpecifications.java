@@ -1,16 +1,15 @@
 package com.uav.platform.specification.station;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.station.Station;
 import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.station.StationStatus;
-
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Collection;
 import java.util.Locale;
 
 /**
- * Specification Factory for Station entity according to Clean Architecture and DDD.
+ * HibernateSpecification Factory for Station entity according to Clean Architecture and DDD.
  */
 public final class StationSpecifications {
 
@@ -19,7 +18,7 @@ public final class StationSpecifications {
     /**
      * Case-insensitive keyword search across code, name, and address.
      */
-    public static Specification<Station> hasKeyword(String keyword) {
+    public static HibernateSpecification<Station> hasKeyword(String keyword) {
         return (root, query, cb) -> {
             if (keyword == null || keyword.isBlank()) {
                 return null;
@@ -35,14 +34,14 @@ public final class StationSpecifications {
     /**
      * Exact match on StationStatus.
      */
-    public static Specification<Station> hasStatus(StationStatus status) {
+    public static HibernateSpecification<Station> hasStatus(StationStatus status) {
         return (root, query, cb) -> status == null ? null : cb.equal(root.get("status"), status);
     }
 
     /**
      * Filter by a collection of allowed StationStatuses.
      */
-    public static Specification<Station> hasStatusIn(Collection<StationStatus> statuses) {
+    public static HibernateSpecification<Station> hasStatusIn(Collection<StationStatus> statuses) {
         return (root, query, cb) ->
                 (statuses == null || statuses.isEmpty()) ? null : root.get("status").in(statuses);
     }
@@ -50,7 +49,7 @@ public final class StationSpecifications {
     /**
      * Filter by permitted station IDs (data scoping).
      */
-    public static Specification<Station> idIn(Collection<Long> ids) {
+    public static HibernateSpecification<Station> idIn(Collection<Long> ids) {
         return (root, query, cb) -> {
             if (ids == null || ids.isEmpty()) {
                 return cb.disjunction();

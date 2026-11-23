@@ -1,11 +1,11 @@
 package com.uav.platform.service.impl.webhook;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.webhook.IFinancialOutboxDao;
 import com.uav.platform.dto.response.webhook.FinancialOutboxEventResponse;
 import com.uav.platform.entity.webhook.FinancialOutboxEvent;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.webhook.FinancialOutboxRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.webhook.FinancialOutboxAdminService;
 import com.uav.platform.specification.webhook.WebhookSpecifications;
@@ -31,7 +31,7 @@ import java.time.LocalDateTime;
 public class FinancialOutboxAdminServiceImpl implements FinancialOutboxAdminService {
     static final String COMPLETED = "LOCAL_COMPLETED";
 
-    private final FinancialOutboxRepository events;
+    private final IFinancialOutboxDao events;
     private final AuditLogService audit;
 
     @Override

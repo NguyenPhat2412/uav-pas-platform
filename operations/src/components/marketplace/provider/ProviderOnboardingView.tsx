@@ -17,6 +17,10 @@ import {
 } from 'lucide-react';
 import {Button, OptionalMark, RequiredMark} from '@/components/ui';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
+import {
+    ProviderDocumentChecklist,
+    ProviderVerificationStepper,
+} from '@/components/marketplace/provider/ProviderVerificationStepper';
 import {useMyProviderProfile, useProviderOnboardingActions} from '@/hooks/marketplace/useMarketplace';
 import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
 import {
@@ -189,7 +193,9 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
                                       ? t('opsMarketplace.onboarding.statusCard.verifiedTitle')
                                       : status === 'REJECTED'
                                         ? t('opsMarketplace.onboarding.statusCard.rejectedTitle')
-                                        : t('opsMarketplace.onboarding.statusCard.draftTitle')}
+                                        : status === 'SUSPENDED'
+                                          ? t('opsMarketplace.onboarding.statusCard.suspendedTitle')
+                                          : t('opsMarketplace.onboarding.statusCard.draftTitle')}
                             </strong>
                             <span className="rounded-full bg-uav-red-light px-2.5 py-0.5 text-xs font-bold whitespace-nowrap text-primary">
                                 {t(`opsMarketplace.studio.verification.${status}`)}
@@ -202,7 +208,9 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
                                   ? t('opsMarketplace.onboarding.statusCard.verifiedDesc')
                                   : profile?.reviewNote
                                     ? t('opsMarketplace.onboarding.statusCard.reviewNote', {note: profile.reviewNote})
-                                    : t('opsMarketplace.onboarding.subtitle')}
+                                    : status === 'SUSPENDED'
+                                      ? t('opsMarketplace.onboarding.statusCard.suspendedDesc')
+                                      : t('opsMarketplace.onboarding.subtitle')}
                         </p>
                     </div>
                 </div>
@@ -221,6 +229,13 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
                     </div>
                 )}
             </div>
+
+            {/* Tiến trình xác minh 5 bước */}
+            <ProviderVerificationStepper
+                profile={profile}
+                providerType={form.providerType}
+                profileDone={step1Done && step3Done}
+            />
 
             {/* Thanh tiến trình 3 bước kiểu Shopee */}
             <div className="grid grid-cols-3 gap-2 rounded-2xl border border-slate-200 bg-white p-2" role="tablist">
@@ -390,6 +405,17 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
                         </div>
                     </div>
 
+                    <ProviderDocumentChecklist
+                        providerType={form.providerType}
+                        documents={profile?.documents ?? []}
+                        onSelectType={code =>
+                            setDocForm(prev => ({
+                                ...prev,
+                                documentType: code,
+                            }))
+                        }
+                    />
+
                     <form onSubmit={handleAddDocument} className="grid grid-cols-1 items-end gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2 lg:grid-cols-4">
                         <label className="grid gap-1 text-xs font-semibold text-slate-700">
                             <span>
@@ -465,6 +491,13 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
                         <ul className="m-0 list-none divide-y divide-slate-100 p-0">
                             {profile.documents.map(doc => {
                                 const safeHref = doc.fileUrl && /^https?:\/\//i.test(doc.fileUrl) ? doc.fileUrl : null;
+                                const isApproved = doc.status === 'APPROVED';
+                                const statusTone =
+                                    doc.status === 'APPROVED'
+                                        ? 'bg-slate-900 text-white'
+                                        : doc.status === 'REJECTED'
+                                          ? 'bg-rose-100 text-danger'
+                                          : 'bg-amber-100 text-amber-800';
                                 return (
                                     <li key={doc.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-xs">
                                         <div className="flex items-center gap-2.5 min-w-0">
@@ -487,16 +520,25 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
                                                     {t(`opsMarketplace.onboarding.documents.types.${doc.documentType}`)}
                                                     {doc.documentNumber ? ` · ${doc.documentNumber}` : ''}
                                                 </div>
+                                                {doc.reviewerNote && (
+                                                    <div className="mt-0.5 text-amber-800">
+                                                        {t('opsMarketplace.onboarding.workflow.reviewerNoteLabel', {
+                                                            note: doc.reviewerNote,
+                                                        })}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap text-slate-700">
+                                            <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${statusTone}`}>
                                                 {t(`opsMarketplace.onboarding.documents.status.${doc.status}`)}
                                             </span>
                                             <button
                                                 type="button"
+                                                disabled={isApproved || deleteDocument.isPending}
+                                                title={isApproved ? t('opsMarketplace.onboarding.workflow.approvedLockedHint') : undefined}
                                                 onClick={() => deleteDocument.mutate(doc.id)}
-                                                className="inline-flex h-9 w-9 items-center justify-center rounded-control text-slate-400 hover:bg-rose-50 hover:text-danger"
+                                                className="inline-flex h-9 w-9 items-center justify-center rounded-control text-slate-400 hover:bg-rose-50 hover:text-danger disabled:cursor-not-allowed disabled:opacity-40"
                                                 aria-label={t('opsMarketplace.common.delete')}
                                             >
                                                 <Trash2 size={15} aria-hidden="true"/>

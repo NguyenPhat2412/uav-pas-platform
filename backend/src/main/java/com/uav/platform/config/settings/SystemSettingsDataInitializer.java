@@ -1,8 +1,8 @@
 package com.uav.platform.config.settings;
 
+import com.uav.platform.dao.settings.ISystemConfigurationDao;
 import com.uav.platform.entity.settings.SystemConfiguration;
 import com.uav.platform.enums.settings.SettingValueType;
-import com.uav.platform.repository.settings.SystemConfigurationRepository;
 import com.uav.platform.service.impl.settings.SystemConfigurationOperations;
 
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 @Component
 @RequiredArgsConstructor
 public class SystemSettingsDataInitializer implements ApplicationRunner {
-    private final SystemConfigurationRepository settings;
+    private final ISystemConfigurationDao settings;
 
     @Override
     @Transactional

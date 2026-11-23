@@ -1,17 +1,16 @@
 package com.uav.platform.specification.user.account;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-
-import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Locale;
 
 /**
- * Specification Factory for AppUser entity according to Clean Architecture and DDD.
+ * HibernateSpecification Factory for AppUser entity according to Clean Architecture and DDD.
  * All factory methods return null on null/blank inputs to allow seamless composition via .and().
  */
 public final class UserSpecifications {
@@ -21,7 +20,7 @@ public final class UserSpecifications {
     /**
      * Case-insensitive keyword search across username, email, and fullName.
      */
-    public static Specification<AppUser> hasKeyword(String keyword) {
+    public static HibernateSpecification<AppUser> hasKeyword(String keyword) {
         return (root, query, cb) -> {
             if (keyword == null || keyword.isBlank()) {
                 return null;
@@ -39,7 +38,7 @@ public final class UserSpecifications {
     /**
      * Exact match on UserRole.
      */
-    public static Specification<AppUser> hasRole(UserRole role) {
+    public static HibernateSpecification<AppUser> hasRole(UserRole role) {
         return (root, query, cb) -> role == null ? null : cb.equal(root.get("role"), role);
     }
 
@@ -47,7 +46,7 @@ public final class UserSpecifications {
      * Match on the status an administrator sees. A manually locked account counts as SUSPENDED
      * whatever its stored status, so it is never listed as ACTIVE or INACTIVE.
      */
-    public static Specification<AppUser> hasStatus(UserStatus status) {
+    public static HibernateSpecification<AppUser> hasStatus(UserStatus status) {
         return (root, query, cb) -> {
             if (status == null) return null;
             var locked = cb.isTrue(root.get("manualLocked"));
@@ -60,7 +59,8 @@ public final class UserSpecifications {
     /**
      * Range match on createdAt timestamp.
      */
-    public static Specification<AppUser> createdBetween(LocalDateTime from, LocalDateTime to) {
+    public static HibernateSpecification<AppUser> createdBetween(
+            LocalDateTime from, LocalDateTime to) {
         return (root, query, cb) -> {
             if (from == null && to == null) return null;
             if (from != null && to != null) {
@@ -77,7 +77,7 @@ public final class UserSpecifications {
     /**
      * Filter by permitted user IDs (data scoping / authorization).
      */
-    public static Specification<AppUser> idIn(Collection<Long> ids) {
+    public static HibernateSpecification<AppUser> idIn(Collection<Long> ids) {
         return (root, query, cb) -> {
             if (ids == null || ids.isEmpty()) {
                 return cb.disjunction();
@@ -89,7 +89,7 @@ public final class UserSpecifications {
     /**
      * Convenience composite specification for user search and role filtering.
      */
-    public static Specification<AppUser> filter(String keyword, UserRole role) {
-        return Specification.where(hasKeyword(keyword)).and(hasRole(role));
+    public static HibernateSpecification<AppUser> filter(String keyword, UserRole role) {
+        return HibernateSpecification.where(hasKeyword(keyword)).and(hasRole(role));
     }
 }

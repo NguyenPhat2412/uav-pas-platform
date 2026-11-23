@@ -2,17 +2,17 @@ package com.uav.platform.specification.weather;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.weather.IWeatherObservationCacheDao;
+import com.uav.platform.dao.weather.IWeatherProviderSettingsDao;
 import com.uav.platform.entity.weather.WeatherObservationCache;
 import com.uav.platform.entity.weather.WeatherProviderSettings;
 import com.uav.platform.enums.weather.WeatherProviderType;
-import com.uav.platform.repository.weather.WeatherObservationCacheRepository;
-import com.uav.platform.repository.weather.WeatherProviderSettingsRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -24,8 +24,8 @@ import java.util.List;
 class WeatherObservationSpecificationsTest {
     private static final LocalDateTime NOW = LocalDateTime.of(2026, 10, 31, 8, 0);
 
-    @Autowired private WeatherObservationCacheRepository cache;
-    @Autowired private WeatherProviderSettingsRepository settings;
+    @Autowired private IWeatherObservationCacheDao cache;
+    @Autowired private IWeatherProviderSettingsDao settings;
 
     @BeforeEach
     void seed() {
@@ -85,7 +85,7 @@ class WeatherObservationSpecificationsTest {
                 cache.findAll(WeatherObservationSpecifications.fetchedAfter(NOW.minusDays(1)))
                         .size());
         assertEquals(3, cache.findAll(WeatherObservationSpecifications.fetchedAfter(null)).size());
-        Specification<WeatherObservationCache> combined =
+        HibernateSpecification<WeatherObservationCache> combined =
                 WeatherObservationSpecifications.withinGrid(21.03, 105.85, 0.05)
                         .and(WeatherObservationSpecifications.byProvider("OPEN_METEO"))
                         .and(WeatherObservationSpecifications.fetchedAfter(NOW.minusHours(1)));

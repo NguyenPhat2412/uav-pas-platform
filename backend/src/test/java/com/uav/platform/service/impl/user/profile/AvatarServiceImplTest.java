@@ -10,6 +10,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.media.MediaUploadRequest;
 import com.uav.platform.dto.request.user.profile.AvatarUploadRequest;
 import com.uav.platform.dto.response.media.MediaAssetResponse;
@@ -19,8 +21,6 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.media.MediaType;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.media.MediaAssetOperations;
 import com.uav.platform.service.media.MediaService;
@@ -40,9 +40,9 @@ import java.util.Optional;
 
 @DisplayName("AvatarServiceImpl")
 class AvatarServiceImplTest {
-    private final UserRepository users = mock(UserRepository.class);
+    private final IUserDao users = mock(IUserDao.class);
     private final MediaService media = mock(MediaService.class);
-    private final MediaAssetRepository assets = mock(MediaAssetRepository.class);
+    private final IMediaAssetDao assets = mock(IMediaAssetDao.class);
     private final ObjectStorageService storage = mock(ObjectStorageService.class);
     private final PermissionService permissions = mock(PermissionService.class);
     private final AuditLogService audit = mock(AuditLogService.class);

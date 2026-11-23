@@ -3,8 +3,8 @@ package com.uav.platform.security.jwt;
 import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_HEADER;
 import static com.uav.platform.common.constant.SecurityConstants.BEARER_PREFIX;
 
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.entity.user.AppUser;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.AuthCookieHelper;
 import com.uav.platform.service.auth.session.InvalidatedTokenService;
 import com.uav.platform.service.impl.user.account.UserAccountServiceImpl;
@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final InvalidatedTokenService invalidatedTokenService;
-    private final UserRepository userRepository;
+    private final IUserDao userRepository;
     private final AuthCookieHelper authCookieHelper;
     private SessionRevocationService sessionRevocationService;
 
@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public JwtAuthenticationFilter(
             JwtTokenProvider jwtTokenProvider,
             @Autowired(required = false) InvalidatedTokenService invalidatedTokenService,
-            @Autowired(required = false) UserRepository userRepository,
+            @Autowired(required = false) IUserDao userRepository,
             @Autowired(required = false) AuthCookieHelper authCookieHelper) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.invalidatedTokenService = invalidatedTokenService;

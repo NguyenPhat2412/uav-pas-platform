@@ -5,6 +5,10 @@ import static com.uav.platform.common.constant.TimeConstants.BUSINESS_ZONE;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.weather.IWeatherObservationCacheDao;
+import com.uav.platform.dao.weather.IWeatherProviderSettingsDao;
 import com.uav.platform.dto.record.weather.CachedKpFeed;
 import com.uav.platform.dto.record.weather.CachedWeatherSeries;
 import com.uav.platform.dto.record.weather.HourlyWeatherSlot;
@@ -24,10 +28,6 @@ import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.station.StationStatus;
 import com.uav.platform.enums.weather.WeatherProviderType;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.weather.WeatherObservationCacheRepository;
-import com.uav.platform.repository.weather.WeatherProviderSettingsRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.settings.SystemConfigService;
@@ -110,12 +110,12 @@ public class WeatherServiceImpl implements WeatherService {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm[:ss][.SSS]", Locale.ROOT);
     private static final TypeReference<List<HourlyWeatherSlot>> SLOTS = new TypeReference<>() {};
 
-    private final WeatherObservationCacheRepository cache;
-    private final WeatherProviderSettingsRepository providerSettings;
+    private final IWeatherObservationCacheDao cache;
+    private final IWeatherProviderSettingsDao providerSettings;
     private final SystemConfigService config;
-    private final ServiceOfferingRepository services;
+    private final IServiceOfferingDao services;
     private final MissionAccessService missionAccess;
-    private final StationRepository stations;
+    private final IStationDao stations;
     private final AuditLogService audit;
     private final WeatherCipherOperations cipher;
     private final FlightSafetyEvaluatorOperations evaluator;
@@ -139,12 +139,12 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Autowired
     public WeatherServiceImpl(
-            WeatherObservationCacheRepository cache,
-            WeatherProviderSettingsRepository providerSettings,
+            IWeatherObservationCacheDao cache,
+            IWeatherProviderSettingsDao providerSettings,
             SystemConfigService config,
-            ServiceOfferingRepository services,
+            IServiceOfferingDao services,
             MissionAccessService missionAccess,
-            StationRepository stations,
+            IStationDao stations,
             AuditLogService audit,
             WeatherCipherOperations cipher,
             FlightSafetyEvaluatorOperations evaluator,
@@ -170,12 +170,12 @@ public class WeatherServiceImpl implements WeatherService {
 
     /** Explicit collaborators (HTTP client, JSON mapper, clock) for tests. */
     public WeatherServiceImpl(
-            WeatherObservationCacheRepository cache,
-            WeatherProviderSettingsRepository providerSettings,
+            IWeatherObservationCacheDao cache,
+            IWeatherProviderSettingsDao providerSettings,
             SystemConfigService config,
-            ServiceOfferingRepository services,
+            IServiceOfferingDao services,
             MissionAccessService missionAccess,
-            StationRepository stations,
+            IStationDao stations,
             AuditLogService audit,
             WeatherCipherOperations cipher,
             FlightSafetyEvaluatorOperations evaluator,

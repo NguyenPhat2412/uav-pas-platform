@@ -4,27 +4,27 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.sar.ISarMissionDao;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.sar.SarMission;
 import com.uav.platform.entity.uav.Uav;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.sar.SarStatus;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.sar.SarMissionRepository;
 import com.uav.platform.service.impl.sar.SarServiceImpl;
 import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.webhook.WebhookService;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.util.*;
 
 class SarCockpitTest {
-    final SarMissionRepository sars = mock(SarMissionRepository.class);
-    final MissionRepository missions = mock(MissionRepository.class);
+    final ISarMissionDao sars = mock(ISarMissionDao.class);
+    final IMissionDao missions = mock(IMissionDao.class);
     final WebhookService hooks = mock(WebhookService.class);
     final PermissionService permissions = mock(PermissionService.class);
     final SarServiceImpl service =
@@ -49,7 +49,7 @@ class SarCockpitTest {
         when(m.getCode()).thenReturn("MS-1");
         // RESCUED is filtered in the query (specification), so each call returns what the DB would.
         when(sars.findAll(
-                        any(Specification.class),
+                        any(HibernateSpecification.class),
                         any(org.springframework.data.domain.Pageable.class)))
                 .thenReturn(
                         new org.springframework.data.domain.PageImpl<>(
@@ -63,7 +63,7 @@ class SarCockpitTest {
         assertEquals("MS-1", service.listForCockpit(false, auth).get(0).missionCode());
         var pages =
                 org.mockito.ArgumentCaptor.forClass(org.springframework.data.domain.Pageable.class);
-        verify(sars, times(3)).findAll(any(Specification.class), pages.capture());
+        verify(sars, times(3)).findAll(any(HibernateSpecification.class), pages.capture());
         assertEquals(50, pages.getValue().getPageSize(), "cockpit default page size");
         assertEquals(
                 org.springframework.data.domain.Sort.Direction.DESC,

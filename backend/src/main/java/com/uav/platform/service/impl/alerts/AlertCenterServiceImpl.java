@@ -2,6 +2,7 @@ package com.uav.platform.service.impl.alerts;
 
 import static com.uav.platform.common.constant.TimeConstants.BUSINESS_ZONE;
 
+import com.uav.platform.dao.devicekey.IDeviceApiKeyDao;
 import com.uav.platform.dto.response.alerts.AdminAlertResponse;
 import com.uav.platform.dto.response.alerts.AlertCenterResponse;
 import com.uav.platform.dto.response.dashboard.SystemHealthResponse;
@@ -10,7 +11,6 @@ import com.uav.platform.entity.devicekey.DeviceApiKey;
 import com.uav.platform.enums.alerts.AlertSeverity;
 import com.uav.platform.enums.alerts.AlertSource;
 import com.uav.platform.enums.weather.FlightClearanceLevel;
-import com.uav.platform.repository.devicekey.DeviceApiKeyRepository;
 import com.uav.platform.service.alerts.AlertCenterService;
 import com.uav.platform.service.dashboard.SystemHealthService;
 import com.uav.platform.service.settings.SystemConfigService;
@@ -55,7 +55,7 @@ public class AlertCenterServiceImpl implements AlertCenterService {
 
     private final JdbcTemplate db;
     private final SystemConfigService settings;
-    private final DeviceApiKeyRepository deviceKeys;
+    private final IDeviceApiKeyDao deviceKeys;
     private final ObjectProvider<SystemHealthService> health;
     private final ObjectProvider<WeatherService> weather;
 
@@ -67,7 +67,7 @@ public class AlertCenterServiceImpl implements AlertCenterService {
     public AlertCenterServiceImpl(
             JdbcTemplate db,
             SystemConfigService settings,
-            DeviceApiKeyRepository deviceKeys,
+            IDeviceApiKeyDao deviceKeys,
             ObjectProvider<SystemHealthService> health) {
         this(db, settings, deviceKeys, health, null);
     }
@@ -76,7 +76,7 @@ public class AlertCenterServiceImpl implements AlertCenterService {
     public AlertCenterServiceImpl(
             JdbcTemplate db,
             SystemConfigService settings,
-            DeviceApiKeyRepository deviceKeys,
+            IDeviceApiKeyDao deviceKeys,
             ObjectProvider<SystemHealthService> health,
             ObjectProvider<WeatherService> weather) {
         this.db = db;

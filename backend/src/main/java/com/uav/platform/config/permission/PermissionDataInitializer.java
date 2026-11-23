@@ -1,13 +1,13 @@
 package com.uav.platform.config.permission;
 
+import com.uav.platform.dao.permission.IPermissionDao;
+import com.uav.platform.dao.role.IRoleTemplateDao;
+import com.uav.platform.dao.role.IRoleTemplatePermissionDao;
 import com.uav.platform.entity.permission.Permission;
 import com.uav.platform.entity.role.RoleTemplate;
 import com.uav.platform.entity.role.RoleTemplatePermission;
 import com.uav.platform.enums.permission.PermissionCode;
 import com.uav.platform.enums.user.UserRole;
-import com.uav.platform.repository.permission.PermissionRepository;
-import com.uav.platform.repository.role.RoleTemplatePermissionRepository;
-import com.uav.platform.repository.role.RoleTemplateRepository;
 import com.uav.platform.service.impl.role.RoleTemplateOperations;
 
 import lombok.RequiredArgsConstructor;
@@ -25,9 +25,9 @@ import java.util.EnumSet;
 @Order(1)
 @RequiredArgsConstructor
 public class PermissionDataInitializer implements ApplicationRunner {
-    private final PermissionRepository repository;
-    private final RoleTemplateRepository roleTemplates;
-    private final RoleTemplatePermissionRepository templatePermissions;
+    private final IPermissionDao repository;
+    private final IRoleTemplateDao roleTemplates;
+    private final IRoleTemplatePermissionDao templatePermissions;
 
     @Override
     @Transactional

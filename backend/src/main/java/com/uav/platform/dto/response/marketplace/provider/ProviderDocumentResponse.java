@@ -12,6 +12,8 @@ public record ProviderDocumentResponse(
         String documentNumber,
         String fileUrl,
         Long mediaAssetId,
+        String downloadUrl,
         ProviderDocumentStatus status,
         String reviewerNote,
-        LocalDateTime createdAt) {}
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt) {}

@@ -2,6 +2,11 @@ package com.uav.platform.integration.mission;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.inventory.QuantityRequest;
 import com.uav.platform.dto.request.mission.catalog.*;
 import com.uav.platform.dto.request.mission.dispatch.*;
@@ -24,11 +29,6 @@ import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.inventory.InventoryService;
 import com.uav.platform.service.mission.lifecycle.MissionService;
@@ -49,13 +49,13 @@ import java.util.UUID;
 @SpringBootTest
 @Transactional
 class MissionPhase2IntegrationTest {
-    @Autowired ServicePlanRepository servicePlans;
+    @Autowired IServicePlanDao servicePlans;
     @Autowired MissionService missions;
     @Autowired org.springframework.jdbc.core.JdbcTemplate db;
-    @Autowired UserRepository users;
-    @Autowired StationRepository stations;
-    @Autowired UavRepository uavs;
-    @Autowired EquipmentRepository equipment;
+    @Autowired IUserDao users;
+    @Autowired IStationDao stations;
+    @Autowired IUavDao uavs;
+    @Autowired IEquipmentDao equipment;
     @Autowired InventoryService inventory;
     @Autowired PasswordEncoder encoder;
 

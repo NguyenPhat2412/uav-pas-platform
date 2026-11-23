@@ -5,6 +5,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.simulation.ISimulationRunLogDao;
+import com.uav.platform.dao.uav.IUavDao;
 import com.uav.platform.dto.request.simulation.SimulationStartRequest;
 import com.uav.platform.dto.request.simulation.SurveyPlanRequest;
 import com.uav.platform.dto.request.uav.TelemetryReportRequest;
@@ -19,9 +22,6 @@ import com.uav.platform.enums.simulation.SimFlightMode;
 import com.uav.platform.enums.simulation.SimRunStatus;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.simulation.SimulationRunLogRepository;
-import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.service.airspace.AirspaceService;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.uav.TelemetryService;
@@ -36,8 +36,8 @@ import java.util.List;
 import java.util.Optional;
 
 class SimulationServiceImplTest {
-    UavRepository uavs = mock(UavRepository.class);
-    MissionRepository missions = mock(MissionRepository.class);
+    IUavDao uavs = mock(IUavDao.class);
+    IMissionDao missions = mock(IMissionDao.class);
     TelemetryService telemetry = mock(TelemetryService.class);
     AuditLogService audit = mock(AuditLogService.class);
     SimulationServiceImpl service = new SimulationServiceImpl(uavs, missions, telemetry, audit);
@@ -175,7 +175,7 @@ class SimulationServiceImplTest {
     @Test
     void rehearseMissionSelectsAvailableUavAndPersistsRunLogLifecycle() {
         AirspaceService airspace = mock(AirspaceService.class);
-        SimulationRunLogRepository runLogs = mock(SimulationRunLogRepository.class);
+        ISimulationRunLogDao runLogs = mock(ISimulationRunLogDao.class);
         SimulationRunLog savedRow = new SimulationRunLog();
         savedRow.setId(77L);
         when(runLogs.save(any()))

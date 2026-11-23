@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.uav.IUavTelemetryDao;
 import com.uav.platform.dto.request.uav.TelemetryReportRequest;
 import com.uav.platform.dto.response.uav.TelemetryResponse;
 import com.uav.platform.entity.mission.Mission;
@@ -12,9 +15,6 @@ import com.uav.platform.entity.uav.UavTelemetry;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.uav.UavTelemetryRepository;
 import com.uav.platform.service.impl.uav.TelemetryServiceImpl;
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.permission.PermissionService;
@@ -34,9 +34,9 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class TelemetryServiceTest {
-    @Mock UavTelemetryRepository telemetry;
-    @Mock UavRepository uavs;
-    @Mock MissionRepository missions;
+    @Mock IUavTelemetryDao telemetry;
+    @Mock IUavDao uavs;
+    @Mock IMissionDao missions;
     @Mock MissionAccessService missionAccess;
     @Mock PermissionService permissions;
     @InjectMocks TelemetryServiceImpl service;

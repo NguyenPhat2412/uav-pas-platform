@@ -1,9 +1,9 @@
 package com.uav.platform.service.impl.notification.policy;
 
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.notification.NotificationType;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.notification.inbox.NotificationService;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class NotificationBroadcastOperations {
 
-    private final UserRepository userRepository;
+    private final IUserDao userRepository;
     private final NotificationService notificationService;
 
     public void notifyActor(

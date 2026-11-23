@@ -1,6 +1,9 @@
 package com.uav.platform.service.impl.notification.inbox;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.notification.INotificationDao;
+import com.uav.platform.dao.notification.IPushDeviceTokenDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.notification.delivery.NotificationDeliveryPayload;
 import com.uav.platform.dto.record.notification.policy.EffectiveNotificationChannels;
 import com.uav.platform.dto.request.notification.delivery.RegisterPushTokenRequest;
@@ -15,9 +18,6 @@ import com.uav.platform.enums.notification.NotificationSeverity;
 import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.notification.inbox.NotificationMapper;
-import com.uav.platform.repository.notification.NotificationRepository;
-import com.uav.platform.repository.notification.PushDeviceTokenRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.notification.delivery.NotificationDeliveryOperations;
 import com.uav.platform.service.impl.notification.policy.NotificationPolicyOperations;
 import com.uav.platform.service.notification.inbox.NotificationService;
@@ -39,12 +39,12 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
-    private final NotificationRepository notificationRepository;
-    private final UserRepository userRepository;
+    private final INotificationDao notificationRepository;
+    private final IUserDao userRepository;
     private final NotificationMapper notificationMapper;
 
     @Autowired(required = false)
-    private PushDeviceTokenRepository pushTokenRepository;
+    private IPushDeviceTokenDao pushTokenRepository;
 
     @Autowired(required = false)
     private NotificationDeliveryOperations deliveryOperations;
@@ -55,7 +55,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired(required = false)
     private RealtimeEventBroadcaster realtime;
 
-    public void setPushTokenRepository(PushDeviceTokenRepository pushTokenRepository) {
+    public void setPushTokenRepository(IPushDeviceTokenDao pushTokenRepository) {
         this.pushTokenRepository = pushTokenRepository;
     }
 

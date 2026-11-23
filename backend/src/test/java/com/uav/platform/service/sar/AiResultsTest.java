@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.sar.IAiDetectionDao;
+import com.uav.platform.dao.sar.IAiTaskDao;
 import com.uav.platform.dto.request.sar.AiDetectionResultRequest;
 import com.uav.platform.dto.request.sar.AiTaskResultRequest;
 import com.uav.platform.entity.mission.Mission;
@@ -12,10 +16,6 @@ import com.uav.platform.entity.sar.AiTask;
 import com.uav.platform.enums.sar.AiTaskStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.sar.SarMapper;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.sar.AiDetectionRepository;
-import com.uav.platform.repository.sar.AiTaskRepository;
 import com.uav.platform.service.impl.sar.AiServiceImpl;
 
 import org.junit.jupiter.api.Test;
@@ -25,14 +25,14 @@ import java.util.List;
 import java.util.Optional;
 
 class AiResultsTest {
-    final AiTaskRepository tasks = mock(AiTaskRepository.class);
-    final AiDetectionRepository detections = mock(AiDetectionRepository.class);
+    final IAiTaskDao tasks = mock(IAiTaskDao.class);
+    final IAiDetectionDao detections = mock(IAiDetectionDao.class);
     final AiServiceImpl service =
             new AiServiceImpl(
                     tasks,
                     detections,
-                    mock(MissionRepository.class),
-                    mock(MediaAssetRepository.class),
+                    mock(IMissionDao.class),
+                    mock(IMediaAssetDao.class),
                     null,
                     null,
                     null,

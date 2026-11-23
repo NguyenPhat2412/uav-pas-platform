@@ -1,5 +1,8 @@
 package com.uav.platform.service.impl.simulation;
 
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.simulation.ISimulationRunLogDao;
+import com.uav.platform.dao.uav.IUavDao;
 import com.uav.platform.dto.record.simulation.SimFlightSettings;
 import com.uav.platform.dto.request.airspace.AirspaceCheckRequest;
 import com.uav.platform.dto.request.simulation.SimulationStartRequest;
@@ -20,9 +23,6 @@ import com.uav.platform.enums.simulation.SimFlightMode;
 import com.uav.platform.enums.simulation.SimRunStatus;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.simulation.SimulationRunLogRepository;
-import com.uav.platform.repository.uav.UavRepository;
 import com.uav.platform.service.airspace.AirspaceService;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.mission.flightplan.FlightPlanOperations;
@@ -65,12 +65,12 @@ public class SimulationServiceImpl implements SimulationService {
     /** Geofence margin beyond the farthest planned point when no radius is given. */
     static final double GEOFENCE_MARGIN_M = 300;
 
-    private final UavRepository uavs;
-    private final MissionRepository missions;
+    private final IUavDao uavs;
+    private final IMissionDao missions;
     private final TelemetryService telemetry;
     private final AuditLogService audit;
     private final AirspaceService airspace;
-    private final SimulationRunLogRepository runLogs;
+    private final ISimulationRunLogDao runLogs;
 
     private final Map<Long, SimulatedFlightOperations> flights = new ConcurrentHashMap<>();
     private final Map<Long, String> labels = new ConcurrentHashMap<>();
@@ -79,12 +79,12 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Autowired
     public SimulationServiceImpl(
-            UavRepository uavs,
-            MissionRepository missions,
+            IUavDao uavs,
+            IMissionDao missions,
             TelemetryService telemetry,
             AuditLogService audit,
             AirspaceService airspace,
-            SimulationRunLogRepository runLogs) {
+            ISimulationRunLogDao runLogs) {
         this.uavs = uavs;
         this.missions = missions;
         this.telemetry = telemetry;
@@ -94,10 +94,7 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     public SimulationServiceImpl(
-            UavRepository uavs,
-            MissionRepository missions,
-            TelemetryService telemetry,
-            AuditLogService audit) {
+            IUavDao uavs, IMissionDao missions, TelemetryService telemetry, AuditLogService audit) {
         this(uavs, missions, telemetry, audit, null, null);
     }
 

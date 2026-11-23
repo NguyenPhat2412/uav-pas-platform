@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.uav.platform.dao.assistant.IAiRouterSettingsDao;
 import com.uav.platform.dto.record.assistant.ChatImage;
 import com.uav.platform.dto.record.assistant.ChatThread;
 import com.uav.platform.dto.request.assistant.AiRouterSettingsRequest;
@@ -16,7 +17,6 @@ import com.uav.platform.dto.response.assistant.*;
 import com.uav.platform.entity.assistant.AiRouterSettings;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.assistant.AiRouterSettingsRepository;
 import com.uav.platform.service.assistant.AiRouterService;
 import com.uav.platform.service.assistant.AssistantConversationService;
 import com.uav.platform.service.audit.AuditLogService;
@@ -52,7 +52,7 @@ public class AiRouterServiceImpl implements AiRouterService {
     /** Built-in platform guide appended to every system prompt so answers about UAV PAS workflows are grounded. */
     static final String PLATFORM_GUIDE = loadGuide();
 
-    private final AiRouterSettingsRepository repository;
+    private final IAiRouterSettingsDao repository;
     private final AuditLogService audit;
     private final ObjectMapper json;
     private final SecretCipherOperations cipher;
@@ -85,7 +85,7 @@ public class AiRouterServiceImpl implements AiRouterService {
 
     @Autowired
     public AiRouterServiceImpl(
-            AiRouterSettingsRepository repository,
+            IAiRouterSettingsDao repository,
             AuditLogService audit,
             @Value("${app.ai-router.secret:}") String secret,
             @Value("${app.jwt.secret}") String jwtSecret) {
@@ -101,7 +101,7 @@ public class AiRouterServiceImpl implements AiRouterService {
     }
 
     AiRouterServiceImpl(
-            AiRouterSettingsRepository repository,
+            IAiRouterSettingsDao repository,
             AuditLogService audit,
             ObjectMapper json,
             SecretCipherOperations cipher,

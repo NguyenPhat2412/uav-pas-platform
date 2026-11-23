@@ -1,5 +1,6 @@
 package com.uav.platform.specification.media;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.dto.record.media.ReadPermissions;
 import com.uav.platform.entity.inventory.Equipment;
 import com.uav.platform.entity.media.MediaAsset;
@@ -11,7 +12,6 @@ import com.uav.platform.enums.media.MediaVisibility;
 import jakarta.persistence.criteria.*;
 
 import org.hibernate.query.criteria.JpaExpression;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 
@@ -41,7 +41,8 @@ public final class MediaVisibilitySpecifications {
 
     private MediaVisibilitySpecifications() {}
 
-    public static Specification<MediaAsset> readableBy(String actor, ReadPermissions permissions) {
+    public static HibernateSpecification<MediaAsset> readableBy(
+            String actor, ReadPermissions permissions) {
         return (asset, query, cb) -> {
             if (actor == null) return cb.disjunction();
             var uploader =

@@ -1,5 +1,8 @@
 package com.uav.platform.service.impl.notification.policy;
 
+import com.uav.platform.dao.notification.INotificationModulePolicyDao;
+import com.uav.platform.dao.notification.IUserNotificationPreferenceDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.dto.request.notification.policy.UpdateNotificationModulePolicyRequest;
 import com.uav.platform.dto.request.notification.policy.UpdateUserNotificationPreferenceRequest;
@@ -12,9 +15,6 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.notification.NotificationModuleCode;
 import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.notification.NotificationModulePolicyRepository;
-import com.uav.platform.repository.notification.UserNotificationPreferenceRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.notification.policy.NotificationPolicyService;
 
@@ -34,9 +34,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class NotificationPolicyServiceImpl implements NotificationPolicyService {
 
-    private final NotificationModulePolicyRepository policyRepository;
-    private final UserNotificationPreferenceRepository preferenceRepository;
-    private final UserRepository userRepository;
+    private final INotificationModulePolicyDao policyRepository;
+    private final IUserNotificationPreferenceDao preferenceRepository;
+    private final IUserDao userRepository;
     private final NotificationPolicyOperations policyOperations;
     private final NotificationService notificationService;
 

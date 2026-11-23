@@ -9,6 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.uav.platform.controller.billing.invoice.BillingController;
 import com.uav.platform.controller.billing.reconciliation.PaymentIpnController;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IPaymentTransactionDao;
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.user.ICustomerBillingProfileDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.billing.reconciliation.PaymentAccountSettings;
 import com.uav.platform.dto.request.billing.reconciliation.SepayWebhookRequest;
 import com.uav.platform.dto.response.billing.reconciliation.SepayWebhookResponse;
@@ -24,12 +30,6 @@ import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.GlobalExceptionHandler;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.PaymentTransactionRepository;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.user.CustomerBillingProfileRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.billing.quota.QuotaService;
 import com.uav.platform.service.billing.reconciliation.PaymentSettingsService;
 import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
@@ -66,16 +66,16 @@ class SepayWebhookAndReceiptTest {
 
     private static final String TEST_SECRET = "sepay-test-webhook-secret-key-2026-uav-pas";
 
-    private ServicePlanRepository planRepository;
-    private InvoiceRepository invoiceRepository;
-    private PaymentTransactionRepository paymentRepository;
-    private UserRepository userRepository;
-    private MissionRepository missionRepository;
+    private IServicePlanDao planRepository;
+    private IInvoiceDao invoiceRepository;
+    private IPaymentTransactionDao paymentRepository;
+    private IUserDao userRepository;
+    private IMissionDao missionRepository;
     private PermissionService permissions;
     private QuotaService quotaService;
     private FinancialOutboxService financialEvents;
     private PaymentSettingsService paymentSettingsService;
-    private CustomerBillingProfileRepository billingProfileRepository;
+    private ICustomerBillingProfileDao billingProfileRepository;
     private BillingServiceImpl billingService;
 
     private final Map<String, Invoice> invoicesByNormalizedCode = new LinkedHashMap<>();
@@ -88,16 +88,16 @@ class SepayWebhookAndReceiptTest {
 
     @BeforeEach
     void setUp() {
-        planRepository = mock(ServicePlanRepository.class);
-        invoiceRepository = mock(InvoiceRepository.class);
-        paymentRepository = mock(PaymentTransactionRepository.class);
-        userRepository = mock(UserRepository.class);
-        missionRepository = mock(MissionRepository.class);
+        planRepository = mock(IServicePlanDao.class);
+        invoiceRepository = mock(IInvoiceDao.class);
+        paymentRepository = mock(IPaymentTransactionDao.class);
+        userRepository = mock(IUserDao.class);
+        missionRepository = mock(IMissionDao.class);
         permissions = mock(PermissionService.class);
         quotaService = mock(QuotaService.class);
         financialEvents = mock(FinancialOutboxService.class);
         paymentSettingsService = mock(PaymentSettingsService.class);
-        billingProfileRepository = mock(CustomerBillingProfileRepository.class);
+        billingProfileRepository = mock(ICustomerBillingProfileDao.class);
 
         billingService =
                 new BillingServiceImpl(

@@ -1,5 +1,6 @@
 package com.uav.platform.specification.marketplace.catalog;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.marketplace.MarketplaceListing;
 import com.uav.platform.entity.marketplace.ProviderPayout;
 import com.uav.platform.entity.marketplace.ProviderProfile;
@@ -12,8 +13,6 @@ import com.uav.platform.enums.mission.MissionType;
 
 import jakarta.persistence.criteria.JoinType;
 
-import org.springframework.data.jpa.domain.Specification;
-
 import java.math.BigDecimal;
 import java.util.Locale;
 
@@ -21,31 +20,33 @@ public final class MarketplaceSpecifications {
 
     private MarketplaceSpecifications() {}
 
-    public static Specification<MarketplaceListing> listingNotDeleted() {
+    public static HibernateSpecification<MarketplaceListing> listingNotDeleted() {
         return (root, query, cb) -> cb.isFalse(root.get("deleted"));
     }
 
-    public static Specification<MarketplaceListing> listingModerationStatus(
+    public static HibernateSpecification<MarketplaceListing> listingModerationStatus(
             ListingModerationStatus status) {
         return (root, query, cb) ->
                 status == null ? null : cb.equal(root.get("moderationStatus"), status);
     }
 
-    public static Specification<MarketplaceListing> listingType(ListingType type) {
+    public static HibernateSpecification<MarketplaceListing> listingType(ListingType type) {
         return (root, query, cb) -> type == null ? null : cb.equal(root.get("listingType"), type);
     }
 
-    public static Specification<MarketplaceListing> listingMissionType(MissionType missionType) {
+    public static HibernateSpecification<MarketplaceListing> listingMissionType(
+            MissionType missionType) {
         return (root, query, cb) ->
                 missionType == null ? null : cb.equal(root.get("missionType"), missionType);
     }
 
-    public static Specification<MarketplaceListing> listingPricingModel(PricingModel pricingModel) {
+    public static HibernateSpecification<MarketplaceListing> listingPricingModel(
+            PricingModel pricingModel) {
         return (root, query, cb) ->
                 pricingModel == null ? null : cb.equal(root.get("pricingModel"), pricingModel);
     }
 
-    public static Specification<MarketplaceListing> listingProvince(String province) {
+    public static HibernateSpecification<MarketplaceListing> listingProvince(String province) {
         return (root, query, cb) -> {
             if (province == null || province.isBlank()) return null;
             String like = "%" + province.trim().toLowerCase(Locale.ROOT) + "%";
@@ -55,7 +56,7 @@ public final class MarketplaceSpecifications {
         };
     }
 
-    public static Specification<MarketplaceListing> listingKeyword(String keyword) {
+    public static HibernateSpecification<MarketplaceListing> listingKeyword(String keyword) {
         return (root, query, cb) -> {
             if (keyword == null || keyword.isBlank()) return null;
             String like = "%" + keyword.trim().toLowerCase(Locale.ROOT) + "%";
@@ -67,19 +68,20 @@ public final class MarketplaceSpecifications {
         };
     }
 
-    public static Specification<MarketplaceListing> listingMaxPrice(BigDecimal maxPrice) {
+    public static HibernateSpecification<MarketplaceListing> listingMaxPrice(BigDecimal maxPrice) {
         return (root, query, cb) ->
                 maxPrice == null ? null : cb.lessThanOrEqualTo(root.get("basePriceVnd"), maxPrice);
     }
 
-    public static Specification<MarketplaceListing> listingCategoryService(Long categoryServiceId) {
+    public static HibernateSpecification<MarketplaceListing> listingCategoryService(
+            Long categoryServiceId) {
         return (root, query, cb) ->
                 categoryServiceId == null
                         ? null
                         : cb.equal(root.get("categoryService").get("id"), categoryServiceId);
     }
 
-    public static Specification<MarketplaceListing> listingCategory(String category) {
+    public static HibernateSpecification<MarketplaceListing> listingCategory(String category) {
         return (root, query, cb) -> {
             if (category == null || category.isBlank()) {
                 return null;
@@ -100,12 +102,13 @@ public final class MarketplaceSpecifications {
         };
     }
 
-    public static Specification<ProviderProfile> providerStatus(ProviderVerificationStatus status) {
+    public static HibernateSpecification<ProviderProfile> providerStatus(
+            ProviderVerificationStatus status) {
         return (root, query, cb) ->
                 status == null ? null : cb.equal(root.get("verificationStatus"), status);
     }
 
-    public static Specification<ProviderProfile> providerKeyword(String keyword) {
+    public static HibernateSpecification<ProviderProfile> providerKeyword(String keyword) {
         return (root, query, cb) -> {
             if (keyword == null || keyword.isBlank()) return null;
             String like = "%" + keyword.trim().toLowerCase(Locale.ROOT) + "%";
@@ -116,7 +119,7 @@ public final class MarketplaceSpecifications {
         };
     }
 
-    public static Specification<ProviderPayout> payoutStatus(PayoutStatus status) {
+    public static HibernateSpecification<ProviderPayout> payoutStatus(PayoutStatus status) {
         return (root, query, cb) -> status == null ? null : cb.equal(root.get("status"), status);
     }
 }

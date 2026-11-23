@@ -1,5 +1,7 @@
 package com.uav.platform.entity.user;
 
+import com.uav.platform.common.util.AesStringAttributeConverter;
+
 import jakarta.persistence.*;
 
 import lombok.Getter;
@@ -22,19 +24,24 @@ public class CustomerBillingProfile {
     @Column(name = "organization_name", length = 200)
     private String organizationName;
 
-    @Column(name = "tax_code", length = 14)
+    @Convert(converter = AesStringAttributeConverter.class)
+    @Column(name = "tax_code", length = 512)
     private String taxCode;
 
-    @Column(name = "billing_address", length = 500)
+    @Convert(converter = AesStringAttributeConverter.class)
+    @Column(name = "billing_address", length = 1024)
     private String billingAddress;
 
-    @Column(name = "billing_email", length = 255)
+    @Convert(converter = AesStringAttributeConverter.class)
+    @Column(name = "billing_email", length = 512)
     private String billingEmail;
 
-    @Column(name = "emergency_contact_name", length = 120)
+    @Convert(converter = AesStringAttributeConverter.class)
+    @Column(name = "emergency_contact_name", length = 512)
     private String emergencyContactName;
 
-    @Column(name = "emergency_contact_phone", length = 20)
+    @Convert(converter = AesStringAttributeConverter.class)
+    @Column(name = "emergency_contact_phone", length = 512)
     private String emergencyContactPhone;
 
     @Version
@@ -46,5 +53,17 @@ public class CustomerBillingProfile {
 
     public CustomerBillingProfile(Long userId) {
         this.userId = userId;
+    }
+
+    @PrePersist
+    void onCreate() {
+        if (this.updatedAt == null) {
+            this.updatedAt = LocalDateTime.now();
+        }
+    }
+
+    @PreUpdate
+    void onPersist() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

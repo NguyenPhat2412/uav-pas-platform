@@ -1,5 +1,13 @@
 package com.uav.platform.service.impl.reporting;
 
+import com.uav.platform.dao.maintenance.IRepairOrderDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IMissionPreflightLogDao;
+import com.uav.platform.dao.mission.IMissionReviewDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.uav.IUavTelemetryDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.response.reporting.SlaIntelligenceResponse;
 import com.uav.platform.dto.response.reporting.SlaIntelligenceResponse.CustomerReviewRow;
 import com.uav.platform.dto.response.reporting.SlaIntelligenceResponse.OperatorSlaRow;
@@ -16,14 +24,6 @@ import com.uav.platform.enums.mission.MissionEventType;
 import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.maintenance.RepairOrderRepository;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionPreflightLogRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.MissionReviewRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.uav.UavTelemetryRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.reporting.SlaIntelligenceService;
 
@@ -53,14 +53,14 @@ public class SlaIntelligenceServiceImpl implements SlaIntelligenceService {
     private static final Set<RepairStatus> ACTIVE_REPAIR_STATUSES =
             Set.of(RepairStatus.OPEN, RepairStatus.IN_PROGRESS);
 
-    private final MissionRepository missionRepository;
-    private final MissionEventRepository eventRepository;
-    private final MissionReviewRepository reviewRepository;
-    private final MissionPreflightLogRepository preflightRepository;
-    private final UavRepository uavRepository;
-    private final UavTelemetryRepository telemetryRepository;
-    private final RepairOrderRepository repairOrderRepository;
-    private final UserRepository userRepository;
+    private final IMissionDao missionRepository;
+    private final IMissionEventDao eventRepository;
+    private final IMissionReviewDao reviewRepository;
+    private final IMissionPreflightLogDao preflightRepository;
+    private final IUavDao uavRepository;
+    private final IUavTelemetryDao telemetryRepository;
+    private final IRepairOrderDao repairOrderRepository;
+    private final IUserDao userRepository;
     private final PermissionService permissionService;
 
     @Override

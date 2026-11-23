@@ -1,5 +1,6 @@
 package com.uav.platform.service.impl.security;
 
+import com.uav.platform.dao.assistant.IAiRouterSettingsDao;
 import com.uav.platform.dto.record.security.SecretSpec;
 import com.uav.platform.dto.response.security.AiProviderKeyStatusResponse;
 import com.uav.platform.dto.response.security.SecretStatusResponse;
@@ -7,7 +8,6 @@ import com.uav.platform.dto.response.security.SecretsOverviewResponse;
 import com.uav.platform.dto.response.security.SecurityPolicyResponse;
 import com.uav.platform.dto.response.security.SecurityWarningResponse;
 import com.uav.platform.entity.assistant.AiRouterSettings;
-import com.uav.platform.repository.assistant.AiRouterSettingsRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.security.SecurityConfigStatusService;
 
@@ -65,7 +65,7 @@ public class SecurityConfigStatusServiceImpl implements SecurityConfigStatusServ
 
     private final Environment env;
     private final JwtTokenProvider jwtTokenProvider;
-    private final AiRouterSettingsRepository aiRouterSettings;
+    private final IAiRouterSettingsDao aiRouterSettings;
 
     static final List<SecretSpec> SECRETS =
             List.of(

@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.auth.IInvalidatedTokenDao;
 import com.uav.platform.entity.auth.InvalidatedToken;
-import com.uav.platform.repository.auth.InvalidatedTokenRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.auth.session.InvalidatedTokenService;
 import com.uav.platform.service.impl.auth.session.InvalidatedTokenServiceImpl;
@@ -23,7 +23,7 @@ import java.util.Date;
 @DisplayName("InvalidatedTokenService Unit Tests")
 class InvalidatedTokenServiceTest {
 
-    @Mock private InvalidatedTokenRepository invalidatedTokenRepository;
+    @Mock private IInvalidatedTokenDao invalidatedTokenRepository;
 
     @Mock private JwtTokenProvider jwtTokenProvider;
 

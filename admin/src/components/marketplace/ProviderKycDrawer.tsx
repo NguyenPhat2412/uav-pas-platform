@@ -2,19 +2,18 @@
 
 import {
     CheckCircle2,
-    ExternalLink,
-    FileCheck2,
-    FileText,
     Landmark,
     MapPin,
     PauseCircle,
     Phone,
+    RotateCcw,
     ShieldCheck,
-    XCircle,
 } from 'lucide-react';
 import {Drawer, Metadata} from '@/components/data/Drawer';
 import {Button, OptionalMark} from '@/components/ui';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
+import {ProviderDocumentReviewList} from '@/components/marketplace/ProviderDocumentReviewList';
+import {ProviderVerificationWorkflowCard} from '@/components/marketplace/ProviderVerificationWorkflowCard';
 import {sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
 import {useI18n} from '@/providers/I18nContext';
 import type {
@@ -30,9 +29,11 @@ export function ProviderKycDrawer({
     feeValue,
     canModerate,
     isPending,
+    isModeratingDoc = false,
     onNoteChange,
     onFeeChange,
     onModerate,
+    onModerateDoc,
     onOpenDoc,
     onClose,
 }: {
@@ -42,23 +43,20 @@ export function ProviderKycDrawer({
     feeValue: string;
     canModerate: boolean;
     isPending: boolean;
+    isModeratingDoc?: boolean;
     onNoteChange: (val: string) => void;
     onFeeChange: (val: string) => void;
     onModerate: (status: ProviderVerificationStatus) => void;
+    onModerateDoc?: (doc: AdminProviderDocument, status: 'APPROVED' | 'REJECTED') => void;
     onOpenDoc: (doc: AdminProviderDocument) => void;
     onClose: () => void;
 }) {
     const {t, formatDate} = useI18n();
-    const docs = provider.documents ?? [];
-    const docTypeLabel = (code: string) => {
-        const key = `adminCommerce.marketplace.docType.${code}`;
-        const val = t(key);
-        return val === key ? code : val;
-    };
-    const docStatusLabel = (code: string) => {
-        const key = `adminCommerce.marketplace.docStatus.${code}`;
-        const val = t(key);
-        return val === key ? code : val;
+
+    const handleAppendReason = (reason: string) => {
+        const trimmed = noteValue.trim();
+        if (trimmed.includes(reason)) return;
+        onNoteChange(trimmed ? `${trimmed} ${reason}` : reason);
     };
 
     return (
@@ -67,6 +65,8 @@ export function ProviderKycDrawer({
             title={t('adminCommerce.marketplace.providers.drawerTitle', {name: sanitizeMarketplaceText(provider.displayName)})}
             onClose={onClose}
         >
+            <ProviderVerificationWorkflowCard activeStatus={provider.verificationStatus} compact/>
+
             <section className="space-y-3">
                 <h3 className="m-0 flex items-center gap-2 text-sm font-semibold text-on-surface">
                     <ShieldCheck size={16} className="text-primary" aria-hidden="true"/>
@@ -141,85 +141,26 @@ export function ProviderKycDrawer({
                 )}
             </section>
 
-            <section className="space-y-3">
-                <h3 className="m-0 flex items-center gap-2 text-sm font-semibold text-on-surface">
-                    <FileCheck2 size={16} className="text-primary" aria-hidden="true"/>
-                    {t('adminCommerce.marketplace.providers.sectionDocs')} ({docs.length})
-                </h3>
-                {docs.length === 0 ? (
-                    <div className="rounded-panel border border-dashed border-border p-5 text-center text-xs text-muted">
-                        {t('adminCommerce.marketplace.providers.noDocs')}
-                    </div>
-                ) : (
-                    <div className="space-y-2.5">
-                        {docs.map(doc => {
-                            const canOpen = Boolean(
-                                (doc.fileUrl && /^https?:\/\//i.test(doc.fileUrl)) || doc.mediaAssetId,
-                            );
-                            const isImagePreview = Boolean(
-                                doc.fileUrl && /^https?:\/\/.+\.(?:png|jpe?g|webp)(\?.*)?$/i.test(doc.fileUrl),
-                            );
-                            return (
-                                <div
-                                    key={doc.id}
-                                    className="space-y-2 rounded-panel border border-border bg-card p-3.5"
-                                >
-                                    <div className="flex flex-wrap items-center justify-between gap-2">
-                                        <div className="min-w-0 space-y-0.5">
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                <FileText size={14} className="shrink-0 text-primary" aria-hidden="true"/>
-                                                <strong className="text-sm font-semibold text-on-surface">
-                                                    {sanitizeMarketplaceText(doc.title)}
-                                                </strong>
-                                                <span className="rounded-badge bg-slate-100 px-2 py-0.5 text-xs font-medium whitespace-nowrap text-on-surface">
-                                                    {docTypeLabel(doc.documentType)}
-                                                </span>
-                                                <span className="rounded-badge border border-slate-200 px-2 py-0.5 text-xs font-medium whitespace-nowrap text-muted">
-                                                    {docStatusLabel(doc.status)}
-                                                </span>
-                                            </div>
-                                            {doc.documentNumber && (
-                                                <p className="m-0 font-mono text-xs text-muted">
-                                                    {t('adminCommerce.marketplace.providers.docNumber', {
-                                                        num: doc.documentNumber,
-                                                    })}
-                                                </p>
-                                            )}
-                                        </div>
-                                        {canOpen && (
-                                            <Button
-                                                type="button"
-                                                size="sm"
-                                                variant="outline"
-                                                onClick={() => onOpenDoc(doc)}
-                                                rightIcon={<ExternalLink size={13} aria-hidden="true"/>}
-                                                className="whitespace-nowrap"
-                                            >
-                                                {t('adminCommerce.marketplace.providers.openDoc')}
-                                            </Button>
-                                        )}
-                                    </div>
-                                    {isImagePreview && doc.fileUrl && (
-                                        // eslint-disable-next-line @next/next/no-img-element
-                                        <img
-                                            src={doc.fileUrl}
-                                            alt={doc.title}
-                                            className="max-h-56 w-auto rounded-control border border-border object-contain"
-                                        />
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-            </section>
+            <ProviderDocumentReviewList
+                provider={provider}
+                canModerate={canModerate}
+                isModeratingDoc={isModeratingDoc}
+                onOpenDoc={onOpenDoc}
+                onModerateDoc={onModerateDoc}
+                onAppendReason={handleAppendReason}
+            />
 
             {canModerate && (
                 <section className="uav-bezel">
                     <div className="uav-bezel-core space-y-3 p-4">
-                        <h3 className="m-0 text-sm font-semibold text-on-surface">
-                            {t('adminCommerce.marketplace.providers.sectionModerate')}
-                        </h3>
+                        <div className="space-y-1">
+                            <h3 className="m-0 text-sm font-semibold text-on-surface">
+                                {t('adminCommerce.marketplace.providers.sectionModerate')}
+                            </h3>
+                            <p className="m-0 text-xs text-muted">
+                                {t('adminCommerce.marketplace.providers.moderationHint')}
+                            </p>
+                        </div>
                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                             <label className="space-y-1 text-xs font-semibold text-on-surface sm:col-span-2">
                                 <span className="block">
@@ -267,11 +208,11 @@ export function ProviderKycDrawer({
                                 size="sm"
                                 variant="outline"
                                 disabled={isPending}
-                                leftIcon={<XCircle size={14} aria-hidden="true"/>}
+                                leftIcon={<RotateCcw size={14} aria-hidden="true"/>}
                                 onClick={() => onModerate('REJECTED')}
                                 className="whitespace-nowrap"
                             >
-                                {t('adminCommerce.marketplace.providers.rejectBtn')}
+                                {t('adminCommerce.marketplace.providers.requestRevisionBtn')}
                             </Button>
                             <Button
                                 type="button"

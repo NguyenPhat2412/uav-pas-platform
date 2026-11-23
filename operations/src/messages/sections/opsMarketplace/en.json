@@ -51,10 +51,36 @@
         "verifiedTitle": "Fleet partner verified",
         "verifiedDesc": "Your fleet is eligible to receive platform orders.",
         "rejectedTitle": "Application requires additional details",
+        "suspendedTitle": "Partner account temporarily suspended",
+        "suspendedDesc": "Published listings are paused pending permit or compliance review. Check the note below and contact support.",
         "draftTitle": "Complete 3 steps to submit for partner review",
         "reviewNote": "Reviewer note: {note}",
         "rating": "Rating",
         "completed": "Completed"
+      },
+      "progress": {
+        "title": "Partner verification progress (5 steps)",
+        "nextStepLabel": "Next action:",
+        "nextDraft": "Complete your fleet profile, upload mandatory documents, and submit for review on Step 3.",
+        "nextPending": "Administrators are reviewing your submitted documents. You may still upload updates if needed.",
+        "nextVerified": "Your account is verified with payout wallet active. You can register UAVs, publish services, and accept orders.",
+        "nextRejected": "Review the feedback below, update flagged or missing documents, and re-submit for review.",
+        "nextSuspended": "Review the suspension reason and upload renewed permits or insurance to request reactivation.",
+        "step1": "1. Create profile",
+        "step2": "2. Upload docs",
+        "step3": "3. Admin review",
+        "step4": "4. Verify & wallet",
+        "step5": "5. Ready for orders",
+        "requiredSummary": "Mandatory docs: {uploaded}/{total}"
+      },
+      "checklist": {
+        "title": "Required document checklist ({uploaded}/{total} mandatory)",
+        "subtitle": "Click any missing document to pre-select it in the upload form below.",
+        "required": "Required",
+        "conditional": "Conditional",
+        "missing": "Missing",
+        "uploadNow": "Select to upload",
+        "reviewerFeedback": "Reviewer feedback: {note}"
       },
       "fields": {
         "displayName": "Fleet / Organization Name",
@@ -110,6 +136,32 @@
         "submitted": "Partner profile submitted for review!",
         "errorMissing": "Please enter Fleet Name and Primary Province.",
         "errorUrl": "Evidence URL must start with http:// or https://."
+      },
+      "workflow": {
+        "title": "Partner Verification Workflow & Required Documents (4 Steps)",
+        "subtitle": "See your exact verification stage and check which documents are uploaded or still missing.",
+        "currentBadge": "Current step",
+        "doneBadge": "Done",
+        "blockedBadge": "Action needed",
+        "encryptionHint": "Identity details, bank payout fields, and uploaded documents are protected with AES-256-GCM encryption at rest.",
+        "steps": {
+          "s1Title": "Step 1 · Profile & Documents",
+          "s1Desc": "Complete fleet profile, service area, and attach legal & flight documents.",
+          "s2Title": "Step 2 · Submit for Review",
+          "s2Desc": "Click Submit for review on Step 3 to send your dossier to administrators.",
+          "s3Title": "Step 3 · Admin Verification",
+          "s3Desc": "Administrators inspect reference numbers, flight credentials, and source files.",
+          "s4Title": "Step 4 · Activation / Revision",
+          "s4Desc": "Approved teams unlock order dispatch; revisions include clear reviewer notes."
+        },
+        "checklistTitle": "Required & Recommended Documents ({done}/{total} core items)",
+        "requiredTag": "Required",
+        "recommendedTag": "Recommended",
+        "uploadedTag": "Uploaded ({count})",
+        "missingTag": "Missing",
+        "uploadNow": "Add now",
+        "approvedLockedHint": "Approved documents are locked and cannot be deleted",
+        "reviewerNoteLabel": "Reviewer note: {note}"
       }
     },
     "fleet": {

@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.mission.flightplan;
 
+import com.uav.platform.dao.mission.ISavedFlightSiteDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.mission.flightplan.SavedFlightSiteUpsertRequest;
 import com.uav.platform.dto.response.mission.flightplan.FlightPlanResponse;
 import com.uav.platform.dto.response.mission.flightplan.SavedFlightSiteResponse;
@@ -7,8 +9,6 @@ import com.uav.platform.entity.mission.SavedFlightSite;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.mission.SavedFlightSiteRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.mission.flightplan.SavedFlightSiteService;
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
@@ -30,8 +30,8 @@ public class SavedFlightSiteServiceImpl implements SavedFlightSiteService {
 
     private static final long MAX_SAVED_SITES_PER_USER = 30;
 
-    private final SavedFlightSiteRepository siteRepository;
-    private final UserRepository userRepository;
+    private final ISavedFlightSiteDao siteRepository;
+    private final IUserDao userRepository;
     private final MissionAccessService accessService;
     private final AuditLogService auditLogService;
 

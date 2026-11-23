@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.uav.platform.common.constant.CoreConstants;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.auth.session.LoginRequest;
 import com.uav.platform.dto.request.auth.session.RegisterRequest;
 import com.uav.platform.dto.response.auth.session.AuthResponse;
@@ -12,7 +13,6 @@ import com.uav.platform.dto.response.user.account.UserResponse;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.auth.session.AuthService;
 import com.uav.platform.service.auth.session.AuthSessionLock;
@@ -32,7 +32,7 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
-    @Mock private UserRepository userRepository;
+    @Mock private IUserDao userRepository;
 
     @Mock private PasswordEncoder passwordEncoder;
 

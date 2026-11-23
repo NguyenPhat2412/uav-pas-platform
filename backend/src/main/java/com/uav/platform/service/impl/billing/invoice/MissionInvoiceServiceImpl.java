@@ -1,10 +1,10 @@
 package com.uav.platform.service.impl.billing.invoice;
 
+import com.uav.platform.dao.billing.*;
+import com.uav.platform.dao.mission.IMissionDao;
 import com.uav.platform.entity.billing.*;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.*;
-import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.service.billing.invoice.MissionInvoiceService;
 import com.uav.platform.service.settings.SystemConfigService;
 
@@ -31,9 +31,9 @@ public class MissionInvoiceServiceImpl implements MissionInvoiceService {
     @org.springframework.beans.factory.annotation.Autowired
     private com.uav.platform.service.webhook.FinancialOutboxService financialEvents;
 
-    private final MissionBillingJobRepository jobs;
-    private final InvoiceRepository invoices;
-    private final MissionRepository missions;
+    private final IMissionBillingJobDao jobs;
+    private final IInvoiceDao invoices;
+    private final IMissionDao missions;
     private final SystemConfigService config;
     private final TransactionTemplate transaction;
 
@@ -41,9 +41,9 @@ public class MissionInvoiceServiceImpl implements MissionInvoiceService {
     private boolean workerEnabled;
 
     public MissionInvoiceServiceImpl(
-            MissionBillingJobRepository jobs,
-            InvoiceRepository invoices,
-            MissionRepository missions,
+            IMissionBillingJobDao jobs,
+            IInvoiceDao invoices,
+            IMissionDao missions,
             SystemConfigService config,
             PlatformTransactionManager manager) {
         this.jobs = jobs;

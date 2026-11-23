@@ -1,5 +1,12 @@
 package com.uav.platform.config.seed;
 
+import com.uav.platform.dao.marketplace.IMarketplaceListingDao;
+import com.uav.platform.dao.marketplace.IProviderPilotDao;
+import com.uav.platform.dao.marketplace.IProviderProfileDao;
+import com.uav.platform.dao.marketplace.IProviderWalletDao;
+import com.uav.platform.dao.project.IProjectDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.entity.marketplace.MarketplaceListing;
 import com.uav.platform.entity.marketplace.ProviderPilot;
 import com.uav.platform.entity.marketplace.ProviderProfile;
@@ -18,13 +25,6 @@ import com.uav.platform.enums.project.ProjectStatus;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.marketplace.MarketplaceListingRepository;
-import com.uav.platform.repository.marketplace.ProviderPilotRepository;
-import com.uav.platform.repository.marketplace.ProviderProfileRepository;
-import com.uav.platform.repository.marketplace.ProviderWalletRepository;
-import com.uav.platform.repository.project.ProjectRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,13 +58,13 @@ public class DevSeedDataInitializer implements ApplicationRunner {
     public static final String DEMO_PILOT_USERNAME = "demo_pilot";
     public static final String DEMO_ADMIN_USERNAME = "demo_admin";
 
-    private final UserRepository users;
-    private final ProviderProfileRepository providers;
-    private final ProviderWalletRepository wallets;
-    private final ProviderPilotRepository pilots;
-    private final MarketplaceListingRepository listings;
-    private final UavRepository uavs;
-    private final ProjectRepository projects;
+    private final IUserDao users;
+    private final IProviderProfileDao providers;
+    private final IProviderWalletDao wallets;
+    private final IProviderPilotDao pilots;
+    private final IMarketplaceListingDao listings;
+    private final IUavDao uavs;
+    private final IProjectDao projects;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.dev-seed.password:}")

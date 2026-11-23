@@ -1,14 +1,14 @@
 package com.uav.platform.service.impl.storage.gateway;
 
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.storage.IStorageDriveNodeDao;
+import com.uav.platform.dao.storage.IStorageDriveObjectDao;
 import com.uav.platform.dto.record.media.ObjectStream;
 import com.uav.platform.dto.record.storage.pool.DriveUploadedFile;
 import com.uav.platform.entity.storage.StorageDriveNode;
 import com.uav.platform.entity.storage.StorageDriveObject;
 import com.uav.platform.enums.storage.DriveNodeHealth;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.storage.StorageDriveNodeRepository;
-import com.uav.platform.repository.storage.StorageDriveObjectRepository;
 import com.uav.platform.service.impl.storage.pool.GoogleDriveClientOperations;
 import com.uav.platform.service.impl.storage.pool.StorageAllocationOperations;
 import com.uav.platform.service.storage.gateway.StorageGatewayService;
@@ -36,9 +36,9 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class StorageGatewayServiceImpl implements StorageGatewayService {
     private final StorageAllocationOperations allocator;
-    private final StorageDriveNodeRepository driveNodes;
-    private final StorageDriveObjectRepository driveObjects;
-    private final MediaAssetRepository mediaAssets;
+    private final IStorageDriveNodeDao driveNodes;
+    private final IStorageDriveObjectDao driveObjects;
+    private final IMediaAssetDao mediaAssets;
     private final GoogleDriveClientOperations driveClient;
 
     @Override

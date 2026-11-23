@@ -6,6 +6,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.weather.IWeatherObservationCacheDao;
+import com.uav.platform.dao.weather.IWeatherProviderSettingsDao;
 import com.uav.platform.dto.record.weather.HourlyWeatherSlot;
 import com.uav.platform.dto.request.weather.WeatherProviderUpdateRequest;
 import com.uav.platform.dto.response.weather.StationWeatherSummaryResponse;
@@ -21,10 +25,6 @@ import com.uav.platform.enums.station.StationStatus;
 import com.uav.platform.enums.weather.FlightClearanceLevel;
 import com.uav.platform.enums.weather.WeatherProviderType;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.weather.WeatherObservationCacheRepository;
-import com.uav.platform.repository.weather.WeatherProviderSettingsRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.weather.FlightSafetyEvaluatorOperations;
 import com.uav.platform.service.impl.weather.WeatherCipherOperations;
@@ -62,12 +62,12 @@ class WeatherServiceImplTest {
             Clock.fixed(LocalDateTime.of(2026, 10, 31, 8, 15).atZone(ZONE).toInstant(), ZONE);
 
     private final ObjectMapper json = new ObjectMapper();
-    private WeatherObservationCacheRepository cache;
-    private WeatherProviderSettingsRepository providerSettings;
+    private IWeatherObservationCacheDao cache;
+    private IWeatherProviderSettingsDao providerSettings;
     private SystemConfigService config;
-    private ServiceOfferingRepository services;
+    private IServiceOfferingDao services;
     private MissionAccessService access;
-    private StationRepository stations;
+    private IStationDao stations;
     private AuditLogService audit;
     private WeatherCipherOperations cipher;
     private HttpClient http;
@@ -78,12 +78,12 @@ class WeatherServiceImplTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        cache = mock(WeatherObservationCacheRepository.class);
-        providerSettings = mock(WeatherProviderSettingsRepository.class);
+        cache = mock(IWeatherObservationCacheDao.class);
+        providerSettings = mock(IWeatherProviderSettingsDao.class);
         config = mock(SystemConfigService.class);
-        services = mock(ServiceOfferingRepository.class);
+        services = mock(IServiceOfferingDao.class);
         access = mock(MissionAccessService.class);
-        stations = mock(StationRepository.class);
+        stations = mock(IStationDao.class);
         audit = mock(AuditLogService.class);
         cipher = new WeatherCipherOperations("weather-service-test-secret-32-bytes");
         http = mock(HttpClient.class);

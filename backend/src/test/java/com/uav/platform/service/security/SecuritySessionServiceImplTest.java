@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.auth.IAuthOtpTokenDao;
+import com.uav.platform.dao.auth.IRefreshTokenDao;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.security.ISessionRevocationDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.security.SecuritySessionQueryRequest;
 import com.uav.platform.dto.request.security.TwoFactorResetRequest;
 import com.uav.platform.entity.auth.AuthOtpToken;
@@ -12,10 +17,6 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.auth.AuthOtpTokenRepository;
-import com.uav.platform.repository.auth.RefreshTokenRepository;
-import com.uav.platform.repository.security.SessionRevocationRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.auth.session.AuthSessionLock;
 import com.uav.platform.service.impl.security.SecuritySessionServiceImpl;
@@ -25,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
@@ -35,10 +35,10 @@ import java.util.Optional;
 
 class SecuritySessionServiceImplTest {
 
-    private final UserRepository users = mock(UserRepository.class);
-    private final RefreshTokenRepository refreshTokens = mock(RefreshTokenRepository.class);
-    private final AuthOtpTokenRepository otpTokens = mock(AuthOtpTokenRepository.class);
-    private final SessionRevocationRepository revocations = mock(SessionRevocationRepository.class);
+    private final IUserDao users = mock(IUserDao.class);
+    private final IRefreshTokenDao refreshTokens = mock(IRefreshTokenDao.class);
+    private final IAuthOtpTokenDao otpTokens = mock(IAuthOtpTokenDao.class);
+    private final ISessionRevocationDao revocations = mock(ISessionRevocationDao.class);
     private final SessionRevocationService revocationService = mock(SessionRevocationService.class);
     private final AuthSessionLock lock = mock(AuthSessionLock.class);
     private final AuditLogService audit = mock(AuditLogService.class);
@@ -180,7 +180,8 @@ class SecuritySessionServiceImplTest {
         pilot.setTwoFactorEnabled(true);
         pilot.setTwoFactorMethod("TOTP");
         Page<AppUser> page = new PageImpl<>(List.of(pilot, adminUser));
-        when(users.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+        when(users.findAll(any(HibernateSpecification.class), any(Pageable.class)))
+                .thenReturn(page);
         RefreshToken active =
                 new RefreshToken(
                         pilot, "secret-refresh-token-value", Instant.now().plusSeconds(3600));

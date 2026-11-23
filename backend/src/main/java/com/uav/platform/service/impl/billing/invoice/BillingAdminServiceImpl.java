@@ -4,6 +4,9 @@ import static com.uav.platform.specification.billing.invoice.BillingSpecificatio
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.config.routes.ApiRoutes;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.billing.IPaymentTransactionDao;
+import com.uav.platform.dao.settings.ISystemConfigurationDao;
 import com.uav.platform.dto.record.billing.reconciliation.PaymentAccountSettings;
 import com.uav.platform.dto.request.billing.reconciliation.PaymentGatewayConfigUpdateRequest;
 import com.uav.platform.dto.request.settings.UpdateConfigurationRequest;
@@ -12,8 +15,6 @@ import com.uav.platform.dto.response.billing.reconciliation.PaymentTransactionAd
 import com.uav.platform.entity.billing.PaymentTransaction;
 import com.uav.platform.enums.settings.SettingValueType;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.PaymentTransactionRepository;
-import com.uav.platform.repository.settings.SystemConfigurationRepository;
 import com.uav.platform.service.billing.invoice.BillingAdminService;
 import com.uav.platform.service.billing.reconciliation.PaymentSettingsService;
 import com.uav.platform.service.impl.billing.reconciliation.VietQrOperations;
@@ -25,7 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,26 +40,26 @@ public class BillingAdminServiceImpl implements BillingAdminService {
             Pattern.compile(
                     "(?i)\\b(signature|checksum|secret\\w*|token|password|api[_-]?key|hmac)(\\s*[=:]\\s*\"?)([^,\\s\")}]+)");
 
-    private final PaymentTransactionRepository payments;
+    private final IPaymentTransactionDao payments;
     private final PaymentSettingsService paymentSettingsService;
     private final SystemConfigService systemConfigService;
-    private final SystemConfigurationRepository configRepository;
+    private final ISystemConfigurationDao configRepository;
     private final boolean providerEnabled;
     private final String ipnSecret;
 
     @Autowired(required = false)
     private com.uav.platform.service.audit.AuditLogService audit;
 
-    public BillingAdminServiceImpl(PaymentTransactionRepository payments) {
+    public BillingAdminServiceImpl(IPaymentTransactionDao payments) {
         this(payments, null, null, null, false, "");
     }
 
     @Autowired
     public BillingAdminServiceImpl(
-            PaymentTransactionRepository payments,
+            IPaymentTransactionDao payments,
             @Autowired(required = false) PaymentSettingsService paymentSettingsService,
             @Autowired(required = false) SystemConfigService systemConfigService,
-            @Autowired(required = false) SystemConfigurationRepository configRepository,
+            @Autowired(required = false) ISystemConfigurationDao configRepository,
             @Value("${app.billing.provider-enabled:false}") boolean providerEnabled,
             @Value("${app.billing.ipn-secret:}") String ipnSecret) {
         this.payments = payments;
@@ -82,8 +82,8 @@ public class BillingAdminServiceImpl implements BillingAdminService {
             Pageable pageable) {
         if (from != null && to != null && from.isAfter(to))
             throw SystemException.badRequest("from must not be after to", "INVALID_DATE_RANGE");
-        Specification<PaymentTransaction> spec =
-                Specification.allOf(
+        HibernateSpecification<PaymentTransaction> spec =
+                HibernateSpecification.allOf(
                         transactionStatus(status),
                         transactionGateway(gateway),
                         transactionCreatedFrom(from == null ? null : from.atStartOfDay()),

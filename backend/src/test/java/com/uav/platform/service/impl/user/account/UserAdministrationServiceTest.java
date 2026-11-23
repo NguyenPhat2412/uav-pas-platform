@@ -3,13 +3,13 @@ package com.uav.platform.service.impl.user.account;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.auth.IRefreshTokenDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.user.account.BulkLockRequest;
 import com.uav.platform.dto.request.user.account.PasswordResetRequest;
 import com.uav.platform.dto.response.user.account.BulkActionResponse;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.mapper.user.account.UserMapper;
-import com.uav.platform.repository.auth.RefreshTokenRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.user.account.UserService;
 
@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.Optional;
 
 class UserAdministrationServiceTest {
-    private final UserRepository users = mock(UserRepository.class);
+    private final IUserDao users = mock(IUserDao.class);
     private final UserService userService = mock(UserService.class);
     private final PasswordEncoder encoder = mock(PasswordEncoder.class);
-    private final RefreshTokenRepository tokens = mock(RefreshTokenRepository.class);
+    private final IRefreshTokenDao tokens = mock(IRefreshTokenDao.class);
     private final UserAdministrationServiceImpl service =
             new UserAdministrationServiceImpl(
                     users,

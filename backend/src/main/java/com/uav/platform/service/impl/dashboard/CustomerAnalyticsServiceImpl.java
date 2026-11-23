@@ -1,5 +1,12 @@
 package com.uav.platform.service.impl.dashboard;
 
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IUserQuotaDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IMissionMediaDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.response.dashboard.CustomerAnalyticsResponse;
 import com.uav.platform.dto.response.dashboard.CustomerAnalyticsResponse.*;
 import com.uav.platform.entity.billing.Invoice;
@@ -12,18 +19,11 @@ import com.uav.platform.enums.billing.InvoiceStatus;
 import com.uav.platform.enums.mission.MissionEventType;
 import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.UserQuotaRepository;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionMediaRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.dashboard.CustomerAnalyticsService;
 import com.uav.platform.specification.mission.lifecycle.MissionSpecifications;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,12 +58,12 @@ public class CustomerAnalyticsServiceImpl implements CustomerAnalyticsService {
         PIPELINE.put("draft", EnumSet.of(MissionStatus.DRAFT));
     }
 
-    private final UserRepository users;
-    private final MissionRepository missions;
-    private final MissionEventRepository events;
-    private final MissionMediaRepository media;
-    private final InvoiceRepository invoices;
-    private final UserQuotaRepository quotas;
+    private final IUserDao users;
+    private final IMissionDao missions;
+    private final IMissionEventDao events;
+    private final IMissionMediaDao media;
+    private final IInvoiceDao invoices;
+    private final IUserQuotaDao quotas;
 
     @Override
     @Transactional(readOnly = true)
@@ -259,7 +259,7 @@ public class CustomerAnalyticsServiceImpl implements CustomerAnalyticsService {
         Map<Long, List<MissionEvent>> byMission =
                 events
                         .findAll(
-                                (Specification<MissionEvent>)
+                                (HibernateSpecification<MissionEvent>)
                                         (r, q, cb) -> r.get("mission").get("id").in(ids))
                         .stream()
                         .collect(Collectors.groupingBy(e -> e.getMission().getId()));
@@ -318,7 +318,7 @@ public class CustomerAnalyticsServiceImpl implements CustomerAnalyticsService {
                 .toList();
     }
 
-    private static Specification<MissionMedia> ownedMedia(Long customerId) {
+    private static HibernateSpecification<MissionMedia> ownedMedia(Long customerId) {
         return (r, q, cb) ->
                 cb.and(
                         cb.equal(r.get("mission").get("customer").get("id"), customerId),

@@ -5,12 +5,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.assistant.IAiRouterSettingsDao;
 import com.uav.platform.dto.request.assistant.AiRouterSettingsRequest;
 import com.uav.platform.dto.request.assistant.AssistantChatRequest;
 import com.uav.platform.dto.request.assistant.AssistantMessageRequest;
 import com.uav.platform.entity.assistant.AiRouterSettings;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.assistant.AiRouterSettingsRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.assistant.AiRouterServiceImpl;
 import com.uav.platform.service.impl.assistant.SecretCipherOperations;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 class AiRouterServiceTest {
-    final AiRouterSettingsRepository repo = mock(AiRouterSettingsRepository.class);
+    final IAiRouterSettingsDao repo = mock(IAiRouterSettingsDao.class);
     final HttpClient http = mock(HttpClient.class);
     final SecretCipherOperations cipher = new SecretCipherOperations("test-secret");
     final AiRouterServiceImpl service = build();
@@ -38,7 +38,7 @@ class AiRouterServiceTest {
         try {
             Constructor<AiRouterServiceImpl> c =
                     AiRouterServiceImpl.class.getDeclaredConstructor(
-                            AiRouterSettingsRepository.class,
+                            IAiRouterSettingsDao.class,
                             AuditLogService.class,
                             ObjectMapper.class,
                             SecretCipherOperations.class,

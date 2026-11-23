@@ -6,12 +6,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.sar.ISarMissionDao;
 import com.uav.platform.dto.request.sar.FlightPlanRequest;
 import com.uav.platform.dto.request.sar.TelemetryEvaluateRequest;
 import com.uav.platform.dto.response.sar.FlightPlanResponse;
 import com.uav.platform.dto.response.sar.TelemetryEvaluateResponse;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.sar.SarMissionRepository;
 import com.uav.platform.service.impl.sar.SarServiceImpl;
 import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.webhook.WebhookService;
@@ -29,9 +29,9 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class SarAlgorithmServiceTest {
 
-    @Mock private SarMissionRepository sarRepository;
+    @Mock private ISarMissionDao sarRepository;
 
-    @Mock private MissionRepository missionRepository;
+    @Mock private IMissionDao missionRepository;
 
     @Mock private NotificationService notificationService;
 

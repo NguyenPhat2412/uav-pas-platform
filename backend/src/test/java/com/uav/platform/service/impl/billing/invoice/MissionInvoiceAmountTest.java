@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IMissionBillingJobDao;
+import com.uav.platform.dao.mission.IMissionDao;
 import com.uav.platform.entity.billing.MissionBillingJob;
 import com.uav.platform.entity.mission.Mission;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.MissionBillingJobRepository;
-import com.uav.platform.repository.mission.MissionRepository;
 import com.uav.platform.service.settings.SystemConfigService;
 
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import java.util.Optional;
 class MissionInvoiceAmountTest {
     @Test
     void missionChargeIsRoundedHalfUpToWholeDong() {
-        var jobs = mock(MissionBillingJobRepository.class);
+        var jobs = mock(IMissionBillingJobDao.class);
         var config = mock(SystemConfigService.class);
         when(config.valueOrDefault("billing.auto_generate_invoice", "false")).thenReturn("true");
         when(config.valueOrDefault("billing.hourly_rate_vnd", "")).thenReturn("333");
@@ -28,8 +28,8 @@ class MissionInvoiceAmountTest {
         var service =
                 new MissionInvoiceServiceImpl(
                         jobs,
-                        mock(InvoiceRepository.class),
-                        mock(MissionRepository.class),
+                        mock(IInvoiceDao.class),
+                        mock(IMissionDao.class),
                         config,
                         mock(org.springframework.transaction.PlatformTransactionManager.class));
         Mission mission = new Mission();

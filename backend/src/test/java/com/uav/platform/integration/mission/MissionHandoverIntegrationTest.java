@@ -7,6 +7,10 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.inventory.QuantityRequest;
 import com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest;
 import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
@@ -22,10 +26,6 @@ import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.enums.station.StationStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.media.MediaAssetOperations;
 import com.uav.platform.service.impl.station.StationOperations;
 import com.uav.platform.service.inventory.InventoryService;
@@ -58,17 +58,17 @@ import java.util.UUID;
 class MissionHandoverIntegrationTest {
     @Autowired WebApplicationContext context;
     @Autowired MissionService missions;
-    @Autowired UserRepository users;
-    @Autowired com.uav.platform.repository.billing.ServicePlanRepository servicePlans;
-    @Autowired StationRepository stations;
-    @Autowired UavRepository uavs;
-    @Autowired EquipmentRepository equipment;
+    @Autowired IUserDao users;
+    @Autowired com.uav.platform.dao.billing.IServicePlanDao servicePlans;
+    @Autowired IStationDao stations;
+    @Autowired IUavDao uavs;
+    @Autowired IEquipmentDao equipment;
     @Autowired InventoryService inventory;
     @Autowired JdbcTemplate db;
     @Autowired ObjectMapper json;
-    @Autowired com.uav.platform.repository.media.MediaAssetRepository assets;
-    @Autowired com.uav.platform.repository.mission.MissionMediaRepository links;
-    @Autowired com.uav.platform.repository.mission.MissionRepository missionRepository;
+    @Autowired com.uav.platform.dao.media.IMediaAssetDao assets;
+    @Autowired com.uav.platform.dao.mission.IMissionMediaDao links;
+    @Autowired com.uav.platform.dao.mission.IMissionDao missionRepository;
 
     @org.springframework.test.context.bean.override.mockito.MockitoSpyBean
     com.uav.platform.service.audit.AuditLogService audit;

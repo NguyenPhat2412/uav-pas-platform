@@ -1,14 +1,15 @@
 package com.uav.platform.service.impl.media;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.IMissionMediaDao;
 import com.uav.platform.dto.request.media.*;
 import com.uav.platform.dto.response.media.*;
 import com.uav.platform.entity.media.MediaAsset;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.media.MediaMapper;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.MissionMediaRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.media.MediaService;
 import com.uav.platform.service.media.ObjectStorageService;
@@ -17,7 +18,6 @@ import com.uav.platform.specification.media.MediaAssetSpecifications;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,23 +27,23 @@ import java.util.UUID;
 @Transactional
 public class MediaServiceImpl implements MediaService {
     @jakarta.persistence.PersistenceContext private jakarta.persistence.EntityManager entityManager;
-    private final MediaAssetRepository repository;
+    private final IMediaAssetDao repository;
     private final ObjectStorageService storage;
     private final AuditLogService audit;
-    private final MissionMediaRepository missionMedia;
+    private final IMissionMediaDao missionMedia;
     private final com.uav.platform.service.media.MediaAccessService access;
     private final MediaMapper mediaMapper;
 
     public MediaServiceImpl(
-            MediaAssetRepository repository, ObjectStorageService storage, AuditLogService audit) {
+            IMediaAssetDao repository, ObjectStorageService storage, AuditLogService audit) {
         this(repository, storage, audit, null, null);
     }
 
     public MediaServiceImpl(
-            MediaAssetRepository repository,
+            IMediaAssetDao repository,
             ObjectStorageService storage,
             AuditLogService audit,
-            MissionMediaRepository missionMedia,
+            IMissionMediaDao missionMedia,
             com.uav.platform.service.media.MediaAccessService access) {
         this(
                 repository,
@@ -56,11 +56,11 @@ public class MediaServiceImpl implements MediaService {
 
     @org.springframework.beans.factory.annotation.Autowired
     public MediaServiceImpl(
-            MediaAssetRepository repository,
+            IMediaAssetDao repository,
             ObjectStorageService storage,
             AuditLogService audit,
             @org.springframework.beans.factory.annotation.Autowired(required = false)
-                    MissionMediaRepository missionMedia,
+                    IMissionMediaDao missionMedia,
             com.uav.platform.service.media.MediaAccessService access,
             MediaMapper mediaMapper) {
         this.repository = repository;
@@ -75,8 +75,8 @@ public class MediaServiceImpl implements MediaService {
     @Transactional(readOnly = true)
     public PageResponse<MediaAssetResponse> list(Pageable pageable) {
         String actor = currentActor();
-        Specification<MediaAsset> scope =
-                Specification.where(MediaAssetSpecifications.isDeleted(false));
+        HibernateSpecification<MediaAsset> scope =
+                HibernateSpecification.where(MediaAssetSpecifications.isDeleted(false));
         if (access != null) scope = scope.and(access.readableBy(actor));
         if (pageable.isPaged() && pageable.getSort().getOrderFor("id") == null) {
             pageable =

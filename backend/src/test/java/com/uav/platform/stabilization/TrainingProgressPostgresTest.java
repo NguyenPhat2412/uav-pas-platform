@@ -2,9 +2,9 @@ package com.uav.platform.stabilization;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.uav.platform.repository.training.TrainingLessonProgressRepository;
-import com.uav.platform.repository.training.TrainingLessonRepository;
-import com.uav.platform.repository.training.UserTrainingProgressRepository;
+import com.uav.platform.dao.training.ITrainingLessonDao;
+import com.uav.platform.dao.training.ITrainingLessonProgressDao;
+import com.uav.platform.dao.training.IUserTrainingProgressDao;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
@@ -62,9 +62,9 @@ class TrainingProgressPostgresTest {
     }
 
     @Autowired JdbcTemplate db;
-    @Autowired TrainingLessonProgressRepository lessonProgress;
-    @Autowired UserTrainingProgressRepository courseProgress;
-    @Autowired TrainingLessonRepository lessons;
+    @Autowired ITrainingLessonProgressDao lessonProgress;
+    @Autowired IUserTrainingProgressDao courseProgress;
+    @Autowired ITrainingLessonDao lessons;
     @Autowired PlatformTransactionManager transactionManager;
 
     private long userId;

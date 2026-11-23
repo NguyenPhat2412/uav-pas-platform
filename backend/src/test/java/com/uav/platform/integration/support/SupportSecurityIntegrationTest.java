@@ -11,10 +11,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.user.UserRepository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ import java.util.UUID;
 class SupportSecurityIntegrationTest {
 
     @Autowired WebApplicationContext context;
-    @Autowired UserRepository users;
+    @Autowired IUserDao users;
     private final ObjectMapper mapper = new ObjectMapper();
 
     private AppUser createUser(UserRole role, String fullName) {

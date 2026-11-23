@@ -6,6 +6,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.training.ITrainingAssetDao;
+import com.uav.platform.dao.training.ITrainingDocumentDao;
+import com.uav.platform.dao.training.ITrainingLessonDao;
 import com.uav.platform.dto.record.media.ObjectMetadata;
 import com.uav.platform.dto.request.training.editor.CreateTrainingAssetRequest;
 import com.uav.platform.dto.request.training.editor.UpdateCourseCoverRequest;
@@ -22,9 +25,6 @@ import com.uav.platform.entity.training.TrainingLessonSlide;
 import com.uav.platform.enums.training.TrainingAssetStatus;
 import com.uav.platform.enums.training.TrainingLessonType;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.training.TrainingAssetRepository;
-import com.uav.platform.repository.training.TrainingDocumentRepository;
-import com.uav.platform.repository.training.TrainingLessonRepository;
 import com.uav.platform.service.impl.training.editor.TrainingCourseAdminServiceImpl;
 import com.uav.platform.service.media.ObjectStorageService;
 import com.uav.platform.service.training.course.TrainingCourseRecords;
@@ -48,9 +48,9 @@ class TrainingCourseAdminServiceTest {
 
     private static final byte[] MP4_HEADER = {0, 0, 0, 24, 'f', 't', 'y', 'p', 'i', 's', 'o', 'm'};
 
-    private TrainingDocumentRepository documents;
-    private TrainingLessonRepository lessons;
-    private TrainingAssetRepository assets;
+    private ITrainingDocumentDao documents;
+    private ITrainingLessonDao lessons;
+    private ITrainingAssetDao assets;
     private ObjectStorageService storage;
     private TrainingCourseRecords records;
     private TrainingCourseAdminServiceImpl service;
@@ -58,9 +58,9 @@ class TrainingCourseAdminServiceTest {
 
     @BeforeEach
     void setUp() {
-        documents = mock(TrainingDocumentRepository.class);
-        lessons = mock(TrainingLessonRepository.class);
-        assets = mock(TrainingAssetRepository.class);
+        documents = mock(ITrainingDocumentDao.class);
+        lessons = mock(ITrainingLessonDao.class);
+        assets = mock(ITrainingAssetDao.class);
         storage = mock(ObjectStorageService.class);
         records = mock(TrainingCourseRecords.class);
         service =

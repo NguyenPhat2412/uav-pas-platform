@@ -1,5 +1,8 @@
 package com.uav.platform.service.impl.sar;
 
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.sar.ISarMissionDao;
 import com.uav.platform.dto.record.sar.AlertResult;
 import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.dto.request.sar.FlightPlanRequest;
@@ -20,8 +23,6 @@ import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.enums.sar.SarStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.sar.SarMapper;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.sar.SarMissionRepository;
 import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.sar.SarService;
 import com.uav.platform.service.webhook.WebhookService;
@@ -29,7 +30,6 @@ import com.uav.platform.specification.sar.SarSpecifications;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,28 +46,28 @@ public class SarServiceImpl implements SarService {
 
     private static final double EARTH_RADIUS_METERS = 6_371_000.0;
 
-    private final SarMissionRepository sarRepository;
-    private final MissionRepository missionRepository;
+    private final ISarMissionDao sarRepository;
+    private final IMissionDao missionRepository;
     private final NotificationService notificationService;
     private final WebhookService webhookService;
     private final com.uav.platform.service.permission.PermissionService permissionService;
     private final SarMapper sarMapper;
 
-    public SarServiceImpl(SarMissionRepository sarRepository, MissionRepository missionRepository) {
+    public SarServiceImpl(ISarMissionDao sarRepository, IMissionDao missionRepository) {
         this(sarRepository, missionRepository, null, null, null);
     }
 
     public SarServiceImpl(
-            SarMissionRepository sarRepository,
-            MissionRepository missionRepository,
+            ISarMissionDao sarRepository,
+            IMissionDao missionRepository,
             NotificationService notificationService,
             WebhookService webhookService) {
         this(sarRepository, missionRepository, notificationService, webhookService, null);
     }
 
     public SarServiceImpl(
-            SarMissionRepository sarRepository,
-            MissionRepository missionRepository,
+            ISarMissionDao sarRepository,
+            IMissionDao missionRepository,
             NotificationService notificationService,
             WebhookService webhookService,
             com.uav.platform.service.permission.PermissionService permissionService) {
@@ -82,8 +82,8 @@ public class SarServiceImpl implements SarService {
 
     @Autowired
     public SarServiceImpl(
-            SarMissionRepository sarRepository,
-            MissionRepository missionRepository,
+            ISarMissionDao sarRepository,
+            IMissionDao missionRepository,
             @Autowired(required = false) NotificationService notificationService,
             @Autowired(required = false) WebhookService webhookService,
             @Autowired(required = false)
@@ -236,9 +236,9 @@ public class SarServiceImpl implements SarService {
         boolean all =
                 permissionService.has(authentication, "MISSION_VIEW_ALL")
                         || permissionService.has(authentication, "USER_MANAGE");
-        Specification<SarMission> spec =
+        HibernateSpecification<SarMission> spec =
                 all
-                        ? Specification.unrestricted()
+                        ? HibernateSpecification.unrestricted()
                         : SarSpecifications.visibleTo(authentication.getName());
         if (!includeClosed) spec = spec.and(SarSpecifications.notSarStatus(SarStatus.RESCUED));
         var pageable =

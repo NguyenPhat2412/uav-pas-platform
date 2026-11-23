@@ -2,6 +2,8 @@ package com.uav.platform.service.impl.storage.files;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.training.ITrainingAssetDao;
 import com.uav.platform.dto.request.storage.files.AdminFileQueryRequest;
 import com.uav.platform.dto.response.storage.files.AdminFileDownloadResponse;
 import com.uav.platform.dto.response.storage.files.AdminFileResponse;
@@ -11,8 +13,6 @@ import com.uav.platform.enums.storage.StoredFileKind;
 import com.uav.platform.enums.storage.StoredFileModule;
 import com.uav.platform.enums.storage.StoredFileStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.training.TrainingAssetRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.media.MediaAssetOperations;
 import com.uav.platform.service.media.ObjectStorageService;
@@ -219,15 +219,15 @@ public class AdminFileServiceImpl implements AdminFileService {
 
     private final NamedParameterJdbcTemplate jdbc;
     private final JdbcTemplate plainJdbc;
-    private final MediaAssetRepository mediaAssets;
-    private final TrainingAssetRepository trainingAssets;
+    private final IMediaAssetDao mediaAssets;
+    private final ITrainingAssetDao trainingAssets;
     private final ObjectStorageService storage;
     private final AuditLogService audit;
 
     public AdminFileServiceImpl(
             JdbcTemplate jdbc,
-            MediaAssetRepository mediaAssets,
-            TrainingAssetRepository trainingAssets,
+            IMediaAssetDao mediaAssets,
+            ITrainingAssetDao trainingAssets,
             ObjectStorageService storage,
             AuditLogService audit) {
         this.plainJdbc = jdbc;

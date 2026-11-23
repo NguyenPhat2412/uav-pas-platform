@@ -1,5 +1,6 @@
 package com.uav.platform.service.impl.airspace;
 
+import com.uav.platform.dao.airspace.IAirspaceZoneDao;
 import com.uav.platform.dto.request.airspace.AirspaceCheckRequest;
 import com.uav.platform.dto.request.airspace.AirspaceZoneUpsertRequest;
 import com.uav.platform.dto.response.airspace.AirspaceCheckResponse;
@@ -9,7 +10,6 @@ import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.airspace.AirspaceMapper;
-import com.uav.platform.repository.airspace.AirspaceZoneRepository;
 import com.uav.platform.service.airspace.AirspaceService;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.notification.policy.NotificationBroadcastOperations;
@@ -31,7 +31,7 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class AirspaceServiceImpl implements AirspaceService {
 
-    private final AirspaceZoneRepository zoneRepository;
+    private final IAirspaceZoneDao zoneRepository;
     private final AirspaceMapper airspaceMapper;
     private final PermissionService permissionService;
     private final AuditLogService auditLogService;

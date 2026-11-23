@@ -2,6 +2,10 @@ package com.uav.platform.service.impl.support;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Pageables;
+import com.uav.platform.dao.support.ISupportMessageDao;
+import com.uav.platform.dao.support.ISupportQuickReplyDao;
+import com.uav.platform.dao.support.ISupportThreadDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.support.PublicSupportCreateRequest;
 import com.uav.platform.dto.request.support.PublicSupportMessageRequest;
 import com.uav.platform.dto.request.support.SupportAdminReplyRequest;
@@ -17,10 +21,6 @@ import com.uav.platform.entity.support.SupportQuickReply;
 import com.uav.platform.entity.support.SupportThread;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
-import com.uav.platform.repository.support.SupportMessageRepository;
-import com.uav.platform.repository.support.SupportQuickReplyRepository;
-import com.uav.platform.repository.support.SupportThreadRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.notification.inbox.NotificationService;
 import com.uav.platform.service.support.SupportService;
 import com.uav.platform.specification.support.SupportThreadSpecifications;
@@ -44,18 +44,18 @@ import java.util.Set;
 @Service
 public class SupportServiceImpl implements SupportService {
 
-    private final SupportThreadRepository threadRepository;
-    private final SupportMessageRepository messageRepository;
-    private final SupportQuickReplyRepository quickReplyRepository;
-    private final UserRepository userRepository;
+    private final ISupportThreadDao threadRepository;
+    private final ISupportMessageDao messageRepository;
+    private final ISupportQuickReplyDao quickReplyRepository;
+    private final IUserDao userRepository;
     private final NotificationService notificationService;
     private final RealtimeEventBroadcaster realtimeBroadcaster;
 
     public SupportServiceImpl(
-            SupportThreadRepository threadRepository,
-            SupportMessageRepository messageRepository,
-            SupportQuickReplyRepository quickReplyRepository,
-            UserRepository userRepository,
+            ISupportThreadDao threadRepository,
+            ISupportMessageDao messageRepository,
+            ISupportQuickReplyDao quickReplyRepository,
+            IUserDao userRepository,
             NotificationService notificationService) {
         this(
                 threadRepository,
@@ -68,10 +68,10 @@ public class SupportServiceImpl implements SupportService {
 
     @Autowired
     public SupportServiceImpl(
-            SupportThreadRepository threadRepository,
-            SupportMessageRepository messageRepository,
-            SupportQuickReplyRepository quickReplyRepository,
-            UserRepository userRepository,
+            ISupportThreadDao threadRepository,
+            ISupportMessageDao messageRepository,
+            ISupportQuickReplyDao quickReplyRepository,
+            IUserDao userRepository,
             NotificationService notificationService,
             @Autowired(required = false) RealtimeEventBroadcaster realtimeBroadcaster) {
         this.threadRepository = threadRepository;

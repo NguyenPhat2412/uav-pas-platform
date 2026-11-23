@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.security.ISessionRevocationDao;
 import com.uav.platform.entity.security.SessionRevocation;
-import com.uav.platform.repository.security.SessionRevocationRepository;
 import com.uav.platform.service.impl.security.SessionRevocationServiceImpl;
 
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 class SessionRevocationServiceImplTest {
 
-    private final SessionRevocationRepository repository = mock(SessionRevocationRepository.class);
+    private final ISessionRevocationDao repository = mock(ISessionRevocationDao.class);
     private final Instant now = Instant.parse("2026-10-25T10:15:30.750Z");
     private final SessionRevocationServiceImpl service =
             new SessionRevocationServiceImpl(repository, Clock.fixed(now, ZoneOffset.UTC));

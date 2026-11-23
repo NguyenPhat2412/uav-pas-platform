@@ -5,12 +5,14 @@ import com.uav.platform.config.routes.ApiRoutes;
 import com.uav.platform.dto.request.marketplace.admin.AutoDispatchRequest;
 import com.uav.platform.dto.request.marketplace.admin.ListingModerationRequest;
 import com.uav.platform.dto.request.marketplace.admin.ManualDispatchRequest;
+import com.uav.platform.dto.request.marketplace.admin.ProviderDocumentModerationRequest;
 import com.uav.platform.dto.request.marketplace.admin.ProviderModerationRequest;
 import com.uav.platform.dto.request.marketplace.escrow.PayoutProcessRequest;
 import com.uav.platform.dto.response.marketplace.admin.DispatchQueueItemResponse;
 import com.uav.platform.dto.response.marketplace.admin.MarketplaceAdminStatsResponse;
 import com.uav.platform.dto.response.marketplace.catalog.MarketplaceListingResponse;
 import com.uav.platform.dto.response.marketplace.escrow.ProviderPayoutResponse;
+import com.uav.platform.dto.response.marketplace.provider.ProviderDocumentResponse;
 import com.uav.platform.dto.response.marketplace.provider.ProviderProfileResponse;
 import com.uav.platform.dto.response.mission.lifecycle.MissionResponse;
 import com.uav.platform.enums.marketplace.ListingModerationStatus;
@@ -35,6 +37,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(ApiRoutes.Marketplace.ADMIN_BASE)
@@ -72,6 +76,24 @@ public class MarketplaceAdminController {
             @Valid @RequestBody ProviderModerationRequest request,
             Authentication auth) {
         return ResponseEntity.ok(adminService.moderateProvider(id, request, auth.getName()));
+    }
+
+    @GetMapping(ApiRoutes.Marketplace.ADMIN_PROVIDER_DOCUMENTS)
+    @PreAuthorize("@permissionService.has(authentication, 'MARKETPLACE_MODERATE')")
+    public ResponseEntity<List<ProviderDocumentResponse>> listProviderDocuments(
+            @PathVariable Long providerId) {
+        return ResponseEntity.ok(adminService.listProviderDocuments(providerId));
+    }
+
+    @PatchMapping(ApiRoutes.Marketplace.ADMIN_PROVIDER_DOCUMENT_BY_ID)
+    @PreAuthorize("@permissionService.has(authentication, 'MARKETPLACE_MODERATE')")
+    public ResponseEntity<ProviderDocumentResponse> moderateProviderDocument(
+            @PathVariable Long providerId,
+            @PathVariable Long docId,
+            @Valid @RequestBody ProviderDocumentModerationRequest request,
+            Authentication auth) {
+        return ResponseEntity.ok(
+                adminService.moderateProviderDocument(providerId, docId, request, auth.getName()));
     }
 
     @GetMapping(ApiRoutes.Marketplace.ADMIN_LISTINGS)

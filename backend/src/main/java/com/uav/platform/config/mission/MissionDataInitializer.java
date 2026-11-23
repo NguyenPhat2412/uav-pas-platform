@@ -1,7 +1,7 @@
 package com.uav.platform.config.mission;
 
+import com.uav.platform.dao.mission.IServiceOfferingDao;
 import com.uav.platform.enums.mission.*;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class MissionDataInitializer implements ApplicationRunner {
-    private final ServiceOfferingRepository services;
+    private final IServiceOfferingDao services;
 
     @Override
     @Transactional

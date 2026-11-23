@@ -4,6 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.airspace.IAirspaceZoneDao;
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IMissionMediaDao;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
 import com.uav.platform.dto.request.airspace.AirspaceCheckRequest;
 import com.uav.platform.dto.request.airspace.AirspaceZoneUpsertRequest;
 import com.uav.platform.dto.request.mission.flightplan.FlightPlanRequest;
@@ -28,12 +34,6 @@ import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.airspace.AirspaceMapper;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
-import com.uav.platform.repository.airspace.AirspaceZoneRepository;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionMediaRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.billing.quota.QuotaService;
 import com.uav.platform.service.impl.airspace.AirspaceServiceImpl;
@@ -68,7 +68,7 @@ class AirspaceAndPermitWorkflowTest {
     private AirspaceZone noiBaiCtr;
     private AirspaceZone giaLamRestrictedPolygon;
     private AirspaceZone hoaLacWarning;
-    private AirspaceZoneRepository zoneRepository;
+    private IAirspaceZoneDao zoneRepository;
     private PermissionService permissionService;
     private AuditLogService auditLogService;
     private AirspaceServiceImpl airspaceService;
@@ -122,7 +122,7 @@ class AirspaceAndPermitWorkflowTest {
         hoaLacWarning.setAuthority("Ban Quản lý Khu Công nghệ cao Hòa Lạc");
         hoaLacWarning.setActive(true);
 
-        zoneRepository = mock(AirspaceZoneRepository.class);
+        zoneRepository = mock(IAirspaceZoneDao.class);
         permissionService = mock(PermissionService.class);
         auditLogService = mock(AuditLogService.class);
 
@@ -293,12 +293,12 @@ class AirspaceAndPermitWorkflowTest {
     @Test
     @SuppressWarnings("unchecked")
     void fullMissionFlightPermitLifecycleEnforcesAirspaceAndPreflightGates() {
-        MissionRepository missionRepo = mock(MissionRepository.class);
-        ServiceOfferingRepository serviceRepo = mock(ServiceOfferingRepository.class);
+        IMissionDao missionRepo = mock(IMissionDao.class);
+        IServiceOfferingDao serviceRepo = mock(IServiceOfferingDao.class);
         AuditLogService audit = mock(AuditLogService.class);
-        MissionEventRepository eventRepo = mock(MissionEventRepository.class);
+        IMissionEventDao eventRepo = mock(IMissionEventDao.class);
         QuotaService quota = mock(QuotaService.class);
-        MissionMediaRepository missionMedia = mock(MissionMediaRepository.class);
+        IMissionMediaDao missionMedia = mock(IMissionMediaDao.class);
         MissionAccessService access = mock(MissionAccessService.class);
         MissionEventService missionEvents = mock(MissionEventService.class);
         MissionResourceService resources = mock(MissionResourceService.class);
@@ -574,7 +574,7 @@ class AirspaceAndPermitWorkflowTest {
     @Test
     @SuppressWarnings("unchecked")
     void draftEditInvalidatesVerifiedPermitAndInProgressBlocksPermitMutation() {
-        MissionRepository missionRepo = mock(MissionRepository.class);
+        IMissionDao missionRepo = mock(IMissionDao.class);
         MissionAccessService access = mock(MissionAccessService.class);
         ObjectProvider<AirspaceService> airspaceProvider = mock(ObjectProvider.class);
         when(airspaceProvider.getIfAvailable()).thenReturn(airspaceService);
@@ -582,11 +582,11 @@ class AirspaceAndPermitWorkflowTest {
         MissionLifecycleServiceImpl lifecycle =
                 new MissionLifecycleServiceImpl(
                         missionRepo,
-                        mock(ServiceOfferingRepository.class),
+                        mock(IServiceOfferingDao.class),
                         mock(AuditLogService.class),
-                        mock(MissionEventRepository.class),
+                        mock(IMissionEventDao.class),
                         mock(QuotaService.class),
-                        mock(MissionMediaRepository.class),
+                        mock(IMissionMediaDao.class),
                         access,
                         mock(MissionEventService.class),
                         mock(MissionResourceService.class),
@@ -701,18 +701,18 @@ class AirspaceAndPermitWorkflowTest {
     @SuppressWarnings("unchecked")
     void permitMediaPreventsCrossUserIdorAndPreflightChecksRealTakeoffWallClock() {
         MissionAccessService access = mock(MissionAccessService.class);
-        MediaAssetRepository mediaRepo = mock(MediaAssetRepository.class);
-        ObjectProvider<MediaAssetRepository> mediaProvider = mock(ObjectProvider.class);
+        IMediaAssetDao mediaRepo = mock(IMediaAssetDao.class);
+        ObjectProvider<IMediaAssetDao> mediaProvider = mock(ObjectProvider.class);
         when(mediaProvider.getIfAvailable()).thenReturn(mediaRepo);
 
         MissionLifecycleServiceImpl lifecycle =
                 new MissionLifecycleServiceImpl(
-                        mock(MissionRepository.class),
-                        mock(ServiceOfferingRepository.class),
+                        mock(IMissionDao.class),
+                        mock(IServiceOfferingDao.class),
                         mock(AuditLogService.class),
-                        mock(MissionEventRepository.class),
+                        mock(IMissionEventDao.class),
                         mock(QuotaService.class),
-                        mock(MissionMediaRepository.class),
+                        mock(IMissionMediaDao.class),
                         access,
                         mock(MissionEventService.class),
                         mock(MissionResourceService.class),

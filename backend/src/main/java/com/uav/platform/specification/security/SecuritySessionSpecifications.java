@@ -1,9 +1,8 @@
 package com.uav.platform.specification.security;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.auth.RefreshToken;
 import com.uav.platform.entity.user.AppUser;
-
-import org.springframework.data.jpa.domain.Specification;
 
 import java.time.Instant;
 
@@ -13,7 +12,8 @@ public final class SecuritySessionSpecifications {
     private SecuritySessionSpecifications() {}
 
     /** Users holding a refresh token that is neither revoked nor expired. */
-    public static Specification<AppUser> hasActiveSession(boolean activeOnly, Instant now) {
+    public static HibernateSpecification<AppUser> hasActiveSession(
+            boolean activeOnly, Instant now) {
         return (root, query, cb) -> {
             if (!activeOnly) return null;
             var sub = query.subquery(Long.class);

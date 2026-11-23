@@ -2,6 +2,8 @@ package com.uav.platform.stabilization;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.inventory.*;
 import com.uav.platform.dto.request.station.StationRequest;
 import com.uav.platform.dto.response.inventory.*;
@@ -16,8 +18,6 @@ import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.inventory.InventoryService;
 import com.uav.platform.service.permission.PermissionService;
@@ -64,17 +64,17 @@ class StabilizationPostgresTest {
 
     @Autowired JdbcTemplate db;
     @Autowired com.uav.platform.service.billing.invoice.MissionInvoiceService invoiceWorker;
-    @Autowired com.uav.platform.repository.billing.MissionBillingJobRepository billingJobs;
-    @Autowired com.uav.platform.repository.billing.InvoiceRepository invoices;
-    @Autowired com.uav.platform.repository.billing.ServicePlanRepository plans;
+    @Autowired com.uav.platform.dao.billing.IMissionBillingJobDao billingJobs;
+    @Autowired com.uav.platform.dao.billing.IInvoiceDao invoices;
+    @Autowired com.uav.platform.dao.billing.IServicePlanDao plans;
     @Autowired com.uav.platform.service.impl.billing.invoice.BillingServiceImpl billing;
-    @Autowired com.uav.platform.repository.mission.MissionRepository missionRepository;
+    @Autowired com.uav.platform.dao.mission.IMissionDao missionRepository;
     @Autowired com.uav.platform.service.mission.lifecycle.MissionService missionService;
     @Autowired com.uav.platform.service.billing.quota.QuotaService quotas;
     @Autowired InventoryService inventory;
-    @Autowired EquipmentRepository equipment;
+    @Autowired IEquipmentDao equipment;
     @Autowired StationService stations;
-    @Autowired UserRepository users;
+    @Autowired IUserDao users;
     @Autowired PermissionService permissions;
     @Autowired UserService userService;
 

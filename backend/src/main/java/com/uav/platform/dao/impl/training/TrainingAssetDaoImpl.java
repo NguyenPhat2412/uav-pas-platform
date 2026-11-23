@@ -1,0 +1,22 @@
+package com.uav.platform.dao.impl.training;
+
+import com.uav.platform.dao.base.HibernateGenericDao;
+import com.uav.platform.dao.training.ITrainingAssetDao;
+import com.uav.platform.entity.training.TrainingAsset;
+
+import jakarta.persistence.EntityManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class TrainingAssetDaoImpl extends HibernateGenericDao<Long, TrainingAsset>
+        implements ITrainingAssetDao {
+
+    private static final Logger logger = LoggerFactory.getLogger(TrainingAssetDaoImpl.class);
+
+    public TrainingAssetDaoImpl(final EntityManager entityManager) {
+        super(TrainingAsset.class, entityManager);
+    }
+}

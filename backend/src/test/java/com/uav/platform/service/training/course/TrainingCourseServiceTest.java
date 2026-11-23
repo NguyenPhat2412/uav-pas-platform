@@ -10,6 +10,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.training.ITrainingAssetDao;
+import com.uav.platform.dao.training.ITrainingDocumentDao;
+import com.uav.platform.dao.training.ITrainingLessonDao;
+import com.uav.platform.dao.training.ITrainingLessonProgressDao;
+import com.uav.platform.dao.training.IUserTrainingProgressDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.media.ObjectStream;
 import com.uav.platform.dto.request.training.course.UpdateLessonProgressRequest;
 import com.uav.platform.dto.response.training.course.TrainingCourseDetailResponse;
@@ -27,12 +33,6 @@ import com.uav.platform.enums.training.TrainingAssetStatus;
 import com.uav.platform.enums.training.TrainingLessonType;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.training.TrainingAssetRepository;
-import com.uav.platform.repository.training.TrainingDocumentRepository;
-import com.uav.platform.repository.training.TrainingLessonProgressRepository;
-import com.uav.platform.repository.training.TrainingLessonRepository;
-import com.uav.platform.repository.training.UserTrainingProgressRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.training.course.TrainingCourseServiceImpl;
 import com.uav.platform.service.media.ObjectStorageService;
 import com.uav.platform.service.permission.PermissionService;
@@ -63,12 +63,12 @@ import java.util.Optional;
 @DisplayName("Training courses for learners")
 class TrainingCourseServiceTest {
 
-    private TrainingDocumentRepository documents;
-    private TrainingLessonRepository lessons;
-    private TrainingLessonProgressRepository lessonProgress;
-    private UserTrainingProgressRepository courseProgress;
-    private TrainingAssetRepository assets;
-    private UserRepository users;
+    private ITrainingDocumentDao documents;
+    private ITrainingLessonDao lessons;
+    private ITrainingLessonProgressDao lessonProgress;
+    private IUserTrainingProgressDao courseProgress;
+    private ITrainingAssetDao assets;
+    private IUserDao users;
     private ObjectStorageService storage;
     private TrainingCourseServiceImpl service;
 
@@ -80,12 +80,12 @@ class TrainingCourseServiceTest {
 
     @BeforeEach
     void setUp() {
-        documents = mock(TrainingDocumentRepository.class);
-        lessons = mock(TrainingLessonRepository.class);
-        lessonProgress = mock(TrainingLessonProgressRepository.class);
-        courseProgress = mock(UserTrainingProgressRepository.class);
-        assets = mock(TrainingAssetRepository.class);
-        users = mock(UserRepository.class);
+        documents = mock(ITrainingDocumentDao.class);
+        lessons = mock(ITrainingLessonDao.class);
+        lessonProgress = mock(ITrainingLessonProgressDao.class);
+        courseProgress = mock(IUserTrainingProgressDao.class);
+        assets = mock(ITrainingAssetDao.class);
+        users = mock(IUserDao.class);
         storage = mock(ObjectStorageService.class);
         service =
                 new TrainingCourseServiceImpl(

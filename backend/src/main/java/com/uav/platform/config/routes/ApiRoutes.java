@@ -653,6 +653,7 @@ public final class ApiRoutes {
 
         public static final String PROVIDER_BASE = API_V1_PREFIX + "/marketplace/provider";
         public static final String ME = "/me";
+        public static final String SUBMIT_VERIFICATION = "/submit-verification";
         public static final String DOCUMENTS = "/documents";
         public static final String DOCUMENT_BY_ID = "/documents/{id}";
         public static final String LISTINGS = "/listings";
@@ -685,6 +686,9 @@ public final class ApiRoutes {
         public static final String ADMIN_BASE = API_V1_PREFIX + "/admin/marketplace";
         public static final String ADMIN_PROVIDERS = "/providers";
         public static final String ADMIN_PROVIDER_MODERATE = "/providers/{id}/moderate";
+        public static final String ADMIN_PROVIDER_DOCUMENTS = "/providers/{providerId}/documents";
+        public static final String ADMIN_PROVIDER_DOCUMENT_BY_ID =
+                "/providers/{providerId}/documents/{docId}";
         public static final String ADMIN_LISTINGS = "/listings";
         public static final String ADMIN_LISTING_MODERATE = "/listings/{id}/moderate";
         public static final String ADMIN_DISPATCH = "/dispatch";

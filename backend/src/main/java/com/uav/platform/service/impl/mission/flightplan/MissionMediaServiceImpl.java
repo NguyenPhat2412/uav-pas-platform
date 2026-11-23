@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.mission.flightplan;
 
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.IMissionMediaDao;
 import com.uav.platform.dto.request.mission.catalog.*;
 import com.uav.platform.dto.request.mission.dispatch.*;
 import com.uav.platform.dto.request.mission.flightplan.*;
@@ -15,8 +17,6 @@ import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.mission.*;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.mission.flightplan.MissionMediaMapper;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.MissionMediaRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.mission.flightplan.MissionMediaService;
@@ -39,9 +39,9 @@ import java.util.List;
 public class MissionMediaServiceImpl implements MissionMediaService {
     private final PermissionService permissions;
     private final AuditLogService audit;
-    private final MediaAssetRepository mediaAssets;
+    private final IMediaAssetDao mediaAssets;
     private final com.uav.platform.service.media.MediaAccessService mediaAccess;
-    private final MissionMediaRepository missionMedia;
+    private final IMissionMediaDao missionMedia;
     private final MissionAccessService access;
     private final MissionEventService missionEvents;
     private final MissionMediaMapper missionMediaMapper;

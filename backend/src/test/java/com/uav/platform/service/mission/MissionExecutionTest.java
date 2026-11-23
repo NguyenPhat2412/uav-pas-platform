@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.mission.*;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.mission.lifecycle.MissionCompletionRequest;
 import com.uav.platform.dto.request.mission.lifecycle.MissionFailureRequest;
 import com.uav.platform.entity.mission.*;
@@ -17,11 +22,6 @@ import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.mission.*;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.inventory.InventoryService;
@@ -40,17 +40,16 @@ class MissionExecutionTest {
     @Test
     void readyRejectsMissingResources() {
         Mission mission = missionAt(MissionStatus.RESOURCE_RESERVED);
-        MissionRepository missions = repository(mission);
+        IMissionDao missions = repository(mission);
         when(missions.findById(1L)).thenReturn(Optional.of(mission));
         when(missions.findByIdForUpdate(1L)).thenReturn(Optional.of(mission));
-        MissionEquipmentReservationRepository reservations =
-                mock(MissionEquipmentReservationRepository.class);
+        IMissionEquipmentReservationDao reservations = mock(IMissionEquipmentReservationDao.class);
         when(reservations.existsByMissionIdAndReleasedFalse(1L)).thenReturn(false);
         MissionService service =
                 service(
                         missions,
                         reservations,
-                        mock(UavRepository.class),
+                        mock(IUavDao.class),
                         mock(InventoryService.class),
                         mock(PermissionService.class));
 
@@ -65,12 +64,12 @@ class MissionExecutionTest {
         MissionOperations.assignOperator(mission, operator);
         MissionOperations.assignUav(mission, new Uav("Model", "UAV-EXEC", "Maker"));
         mission.getUav().setStatus(UavStatus.ASSIGNED);
-        MissionRepository missions = repository(mission);
+        IMissionDao missions = repository(mission);
         MissionService service =
                 service(
                         missions,
-                        mock(MissionEquipmentReservationRepository.class),
-                        mock(UavRepository.class),
+                        mock(IMissionEquipmentReservationDao.class),
+                        mock(IUavDao.class),
                         mock(InventoryService.class),
                         permissions(true));
 
@@ -88,12 +87,12 @@ class MissionExecutionTest {
         MissionOperations.assignOperator(
                 mission,
                 new AppUser("operator", "operator@complete.vn", "hash", null, UserStatus.ACTIVE));
-        MissionRepository missions = repository(mission);
+        IMissionDao missions = repository(mission);
         MissionService service =
                 service(
                         missions,
-                        mock(MissionEquipmentReservationRepository.class),
-                        mock(UavRepository.class),
+                        mock(IMissionEquipmentReservationDao.class),
+                        mock(IUavDao.class),
                         mock(InventoryService.class),
                         permissions(true));
 
@@ -112,12 +111,12 @@ class MissionExecutionTest {
         MissionOperations.assignOperator(
                 mission,
                 new AppUser("operator", "operator@fail.vn", "hash", null, UserStatus.ACTIVE));
-        MissionRepository missions = repository(mission);
+        IMissionDao missions = repository(mission);
         MissionService service =
                 service(
                         missions,
-                        mock(MissionEquipmentReservationRepository.class),
-                        mock(UavRepository.class),
+                        mock(IMissionEquipmentReservationDao.class),
+                        mock(IUavDao.class),
                         mock(InventoryService.class),
                         permissions(true));
 
@@ -128,30 +127,30 @@ class MissionExecutionTest {
     }
 
     private MissionService service(
-            MissionRepository missions,
-            MissionEquipmentReservationRepository reservations,
-            UavRepository uavs,
+            IMissionDao missions,
+            IMissionEquipmentReservationDao reservations,
+            IUavDao uavs,
             InventoryService inventory,
             PermissionService permissions) {
-        UserRepository users = mock(UserRepository.class);
+        IUserDao users = mock(IUserDao.class);
         AppUser actor = new AppUser("operator", "actor@exec.vn", "hash", null, UserStatus.ACTIVE);
         when(users.findByUsername("operator")).thenReturn(Optional.of(actor));
         return com.uav.platform.support.MissionServiceFixture.create(
                 missions,
-                mock(ServiceOfferingRepository.class),
+                mock(IServiceOfferingDao.class),
                 users,
                 permissions,
                 mock(AuditLogService.class),
-                mock(MissionEventRepository.class),
-                mock(StationRepository.class),
+                mock(IMissionEventDao.class),
+                mock(IStationDao.class),
                 uavs,
-                mock(EquipmentRepository.class),
+                mock(IEquipmentDao.class),
                 inventory,
                 reservations);
     }
 
-    private MissionRepository repository(Mission mission) {
-        MissionRepository r = mock(MissionRepository.class);
+    private IMissionDao repository(Mission mission) {
+        IMissionDao r = mock(IMissionDao.class);
         when(r.findById(1L)).thenReturn(Optional.of(mission));
         when(r.findByIdForUpdate(1L)).thenReturn(Optional.of(mission));
         return r;

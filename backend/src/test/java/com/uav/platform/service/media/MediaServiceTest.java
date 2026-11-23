@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.media.IMediaAssetDao;
 import com.uav.platform.dto.record.media.ObjectMetadata;
 import com.uav.platform.entity.media.MediaAsset;
 import com.uav.platform.enums.audit.*;
@@ -15,7 +17,6 @@ import com.uav.platform.enums.mission.*;
 import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.media.MediaAssetRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.media.MediaServiceImpl;
 
@@ -28,7 +29,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -36,7 +36,7 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class MediaServiceTest {
-    @Mock MediaAssetRepository repository;
+    @Mock IMediaAssetDao repository;
     @Mock ObjectStorageService storage;
     @Mock AuditLogService audit;
 
@@ -110,12 +110,12 @@ class MediaServiceTest {
     @Test
     void listUsesDatabaseSpecificationForSoftDeletedAssetsAndPageable() {
         Pageable pageable = PageRequest.of(0, 20, Sort.by("id"));
-        when(repository.findAll(any(Specification.class), eq(pageable)))
+        when(repository.findAll(any(HibernateSpecification.class), eq(pageable)))
                 .thenReturn(Page.empty(pageable));
 
         assertEquals(0, service.list(pageable).content().size());
-        verify(repository).findAll(any(Specification.class), eq(pageable));
-        verify(repository, never()).findAll(any(Specification.class), any(Sort.class));
+        verify(repository).findAll(any(HibernateSpecification.class), eq(pageable));
+        verify(repository, never()).findAll(any(HibernateSpecification.class), any(Sort.class));
     }
 
     @Test
@@ -139,7 +139,7 @@ class MediaServiceTest {
                         com.uav.platform.specification.media.MediaAssetSpecifications.hasUploader(
                                 "pilot"));
         var pageable = PageRequest.of(0, 1, Sort.by("id"));
-        when(repository.findAll(any(Specification.class), eq(pageable)))
+        when(repository.findAll(any(HibernateSpecification.class), eq(pageable)))
                 .thenReturn(
                         new org.springframework.data.domain.PageImpl<>(
                                 java.util.List.of(visible), pageable, 1));
@@ -154,7 +154,7 @@ class MediaServiceTest {
             assertEquals(1, result.totalElements());
             assertEquals(1, result.totalPages());
             verify(access).readableBy("pilot");
-            verify(repository, never()).findAll(any(Specification.class), any(Sort.class));
+            verify(repository, never()).findAll(any(HibernateSpecification.class), any(Sort.class));
         } finally {
             SecurityContextHolder.clearContext();
         }

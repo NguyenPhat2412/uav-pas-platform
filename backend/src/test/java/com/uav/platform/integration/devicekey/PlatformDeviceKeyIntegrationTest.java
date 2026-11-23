@@ -7,15 +7,15 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.uav.platform.dao.devicekey.IDeviceApiKeyDao;
+import com.uav.platform.dao.settings.ISystemConfigurationDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.devicekey.CreateDeviceKeyRequest;
 import com.uav.platform.dto.request.uav.UavRequest;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.settings.SettingValueType;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.devicekey.DeviceApiKeyRepository;
-import com.uav.platform.repository.settings.SystemConfigurationRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.devicekey.DeviceKeyService;
 import com.uav.platform.service.impl.settings.SystemConfigurationOperations;
 import com.uav.platform.service.uav.UavService;
@@ -45,10 +45,10 @@ class PlatformDeviceKeyIntegrationTest {
 
     @Autowired WebApplicationContext context;
     @Autowired DeviceKeyService deviceKeys;
-    @Autowired DeviceApiKeyRepository keyRepository;
+    @Autowired IDeviceApiKeyDao keyRepository;
     @Autowired UavService uavs;
-    @Autowired UserRepository users;
-    @Autowired SystemConfigurationRepository settings;
+    @Autowired IUserDao users;
+    @Autowired ISystemConfigurationDao settings;
     private MockMvc mvc;
     private AppUser admin;
     private Long uavId;

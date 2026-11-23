@@ -6,6 +6,8 @@ import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.support.ISupportThreadDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.realtime.RealtimeSessionPrincipal;
 import com.uav.platform.dto.response.support.PublicSupportThreadSessionResponse;
 import com.uav.platform.dto.response.support.SupportAdminSummaryResponse;
@@ -14,8 +16,6 @@ import com.uav.platform.dto.response.support.SupportThreadResponse;
 import com.uav.platform.entity.support.SupportThread;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.support.SupportThreadRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.permission.PermissionService;
 
 import org.junit.jupiter.api.AfterEach;
@@ -42,18 +42,18 @@ import java.util.Optional;
 class RealtimeWebSocketHandlerTest {
 
     private final ObjectMapper json = new ObjectMapper().findAndRegisterModules();
-    private UserRepository userRepository;
+    private IUserDao userRepository;
     private PermissionService permissionService;
-    private SupportThreadRepository supportThreadRepository;
+    private ISupportThreadDao supportThreadRepository;
     private RealtimeHandshakeInterceptor interceptor;
     private RealtimeEventBroadcaster broadcaster;
     private RealtimeWebSocketHandler handler;
 
     @BeforeEach
     void setUp() {
-        userRepository = mock(UserRepository.class);
+        userRepository = mock(IUserDao.class);
         permissionService = mock(PermissionService.class);
-        supportThreadRepository = mock(SupportThreadRepository.class);
+        supportThreadRepository = mock(ISupportThreadDao.class);
         interceptor =
                 new RealtimeHandshakeInterceptor(
                         userRepository, permissionService, supportThreadRepository);

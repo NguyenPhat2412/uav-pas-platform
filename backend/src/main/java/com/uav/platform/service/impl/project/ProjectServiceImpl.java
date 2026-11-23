@@ -10,6 +10,13 @@ import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.OrderStatusGroups;
 import com.uav.platform.common.util.SecureTokens;
 import com.uav.platform.common.util.VietnamProvinceCoordinates;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.marketplace.IMarketplaceListingDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.project.IProjectDao;
+import com.uav.platform.dao.project.IProjectSubscriptionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
 import com.uav.platform.dto.request.project.ProjectCreateRequest;
 import com.uav.platform.dto.request.project.ProjectSubscriptionCreateRequest;
@@ -34,12 +41,6 @@ import com.uav.platform.enums.project.ProjectSubscriptionStatus;
 import com.uav.platform.enums.project.SubscriptionScheduleType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.project.ProjectMapper;
-import com.uav.platform.repository.marketplace.MarketplaceListingRepository;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.project.ProjectRepository;
-import com.uav.platform.repository.project.ProjectSubscriptionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.mission.lifecycle.MissionLifecycleService;
 import com.uav.platform.service.permission.PermissionService;
@@ -52,7 +53,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -70,12 +70,12 @@ import java.util.Objects;
 @Transactional
 public class ProjectServiceImpl implements ProjectService {
 
-    private final ProjectRepository projects;
-    private final ProjectSubscriptionRepository subscriptions;
-    private final MarketplaceListingRepository listings;
-    private final MissionRepository missions;
-    private final MissionEventRepository missionEvents;
-    private final UserRepository users;
+    private final IProjectDao projects;
+    private final IProjectSubscriptionDao subscriptions;
+    private final IMarketplaceListingDao listings;
+    private final IMissionDao missions;
+    private final IMissionEventDao missionEvents;
+    private final IUserDao users;
     private final PermissionService permissions;
     private final MissionLifecycleService missionLifecycle;
     private final AuditLogService audit;
@@ -94,8 +94,8 @@ public class ProjectServiceImpl implements ProjectService {
             Authentication auth) {
         AppUser actor = requireUser(auth);
         boolean viewAll = canViewAll(auth);
-        Specification<Project> spec =
-                Specification.allOf(
+        HibernateSpecification<Project> spec =
+                HibernateSpecification.allOf(
                         notDeleted(),
                         belongsToCustomer(viewAll ? null : actor.getId()),
                         hasKeyword(keyword),
@@ -204,8 +204,8 @@ public class ProjectServiceImpl implements ProjectService {
             Pageable pageable,
             Authentication auth) {
         Project project = requireAccessibleProject(projectId, auth);
-        Specification<ProjectSubscription> spec =
-                Specification.allOf(
+        HibernateSpecification<ProjectSubscription> spec =
+                HibernateSpecification.allOf(
                         ProjectSubscriptionSpecifications.notDeleted(),
                         ProjectSubscriptionSpecifications.belongsToProject(project.getId()),
                         ProjectSubscriptionSpecifications.hasStatus(status));

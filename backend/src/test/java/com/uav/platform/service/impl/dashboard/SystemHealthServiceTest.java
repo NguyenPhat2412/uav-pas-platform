@@ -4,14 +4,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.webhook.IFinancialOutboxDao;
+import com.uav.platform.dao.webhook.IWebhookDeliveryLogDao;
 import com.uav.platform.dto.response.dashboard.SystemHealthResponse;
 import com.uav.platform.dto.response.dashboard.SystemHealthResponse.Component;
-import com.uav.platform.repository.webhook.FinancialOutboxRepository;
-import com.uav.platform.repository.webhook.WebhookDeliveryLogRepository;
 import com.uav.platform.service.media.ObjectStorageService;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -50,10 +50,10 @@ class SystemHealthServiceTest {
         ObjectStorageService storage = mock(ObjectStorageService.class);
         when(storage.provider()).thenReturn("minio");
         when(storage.bucketReachable()).thenReturn(true);
-        WebhookDeliveryLogRepository deliveries = mock(WebhookDeliveryLogRepository.class);
-        when(deliveries.count(any(Specification.class))).thenReturn(0L);
-        FinancialOutboxRepository outbox = mock(FinancialOutboxRepository.class);
-        when(outbox.count(any(Specification.class))).thenReturn(0L);
+        IWebhookDeliveryLogDao deliveries = mock(IWebhookDeliveryLogDao.class);
+        when(deliveries.count(any(HibernateSpecification.class))).thenReturn(0L);
+        IFinancialOutboxDao outbox = mock(IFinancialOutboxDao.class);
+        when(outbox.count(any(HibernateSpecification.class))).thenReturn(0L);
         com.uav.platform.service.billing.reconciliation.BankTransferService bank =
                 mock(com.uav.platform.service.billing.reconciliation.BankTransferService.class);
         when(bank.status())

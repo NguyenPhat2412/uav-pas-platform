@@ -1,12 +1,12 @@
 package com.uav.platform.service.impl.user.account;
 
 import com.uav.platform.common.constant.CoreConstants;
+import com.uav.platform.dao.auth.IRefreshTokenDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.user.account.PasswordChangeRequest;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.auth.RefreshTokenRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.auth.session.SessionTerminationService;
 import com.uav.platform.service.user.account.PasswordChangeService;
@@ -24,9 +24,9 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
     static final String WRONG_CURRENT = "Current password is incorrect";
     static final String SAME_AS_CURRENT = "New password must differ from the current password";
 
-    private final UserRepository users;
+    private final IUserDao users;
     private final PasswordEncoder encoder;
-    private final RefreshTokenRepository refreshTokens;
+    private final IRefreshTokenDao refreshTokens;
     private final AuditLogService audit;
     private SessionTerminationService sessionTermination;
 

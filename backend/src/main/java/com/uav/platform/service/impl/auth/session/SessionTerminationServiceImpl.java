@@ -1,9 +1,9 @@
 package com.uav.platform.service.impl.auth.session;
 
+import com.uav.platform.dao.auth.IAuthOtpTokenDao;
+import com.uav.platform.dao.auth.IRefreshTokenDao;
 import com.uav.platform.entity.auth.AuthOtpToken;
 import com.uav.platform.entity.user.AppUser;
-import com.uav.platform.repository.auth.AuthOtpTokenRepository;
-import com.uav.platform.repository.auth.RefreshTokenRepository;
 import com.uav.platform.service.auth.session.SessionTerminationService;
 import com.uav.platform.service.impl.auth.verification.AuthOtpServiceImpl;
 import com.uav.platform.service.security.SessionRevocationService;
@@ -19,13 +19,13 @@ import java.util.List;
 @Transactional
 public class SessionTerminationServiceImpl implements SessionTerminationService {
 
-    private final RefreshTokenRepository refreshTokens;
-    private final AuthOtpTokenRepository otpTokens;
+    private final IRefreshTokenDao refreshTokens;
+    private final IAuthOtpTokenDao otpTokens;
     private final ObjectProvider<SessionRevocationService> revocations;
 
     public SessionTerminationServiceImpl(
-            RefreshTokenRepository refreshTokens,
-            AuthOtpTokenRepository otpTokens,
+            IRefreshTokenDao refreshTokens,
+            IAuthOtpTokenDao otpTokens,
             ObjectProvider<SessionRevocationService> revocations) {
         this.refreshTokens = refreshTokens;
         this.otpTokens = otpTokens;

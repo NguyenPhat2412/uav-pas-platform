@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.audit.AuditLog;
 import com.uav.platform.enums.audit.*;
 import com.uav.platform.enums.audit.AuditAction;
@@ -20,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 
@@ -75,7 +75,7 @@ class AuditLogSpecificationsTest {
         when(cb.like(any(), anyString())).thenReturn(predicate);
         when(cb.or(any(Predicate[].class))).thenReturn(predicate);
 
-        Specification<AuditLog> spec = AuditLogSpecifications.hasKeyword("system");
+        HibernateSpecification<AuditLog> spec = AuditLogSpecifications.hasKeyword("system");
         Predicate result = spec.toPredicate(root, query, cb);
 
         assertThat(result).isSameAs(predicate);
@@ -165,7 +165,7 @@ class AuditLogSpecificationsTest {
     @Test
     @DisplayName("filter composite specification combines null-safe criteria")
     void filter_Composite_Tests() {
-        Specification<AuditLog> spec =
+        HibernateSpecification<AuditLog> spec =
                 AuditLogSpecifications.filter(null, null, null, null, null, null);
         assertThat(spec.toPredicate(root, query, cb)).isNull();
     }

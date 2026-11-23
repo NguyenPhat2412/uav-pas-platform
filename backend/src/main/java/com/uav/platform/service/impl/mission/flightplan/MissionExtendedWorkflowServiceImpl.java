@@ -1,5 +1,16 @@
 package com.uav.platform.service.impl.mission.flightplan;
 
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.maintenance.IRepairOrderDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEquipmentReservationDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IMissionPreflightLogDao;
+import com.uav.platform.dao.mission.IMissionReviewDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.uav.IUavTelemetryDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest;
 import com.uav.platform.dto.request.mission.flightplan.MissionPreflightUpsertRequest;
 import com.uav.platform.dto.request.mission.flightplan.MissionReviewUpsertRequest;
@@ -32,17 +43,6 @@ import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.maintenance.RepairOrderRepository;
-import com.uav.platform.repository.mission.MissionEquipmentReservationRepository;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionPreflightLogRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.MissionReviewRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.uav.UavTelemetryRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.airspace.AirspaceService;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.billing.quota.QuotaService;
@@ -99,16 +99,16 @@ public class MissionExtendedWorkflowServiceImpl implements MissionExtendedWorkfl
 
     private static final String CLONE_SUFFIX = " (Bản sao)";
 
-    private final MissionRepository missions;
-    private final MissionEventRepository events;
-    private final MissionReviewRepository reviews;
-    private final MissionPreflightLogRepository preflightLogs;
-    private final MissionEquipmentReservationRepository reservations;
-    private final StationRepository stations;
-    private final UavRepository uavs;
-    private final UavTelemetryRepository telemetry;
-    private final EquipmentRepository equipmentRepository;
-    private final UserRepository users;
+    private final IMissionDao missions;
+    private final IMissionEventDao events;
+    private final IMissionReviewDao reviews;
+    private final IMissionPreflightLogDao preflightLogs;
+    private final IMissionEquipmentReservationDao reservations;
+    private final IStationDao stations;
+    private final IUavDao uavs;
+    private final IUavTelemetryDao telemetry;
+    private final IEquipmentDao equipmentRepository;
+    private final IUserDao users;
     private final MissionAccessService access;
     private final MissionLifecycleService lifecycle;
     private final MissionDispatchService dispatch;
@@ -120,7 +120,7 @@ public class MissionExtendedWorkflowServiceImpl implements MissionExtendedWorkfl
     private final PermissionService permissionService;
     private final ObjectProvider<AirspaceService> airspace;
     private final ObjectProvider<NotificationService> notifications;
-    private final RepairOrderRepository repairOrders;
+    private final IRepairOrderDao repairOrders;
 
     @Autowired(required = false)
     private com.uav.platform.service.marketplace.escrow.MarketplaceEscrowService marketplaceEscrow;
@@ -129,16 +129,16 @@ public class MissionExtendedWorkflowServiceImpl implements MissionExtendedWorkfl
     private com.uav.platform.transport.websocket.RealtimeEventBroadcaster realtime;
 
     public MissionExtendedWorkflowServiceImpl(
-            MissionRepository missions,
-            MissionEventRepository events,
-            MissionReviewRepository reviews,
-            MissionPreflightLogRepository preflightLogs,
-            MissionEquipmentReservationRepository reservations,
-            StationRepository stations,
-            UavRepository uavs,
-            UavTelemetryRepository telemetry,
-            EquipmentRepository equipmentRepository,
-            UserRepository users,
+            IMissionDao missions,
+            IMissionEventDao events,
+            IMissionReviewDao reviews,
+            IMissionPreflightLogDao preflightLogs,
+            IMissionEquipmentReservationDao reservations,
+            IStationDao stations,
+            IUavDao uavs,
+            IUavTelemetryDao telemetry,
+            IEquipmentDao equipmentRepository,
+            IUserDao users,
             MissionAccessService access,
             MissionLifecycleService lifecycle,
             MissionDispatchService dispatch,
@@ -177,16 +177,16 @@ public class MissionExtendedWorkflowServiceImpl implements MissionExtendedWorkfl
 
     @Autowired
     public MissionExtendedWorkflowServiceImpl(
-            MissionRepository missions,
-            MissionEventRepository events,
-            MissionReviewRepository reviews,
-            MissionPreflightLogRepository preflightLogs,
-            MissionEquipmentReservationRepository reservations,
-            StationRepository stations,
-            UavRepository uavs,
-            UavTelemetryRepository telemetry,
-            EquipmentRepository equipmentRepository,
-            UserRepository users,
+            IMissionDao missions,
+            IMissionEventDao events,
+            IMissionReviewDao reviews,
+            IMissionPreflightLogDao preflightLogs,
+            IMissionEquipmentReservationDao reservations,
+            IStationDao stations,
+            IUavDao uavs,
+            IUavTelemetryDao telemetry,
+            IEquipmentDao equipmentRepository,
+            IUserDao users,
             MissionAccessService access,
             MissionLifecycleService lifecycle,
             MissionDispatchService dispatch,
@@ -198,7 +198,7 @@ public class MissionExtendedWorkflowServiceImpl implements MissionExtendedWorkfl
             PermissionService permissionService,
             ObjectProvider<AirspaceService> airspace,
             ObjectProvider<NotificationService> notifications,
-            RepairOrderRepository repairOrders) {
+            IRepairOrderDao repairOrders) {
         this.missions = missions;
         this.events = events;
         this.reviews = reviews;

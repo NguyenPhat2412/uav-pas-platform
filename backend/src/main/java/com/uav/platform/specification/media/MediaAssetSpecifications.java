@@ -1,16 +1,15 @@
 package com.uav.platform.specification.media;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.media.MediaAsset;
 import com.uav.platform.enums.media.*;
 import com.uav.platform.enums.media.MediaType;
-
-import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
 
 /**
- * Atomic Specification factories for querying {@link MediaAsset} entities.
+ * Atomic HibernateSpecification factories for querying {@link MediaAsset} entities.
  * <p>
  * Follows DDD and Clean Architecture by decoupling query predicate construction
  * from data access repositories. All methods are null-safe and return {@code null}
@@ -25,7 +24,7 @@ public final class MediaAssetSpecifications {
     /**
      * Case-insensitive keyword search matching originalName, objectKey, or uploadedBy.
      */
-    public static Specification<MediaAsset> hasKeyword(String keyword) {
+    public static HibernateSpecification<MediaAsset> hasKeyword(String keyword) {
         return (root, query, cb) -> {
             if (keyword == null || keyword.isBlank()) {
                 return null;
@@ -41,7 +40,7 @@ public final class MediaAssetSpecifications {
     /**
      * Filters media assets by uploader username.
      */
-    public static Specification<MediaAsset> hasUploader(String uploadedBy) {
+    public static HibernateSpecification<MediaAsset> hasUploader(String uploadedBy) {
         return (root, query, cb) -> {
             if (uploadedBy == null || uploadedBy.isBlank()) {
                 return null;
@@ -54,14 +53,14 @@ public final class MediaAssetSpecifications {
     /**
      * Filters media assets by media type (IMAGE, VIDEO, DOCUMENT, TELEMETRY, OTHER).
      */
-    public static Specification<MediaAsset> hasType(MediaType type) {
+    public static HibernateSpecification<MediaAsset> hasType(MediaType type) {
         return (root, query, cb) -> type == null ? null : cb.equal(root.get("type"), type);
     }
 
     /**
      * Filters media assets by MIME content-type.
      */
-    public static Specification<MediaAsset> hasContentType(String contentType) {
+    public static HibernateSpecification<MediaAsset> hasContentType(String contentType) {
         return (root, query, cb) -> {
             if (contentType == null || contentType.isBlank()) {
                 return null;
@@ -74,7 +73,7 @@ public final class MediaAssetSpecifications {
     /**
      * Filters media assets by confirmation status.
      */
-    public static Specification<MediaAsset> isConfirmed(Boolean confirmed) {
+    public static HibernateSpecification<MediaAsset> isConfirmed(Boolean confirmed) {
         return (root, query, cb) ->
                 confirmed == null ? null : cb.equal(root.get("confirmed"), confirmed);
     }
@@ -82,14 +81,14 @@ public final class MediaAssetSpecifications {
     /**
      * Filters media assets by deletion status (soft delete flag).
      */
-    public static Specification<MediaAsset> isDeleted(Boolean deleted) {
+    public static HibernateSpecification<MediaAsset> isDeleted(Boolean deleted) {
         return (root, query, cb) -> deleted == null ? null : cb.equal(root.get("deleted"), deleted);
     }
 
     /**
      * Filters media assets linked to a specific domain entity.
      */
-    public static Specification<MediaAsset> hasLinkedEntity(
+    public static HibernateSpecification<MediaAsset> hasLinkedEntity(
             String linkedEntityType, String linkedEntityId) {
         return (root, query, cb) -> {
             boolean hasType = linkedEntityType != null && !linkedEntityType.isBlank();
@@ -117,7 +116,8 @@ public final class MediaAssetSpecifications {
     /**
      * Filters media assets created within a specific timestamp window [from, to].
      */
-    public static Specification<MediaAsset> createdBetween(LocalDateTime from, LocalDateTime to) {
+    public static HibernateSpecification<MediaAsset> createdBetween(
+            LocalDateTime from, LocalDateTime to) {
         return (root, query, cb) -> {
             if (from == null && to == null) {
                 return null;
@@ -136,9 +136,9 @@ public final class MediaAssetSpecifications {
     /**
      * Composable composite filter for common media query scenarios.
      */
-    public static Specification<MediaAsset> filter(
+    public static HibernateSpecification<MediaAsset> filter(
             String keyword, MediaType type, Boolean confirmed, Boolean deleted) {
-        return Specification.where(hasKeyword(keyword))
+        return HibernateSpecification.where(hasKeyword(keyword))
                 .and(hasType(type))
                 .and(isConfirmed(confirmed))
                 .and(isDeleted(deleted));
@@ -147,7 +147,7 @@ public final class MediaAssetSpecifications {
     /**
      * Detailed composite filter for media asset search and audit filtering.
      */
-    public static Specification<MediaAsset> filter(
+    public static HibernateSpecification<MediaAsset> filter(
             String keyword,
             MediaType type,
             String uploadedBy,
@@ -155,7 +155,7 @@ public final class MediaAssetSpecifications {
             Boolean deleted,
             LocalDateTime from,
             LocalDateTime to) {
-        return Specification.where(hasKeyword(keyword))
+        return HibernateSpecification.where(hasKeyword(keyword))
                 .and(hasType(type))
                 .and(hasUploader(uploadedBy))
                 .and(isConfirmed(confirmed))

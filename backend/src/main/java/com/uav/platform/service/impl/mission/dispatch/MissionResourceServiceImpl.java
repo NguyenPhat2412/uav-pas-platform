@@ -1,5 +1,10 @@
 package com.uav.platform.service.impl.mission.dispatch;
 
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEquipmentReservationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.inventory.QuantityRequest;
 import com.uav.platform.entity.inventory.Equipment;
 import com.uav.platform.entity.mission.*;
@@ -12,11 +17,6 @@ import com.uav.platform.enums.station.StationStatus;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.mission.MissionEquipmentReservationRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.impl.user.account.UserAccountServiceImpl;
 import com.uav.platform.service.inventory.InventoryService;
@@ -34,12 +34,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MissionResourceServiceImpl implements MissionResourceService {
     private final jakarta.persistence.EntityManager entityManager;
-    private final MissionRepository missions;
-    private final UserRepository users;
-    private final UavRepository uavs;
-    private final EquipmentRepository equipment;
+    private final IMissionDao missions;
+    private final IUserDao users;
+    private final IUavDao uavs;
+    private final IEquipmentDao equipment;
     private final InventoryService inventory;
-    private final MissionEquipmentReservationRepository reservations;
+    private final IMissionEquipmentReservationDao reservations;
     private final com.uav.platform.service.uav.UavService uavService;
 
     @Override

@@ -7,6 +7,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.devicekey.CreateDeviceKeyRequest;
 import com.uav.platform.dto.request.uav.UavRequest;
 import com.uav.platform.dto.response.alerts.AdminAlertResponse;
@@ -14,7 +15,6 @@ import com.uav.platform.dto.response.dashboard.SystemHealthResponse;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.alerts.AlertCenterService;
 import com.uav.platform.service.dashboard.SystemHealthService;
 import com.uav.platform.service.devicekey.DeviceKeyService;
@@ -43,7 +43,7 @@ import java.util.UUID;
 class PlatformAlertCenterIntegrationTest {
     @Autowired AlertCenterService alerts;
     @Autowired UavService uavs;
-    @Autowired UserRepository users;
+    @Autowired IUserDao users;
     @Autowired DeviceKeyService deviceKeys;
     @Autowired JdbcTemplate db;
     @Autowired WebApplicationContext context;

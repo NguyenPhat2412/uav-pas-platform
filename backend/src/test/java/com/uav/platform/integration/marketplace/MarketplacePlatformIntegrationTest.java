@@ -8,6 +8,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.uav.platform.config.routes.ApiRoutes;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.marketplace.admin.ListingModerationRequest;
 import com.uav.platform.dto.request.marketplace.admin.ProviderModerationRequest;
 import com.uav.platform.dto.request.marketplace.catalog.MissionBidCreateRequest;
@@ -42,9 +45,6 @@ import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.marketplace.admin.MarketplaceAdminService;
 import com.uav.platform.service.marketplace.catalog.MarketplaceCatalogService;
 import com.uav.platform.service.marketplace.escrow.MarketplaceEscrowService;
@@ -75,9 +75,9 @@ import java.util.UUID;
 class MarketplacePlatformIntegrationTest {
 
     @Autowired WebApplicationContext context;
-    @Autowired UserRepository users;
-    @Autowired InvoiceRepository invoices;
-    @Autowired MediaAssetRepository mediaAssets;
+    @Autowired IUserDao users;
+    @Autowired IInvoiceDao invoices;
+    @Autowired IMediaAssetDao mediaAssets;
     @Autowired SystemConfigService systemConfig;
     @Autowired MarketplaceCatalogService catalogService;
     @Autowired MarketplaceProviderService providerService;

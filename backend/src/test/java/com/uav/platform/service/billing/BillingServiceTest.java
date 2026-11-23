@@ -11,6 +11,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IPaymentTransactionDao;
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.billing.invoice.CreateInvoiceRequest;
 import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.billing.ServicePlan;
@@ -21,11 +26,6 @@ import com.uav.platform.enums.mission.MissionPriority;
 import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.PaymentTransactionRepository;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
 import com.uav.platform.service.impl.billing.plan.ServicePlanOperations;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
@@ -53,11 +53,11 @@ import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class BillingServiceTest {
-    @Mock ServicePlanRepository planRepository;
-    @Mock InvoiceRepository invoiceRepository;
-    @Mock PaymentTransactionRepository paymentRepository;
-    @Mock UserRepository userRepository;
-    @Mock MissionRepository missionRepository;
+    @Mock IServicePlanDao planRepository;
+    @Mock IInvoiceDao invoiceRepository;
+    @Mock IPaymentTransactionDao paymentRepository;
+    @Mock IUserDao userRepository;
+    @Mock IMissionDao missionRepository;
     @Mock PermissionService permissions;
 
     @org.mockito.Spy
@@ -501,7 +501,7 @@ class BillingServiceTest {
         stubUser(auth, owner);
         when(invoiceRepository.findAll(
                         org.mockito.ArgumentMatchers
-                                .<org.springframework.data.jpa.domain.Specification<Invoice>>any(),
+                                .<com.uav.platform.dao.base.HibernateSpecification<Invoice>>any(),
                         org.mockito.ArgumentMatchers.eq(pageable)))
                 .thenReturn(new PageImpl<>(List.of(invoice(owner)), pageable, 1));
 
@@ -512,7 +512,7 @@ class BillingServiceTest {
         verify(invoiceRepository)
                 .findAll(
                         org.mockito.ArgumentMatchers
-                                .<org.springframework.data.jpa.domain.Specification<Invoice>>any(),
+                                .<com.uav.platform.dao.base.HibernateSpecification<Invoice>>any(),
                         org.mockito.ArgumentMatchers.eq(pageable));
         verify(invoiceRepository, never()).findByUserIdOrderByCreatedAtDesc(1L, pageable);
     }

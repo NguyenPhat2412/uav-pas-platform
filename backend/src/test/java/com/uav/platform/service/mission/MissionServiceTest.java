@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.mission.lifecycle.MissionFilter;
 import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
 import com.uav.platform.dto.response.mission.lifecycle.MissionResponse;
@@ -18,10 +23,6 @@ import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.service.permission.PermissionService;
@@ -30,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.time.LocalDate;
@@ -41,9 +41,9 @@ import java.util.Optional;
 class MissionServiceTest {
     @Test
     void createsDraftWithStableCodeAndCreatedEvent() {
-        MissionRepository missions = mock(MissionRepository.class);
-        UserRepository users = mock(UserRepository.class);
-        MissionEventRepository events = mock(MissionEventRepository.class);
+        IMissionDao missions = mock(IMissionDao.class);
+        IUserDao users = mock(IUserDao.class);
+        IMissionEventDao events = mock(IMissionEventDao.class);
         AppUser customer =
                 new AppUser("customer", "customer@test.vn", "hash", null, UserStatus.ACTIVE);
         customer.setId(7L);
@@ -60,7 +60,7 @@ class MissionServiceTest {
         MissionService service =
                 com.uav.platform.support.MissionServiceFixture.create(
                         missions,
-                        mock(ServiceOfferingRepository.class),
+                        mock(IServiceOfferingDao.class),
                         users,
                         mock(PermissionService.class),
                         mock(AuditLogService.class),
@@ -74,31 +74,31 @@ class MissionServiceTest {
 
     @Test
     void customerListUsesOwnershipUnlessViewAllIsGranted() {
-        MissionRepository missions = mock(MissionRepository.class);
-        UserRepository users = mock(UserRepository.class);
+        IMissionDao missions = mock(IMissionDao.class);
+        IUserDao users = mock(IUserDao.class);
         PermissionService permissions = mock(PermissionService.class);
         AppUser customer =
                 new AppUser("customer", "customer2@test.vn", "hash", null, UserStatus.ACTIVE);
         customer.setId(8L);
         when(users.findByUsername("customer")).thenReturn(Optional.of(customer));
         when(permissions.has(any(), eq("MISSION_VIEW_ALL"))).thenReturn(false);
-        when(missions.findAll(any(Specification.class), any(Pageable.class)))
+        when(missions.findAll(any(HibernateSpecification.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of()));
 
         MissionService service =
                 com.uav.platform.support.MissionServiceFixture.create(
                         missions,
-                        mock(ServiceOfferingRepository.class),
+                        mock(IServiceOfferingDao.class),
                         users,
                         permissions,
                         mock(AuditLogService.class),
-                        mock(MissionEventRepository.class));
+                        mock(IMissionEventDao.class));
         service.list(
                 MissionFilter.empty(),
                 PageRequest.of(0, 20),
                 UsernamePasswordAuthenticationToken.authenticated("customer", "n/a", List.of()));
 
-        verify(missions).findAll(any(Specification.class), any(Pageable.class));
+        verify(missions).findAll(any(HibernateSpecification.class), any(Pageable.class));
     }
 
     private MissionCreateRequest request() {

@@ -81,6 +81,27 @@ export function useModerateProvider() {
     });
 }
 
+export function useModerateProviderDocument() {
+    const {user} = useAuth();
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            providerId,
+            docId,
+            status,
+            reviewerNote,
+        }: {
+            providerId: number;
+            docId: number;
+            status: 'PENDING' | 'APPROVED' | 'REJECTED';
+            reviewerNote?: string;
+        }) => adminMarketplaceApi.moderateProviderDocument(providerId, docId, {status, reviewerNote}),
+        onSettled: () => {
+            void qc.invalidateQueries({queryKey: ['session', user?.id ?? 'anonymous', 'admin-marketplace', 'providers']});
+        },
+    });
+}
+
 export function useAdminListings(status: ListingModerationStatus | '', keyword: string, page = 0) {
     const {user, can, permissionsReady} = useAuth();
     return useQuery({

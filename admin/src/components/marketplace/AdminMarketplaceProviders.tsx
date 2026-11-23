@@ -1,7 +1,7 @@
 'use client';
 
 import {useState} from 'react';
-import {BadgeCheck, Clock, Layers, PauseCircle, Search, ShieldCheck, Store, XCircle} from 'lucide-react';
+import {BadgeCheck, Clock, FileEdit, Layers, PauseCircle, Search, ShieldCheck, Store, XCircle} from 'lucide-react';
 import {Alert, Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
 import {
     IllustrativeFooterNote,
@@ -13,7 +13,13 @@ import {
 } from '@/components/marketplace/MarketplaceShared';
 import {ProviderKycDrawer} from '@/components/marketplace/ProviderKycDrawer';
 import {ProviderModerationRow} from '@/components/marketplace/ProviderModerationRow';
-import {useAdminProviders, useModerateProvider, useOpenProviderDocument} from '@/hooks/marketplace/useAdminMarketplace';
+import {ProviderVerificationWorkflowCard} from '@/components/marketplace/ProviderVerificationWorkflowCard';
+import {
+    useAdminProviders,
+    useModerateProvider,
+    useModerateProviderDocument,
+    useOpenProviderDocument,
+} from '@/hooks/marketplace/useAdminMarketplace';
 import {usePlatformSettings} from '@/hooks/settings/useSettings';
 import {validateProviderModerationInput} from '@/forms/marketplace/admin-marketplace-form';
 import {useAuth} from '@/providers/AuthContext';
@@ -37,6 +43,7 @@ export function AdminMarketplaceProviders() {
     const query = useAdminProviders(status, keyword, page);
     const settingsQuery = usePlatformSettings();
     const moderate = useModerateProvider();
+    const moderateDoc = useModerateProviderDocument();
     const openDoc = useOpenProviderDocument();
     const providers = query.data?.content ?? [];
     const selectedProvider: AdminProviderProfile | null =
@@ -75,6 +82,7 @@ export function AdminMarketplaceProviders() {
 
     const statusTabs: { value: ProviderVerificationStatus | ''; label: string; icon: React.ReactNode }[] = [
         {value: '', label: t('adminCommerce.marketplace.providerStatus.ALL'), icon: <Layers size={14} aria-hidden="true"/>},
+        {value: 'DRAFT', label: t('adminCommerce.marketplace.providerStatus.DRAFT'), icon: <FileEdit size={14} aria-hidden="true"/>},
         {value: 'PENDING_REVIEW', label: t('adminCommerce.marketplace.providerStatus.PENDING_REVIEW'), icon: <Clock size={14} aria-hidden="true"/>},
         {value: 'VERIFIED', label: t('adminCommerce.marketplace.providerStatus.VERIFIED'), icon: <BadgeCheck size={14} aria-hidden="true"/>},
         {value: 'REJECTED', label: t('adminCommerce.marketplace.providerStatus.REJECTED'), icon: <XCircle size={14} aria-hidden="true"/>},
@@ -83,6 +91,7 @@ export function AdminMarketplaceProviders() {
 
     return (
         <div className="space-y-4">
+            <ProviderVerificationWorkflowCard activeStatus={status}/>
             <Card>
                 <CardHeader className="space-y-3 px-5 py-4">
                     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -205,9 +214,34 @@ export function AdminMarketplaceProviders() {
                     }
                     canModerate={canModerate}
                     isPending={moderate.isPending}
+                    isModeratingDoc={moderateDoc.isPending}
                     onNoteChange={val => setNoteById(s => ({...s, [selectedProvider.id]: val}))}
                     onFeeChange={val => setFeePctById(s => ({...s, [selectedProvider.id]: val}))}
                     onModerate={nextStatus => handleModerate(selectedProvider, nextStatus)}
+                    onModerateDoc={(doc, nextDocStatus) => {
+                        const rawNote = (noteById[selectedProvider.id] ?? '').trim();
+                        if (nextDocStatus === 'REJECTED' && !rawNote) {
+                            setLocalError(t('adminCommerce.marketplace.providers.errNoteRequired'));
+                            return;
+                        }
+                        setLocalError(null);
+                        moderateDoc.mutate(
+                            {
+                                providerId: selectedProvider.id,
+                                docId: doc.id,
+                                status: nextDocStatus,
+                                reviewerNote: rawNote || undefined,
+                            },
+                            {
+                                onSuccess: () =>
+                                    toast.success(
+                                        t('adminCommerce.marketplace.providers.moderatedToast', {
+                                            name: doc.title,
+                                        }),
+                                    ),
+                            },
+                        );
+                    }}
                     onOpenDoc={doc => void openDoc(doc, t('adminCommerce.marketplace.providers.docOpenError'))}
                     onClose={() => setSelectedProviderId(null)}
                 />

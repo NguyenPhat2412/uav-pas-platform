@@ -2,6 +2,8 @@ package com.uav.platform.service.impl.auth.verification;
 
 import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.common.dto.response.MessageResponse;
+import com.uav.platform.dao.auth.IAuthOtpTokenDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.auth.session.PendingSignup;
 import com.uav.platform.dto.record.auth.session.RegistrationInput;
 import com.uav.platform.dto.record.auth.verification.IssuedChallenge;
@@ -18,8 +20,6 @@ import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.auth.session.AuthMapper;
 import com.uav.platform.mapper.user.account.UserMapper;
-import com.uav.platform.repository.auth.AuthOtpTokenRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.ClientIpResolver;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.auth.session.AuthRateLimitService;
@@ -70,8 +70,8 @@ public class AuthOtpServiceImpl implements AuthOtpService {
     public static final String RESET_SENT_MESSAGE =
             "Nếu email đã được đăng ký, mã OTP đặt lại mật khẩu đã được gửi tới hộp thư của bạn.";
 
-    private final UserRepository userRepository;
-    private final AuthOtpTokenRepository otpTokenRepository;
+    private final IUserDao userRepository;
+    private final IAuthOtpTokenDao otpTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
@@ -89,8 +89,8 @@ public class AuthOtpServiceImpl implements AuthOtpService {
 
     @Autowired
     public AuthOtpServiceImpl(
-            UserRepository userRepository,
-            AuthOtpTokenRepository otpTokenRepository,
+            IUserDao userRepository,
+            IAuthOtpTokenDao otpTokenRepository,
             PasswordEncoder passwordEncoder,
             JwtTokenProvider jwtTokenProvider,
             @Autowired(required = false) RefreshTokenService refreshTokenService,

@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
 
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.mission.lifecycle.MissionCreateRequest;
 import com.uav.platform.dto.response.mission.lifecycle.MissionResponse;
 import com.uav.platform.entity.user.AppUser;
@@ -13,8 +15,6 @@ import com.uav.platform.enums.mission.MissionPriority;
 import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.support.ServicePlanTestData;
@@ -42,9 +42,9 @@ import java.util.concurrent.TimeUnit;
             "spring.datasource.hikari.maximum-pool-size=16"
         })
 class MissionCodeConcurrencyIntegrationTest {
-    @Autowired ServicePlanRepository servicePlans;
+    @Autowired IServicePlanDao servicePlans;
     @Autowired MissionService missions;
-    @Autowired UserRepository users;
+    @Autowired IUserDao users;
     @Autowired JdbcTemplate db;
     @MockitoSpyBean AuditLogService audit;
     private AppUser customer;

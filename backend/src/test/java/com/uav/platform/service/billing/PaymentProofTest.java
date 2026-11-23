@@ -3,14 +3,14 @@ package com.uav.platform.service.billing;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.billing.*;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.billing.reconciliation.PaymentIpnRequest;
 import com.uav.platform.entity.billing.*;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.*;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
 import com.uav.platform.service.permission.PermissionService;
 
@@ -25,9 +25,9 @@ import java.util.*;
 class PaymentProofTest {
     @Test
     void customerLoginIsNotPaymentProofAndUnconfiguredGatewayCannotWrite() {
-        var invoices = mock(InvoiceRepository.class);
-        var payments = mock(PaymentTransactionRepository.class);
-        var users = mock(UserRepository.class);
+        var invoices = mock(IInvoiceDao.class);
+        var payments = mock(IPaymentTransactionDao.class);
+        var users = mock(IUserDao.class);
         var permissions = mock(PermissionService.class);
         var owner = new AppUser("owner", "owner@example.test", "hash", null, UserStatus.ACTIVE);
         owner.setId(1L);
@@ -45,11 +45,11 @@ class PaymentProofTest {
         lenient().when(users.findByUsername("owner")).thenReturn(Optional.of(owner));
         var service =
                 new BillingServiceImpl(
-                        mock(ServicePlanRepository.class),
+                        mock(IServicePlanDao.class),
                         invoices,
                         payments,
                         users,
-                        mock(MissionRepository.class),
+                        mock(IMissionDao.class),
                         permissions);
         var request = new PaymentIpnRequest("INV-PROOF", 1L, "TX-PROOF", BigDecimal.TEN, "FAILED");
         var error =
@@ -71,11 +71,11 @@ class PaymentProofTest {
     void signatureCoversStatusAndBothInvoiceIdentifiers() {
         var service =
                 new BillingServiceImpl(
-                        mock(ServicePlanRepository.class),
-                        mock(InvoiceRepository.class),
-                        mock(PaymentTransactionRepository.class),
-                        mock(UserRepository.class),
-                        mock(MissionRepository.class),
+                        mock(IServicePlanDao.class),
+                        mock(IInvoiceDao.class),
+                        mock(IPaymentTransactionDao.class),
+                        mock(IUserDao.class),
+                        mock(IMissionDao.class),
                         mock(PermissionService.class),
                         null,
                         null,

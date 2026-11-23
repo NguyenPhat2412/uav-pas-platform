@@ -2,6 +2,11 @@ package com.uav.platform.stabilization;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.marketplace.IProviderProfileDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.inventory.EquipmentRequest;
 import com.uav.platform.dto.request.inventory.QuantityRequest;
 import com.uav.platform.dto.request.marketplace.admin.ProviderModerationRequest;
@@ -29,11 +34,6 @@ import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.marketplace.ProviderProfileRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.inventory.InventoryService;
 import com.uav.platform.service.marketplace.admin.MarketplaceAdminService;
 import com.uav.platform.service.marketplace.provider.MarketplaceProviderFleetService;
@@ -93,11 +93,11 @@ class MarketplaceConcurrencyPostgresTest {
     }
 
     @Autowired JdbcTemplate db;
-    @Autowired UserRepository users;
-    @Autowired ProviderProfileRepository providers;
-    @Autowired UavRepository uavs;
-    @Autowired MissionRepository missions;
-    @Autowired EquipmentRepository equipmentRepository;
+    @Autowired IUserDao users;
+    @Autowired IProviderProfileDao providers;
+    @Autowired IUavDao uavs;
+    @Autowired IMissionDao missions;
+    @Autowired IEquipmentDao equipmentRepository;
     @Autowired InventoryService inventoryService;
     @Autowired MarketplaceProviderService providerService;
     @Autowired MarketplaceProviderFleetService fleetService;

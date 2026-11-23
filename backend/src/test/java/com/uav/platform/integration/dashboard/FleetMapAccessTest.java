@@ -5,11 +5,11 @@ import static org.mockito.Mockito.mock;
 
 import com.uav.platform.config.permission.PermissionDataInitializer;
 import com.uav.platform.controller.dashboard.DashboardController;
+import com.uav.platform.dao.permission.IPermissionDao;
+import com.uav.platform.dao.role.IRoleTemplateDao;
+import com.uav.platform.dao.role.IRoleTemplatePermissionDao;
 import com.uav.platform.enums.permission.PermissionCode;
 import com.uav.platform.enums.user.UserRole;
-import com.uav.platform.repository.permission.PermissionRepository;
-import com.uav.platform.repository.role.RoleTemplatePermissionRepository;
-import com.uav.platform.repository.role.RoleTemplateRepository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,9 +44,9 @@ class FleetMapAccessTest {
     private static EnumSet<PermissionCode> defaults(UserRole role) throws Exception {
         PermissionDataInitializer initializer =
                 new PermissionDataInitializer(
-                        mock(PermissionRepository.class),
-                        mock(RoleTemplateRepository.class),
-                        mock(RoleTemplatePermissionRepository.class));
+                        mock(IPermissionDao.class),
+                        mock(IRoleTemplateDao.class),
+                        mock(IRoleTemplatePermissionDao.class));
         Method method =
                 PermissionDataInitializer.class.getDeclaredMethod("defaults", UserRole.class);
         method.setAccessible(true);

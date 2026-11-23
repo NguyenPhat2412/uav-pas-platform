@@ -1,5 +1,13 @@
 package com.uav.platform.service.impl.dashboard;
 
+import com.uav.platform.dao.audit.IAuditLogDao;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.dashboard.AppUserView;
 import com.uav.platform.dto.response.dashboard.DashboardResponse;
 import com.uav.platform.dto.response.dashboard.MissionDashboardResponse;
@@ -7,66 +15,58 @@ import com.uav.platform.entity.inventory.Equipment;
 import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.mapper.dashboard.DashboardMapper;
-import com.uav.platform.repository.audit.AuditLogRepository;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.dashboard.DashboardService;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.specification.inventory.EquipmentSpecifications;
 import com.uav.platform.specification.mission.lifecycle.MissionSpecifications;
 import com.uav.platform.specification.uav.UavSpecifications;
 
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
-    private final UserRepository users;
-    private final StationRepository stations;
-    private final UavRepository uavs;
-    private final EquipmentRepository equipment;
-    private final MediaAssetRepository media;
-    private final AuditLogRepository audit;
+    private final IUserDao users;
+    private final IStationDao stations;
+    private final IUavDao uavs;
+    private final IEquipmentDao equipment;
+    private final IMediaAssetDao media;
+    private final IAuditLogDao audit;
     private final PermissionService permissionService;
-    private final MissionRepository missions;
+    private final IMissionDao missions;
     private final DashboardMapper dashboardMapper;
 
     public DashboardServiceImpl(
-            UserRepository users,
-            StationRepository stations,
-            UavRepository uavs,
-            EquipmentRepository equipment,
-            MediaAssetRepository media,
-            AuditLogRepository audit) {
+            IUserDao users,
+            IStationDao stations,
+            IUavDao uavs,
+            IEquipmentDao equipment,
+            IMediaAssetDao media,
+            IAuditLogDao audit) {
         this(users, stations, uavs, equipment, media, audit, null);
     }
 
     public DashboardServiceImpl(
-            UserRepository users,
-            StationRepository stations,
-            UavRepository uavs,
-            EquipmentRepository equipment,
-            MediaAssetRepository media,
-            AuditLogRepository audit,
+            IUserDao users,
+            IStationDao stations,
+            IUavDao uavs,
+            IEquipmentDao equipment,
+            IMediaAssetDao media,
+            IAuditLogDao audit,
             PermissionService permissionService) {
         this(users, stations, uavs, equipment, media, audit, permissionService, null);
     }
 
     public DashboardServiceImpl(
-            UserRepository users,
-            StationRepository stations,
-            UavRepository uavs,
-            EquipmentRepository equipment,
-            MediaAssetRepository media,
-            AuditLogRepository audit,
+            IUserDao users,
+            IStationDao stations,
+            IUavDao uavs,
+            IEquipmentDao equipment,
+            IMediaAssetDao media,
+            IAuditLogDao audit,
             PermissionService permissionService,
-            MissionRepository missions) {
+            IMissionDao missions) {
         this(
                 users,
                 stations,
@@ -81,14 +81,14 @@ public class DashboardServiceImpl implements DashboardService {
 
     @org.springframework.beans.factory.annotation.Autowired
     public DashboardServiceImpl(
-            UserRepository users,
-            StationRepository stations,
-            UavRepository uavs,
-            EquipmentRepository equipment,
-            MediaAssetRepository media,
-            AuditLogRepository audit,
+            IUserDao users,
+            IStationDao stations,
+            IUavDao uavs,
+            IEquipmentDao equipment,
+            IMediaAssetDao media,
+            IAuditLogDao audit,
             PermissionService permissionService,
-            MissionRepository missions,
+            IMissionDao missions,
             DashboardMapper dashboardMapper) {
         this.users = users;
         this.stations = stations;
@@ -147,7 +147,7 @@ public class DashboardServiceImpl implements DashboardService {
             count =
                     status ->
                             missions.count(
-                                    Specification.where(
+                                    HibernateSpecification.where(
                                                     MissionSpecifications.hasCustomer(owner.id()))
                                             .and(MissionSpecifications.hasStatus(status)));
         }

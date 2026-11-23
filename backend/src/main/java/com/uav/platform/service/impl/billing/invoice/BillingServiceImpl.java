@@ -2,6 +2,13 @@ package com.uav.platform.service.impl.billing.invoice;
 
 import com.uav.platform.common.dto.response.PageResponse;
 import com.uav.platform.common.util.Hashing;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IPaymentTransactionDao;
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.billing.IUserQuotaDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.user.ICustomerBillingProfileDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.billing.invoice.InvoiceReceiptData;
 import com.uav.platform.dto.record.billing.reconciliation.IpnSignaturePayload;
 import com.uav.platform.dto.record.billing.reconciliation.PaymentAccountSettings;
@@ -28,13 +35,6 @@ import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.billing.invoice.BillingMapper;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.PaymentTransactionRepository;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.billing.UserQuotaRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.user.CustomerBillingProfileRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.billing.invoice.BillingService;
 import com.uav.platform.service.billing.reconciliation.PaymentSettingsService;
 import com.uav.platform.service.impl.billing.reconciliation.BankTransferServiceImpl;
@@ -68,13 +68,13 @@ import java.util.UUID;
 @Transactional
 public class BillingServiceImpl implements BillingService {
 
-    private final ServicePlanRepository planRepository;
-    private final InvoiceRepository invoiceRepository;
-    private final PaymentTransactionRepository paymentRepository;
-    private final UserRepository userRepository;
-    private final MissionRepository missionRepository;
+    private final IServicePlanDao planRepository;
+    private final IInvoiceDao invoiceRepository;
+    private final IPaymentTransactionDao paymentRepository;
+    private final IUserDao userRepository;
+    private final IMissionDao missionRepository;
     private final PermissionService permissions;
-    private final UserQuotaRepository quotaRepository;
+    private final IUserQuotaDao quotaRepository;
     private final WebhookService webhookService;
     private final String ipnSecret;
     private final BillingMapper billingMapper;
@@ -95,7 +95,7 @@ public class BillingServiceImpl implements BillingService {
     private PaymentSettingsService paymentSettingsService;
 
     @Autowired(required = false)
-    private CustomerBillingProfileRepository billingProfileRepository;
+    private ICustomerBillingProfileDao billingProfileRepository;
 
     @Autowired(required = false)
     private ObjectProvider<NotificationService> notifications;
@@ -138,11 +138,11 @@ public class BillingServiceImpl implements BillingService {
     }
 
     public BillingServiceImpl(
-            ServicePlanRepository planRepository,
-            InvoiceRepository invoiceRepository,
-            PaymentTransactionRepository paymentRepository,
-            UserRepository userRepository,
-            MissionRepository missionRepository,
+            IServicePlanDao planRepository,
+            IInvoiceDao invoiceRepository,
+            IPaymentTransactionDao paymentRepository,
+            IUserDao userRepository,
+            IMissionDao missionRepository,
             PermissionService permissions) {
         this(
                 planRepository,
@@ -157,13 +157,13 @@ public class BillingServiceImpl implements BillingService {
     }
 
     public BillingServiceImpl(
-            ServicePlanRepository planRepository,
-            InvoiceRepository invoiceRepository,
-            PaymentTransactionRepository paymentRepository,
-            UserRepository userRepository,
-            MissionRepository missionRepository,
+            IServicePlanDao planRepository,
+            IInvoiceDao invoiceRepository,
+            IPaymentTransactionDao paymentRepository,
+            IUserDao userRepository,
+            IMissionDao missionRepository,
             PermissionService permissions,
-            UserQuotaRepository quotaRepository,
+            IUserQuotaDao quotaRepository,
             WebhookService webhookService) {
         this(
                 planRepository,
@@ -178,13 +178,13 @@ public class BillingServiceImpl implements BillingService {
     }
 
     public BillingServiceImpl(
-            ServicePlanRepository planRepository,
-            InvoiceRepository invoiceRepository,
-            PaymentTransactionRepository paymentRepository,
-            UserRepository userRepository,
-            MissionRepository missionRepository,
+            IServicePlanDao planRepository,
+            IInvoiceDao invoiceRepository,
+            IPaymentTransactionDao paymentRepository,
+            IUserDao userRepository,
+            IMissionDao missionRepository,
             PermissionService permissions,
-            UserQuotaRepository quotaRepository,
+            IUserQuotaDao quotaRepository,
             WebhookService webhookService,
             String ipnSecret) {
         this(
@@ -202,13 +202,13 @@ public class BillingServiceImpl implements BillingService {
 
     @Autowired
     public BillingServiceImpl(
-            ServicePlanRepository planRepository,
-            InvoiceRepository invoiceRepository,
-            PaymentTransactionRepository paymentRepository,
-            UserRepository userRepository,
-            MissionRepository missionRepository,
+            IServicePlanDao planRepository,
+            IInvoiceDao invoiceRepository,
+            IPaymentTransactionDao paymentRepository,
+            IUserDao userRepository,
+            IMissionDao missionRepository,
             PermissionService permissions,
-            @Autowired(required = false) UserQuotaRepository quotaRepository,
+            @Autowired(required = false) IUserQuotaDao quotaRepository,
             @Autowired(required = false) WebhookService webhookService,
             @org.springframework.beans.factory.annotation.Value("${app.billing.ipn-secret:}")
                     String ipnSecret,
@@ -295,7 +295,7 @@ public class BillingServiceImpl implements BillingService {
     }
 
     /** Customers are always pinned to their own invoices; managers see every invoice. */
-    static org.springframework.data.jpa.domain.Specification<Invoice> invoiceFilter(
+    static com.uav.platform.dao.base.HibernateSpecification<Invoice> invoiceFilter(
             Long ownerId, InvoiceStatus status, boolean overdue, LocalDateTime now) {
         return (root, query, cb) -> {
             java.util.List<jakarta.persistence.criteria.Predicate> where =

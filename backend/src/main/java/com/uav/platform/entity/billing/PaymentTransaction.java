@@ -81,4 +81,11 @@ public class PaymentTransaction {
         this.amount = amount;
         this.status = "PENDING";
     }
+
+    @PrePersist
+    void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
 }

@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IMissionMediaDao;
+import com.uav.platform.dao.mission.IServiceOfferingDao;
 import com.uav.platform.dto.response.weather.WeatherAssessmentResponse;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.enums.mission.MissionEventType;
@@ -11,10 +15,6 @@ import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.enums.weather.FlightClearanceLevel;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionMediaRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.mission.ServiceOfferingRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.billing.quota.QuotaService;
 import com.uav.platform.service.mission.dispatch.MissionResourceService;
@@ -63,12 +63,12 @@ class MissionWeatherPreflightTest {
 
     private MissionLifecycleServiceImpl service(ObjectProvider<WeatherService> weatherProvider) {
         return new MissionLifecycleServiceImpl(
-                mock(MissionRepository.class),
-                mock(ServiceOfferingRepository.class),
+                mock(IMissionDao.class),
+                mock(IServiceOfferingDao.class),
                 mock(AuditLogService.class),
-                mock(MissionEventRepository.class),
+                mock(IMissionEventDao.class),
                 mock(QuotaService.class),
-                mock(MissionMediaRepository.class),
+                mock(IMissionMediaDao.class),
                 access,
                 events,
                 mock(MissionResourceService.class),
@@ -169,12 +169,12 @@ class MissionWeatherPreflightTest {
     void theLegacyConstructorStartsWithoutWeather() {
         MissionLifecycleServiceImpl legacy =
                 new MissionLifecycleServiceImpl(
-                        mock(MissionRepository.class),
-                        mock(ServiceOfferingRepository.class),
+                        mock(IMissionDao.class),
+                        mock(IServiceOfferingDao.class),
                         mock(AuditLogService.class),
-                        mock(MissionEventRepository.class),
+                        mock(IMissionEventDao.class),
                         mock(QuotaService.class),
-                        mock(MissionMediaRepository.class),
+                        mock(IMissionMediaDao.class),
                         access,
                         events,
                         mock(MissionResourceService.class),

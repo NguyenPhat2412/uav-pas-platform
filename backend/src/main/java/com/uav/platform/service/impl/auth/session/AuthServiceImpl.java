@@ -1,6 +1,7 @@
 package com.uav.platform.service.impl.auth.session;
 
 import com.uav.platform.common.constant.CoreConstants;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.auth.oauth.AppleIdentity;
 import com.uav.platform.dto.record.auth.oauth.GoogleIdentity;
 import com.uav.platform.dto.record.auth.session.RegistrationInput;
@@ -19,7 +20,6 @@ import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.auth.session.AuthMapper;
 import com.uav.platform.mapper.user.account.UserMapper;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.jwt.JwtTokenProvider;
 import com.uav.platform.service.auth.oauth.AppleIdTokenService;
 import com.uav.platform.service.auth.oauth.GoogleIdTokenService;
@@ -45,7 +45,7 @@ import java.util.UUID;
 @Transactional
 public class AuthServiceImpl implements AuthService {
 
-    private final UserRepository userRepository;
+    private final IUserDao userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
@@ -92,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public AuthServiceImpl(
-            UserRepository userRepository,
+            IUserDao userRepository,
             PasswordEncoder passwordEncoder,
             JwtTokenProvider jwtTokenProvider,
             RefreshTokenService refreshTokenService,
@@ -111,7 +111,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     public AuthServiceImpl(
-            UserRepository userRepository,
+            IUserDao userRepository,
             PasswordEncoder passwordEncoder,
             JwtTokenProvider jwtTokenProvider,
             @Autowired(required = false) RefreshTokenService refreshTokenService,

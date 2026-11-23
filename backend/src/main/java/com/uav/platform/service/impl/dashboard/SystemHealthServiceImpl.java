@@ -1,5 +1,8 @@
 package com.uav.platform.service.impl.dashboard;
 
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.webhook.IFinancialOutboxDao;
+import com.uav.platform.dao.webhook.IWebhookDeliveryLogDao;
 import com.uav.platform.dto.record.dashboard.HealthCheckResult;
 import com.uav.platform.dto.record.infrastructure.MailConnectionCheck;
 import com.uav.platform.dto.record.infrastructure.TlsCertificateInfo;
@@ -8,8 +11,6 @@ import com.uav.platform.dto.response.dashboard.SystemHealthResponse.Component;
 import com.uav.platform.dto.response.infrastructure.BackupStatusResponse;
 import com.uav.platform.entity.webhook.FinancialOutboxEvent;
 import com.uav.platform.entity.webhook.WebhookDeliveryLog;
-import com.uav.platform.repository.webhook.FinancialOutboxRepository;
-import com.uav.platform.repository.webhook.WebhookDeliveryLogRepository;
 import com.uav.platform.service.billing.reconciliation.BankTransferService;
 import com.uav.platform.service.dashboard.SystemHealthService;
 import com.uav.platform.service.infrastructure.BackupStatusService;
@@ -19,7 +20,6 @@ import com.uav.platform.service.media.ObjectStorageService;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.lang.management.ManagementFactory;
@@ -41,8 +41,8 @@ public class SystemHealthServiceImpl implements SystemHealthService {
 
     private final DataSource dataSource;
     private final ObjectStorageService storage;
-    private final WebhookDeliveryLogRepository deliveries;
-    private final FinancialOutboxRepository outbox;
+    private final IWebhookDeliveryLogDao deliveries;
+    private final IFinancialOutboxDao outbox;
     private final BankTransferService bankTransfer;
     private final MailDiagnosticsService mail;
     private final BackupStatusService backups;
@@ -148,7 +148,7 @@ public class SystemHealthServiceImpl implements SystemHealthService {
         return timed(
                 "financialOutbox",
                 () -> {
-                    Specification<FinancialOutboxEvent> pending =
+                    HibernateSpecification<FinancialOutboxEvent> pending =
                             (r, q, cb) -> r.get("status").in("PENDING", "WAITING_SUBSCRIBERS");
                     long pendingCount = outbox.count(pending);
                     long lagging =
@@ -240,7 +240,7 @@ public class SystemHealthServiceImpl implements SystemHealthService {
         };
     }
 
-    private static Specification<WebhookDeliveryLog> statusIn(List<String> statuses) {
+    private static HibernateSpecification<WebhookDeliveryLog> statusIn(List<String> statuses) {
         return (r, q, cb) -> r.get("deliveryStatus").in(statuses);
     }
 

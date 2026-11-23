@@ -3,6 +3,10 @@ package com.uav.platform.service.impl.storage.pool;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uav.platform.config.routes.ApiRoutes;
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.settings.ISystemConfigurationDao;
+import com.uav.platform.dao.storage.IStorageDriveNodeDao;
+import com.uav.platform.dao.storage.IStorageDriveObjectDao;
 import com.uav.platform.dto.record.media.ObjectStream;
 import com.uav.platform.dto.record.storage.files.CandidateRow;
 import com.uav.platform.dto.record.storage.pool.DriveAboutInfo;
@@ -27,10 +31,6 @@ import com.uav.platform.enums.settings.SettingValueType;
 import com.uav.platform.enums.storage.DriveAuthType;
 import com.uav.platform.enums.storage.DriveNodeHealth;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.settings.SystemConfigurationRepository;
-import com.uav.platform.repository.storage.StorageDriveNodeRepository;
-import com.uav.platform.repository.storage.StorageDriveObjectRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.media.HybridObjectStorageServiceImpl;
 import com.uav.platform.service.impl.notification.policy.NotificationBroadcastOperations;
@@ -100,10 +100,10 @@ public class StoragePoolServiceImpl implements StoragePoolService {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final JdbcTemplate jdbc;
-    private final StorageDriveNodeRepository driveNodes;
-    private final StorageDriveObjectRepository driveObjects;
-    private final MediaAssetRepository mediaAssets;
-    private final SystemConfigurationRepository settings;
+    private final IStorageDriveNodeDao driveNodes;
+    private final IStorageDriveObjectDao driveObjects;
+    private final IMediaAssetDao mediaAssets;
+    private final ISystemConfigurationDao settings;
     private final StorageAllocationOperations allocator;
     private final GoogleDriveClientOperations driveClient;
     private final ObjectStorageService objectStorage;
@@ -119,10 +119,10 @@ public class StoragePoolServiceImpl implements StoragePoolService {
     @Autowired
     public StoragePoolServiceImpl(
             JdbcTemplate jdbc,
-            StorageDriveNodeRepository driveNodes,
-            StorageDriveObjectRepository driveObjects,
-            MediaAssetRepository mediaAssets,
-            SystemConfigurationRepository settings,
+            IStorageDriveNodeDao driveNodes,
+            IStorageDriveObjectDao driveObjects,
+            IMediaAssetDao mediaAssets,
+            ISystemConfigurationDao settings,
             StorageAllocationOperations allocator,
             GoogleDriveClientOperations driveClient,
             ObjectStorageService objectStorage,

@@ -1,6 +1,7 @@
 package com.uav.platform.entity.user;
 
 import com.uav.platform.common.entity.BaseEntity;
+import com.uav.platform.common.util.AesStringAttributeConverter;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.service.impl.user.account.UserAccountPersistenceListener;
@@ -76,11 +77,13 @@ public class AppUser extends BaseEntity {
     @Column(name = "two_factor_method", nullable = false, length = 20)
     private String twoFactorMethod = "EMAIL";
 
-    @Column(name = "totp_secret", length = 128)
+    @Convert(converter = AesStringAttributeConverter.class)
+    @Column(name = "totp_secret", length = 512)
     private String totpSecret;
 
     /** Authenticator secret from a setup that has not been confirmed with a code yet. */
-    @Column(name = "pending_totp_secret", length = 128)
+    @Convert(converter = AesStringAttributeConverter.class)
+    @Column(name = "pending_totp_secret", length = 512)
     private String pendingTotpSecret;
 
     /** Last accepted TOTP time step; a code from this step or earlier is a replay. */

@@ -1,7 +1,8 @@
 'use client';
 
 import {useMemo, useState} from 'react';
-import {Eye, Plus, RefreshCw} from 'lucide-react';
+import Link from 'next/link';
+import {BookOpenCheck, Eye, Plus, RefreshCw, ShieldCheck} from 'lucide-react';
 import {Button} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
 import {
@@ -24,6 +25,7 @@ import {TrainingCourseCatalog} from '@/components/training/catalog/TrainingCours
 import {TrainingCourseFormModal} from '@/components/training/editor/TrainingCourseFormModal';
 import {TrainingDocumentMasterDetail} from '@/components/training/catalog/TrainingDocumentMasterDetail';
 import {TrainingEnrollmentStatsStrip} from '@/components/training/catalog/TrainingEnrollmentStatsStrip';
+import {TrainingGovernanceGuideBanner} from '@/components/training/catalog/TrainingGovernanceGuideBanner';
 
 /**
  * Operations training entry: when an operator is granted `USER_PERMISSION_MANAGE`, they can add
@@ -220,6 +222,53 @@ export function TrainingAcademyWorkspace({
                     )}
                 </div>
             </div>
+
+            {manage && !learnerBasePath && (
+                <div className="flex flex-col justify-between gap-3 bg-surface-variant/40 px-5 py-3 lg:flex-row lg:items-center">
+                    <div className="flex flex-wrap items-center gap-1.5" role="navigation" aria-label="Phân khu tài liệu đào tạo">
+                        {(
+                            [
+                                {portal: 'CUSTOMER' as const, href: '/admin/training/customer', label: 'Khách hàng'},
+                                {portal: 'OPERATIONS' as const, href: '/admin/training/operations', label: 'SOP Điều hành & Đội bay'},
+                                {portal: 'ADMIN' as const, href: '/admin/training/admin', label: 'Quy chuẩn Quản trị'},
+                            ] as const
+                        ).map(tab => {
+                            const isCurrent = activePortal === tab.portal;
+                            return (
+                                <Link
+                                    key={tab.portal}
+                                    href={tab.href}
+                                    aria-current={isCurrent ? 'page' : undefined}
+                                    className={`inline-flex items-center rounded-control border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                                        isCurrent
+                                            ? 'border-primary bg-primary text-white'
+                                            : 'border-border bg-card text-foreground hover:bg-surface-variant'
+                                    }`}
+                                >
+                                    {tab.label}
+                                </Link>
+                            );
+                        })}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
+                        <span className="inline-flex items-center gap-1.5">
+                            <BookOpenCheck className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true"/>
+                            <span>Quản lý tài liệu SOP vận hành và hướng dẫn chuẩn bị 8 hạng mục hồ sơ đối tác.</span>
+                        </span>
+                        <Link
+                            href="/admin/marketplace/providers"
+                            className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-primary hover:underline"
+                        >
+                            <ShieldCheck className="h-3.5 w-3.5 shrink-0" aria-hidden="true"/>
+                            <span>Mở duyệt đối tác</span>
+                        </Link>
+                    </div>
+                </div>
+            )}
+
+            {manage && !learnerBasePath && (
+                <TrainingGovernanceGuideBanner activePortal={activePortal} />
+            )}
 
             {manage && learnerPreview ? (
                 <TrainingCourseCatalog

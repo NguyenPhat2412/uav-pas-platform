@@ -1,6 +1,9 @@
 package com.uav.platform.service.impl.inventory;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.inventory.IInventoryMovementDao;
+import com.uav.platform.dao.station.IStationDao;
 import com.uav.platform.dto.request.inventory.*;
 import com.uav.platform.dto.response.inventory.*;
 import com.uav.platform.entity.inventory.*;
@@ -10,9 +13,6 @@ import com.uav.platform.enums.inventory.*;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.inventory.EquipmentMapper;
 import com.uav.platform.mapper.inventory.InventoryMovementMapper;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.inventory.InventoryMovementRepository;
-import com.uav.platform.repository.station.StationRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.inventory.InventoryService;
 
@@ -27,15 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
     @org.springframework.beans.factory.annotation.Autowired
-    private com.uav.platform.repository.mission.MissionEquipmentReservationRepository
-            missionReservations;
+    private com.uav.platform.dao.mission.IMissionEquipmentReservationDao missionReservations;
 
     @org.springframework.beans.factory.annotation.Autowired
     private org.springframework.jdbc.core.JdbcTemplate requestJdbc;
 
-    private final EquipmentRepository equipment;
-    private final InventoryMovementRepository movements;
-    private final StationRepository stations;
+    private final IEquipmentDao equipment;
+    private final IInventoryMovementDao movements;
+    private final IStationDao stations;
     private final AuditLogService audit;
     private final EquipmentMapper equipmentMapper;
     private final InventoryMovementMapper movementMapper;

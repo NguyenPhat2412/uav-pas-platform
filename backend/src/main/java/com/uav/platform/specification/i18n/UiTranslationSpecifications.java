@@ -1,14 +1,14 @@
 package com.uav.platform.specification.i18n;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.i18n.UiTranslation;
 
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
 public final class UiTranslationSpecifications {
     private UiTranslationSpecifications() {}
 
-    public static Specification<UiTranslation> filter(
+    public static HibernateSpecification<UiTranslation> filter(
             String locale, String namespace, String keyword) {
         return (root, query, cb) -> {
             var predicates = new java.util.ArrayList<jakarta.persistence.criteria.Predicate>();

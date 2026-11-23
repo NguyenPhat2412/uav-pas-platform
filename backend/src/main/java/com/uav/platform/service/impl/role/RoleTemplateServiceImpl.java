@@ -1,5 +1,8 @@
 package com.uav.platform.service.impl.role;
 
+import com.uav.platform.dao.permission.IPermissionDao;
+import com.uav.platform.dao.role.IRoleTemplateDao;
+import com.uav.platform.dao.role.IRoleTemplatePermissionDao;
 import com.uav.platform.dto.response.role.RoleTemplateResponse;
 import com.uav.platform.entity.permission.Permission;
 import com.uav.platform.entity.role.RoleTemplate;
@@ -8,9 +11,6 @@ import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.permission.PermissionCode;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.mapper.role.RoleTemplateMapper;
-import com.uav.platform.repository.permission.PermissionRepository;
-import com.uav.platform.repository.role.RoleTemplatePermissionRepository;
-import com.uav.platform.repository.role.RoleTemplateRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.role.RoleTemplateService;
 
@@ -23,25 +23,25 @@ import java.util.List;
 @Service
 @Transactional
 public class RoleTemplateServiceImpl implements RoleTemplateService {
-    private final RoleTemplateRepository templates;
-    private final RoleTemplatePermissionRepository assignments;
-    private final PermissionRepository permissions;
+    private final IRoleTemplateDao templates;
+    private final IRoleTemplatePermissionDao assignments;
+    private final IPermissionDao permissions;
     private final AuditLogService audit;
     private final com.uav.platform.security.AccessRecoveryGuard recovery;
     private final RoleTemplateMapper roleTemplateMapper;
 
     public RoleTemplateServiceImpl(
-            RoleTemplateRepository templates,
-            RoleTemplatePermissionRepository assignments,
-            PermissionRepository permissions,
+            IRoleTemplateDao templates,
+            IRoleTemplatePermissionDao assignments,
+            IPermissionDao permissions,
             AuditLogService audit) {
         this(templates, assignments, permissions, audit, null);
     }
 
     public RoleTemplateServiceImpl(
-            RoleTemplateRepository templates,
-            RoleTemplatePermissionRepository assignments,
-            PermissionRepository permissions,
+            IRoleTemplateDao templates,
+            IRoleTemplatePermissionDao assignments,
+            IPermissionDao permissions,
             AuditLogService audit,
             com.uav.platform.security.AccessRecoveryGuard recovery) {
         this(
@@ -55,9 +55,9 @@ public class RoleTemplateServiceImpl implements RoleTemplateService {
 
     @org.springframework.beans.factory.annotation.Autowired
     public RoleTemplateServiceImpl(
-            RoleTemplateRepository templates,
-            RoleTemplatePermissionRepository assignments,
-            PermissionRepository permissions,
+            IRoleTemplateDao templates,
+            IRoleTemplatePermissionDao assignments,
+            IPermissionDao permissions,
             AuditLogService audit,
             com.uav.platform.security.AccessRecoveryGuard recovery,
             RoleTemplateMapper roleTemplateMapper) {

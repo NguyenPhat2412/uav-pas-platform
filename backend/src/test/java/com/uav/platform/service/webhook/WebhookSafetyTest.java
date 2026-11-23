@@ -3,8 +3,8 @@ package com.uav.platform.service.webhook;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.webhook.*;
 import com.uav.platform.entity.webhook.*;
-import com.uav.platform.repository.webhook.*;
 import com.uav.platform.service.impl.webhook.WebhookServiceImpl;
 
 import org.junit.jupiter.api.Test;
@@ -30,8 +30,8 @@ class WebhookSafetyTest {
 
     @Test
     void unconfiguredDoesNotFakeGovernmentSuccess() {
-        var subs = mock(WebhookSubscriptionRepository.class);
-        var logs = mock(WebhookDeliveryLogRepository.class);
+        var subs = mock(IWebhookSubscriptionDao.class);
+        var logs = mock(IWebhookDeliveryLogDao.class);
         when(subs.findActiveSubscribersForEvent("TEST"))
                 .thenReturn(
                         List.of(
@@ -50,8 +50,8 @@ class WebhookSafetyTest {
 
     @Test
     void outcomeReflectsActualMatchingAndApprovedTargets() {
-        var subs = mock(WebhookSubscriptionRepository.class);
-        var logs = mock(WebhookDeliveryLogRepository.class);
+        var subs = mock(IWebhookSubscriptionDao.class);
+        var logs = mock(IWebhookDeliveryLogDao.class);
         var service = new WebhookServiceImpl(subs, logs, null);
         org.springframework.test.util.ReflectionTestUtils.setField(service, "enabled", true);
         org.springframework.test.util.ReflectionTestUtils.setField(
@@ -76,8 +76,8 @@ class WebhookSafetyTest {
     void signingHeadersCarryTimestampAndPreviousSecretDuringGrace() {
         var service =
                 new WebhookServiceImpl(
-                        mock(WebhookSubscriptionRepository.class),
-                        mock(WebhookDeliveryLogRepository.class),
+                        mock(IWebhookSubscriptionDao.class),
+                        mock(IWebhookDeliveryLogDao.class),
                         null);
         var sub =
                 new WebhookSubscription(
@@ -117,8 +117,8 @@ class WebhookSafetyTest {
 
     @Test
     void shortSecretsAreRejectedOnCreate() {
-        var subs = mock(WebhookSubscriptionRepository.class);
-        var service = new WebhookServiceImpl(subs, mock(WebhookDeliveryLogRepository.class), null);
+        var subs = mock(IWebhookSubscriptionDao.class);
+        var service = new WebhookServiceImpl(subs, mock(IWebhookDeliveryLogDao.class), null);
         var error =
                 assertThrows(
                         com.uav.platform.error.SystemException.class,
@@ -134,8 +134,8 @@ class WebhookSafetyTest {
 
     @Test
     void enablingAnApprovedDestinationReleasesParkedDeliveries() {
-        var subs = mock(WebhookSubscriptionRepository.class);
-        var logs = mock(WebhookDeliveryLogRepository.class);
+        var subs = mock(IWebhookSubscriptionDao.class);
+        var logs = mock(IWebhookDeliveryLogDao.class);
         var service = new WebhookServiceImpl(subs, logs, null);
         org.springframework.test.util.ReflectionTestUtils.setField(service, "enabled", true);
         org.springframework.test.util.ReflectionTestUtils.setField(

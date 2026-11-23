@@ -1,5 +1,8 @@
 package com.uav.platform.service.impl.uav;
 
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.uav.IUavTelemetryDao;
 import com.uav.platform.dto.request.uav.TelemetryReportRequest;
 import com.uav.platform.dto.response.uav.MissionTelemetryReplayResponse;
 import com.uav.platform.dto.response.uav.TelemetryResponse;
@@ -7,9 +10,6 @@ import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.entity.uav.UavTelemetry;
 import com.uav.platform.enums.mission.MissionStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.uav.UavTelemetryRepository;
 import com.uav.platform.service.mission.lifecycle.MissionAccessService;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.uav.TelemetryService;
@@ -32,9 +32,9 @@ public class TelemetryServiceImpl implements TelemetryService {
     /** Device clocks may run slightly ahead; anything further in the future is rejected. */
     static final Duration CLOCK_SKEW = Duration.ofMinutes(5);
 
-    private final UavTelemetryRepository telemetry;
-    private final UavRepository uavs;
-    private final MissionRepository missions;
+    private final IUavTelemetryDao telemetry;
+    private final IUavDao uavs;
+    private final IMissionDao missions;
     private final MissionAccessService missionAccess;
     private final PermissionService permissions;
 

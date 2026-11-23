@@ -81,6 +81,11 @@ public class MarketplaceProviderController {
         return ResponseEntity.ok(providerService.upsertMyProfile(request, auth.getName()));
     }
 
+    @PostMapping(ApiRoutes.Marketplace.SUBMIT_VERIFICATION)
+    public ResponseEntity<ProviderProfileResponse> submitForVerification(Authentication auth) {
+        return ResponseEntity.ok(providerService.submitForVerification(auth.getName()));
+    }
+
     @GetMapping(ApiRoutes.Marketplace.DOCUMENTS)
     public ResponseEntity<List<ProviderDocumentResponse>> listDocuments(Authentication auth) {
         return ResponseEntity.ok(fleetService.listMyDocuments(auth.getName()));

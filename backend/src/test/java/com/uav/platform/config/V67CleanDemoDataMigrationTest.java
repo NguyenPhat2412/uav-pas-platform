@@ -6,6 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.uav.platform.dao.marketplace.IMarketplaceListingDao;
+import com.uav.platform.dao.marketplace.IProviderPilotDao;
+import com.uav.platform.dao.marketplace.IProviderProfileDao;
+import com.uav.platform.dao.project.IProjectDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.entity.marketplace.MarketplaceListing;
 import com.uav.platform.entity.marketplace.ProviderPilot;
 import com.uav.platform.entity.marketplace.ProviderProfile;
@@ -23,12 +29,6 @@ import com.uav.platform.enums.project.ProjectStatus;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.marketplace.MarketplaceListingRepository;
-import com.uav.platform.repository.marketplace.ProviderPilotRepository;
-import com.uav.platform.repository.marketplace.ProviderProfileRepository;
-import com.uav.platform.repository.project.ProjectRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 
 import jakarta.persistence.EntityManager;
 
@@ -78,12 +78,12 @@ class V67CleanDemoDataMigrationTest {
 
     @Autowired private JdbcTemplate jdbc;
     @Autowired private EntityManager entityManager;
-    @Autowired private UserRepository users;
-    @Autowired private ProviderProfileRepository providers;
-    @Autowired private ProviderPilotRepository pilots;
-    @Autowired private UavRepository uavs;
-    @Autowired private ProjectRepository projects;
-    @Autowired private MarketplaceListingRepository listings;
+    @Autowired private IUserDao users;
+    @Autowired private IProviderProfileDao providers;
+    @Autowired private IProviderPilotDao pilots;
+    @Autowired private IUavDao uavs;
+    @Autowired private IProjectDao projects;
+    @Autowired private IMarketplaceListingDao listings;
 
     @Test
     void v67CleansAllNameSuffixVariantsAssignsUniqueCleanCoversDisablesRfqAndIsIdempotent()

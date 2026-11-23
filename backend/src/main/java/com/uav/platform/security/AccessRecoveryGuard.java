@@ -1,9 +1,9 @@
 package com.uav.platform.security;
 
+import com.uav.platform.dao.permission.IPermissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.enums.permission.PermissionCode;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.permission.PermissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.user.account.UserAccountServiceImpl;
 import com.uav.platform.service.permission.PermissionService;
 
@@ -18,14 +18,14 @@ import java.util.List;
 /** Serializes changes affecting recovery permissions, regardless of role labels. */
 @Service
 public class AccessRecoveryGuard {
-    private final PermissionRepository catalog;
-    private final UserRepository users;
+    private final IPermissionDao catalog;
+    private final IUserDao users;
     private final ObjectProvider<PermissionService> permissions;
     private final EntityManager entityManager;
 
     public AccessRecoveryGuard(
-            PermissionRepository catalog,
-            UserRepository users,
+            IPermissionDao catalog,
+            IUserDao users,
             ObjectProvider<PermissionService> permissions,
             EntityManager entityManager) {
         this.catalog = catalog;

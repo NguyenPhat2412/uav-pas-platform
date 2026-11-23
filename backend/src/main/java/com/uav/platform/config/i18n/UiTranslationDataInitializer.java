@@ -2,8 +2,8 @@ package com.uav.platform.config.i18n;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.i18n.IUiTranslationDao;
 import com.uav.platform.entity.i18n.UiTranslation;
-import com.uav.platform.repository.i18n.UiTranslationRepository;
 import com.uav.platform.service.i18n.UiTranslationService;
 import com.uav.platform.service.impl.i18n.UiTranslationServiceImpl;
 
@@ -41,7 +41,7 @@ public class UiTranslationDataInitializer implements ApplicationRunner {
 
     private static final List<String> LOCALES = List.of("vi", "en", "ja");
 
-    private final UiTranslationRepository repository;
+    private final IUiTranslationDao repository;
     private final UiTranslationService translationService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 

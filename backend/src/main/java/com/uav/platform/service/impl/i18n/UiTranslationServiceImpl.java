@@ -1,13 +1,13 @@
 package com.uav.platform.service.impl.i18n;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.i18n.IUiTranslationDao;
 import com.uav.platform.dto.request.i18n.UpsertUiTranslationRequest;
 import com.uav.platform.dto.response.i18n.PublicLocaleBundleResponse;
 import com.uav.platform.dto.response.i18n.UiTranslationRowResponse;
 import com.uav.platform.entity.i18n.UiTranslation;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.i18n.UiTranslationRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.i18n.UiTranslationService;
 import com.uav.platform.specification.i18n.UiTranslationSpecifications;
@@ -39,7 +39,7 @@ public class UiTranslationServiceImpl implements UiTranslationService {
     private static final List<String> SUPPORTED_LOCALES = List.of("vi", "en", "ja");
     private static final Set<String> VALID_LOCALE_SET = Set.of("vi", "en", "ja");
 
-    private final UiTranslationRepository repository;
+    private final IUiTranslationDao repository;
     private final AuditLogService auditLogService;
 
     private final Map<String, PublicLocaleBundleResponse> bundleCache = new ConcurrentHashMap<>();

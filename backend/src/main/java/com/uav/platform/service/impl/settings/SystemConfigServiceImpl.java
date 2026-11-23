@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.settings;
 
+import com.uav.platform.dao.settings.ISystemConfigurationDao;
+import com.uav.platform.dao.settings.ISystemConfigurationHistoryDao;
 import com.uav.platform.dto.record.settings.CachedSettingValue;
 import com.uav.platform.dto.request.settings.UpdateConfigurationRequest;
 import com.uav.platform.dto.response.settings.PublicSiteInfoResponse;
@@ -9,8 +11,6 @@ import com.uav.platform.entity.settings.SystemConfiguration;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.settings.SystemConfigMapper;
-import com.uav.platform.repository.settings.SystemConfigurationHistoryRepository;
-import com.uav.platform.repository.settings.SystemConfigurationRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.settings.SystemConfigService;
 
@@ -33,14 +33,14 @@ public class SystemConfigServiceImpl implements SystemConfigService {
 
     private static final long CACHE_TTL_NANOS = 5_000_000_000L;
 
-    private final SystemConfigurationRepository configRepository;
+    private final ISystemConfigurationDao configRepository;
     private final SystemConfigMapper systemConfigMapper;
-    private final SystemConfigurationHistoryRepository historyRepository;
+    private final ISystemConfigurationHistoryDao historyRepository;
     private final AuditLogService auditLogService;
     private final ConcurrentHashMap<String, CachedSettingValue> valueCache =
             new ConcurrentHashMap<>();
 
-    public SystemConfigServiceImpl(SystemConfigurationRepository configRepository) {
+    public SystemConfigServiceImpl(ISystemConfigurationDao configRepository) {
         this(
                 configRepository,
                 org.mapstruct.factory.Mappers.getMapper(SystemConfigMapper.class),
@@ -50,9 +50,9 @@ public class SystemConfigServiceImpl implements SystemConfigService {
 
     @Autowired
     public SystemConfigServiceImpl(
-            SystemConfigurationRepository configRepository,
+            ISystemConfigurationDao configRepository,
             SystemConfigMapper systemConfigMapper,
-            @Autowired(required = false) SystemConfigurationHistoryRepository historyRepository,
+            @Autowired(required = false) ISystemConfigurationHistoryDao historyRepository,
             @Autowired(required = false) AuditLogService auditLogService) {
         this.configRepository = configRepository;
         this.systemConfigMapper = systemConfigMapper;

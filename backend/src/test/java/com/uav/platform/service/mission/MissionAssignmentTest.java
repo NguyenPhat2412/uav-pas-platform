@@ -4,6 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.inventory.IEquipmentDao;
+import com.uav.platform.dao.mission.*;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.mission.dispatch.ResourceAssignmentRequest;
 import com.uav.platform.entity.inventory.Equipment;
 import com.uav.platform.entity.mission.*;
@@ -18,11 +24,6 @@ import com.uav.platform.enums.station.*;
 import com.uav.platform.enums.uav.*;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.repository.inventory.EquipmentRepository;
-import com.uav.platform.repository.mission.*;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.inventory.InventoryService;
@@ -30,7 +31,6 @@ import com.uav.platform.service.mission.lifecycle.MissionService;
 import com.uav.platform.service.permission.PermissionService;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.time.LocalDate;
@@ -45,16 +45,16 @@ class MissionAssignmentTest {
         Uav uav = new Uav("Model", "UAV-1", "Maker");
         uav.setId(3L);
         uav.setStatus(UavStatus.MAINTENANCE);
-        MissionRepository missions = repository(mission);
-        UavRepository uavs = mock(UavRepository.class);
+        IMissionDao missions = repository(mission);
+        IUavDao uavs = mock(IUavDao.class);
         when(uavs.findByIdForUpdate(3L)).thenReturn(Optional.of(uav));
 
         MissionService service =
                 service(
                         missions,
                         uavs,
-                        mock(StationRepository.class),
-                        mock(EquipmentRepository.class),
+                        mock(IStationDao.class),
+                        mock(IEquipmentDao.class),
                         mock(InventoryService.class));
         assertThrows(RuntimeException.class, () -> service.assignUav(1L, 3L, auth()));
     }
@@ -64,17 +64,17 @@ class MissionAssignmentTest {
         Mission mission = mission();
         Uav uav = new Uav("Model", "UAV-1", "Maker");
         uav.setId(3L);
-        MissionRepository missions = repository(mission);
-        UavRepository uavs = mock(UavRepository.class);
+        IMissionDao missions = repository(mission);
+        IUavDao uavs = mock(IUavDao.class);
         when(uavs.findByIdForUpdate(3L)).thenReturn(Optional.of(uav));
-        when(missions.exists(any(Specification.class))).thenReturn(true);
+        when(missions.exists(any(HibernateSpecification.class))).thenReturn(true);
 
         MissionService service =
                 service(
                         missions,
                         uavs,
-                        mock(StationRepository.class),
-                        mock(EquipmentRepository.class),
+                        mock(IStationDao.class),
+                        mock(IEquipmentDao.class),
                         mock(InventoryService.class));
         assertThrows(RuntimeException.class, () -> service.assignUav(1L, 3L, auth()));
     }
@@ -84,16 +84,16 @@ class MissionAssignmentTest {
         Mission mission = mission();
         Equipment equipment = new Equipment("Battery", EquipmentType.BATTERY, "BAT-1", null);
         equipment.setId(5L);
-        MissionRepository missions = repository(mission);
-        EquipmentRepository equipmentRepository = mock(EquipmentRepository.class);
+        IMissionDao missions = repository(mission);
+        IEquipmentDao equipmentRepository = mock(IEquipmentDao.class);
         when(equipmentRepository.findById(5L)).thenReturn(Optional.of(equipment));
         InventoryService inventory = mock(InventoryService.class);
 
         MissionService service =
                 service(
                         missions,
-                        mock(UavRepository.class),
-                        mock(StationRepository.class),
+                        mock(IUavDao.class),
+                        mock(IStationDao.class),
                         equipmentRepository,
                         inventory);
         assertThrows(
@@ -105,27 +105,27 @@ class MissionAssignmentTest {
     }
 
     private MissionService service(
-            MissionRepository missions,
-            UavRepository uavs,
-            StationRepository stations,
-            EquipmentRepository equipment,
+            IMissionDao missions,
+            IUavDao uavs,
+            IStationDao stations,
+            IEquipmentDao equipment,
             InventoryService inventory) {
         return com.uav.platform.support.MissionServiceFixture.create(
                 missions,
-                mock(ServiceOfferingRepository.class),
-                mock(UserRepository.class),
+                mock(IServiceOfferingDao.class),
+                mock(IUserDao.class),
                 mock(PermissionService.class),
                 mock(AuditLogService.class),
-                mock(MissionEventRepository.class),
+                mock(IMissionEventDao.class),
                 stations,
                 uavs,
                 equipment,
                 inventory,
-                mock(MissionEquipmentReservationRepository.class));
+                mock(IMissionEquipmentReservationDao.class));
     }
 
-    private MissionRepository repository(Mission mission) {
-        MissionRepository repository = mock(MissionRepository.class);
+    private IMissionDao repository(Mission mission) {
+        IMissionDao repository = mock(IMissionDao.class);
         when(repository.findById(1L)).thenReturn(Optional.of(mission));
         when(repository.findByIdForUpdate(1L)).thenReturn(Optional.of(mission));
         return repository;

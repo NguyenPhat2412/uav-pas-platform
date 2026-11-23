@@ -1,11 +1,13 @@
 package com.uav.platform.entity.marketplace;
 
 import com.uav.platform.common.entity.BaseEntity;
+import com.uav.platform.common.util.AesStringAttributeConverter;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.marketplace.ProviderType;
 import com.uav.platform.enums.marketplace.ProviderVerificationStatus;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -42,10 +44,12 @@ public class ProviderProfile extends BaseEntity {
     @Column(name = "provider_type", nullable = false, length = 24)
     private ProviderType providerType = ProviderType.INDIVIDUAL;
 
-    @Column(name = "tax_or_id_number", length = 60)
+    @Convert(converter = AesStringAttributeConverter.class)
+    @Column(name = "tax_or_id_number", length = 512)
     private String taxOrIdNumber;
 
-    @Column(name = "flight_license_number", length = 80)
+    @Convert(converter = AesStringAttributeConverter.class)
+    @Column(name = "flight_license_number", length = 512)
     private String flightLicenseNumber;
 
     @Column(length = 2000)
@@ -57,16 +61,19 @@ public class ProviderProfile extends BaseEntity {
     @Column(name = "service_radius_km", nullable = false)
     private int serviceRadiusKm = 50;
 
-    @Column(name = "contact_phone", length = 30)
+    @Convert(converter = AesStringAttributeConverter.class)
+    @Column(name = "contact_phone", length = 512)
     private String contactPhone;
 
     @Column(name = "bank_name", length = 120)
     private String bankName;
 
-    @Column(name = "bank_account_number", length = 60)
+    @Convert(converter = AesStringAttributeConverter.class)
+    @Column(name = "bank_account_number", length = 512)
     private String bankAccountNumber;
 
-    @Column(name = "bank_account_holder", length = 120)
+    @Convert(converter = AesStringAttributeConverter.class)
+    @Column(name = "bank_account_holder", length = 512)
     private String bankAccountHolder;
 
     @Enumerated(EnumType.STRING)

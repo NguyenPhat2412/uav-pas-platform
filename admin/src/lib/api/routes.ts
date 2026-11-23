@@ -332,6 +332,10 @@ export const API_ROUTES = {
     adminMarketplace: {
         providers: '/api/v1/admin/marketplace/providers',
         moderateProvider: (id: string | number) => `/api/v1/admin/marketplace/providers/${id}/moderate`,
+        providerDocuments: (providerId: string | number) =>
+            `/api/v1/admin/marketplace/providers/${providerId}/documents`,
+        moderateProviderDocument: (providerId: string | number, docId: string | number) =>
+            `/api/v1/admin/marketplace/providers/${providerId}/documents/${docId}`,
         listings: '/api/v1/admin/marketplace/listings',
         moderateListing: (id: string | number) => `/api/v1/admin/marketplace/listings/${id}/moderate`,
         dispatch: '/api/v1/admin/marketplace/dispatch',

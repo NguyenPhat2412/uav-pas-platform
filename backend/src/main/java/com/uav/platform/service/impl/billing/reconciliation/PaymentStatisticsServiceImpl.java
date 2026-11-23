@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.billing.reconciliation;
 
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IPaymentTransactionDao;
 import com.uav.platform.dto.response.billing.reconciliation.PaymentStatisticsResponse;
 import com.uav.platform.dto.response.billing.reconciliation.PaymentStatisticsResponse.CustomerSpend;
 import com.uav.platform.dto.response.billing.reconciliation.PaymentStatisticsResponse.MonthPoint;
@@ -11,8 +13,6 @@ import com.uav.platform.entity.billing.Invoice;
 import com.uav.platform.entity.billing.PaymentTransaction;
 import com.uav.platform.enums.billing.InvoiceStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.PaymentTransactionRepository;
 import com.uav.platform.service.billing.reconciliation.PaymentStatisticsService;
 
 import lombok.RequiredArgsConstructor;
@@ -51,8 +51,8 @@ public class PaymentStatisticsServiceImpl implements PaymentStatisticsService {
     static final int TOP_CUSTOMERS = 5;
     private static final Set<String> REVIEW = Set.of("MISMATCH", "UNMATCHED");
 
-    private final InvoiceRepository invoices;
-    private final PaymentTransactionRepository payments;
+    private final IInvoiceDao invoices;
+    private final IPaymentTransactionDao payments;
 
     @Override
     @Transactional(readOnly = true)

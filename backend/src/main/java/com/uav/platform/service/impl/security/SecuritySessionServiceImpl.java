@@ -2,6 +2,11 @@ package com.uav.platform.service.impl.security;
 
 import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.auth.IAuthOtpTokenDao;
+import com.uav.platform.dao.auth.IRefreshTokenDao;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.security.ISessionRevocationDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.security.SessionRevokeOutcome;
 import com.uav.platform.dto.request.security.SecuritySessionQueryRequest;
 import com.uav.platform.dto.request.security.TwoFactorResetRequest;
@@ -13,10 +18,6 @@ import com.uav.platform.entity.security.SessionRevocation;
 import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.auth.AuthOtpTokenRepository;
-import com.uav.platform.repository.auth.RefreshTokenRepository;
-import com.uav.platform.repository.security.SessionRevocationRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.auth.session.AuthSessionLock;
 import com.uav.platform.service.impl.auth.verification.AuthOtpServiceImpl;
@@ -30,7 +31,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,10 +50,10 @@ public class SecuritySessionServiceImpl implements SecuritySessionService {
     static final String ENTITY_SESSION = "USER_SESSION";
     static final String ENTITY_2FA = "USER_2FA";
 
-    private final UserRepository users;
-    private final RefreshTokenRepository refreshTokens;
-    private final AuthOtpTokenRepository otpTokens;
-    private final SessionRevocationRepository revocations;
+    private final IUserDao users;
+    private final IRefreshTokenDao refreshTokens;
+    private final IAuthOtpTokenDao otpTokens;
+    private final ISessionRevocationDao revocations;
     private final SessionRevocationService revocationService;
     private final AuthSessionLock sessionLock;
     private final AuditLogService audit;
@@ -64,8 +64,8 @@ public class SecuritySessionServiceImpl implements SecuritySessionService {
         int page = Math.max(query.page(), 0);
         int size = Math.min(Math.max(query.size(), 1), 100);
         Instant now = Instant.now();
-        Specification<AppUser> spec =
-                Specification.where(UserSpecifications.hasKeyword(query.keyword()))
+        HibernateSpecification<AppUser> spec =
+                HibernateSpecification.where(UserSpecifications.hasKeyword(query.keyword()))
                         .and(UserSpecifications.hasRole(query.role()))
                         .and(
                                 SecuritySessionSpecifications.hasActiveSession(

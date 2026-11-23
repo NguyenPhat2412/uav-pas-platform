@@ -2,6 +2,8 @@ package com.uav.platform.service.impl.user.profile;
 
 import static com.uav.platform.common.constant.MediaConstants.IMAGE_TYPES;
 
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.media.MediaUploadRequest;
 import com.uav.platform.dto.request.user.profile.AvatarUploadRequest;
 import com.uav.platform.dto.response.media.MediaAssetResponse;
@@ -11,8 +13,6 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.media.MediaType;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.media.MediaService;
 import com.uav.platform.service.media.ObjectStorageService;
@@ -42,9 +42,9 @@ public class AvatarServiceImpl implements AvatarService {
     static final Set<String> TYPES = IMAGE_TYPES;
     private static final Pattern VERSION = Pattern.compile("[?&]v=(\\d+)");
 
-    private final UserRepository users;
+    private final IUserDao users;
     private final MediaService media;
-    private final MediaAssetRepository assets;
+    private final IMediaAssetDao assets;
     private final ObjectStorageService storage;
     private final PermissionService permissions;
     private final AuditLogService audit;

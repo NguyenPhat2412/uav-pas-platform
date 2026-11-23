@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.mission.Mission;
 import com.uav.platform.enums.audit.*;
 import com.uav.platform.enums.inventory.*;
@@ -22,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -95,7 +95,7 @@ class MissionSpecificationsTest {
         when(cb.like(any(), anyString())).thenReturn(predicate);
         when(cb.or(any(Predicate[].class))).thenReturn(predicate);
 
-        Specification<Mission> spec = MissionSpecifications.hasKeyword("inspection");
+        HibernateSpecification<Mission> spec = MissionSpecifications.hasKeyword("inspection");
         Predicate result = spec.toPredicate(root, query, cb);
 
         assertThat(result).isSameAs(predicate);

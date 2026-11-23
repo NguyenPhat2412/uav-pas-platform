@@ -1,5 +1,7 @@
 package com.uav.platform.service.impl.media;
 
+import com.uav.platform.dao.storage.IStorageDriveNodeDao;
+import com.uav.platform.dao.storage.IStorageDriveObjectDao;
 import com.uav.platform.dto.record.media.ObjectMetadata;
 import com.uav.platform.dto.record.media.ObjectStream;
 import com.uav.platform.dto.record.media.StorageUsage;
@@ -9,11 +11,11 @@ import com.uav.platform.entity.storage.StorageDriveObject;
 import com.uav.platform.enums.storage.DriveNodeHealth;
 import com.uav.platform.enums.storage.StorageBackendMode;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.storage.StorageDriveNodeRepository;
-import com.uav.platform.repository.storage.StorageDriveObjectRepository;
+import com.uav.platform.service.impl.security.DocumentEncryptionServiceImpl;
 import com.uav.platform.service.impl.storage.pool.GoogleDriveClientOperations;
 import com.uav.platform.service.impl.storage.pool.StorageAllocationOperations;
 import com.uav.platform.service.media.ObjectStorageService;
+import com.uav.platform.service.security.DocumentEncryptionService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -22,8 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.util.List;
@@ -38,10 +43,12 @@ import java.util.Optional;
 @Service
 public class HybridObjectStorageServiceImpl implements ObjectStorageService {
     private final S3CompatibleStorageService r2Delegate;
-    private final StorageDriveNodeRepository driveNodes;
-    private final StorageDriveObjectRepository driveObjects;
+    private final IStorageDriveNodeDao driveNodes;
+    private final IStorageDriveObjectDao driveObjects;
     private final StorageAllocationOperations allocator;
     private final GoogleDriveClientOperations driveClient;
+    private final DocumentEncryptionService documentEncryption =
+            new DocumentEncryptionServiceImpl();
 
     @Autowired
     public HybridObjectStorageServiceImpl(
@@ -55,8 +62,8 @@ public class HybridObjectStorageServiceImpl implements ObjectStorageService {
             @Value("${app.storage.ensure-bucket:false}") boolean ensureBucket,
             @Value("${app.storage.cors-origin:http://localhost:3000}") String corsOrigin,
             @Value("${app.cors.allowed-origins:}") String appCorsAllowedOrigins,
-            StorageDriveNodeRepository driveNodes,
-            StorageDriveObjectRepository driveObjects,
+            IStorageDriveNodeDao driveNodes,
+            IStorageDriveObjectDao driveObjects,
             StorageAllocationOperations allocator,
             GoogleDriveClientOperations driveClient) {
         this(
@@ -79,8 +86,8 @@ public class HybridObjectStorageServiceImpl implements ObjectStorageService {
 
     public HybridObjectStorageServiceImpl(
             S3CompatibleStorageService r2Delegate,
-            StorageDriveNodeRepository driveNodes,
-            StorageDriveObjectRepository driveObjects,
+            IStorageDriveNodeDao driveNodes,
+            IStorageDriveObjectDao driveObjects,
             StorageAllocationOperations allocator,
             GoogleDriveClientOperations driveClient) {
         this.r2Delegate = r2Delegate;
@@ -139,11 +146,28 @@ public class HybridObjectStorageServiceImpl implements ObjectStorageService {
 
     @Override
     public void uploadObject(String objectKey, String contentType, long size, InputStream body) {
-        Optional<StorageDriveNode> selected = allocator.selectNode(objectKey, contentType, size);
+        InputStream uploadStream = body;
+        long uploadSize = size;
+        if (documentEncryption.shouldEncryptContentType(contentType)) {
+            try {
+                byte[] raw = body.readAllBytes();
+                byte[] sealed = documentEncryption.encryptDocument(raw);
+                uploadStream = new ByteArrayInputStream(sealed);
+                uploadSize = sealed.length;
+            } catch (IOException ex) {
+                throw new SystemException(
+                        "Failed to read document stream for AES encryption",
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "DOCUMENT_READ_FAILED");
+            }
+        }
+        Optional<StorageDriveNode> selected =
+                allocator.selectNode(objectKey, contentType, uploadSize);
         if (selected.isPresent()) {
             StorageDriveNode node = selected.get();
             DriveUploadedFile uploaded =
-                    driveClient.uploadStream(node, objectKey, contentType, size, body);
+                    driveClient.uploadStream(
+                            node, objectKey, contentType, uploadSize, uploadStream);
             StorageDriveObject record =
                     driveObjects.findByObjectKey(objectKey).orElseGet(StorageDriveObject::new);
             record.setObjectKey(objectKey);
@@ -163,7 +187,7 @@ public class HybridObjectStorageServiceImpl implements ObjectStorageService {
             return;
         }
         if (allocator.primaryBackend() == StorageBackendMode.R2 || allocator.fallbackToR2()) {
-            r2Delegate.uploadObject(objectKey, contentType, size, body);
+            r2Delegate.uploadObject(objectKey, contentType, uploadSize, uploadStream);
             return;
         }
         throw SystemException.serviceUnavailable(
@@ -225,12 +249,44 @@ public class HybridObjectStorageServiceImpl implements ObjectStorageService {
     @Override
     public ObjectStream openStream(String objectKey, String range) {
         Optional<StorageDriveObject> mapped = driveObjects.findByObjectKey(objectKey);
+        ObjectStream stream;
         if (mapped.isPresent()) {
             StorageDriveObject obj = mapped.get();
-            return driveClient.openStream(
-                    obj.getNode(), obj.getDriveFileId(), obj.getContentType(), range);
+            stream =
+                    driveClient.openStream(
+                            obj.getNode(), obj.getDriveFileId(), obj.getContentType(), range);
+        } else {
+            stream = r2Delegate.openStream(objectKey, range);
         }
-        return r2Delegate.openStream(objectKey, range);
+        return maybeDecryptStream(stream);
+    }
+
+    private ObjectStream maybeDecryptStream(ObjectStream stream) {
+        if (stream == null || stream.body() == null) {
+            return stream;
+        }
+        if (!documentEncryption.shouldEncryptContentType(stream.contentType())) {
+            return stream;
+        }
+        try (InputStream rawIn = stream.body()) {
+            byte[] raw = rawIn.readAllBytes();
+            byte[] plain =
+                    documentEncryption.isEncrypted(raw)
+                            ? documentEncryption.decryptDocument(raw)
+                            : raw;
+            return new ObjectStream(
+                    new ByteArrayInputStream(plain),
+                    stream.contentType(),
+                    plain.length,
+                    stream.contentRange(),
+                    stream.acceptRanges(),
+                    stream.eTag());
+        } catch (IOException ex) {
+            throw new SystemException(
+                    "Failed to decrypt stored document stream",
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "DOCUMENT_STREAM_DECRYPT_FAILED");
+        }
     }
 
     @Override

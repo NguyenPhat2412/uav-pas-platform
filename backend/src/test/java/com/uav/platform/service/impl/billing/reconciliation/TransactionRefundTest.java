@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.uav.platform.dao.billing.IPaymentTransactionDao;
 import com.uav.platform.entity.billing.PaymentTransaction;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.PaymentTransactionRepository;
 import com.uav.platform.service.impl.billing.invoice.BillingAdminServiceImpl;
 
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 class TransactionRefundTest {
-    private final PaymentTransactionRepository payments = mock(PaymentTransactionRepository.class);
+    private final IPaymentTransactionDao payments = mock(IPaymentTransactionDao.class);
     private final BillingAdminServiceImpl service = new BillingAdminServiceImpl(payments);
     private final TestingAuthenticationToken admin = new TestingAuthenticationToken("admin", null);
 

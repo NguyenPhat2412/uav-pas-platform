@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.billing.IUserQuotaDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.entity.billing.ServicePlan;
 import com.uav.platform.entity.billing.UserQuota;
 import com.uav.platform.entity.mission.Mission;
@@ -13,10 +17,6 @@ import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.billing.invoice.BillingMapper;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.billing.UserQuotaRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 
 import org.junit.jupiter.api.Test;
@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.Optional;
 
 class QuotaServiceImplTest {
-    final UserQuotaRepository quotas = mock(UserQuotaRepository.class);
-    final ServicePlanRepository plans = mock(ServicePlanRepository.class);
-    final UserRepository users = mock(UserRepository.class);
-    final MissionRepository missions = mock(MissionRepository.class);
+    final IUserQuotaDao quotas = mock(IUserQuotaDao.class);
+    final IServicePlanDao plans = mock(IServicePlanDao.class);
+    final IUserDao users = mock(IUserDao.class);
+    final IMissionDao missions = mock(IMissionDao.class);
     final QuotaServiceImpl service =
             new QuotaServiceImpl(
                     quotas,

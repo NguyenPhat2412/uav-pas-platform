@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.billing.*;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.billing.invoice.CreateInvoiceRequest;
 import com.uav.platform.dto.request.billing.reconciliation.PaymentIpnRequest;
 import com.uav.platform.entity.billing.*;
@@ -11,9 +14,6 @@ import com.uav.platform.entity.user.AppUser;
 import com.uav.platform.enums.billing.InvoiceStatus;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.repository.billing.*;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
 import com.uav.platform.service.permission.PermissionService;
 import com.uav.platform.service.webhook.FinancialOutboxService;
@@ -33,18 +33,18 @@ import java.util.Optional;
 
 /** VND invoices are whole đồng; refused provider transfers leave a visible trace. */
 class PaymentAmountAndEvidenceTest {
-    final InvoiceRepository invoices = mock(InvoiceRepository.class);
-    final PaymentTransactionRepository payments = mock(PaymentTransactionRepository.class);
-    final UserRepository users = mock(UserRepository.class);
+    final IInvoiceDao invoices = mock(IInvoiceDao.class);
+    final IPaymentTransactionDao payments = mock(IPaymentTransactionDao.class);
+    final IUserDao users = mock(IUserDao.class);
     final PermissionService permissions = mock(PermissionService.class);
     final AppUser owner = new AppUser("owner", "owner@vnd.test", "hash", null, UserStatus.ACTIVE);
     final BillingServiceImpl billing =
             new BillingServiceImpl(
-                    mock(ServicePlanRepository.class),
+                    mock(IServicePlanDao.class),
                     invoices,
                     payments,
                     users,
-                    mock(MissionRepository.class),
+                    mock(IMissionDao.class),
                     permissions,
                     null,
                     null,

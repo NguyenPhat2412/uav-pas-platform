@@ -1,5 +1,10 @@
 package com.uav.platform.service.impl.mission.dispatch;
 
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.mission.IMissionEquipmentReservationDao;
+import com.uav.platform.dao.mission.IMissionEventDao;
+import com.uav.platform.dao.mission.IMissionPreflightLogDao;
+import com.uav.platform.dao.station.IStationDao;
 import com.uav.platform.dto.request.inventory.QuantityRequest;
 import com.uav.platform.dto.request.mission.catalog.*;
 import com.uav.platform.dto.request.mission.dispatch.*;
@@ -23,11 +28,6 @@ import com.uav.platform.enums.station.StationStatus;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.mission.lifecycle.MissionMapper;
-import com.uav.platform.repository.mission.MissionEquipmentReservationRepository;
-import com.uav.platform.repository.mission.MissionEventRepository;
-import com.uav.platform.repository.mission.MissionPreflightLogRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.station.StationRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
 import com.uav.platform.service.inventory.InventoryService;
@@ -55,13 +55,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MissionDispatchServiceImpl implements MissionDispatchService {
     private final jakarta.persistence.EntityManager entityManager;
-    private final MissionRepository missions;
+    private final IMissionDao missions;
     private final PermissionService permissions;
     private final AuditLogService audit;
-    private final MissionEventRepository events;
-    private final StationRepository stations;
+    private final IMissionEventDao events;
+    private final IStationDao stations;
     private final InventoryService inventory;
-    private final MissionEquipmentReservationRepository reservations;
+    private final IMissionEquipmentReservationDao reservations;
     private final MissionAccessService access;
     private final MissionEventService missionEvents;
     private final MissionResourceService resources;
@@ -71,13 +71,13 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
     private ObjectProvider<NotificationService> notifications;
 
     @Autowired(required = false)
-    private ObjectProvider<MissionPreflightLogRepository> preflightLogs;
+    private ObjectProvider<IMissionPreflightLogDao> preflightLogs;
 
     public void setNotifications(ObjectProvider<NotificationService> notifications) {
         this.notifications = notifications;
     }
 
-    public void setPreflightLogs(ObjectProvider<MissionPreflightLogRepository> preflightLogs) {
+    public void setPreflightLogs(ObjectProvider<IMissionPreflightLogDao> preflightLogs) {
         this.preflightLogs = preflightLogs;
     }
 
@@ -85,7 +85,7 @@ public class MissionDispatchServiceImpl implements MissionDispatchService {
         if (preflightLogs == null || missionId == null) {
             return;
         }
-        MissionPreflightLogRepository repo = preflightLogs.getIfAvailable();
+        IMissionPreflightLogDao repo = preflightLogs.getIfAvailable();
         if (repo == null) {
             return;
         }

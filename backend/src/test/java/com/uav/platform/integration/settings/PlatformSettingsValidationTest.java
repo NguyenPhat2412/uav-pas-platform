@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.settings.ISystemConfigurationDao;
+import com.uav.platform.dao.settings.ISystemConfigurationHistoryDao;
 import com.uav.platform.dto.request.settings.UpdateConfigurationRequest;
 import com.uav.platform.entity.settings.SystemConfiguration;
 import com.uav.platform.entity.settings.SystemConfigurationHistory;
@@ -11,8 +13,6 @@ import com.uav.platform.enums.audit.AuditAction;
 import com.uav.platform.enums.settings.SettingValueType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.settings.SystemConfigMapper;
-import com.uav.platform.repository.settings.SystemConfigurationHistoryRepository;
-import com.uav.platform.repository.settings.SystemConfigurationRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.settings.SystemConfigServiceImpl;
 import com.uav.platform.service.impl.settings.SystemConfigurationOperations;
@@ -142,8 +142,8 @@ class PlatformSettingsValidationTest {
 
     @Test
     void changeIsValidatedRecordedInHistoryAndAudited() {
-        var repo = mock(SystemConfigurationRepository.class);
-        var history = mock(SystemConfigurationHistoryRepository.class);
+        var repo = mock(ISystemConfigurationDao.class);
+        var history = mock(ISystemConfigurationHistoryDao.class);
         var audit = mock(AuditLogService.class);
         var cfg =
                 typed(

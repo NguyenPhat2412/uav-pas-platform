@@ -1,13 +1,12 @@
 package com.uav.platform.specification.assistant;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.assistant.AssistantConversation;
-
-import org.springframework.data.jpa.domain.Specification;
 
 public final class AssistantConversationSpecifications {
     private AssistantConversationSpecifications() {}
 
-    public static Specification<AssistantConversation> inPortal(String portal) {
+    public static HibernateSpecification<AssistantConversation> inPortal(String portal) {
         return (root, query, cb) ->
                 portal == null || portal.isBlank()
                         ? cb.conjunction()
@@ -15,7 +14,7 @@ public final class AssistantConversationSpecifications {
     }
 
     /** Matches the username, the person's name or the conversation title, case-insensitively. */
-    public static Specification<AssistantConversation> matching(String text) {
+    public static HibernateSpecification<AssistantConversation> matching(String text) {
         return (root, query, cb) -> {
             if (text == null || text.isBlank()) return cb.conjunction();
             String like =

@@ -1,6 +1,11 @@
 package com.uav.platform.service.impl.uav;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.uav.IUavStatusHistoryDao;
 import com.uav.platform.dto.request.uav.UavRequest;
 import com.uav.platform.dto.response.uav.UavHealthAnalyticsResponse;
 import com.uav.platform.dto.response.uav.UavResponse;
@@ -14,10 +19,6 @@ import com.uav.platform.enums.station.StationStatus;
 import com.uav.platform.enums.uav.UavStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.uav.UavMapper;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.uav.UavStatusHistoryRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.uav.UavService;
 
@@ -26,7 +27,6 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,13 +36,13 @@ import java.util.EnumSet;
 @Transactional
 @RequiredArgsConstructor
 public class UavServiceImpl implements UavService {
-    private final UavRepository repository;
-    private final StationRepository stations;
-    private final UavStatusHistoryRepository history;
+    private final IUavDao repository;
+    private final IStationDao stations;
+    private final IUavStatusHistoryDao history;
     private final AuditLogService audit;
-    private final MissionRepository missions;
+    private final IMissionDao missions;
     private final EntityManager entityManager;
-    private final com.uav.platform.repository.maintenance.RepairOrderRepository repairOrders;
+    private final com.uav.platform.dao.maintenance.IRepairOrderDao repairOrders;
     private final UavMapper uavMapper;
     private static final EnumSet<MissionStatus> TERMINAL_MISSIONS =
             EnumSet.of(
@@ -240,7 +240,7 @@ public class UavServiceImpl implements UavService {
         find(id);
         return PageResponse.from(
                 history.findAll(
-                        Specification.where(
+                        HibernateSpecification.where(
                                 com.uav.platform.specification.uav.UavStatusHistorySpecifications
                                         .belongsToUav(id)),
                         pageable),

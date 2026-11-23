@@ -53,4 +53,16 @@ public class AiRouterSettings {
 
     @Column(name = "updated_by", length = 100)
     private String updatedBy;
+
+    @PrePersist
+    void onCreate() {
+        if (this.updatedAt == null) {
+            this.updatedAt = LocalDateTime.now();
+        }
+    }
+
+    @PreUpdate
+    void onPersist() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

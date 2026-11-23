@@ -1,6 +1,11 @@
 package com.uav.platform.service.impl.permission;
 
 import com.uav.platform.config.permission.PermissionDataInitializer;
+import com.uav.platform.dao.permission.IPermissionDao;
+import com.uav.platform.dao.permission.IUserPermissionDao;
+import com.uav.platform.dao.role.IRoleTemplateDao;
+import com.uav.platform.dao.role.IRoleTemplatePermissionDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.response.permission.PermissionCodesResponse;
 import com.uav.platform.dto.response.permission.PermissionResponse;
 import com.uav.platform.dto.response.permission.UserPermissionResponse;
@@ -12,11 +17,6 @@ import com.uav.platform.enums.permission.PermissionCode;
 import com.uav.platform.enums.user.UserRole;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.permission.PermissionMapper;
-import com.uav.platform.repository.permission.PermissionRepository;
-import com.uav.platform.repository.permission.UserPermissionRepository;
-import com.uav.platform.repository.role.RoleTemplatePermissionRepository;
-import com.uav.platform.repository.role.RoleTemplateRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.security.AccessRecoveryGuard;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.user.account.UserAccountServiceImpl;
@@ -34,30 +34,30 @@ import java.util.List;
 @Service("permissionService")
 @Transactional
 public class PermissionServiceImpl implements PermissionService {
-    private final PermissionRepository permissions;
-    private final UserPermissionRepository userPermissions;
-    private final UserRepository users;
+    private final IPermissionDao permissions;
+    private final IUserPermissionDao userPermissions;
+    private final IUserDao users;
     private final AuditLogService auditLogService;
-    private final RoleTemplateRepository roleTemplates;
-    private final RoleTemplatePermissionRepository roleTemplatePermissions;
+    private final IRoleTemplateDao roleTemplates;
+    private final IRoleTemplatePermissionDao roleTemplatePermissions;
     private final AccessRecoveryGuard recovery;
     private final PermissionMapper permissionMapper;
 
     public PermissionServiceImpl(
-            PermissionRepository permissions,
-            UserPermissionRepository userPermissions,
-            UserRepository users,
+            IPermissionDao permissions,
+            IUserPermissionDao userPermissions,
+            IUserDao users,
             AuditLogService auditLogService) {
         this(permissions, userPermissions, users, auditLogService, null, null);
     }
 
     public PermissionServiceImpl(
-            PermissionRepository permissions,
-            UserPermissionRepository userPermissions,
-            UserRepository users,
+            IPermissionDao permissions,
+            IUserPermissionDao userPermissions,
+            IUserDao users,
             AuditLogService auditLogService,
-            RoleTemplateRepository roleTemplates,
-            RoleTemplatePermissionRepository roleTemplatePermissions) {
+            IRoleTemplateDao roleTemplates,
+            IRoleTemplatePermissionDao roleTemplatePermissions) {
         this(
                 permissions,
                 userPermissions,
@@ -69,12 +69,12 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     public PermissionServiceImpl(
-            PermissionRepository permissions,
-            UserPermissionRepository userPermissions,
-            UserRepository users,
+            IPermissionDao permissions,
+            IUserPermissionDao userPermissions,
+            IUserDao users,
             AuditLogService auditLogService,
-            RoleTemplateRepository roleTemplates,
-            RoleTemplatePermissionRepository roleTemplatePermissions,
+            IRoleTemplateDao roleTemplates,
+            IRoleTemplatePermissionDao roleTemplatePermissions,
             AccessRecoveryGuard recovery) {
         this(
                 permissions,
@@ -89,12 +89,12 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Autowired
     public PermissionServiceImpl(
-            PermissionRepository permissions,
-            UserPermissionRepository userPermissions,
-            UserRepository users,
+            IPermissionDao permissions,
+            IUserPermissionDao userPermissions,
+            IUserDao users,
             AuditLogService auditLogService,
-            RoleTemplateRepository roleTemplates,
-            RoleTemplatePermissionRepository roleTemplatePermissions,
+            IRoleTemplateDao roleTemplates,
+            IRoleTemplatePermissionDao roleTemplatePermissions,
             AccessRecoveryGuard recovery,
             PermissionMapper permissionMapper) {
         this.recovery = recovery;

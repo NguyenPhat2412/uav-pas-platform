@@ -1,24 +1,23 @@
 package com.uav.platform.specification.notification.inbox;
 
+import com.uav.platform.dao.base.HibernateSpecification;
 import com.uav.platform.entity.notification.Notification;
 import com.uav.platform.enums.notification.NotificationType;
-
-import org.springframework.data.jpa.domain.Specification;
 
 public final class NotificationSpecifications {
 
     private NotificationSpecifications() {}
 
-    public static Specification<Notification> belongsToUser(Long userId) {
+    public static HibernateSpecification<Notification> belongsToUser(Long userId) {
         return (root, query, cb) ->
                 userId == null ? null : cb.equal(root.get("user").get("id"), userId);
     }
 
-    public static Specification<Notification> isUnread() {
+    public static HibernateSpecification<Notification> isUnread() {
         return (root, query, cb) -> cb.isFalse(root.get("isRead"));
     }
 
-    public static Specification<Notification> hasType(NotificationType type) {
+    public static HibernateSpecification<Notification> hasType(NotificationType type) {
         return (root, query, cb) -> type == null ? null : cb.equal(root.get("type"), type);
     }
 }

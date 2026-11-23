@@ -2,9 +2,9 @@ package com.uav.platform.transport.websocket;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uav.platform.dao.support.ISupportThreadDao;
 import com.uav.platform.dto.record.realtime.RealtimeSessionPrincipal;
 import com.uav.platform.entity.support.SupportThread;
-import com.uav.platform.repository.support.SupportThreadRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,13 +30,13 @@ public class RealtimeWebSocketHandler extends TextWebSocketHandler {
     private static final int MAX_INBOUND_FRAME_LENGTH = 4_096;
 
     private final RealtimeEventBroadcaster broadcaster;
-    private final SupportThreadRepository supportThreadRepository;
+    private final ISupportThreadDao supportThreadRepository;
     private final ObjectMapper json;
 
     @Autowired
     public RealtimeWebSocketHandler(
             RealtimeEventBroadcaster broadcaster,
-            SupportThreadRepository supportThreadRepository,
+            ISupportThreadDao supportThreadRepository,
             @Autowired(required = false) ObjectMapper objectMapper) {
         this.broadcaster = broadcaster;
         this.supportThreadRepository = supportThreadRepository;

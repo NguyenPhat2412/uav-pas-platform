@@ -5,6 +5,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import com.uav.platform.dao.notification.INotificationDao;
+import com.uav.platform.dao.notification.INotificationModulePolicyDao;
+import com.uav.platform.dao.notification.IUserNotificationPreferenceDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.record.notification.delivery.NotificationDeliveryPayload;
 import com.uav.platform.dto.request.notification.inbox.CreateNotificationRequest;
 import com.uav.platform.dto.request.notification.policy.UpdateNotificationModulePolicyRequest;
@@ -19,10 +23,6 @@ import com.uav.platform.enums.notification.NotificationSeverity;
 import com.uav.platform.enums.notification.NotificationType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.notification.inbox.NotificationMapper;
-import com.uav.platform.repository.notification.NotificationModulePolicyRepository;
-import com.uav.platform.repository.notification.NotificationRepository;
-import com.uav.platform.repository.notification.UserNotificationPreferenceRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.impl.notification.delivery.NotificationDeliveryOperations;
 import com.uav.platform.service.impl.notification.inbox.NotificationServiceImpl;
 import com.uav.platform.service.impl.notification.policy.NotificationPolicyOperations;
@@ -39,10 +39,10 @@ import java.util.Optional;
 
 class NotificationModulePolicyTest {
 
-    private NotificationRepository notificationRepository;
-    private NotificationModulePolicyRepository policyRepository;
-    private UserNotificationPreferenceRepository preferenceRepository;
-    private UserRepository userRepository;
+    private INotificationDao notificationRepository;
+    private INotificationModulePolicyDao policyRepository;
+    private IUserNotificationPreferenceDao preferenceRepository;
+    private IUserDao userRepository;
     private NotificationDeliveryOperations deliveryOperations;
     private RealtimeEventBroadcaster realtime;
     private NotificationPolicyOperations policyOperations;
@@ -52,10 +52,10 @@ class NotificationModulePolicyTest {
 
     @BeforeEach
     void setUp() {
-        notificationRepository = mock(NotificationRepository.class);
-        policyRepository = mock(NotificationModulePolicyRepository.class);
-        preferenceRepository = mock(UserNotificationPreferenceRepository.class);
-        userRepository = mock(UserRepository.class);
+        notificationRepository = mock(INotificationDao.class);
+        policyRepository = mock(INotificationModulePolicyDao.class);
+        preferenceRepository = mock(IUserNotificationPreferenceDao.class);
+        userRepository = mock(IUserDao.class);
         deliveryOperations = mock(NotificationDeliveryOperations.class);
         realtime = mock(RealtimeEventBroadcaster.class);
 

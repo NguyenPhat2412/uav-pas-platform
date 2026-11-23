@@ -11,6 +11,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.uav.platform.controller.audit.AuditLogController;
+import com.uav.platform.dao.billing.IInvoiceDao;
+import com.uav.platform.dao.billing.IPaymentTransactionDao;
+import com.uav.platform.dao.billing.IServicePlanDao;
+import com.uav.platform.dao.media.IMediaAssetDao;
+import com.uav.platform.dao.mission.IMissionDao;
+import com.uav.platform.dao.sar.IAiDetectionDao;
+import com.uav.platform.dao.sar.IAiTaskDao;
+import com.uav.platform.dao.sar.ISarMissionDao;
+import com.uav.platform.dao.station.IStationDao;
+import com.uav.platform.dao.uav.IUavDao;
+import com.uav.platform.dao.user.IUserDao;
 import com.uav.platform.dto.request.billing.reconciliation.PaymentIpnRequest;
 import com.uav.platform.dto.request.sar.VerifyDetectionRequest;
 import com.uav.platform.entity.billing.Invoice;
@@ -27,17 +38,6 @@ import com.uav.platform.enums.sar.SarStatus;
 import com.uav.platform.enums.user.UserStatus;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.webhook.WebhookMapper;
-import com.uav.platform.repository.billing.InvoiceRepository;
-import com.uav.platform.repository.billing.PaymentTransactionRepository;
-import com.uav.platform.repository.billing.ServicePlanRepository;
-import com.uav.platform.repository.media.MediaAssetRepository;
-import com.uav.platform.repository.mission.MissionRepository;
-import com.uav.platform.repository.sar.AiDetectionRepository;
-import com.uav.platform.repository.sar.AiTaskRepository;
-import com.uav.platform.repository.sar.SarMissionRepository;
-import com.uav.platform.repository.station.StationRepository;
-import com.uav.platform.repository.uav.UavRepository;
-import com.uav.platform.repository.user.UserRepository;
 import com.uav.platform.service.audit.AuditLogService;
 import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
 import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
@@ -68,18 +68,18 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class SecurityAuditHardeningTest {
 
-    @Mock ServicePlanRepository planRepository;
-    @Mock InvoiceRepository invoiceRepository;
-    @Mock PaymentTransactionRepository paymentRepository;
-    @Mock UserRepository userRepository;
-    @Mock MissionRepository missionRepository;
+    @Mock IServicePlanDao planRepository;
+    @Mock IInvoiceDao invoiceRepository;
+    @Mock IPaymentTransactionDao paymentRepository;
+    @Mock IUserDao userRepository;
+    @Mock IMissionDao missionRepository;
     @Mock PermissionService permissionService;
-    @Mock SarMissionRepository sarMissionRepository;
-    @Mock AiTaskRepository aiTaskRepository;
-    @Mock AiDetectionRepository aiDetectionRepository;
-    @Mock MediaAssetRepository mediaAssetRepository;
-    @Mock UavRepository uavRepository;
-    @Mock StationRepository stationRepository;
+    @Mock ISarMissionDao sarMissionRepository;
+    @Mock IAiTaskDao aiTaskRepository;
+    @Mock IAiDetectionDao aiDetectionRepository;
+    @Mock IMediaAssetDao mediaAssetRepository;
+    @Mock IUavDao uavRepository;
+    @Mock IStationDao stationRepository;
 
     @Test
     void sec01_unauthenticatedIpnWithoutSignatureIsRejected() {

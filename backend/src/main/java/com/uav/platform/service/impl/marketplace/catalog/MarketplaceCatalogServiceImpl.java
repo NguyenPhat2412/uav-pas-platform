@@ -3,6 +3,9 @@ package com.uav.platform.service.impl.marketplace.catalog;
 import static com.uav.platform.specification.marketplace.catalog.MarketplaceSpecifications.*;
 
 import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.dao.marketplace.IMarketplaceListingDao;
+import com.uav.platform.dao.mission.IMissionReviewDao;
 import com.uav.platform.dto.response.marketplace.catalog.MarketplaceListingDetailResponse;
 import com.uav.platform.dto.response.marketplace.catalog.MarketplaceListingResponse;
 import com.uav.platform.dto.response.marketplace.catalog.MarketplaceStorefrontResponse;
@@ -13,8 +16,6 @@ import com.uav.platform.enums.marketplace.PricingModel;
 import com.uav.platform.enums.mission.MissionType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.marketplace.provider.MarketplaceMapper;
-import com.uav.platform.repository.marketplace.MarketplaceListingRepository;
-import com.uav.platform.repository.mission.MissionReviewRepository;
 import com.uav.platform.service.marketplace.catalog.MarketplaceCatalogService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +33,8 @@ import java.math.BigDecimal;
 @Transactional(readOnly = true)
 public class MarketplaceCatalogServiceImpl implements MarketplaceCatalogService {
 
-    private final MarketplaceListingRepository listings;
-    private final MissionReviewRepository reviews;
+    private final IMarketplaceListingDao listings;
+    private final IMissionReviewDao reviews;
     private final MarketplaceMapper mapper;
 
     @Override
@@ -48,8 +48,8 @@ public class MarketplaceCatalogServiceImpl implements MarketplaceCatalogService 
             BigDecimal maxPriceVnd,
             Long categoryServiceId,
             Pageable pageable) {
-        Specification<MarketplaceListing> spec =
-                Specification.allOf(
+        HibernateSpecification<MarketplaceListing> spec =
+                HibernateSpecification.allOf(
                         listingNotDeleted(),
                         listingModerationStatus(ListingModerationStatus.PUBLISHED),
                         listingKeyword(keyword),
