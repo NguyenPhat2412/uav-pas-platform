@@ -19,7 +19,8 @@ uav-pas-platform/
 
 | Thư mục | Nội dung | Quy ước tên tệp |
 |---|---|---|
-| [architecture/](architecture/) | Kiến trúc và thiết kế đang áp dụng | `UPPER_SNAKE.md` |
+| [architecture/](architecture/) | Kiến trúc, quy tắc code bắt buộc ([CODING_STANDARDS_AND_RULES.md](architecture/CODING_STANDARDS_AND_RULES.md), [HIBERNATE_DAO_AND_SECURITY.md](architecture/HIBERNATE_DAO_AND_SECURITY.md)) | `UPPER_SNAKE.md` |
+| [workflows/](workflows/) | Quy trình vận hành & xác minh hồ sơ giấy tờ ([PROVIDER_VERIFICATION_DOCS_WORKFLOW.md](workflows/PROVIDER_VERIFICATION_DOCS_WORKFLOW.md)) | `UPPER_SNAKE.md` |
 | [business/](business/) | Đặc tả nghiệp vụ (BA), traceability, hình minh hoạ | `UPPER_SNAKE.md` |
 | [specs/](specs/) | Bản thiết kế trước khi làm một tính năng | `YYYY-MM-DD-<tên>-design.md` |
 | [plans/](plans/) | Kế hoạch triển khai, mục tiêu, checklist | `YYYY-MM-DD-<tên>.md` |
