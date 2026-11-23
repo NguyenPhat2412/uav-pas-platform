@@ -9,6 +9,7 @@ import {MarketplaceListingCard} from '@/components/marketplace/catalog/Marketpla
 import {CustomerShopCategoryStrip} from '@/components/marketplace/shop/CustomerShopCategoryStrip';
 import {usePublicListings} from '@/hooks/marketplace/useMarketplace';
 import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+import {useAbExperiment} from '@/lib/experiments/ab-experiments';
 import {WEB_SERVICE_CATEGORIES, type ServiceCategoryDef} from '@/lib/marketplace/service-categories';
 import {useI18n} from '@/providers/I18nContext';
 import type {ListingSortOption, ListingType, PricingModel} from '@/types/marketplace/marketplace.types';
@@ -18,6 +19,8 @@ export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 
     const {t} = useI18n();
     const searchParams = useSearchParams();
     const {invoiceDueDays} = useSiteInfo();
+    const mobileDrawerVariant = useAbExperiment('mobile_compact_filter_drawer');
+    const compactMobile = mobileDrawerVariant === 'treatment';
 
     const initialQ = searchParams.get('q')?.trim() ?? '';
     const initialCatParam = searchParams.get('category')?.trim() || searchParams.get('mission')?.trim() || '';
@@ -87,9 +90,9 @@ export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 
     };
 
     return (
-        <section className={mode === 'public' ? 'border-b border-slate-200 bg-white py-10 sm:py-12' : 'border-b border-slate-200 bg-white p-4 sm:p-5'}>
-            <div className={mode === 'public' ? 'mx-auto w-full max-w-[1380px] space-y-5 px-4 sm:px-6 lg:px-8' : 'space-y-5'}>
-                <div className="flex flex-wrap items-end justify-between gap-4">
+        <section className={mode === 'public' ? 'border-b border-slate-200 bg-white py-6 sm:py-12' : 'border-b border-slate-200 bg-white p-4 sm:p-5'}>
+            <div className={mode === 'public' ? 'mx-auto w-full max-w-[1380px] space-y-4 px-4 sm:space-y-5 sm:px-6 lg:px-8' : 'space-y-5'}>
+                <div className={compactMobile ? 'hidden flex-wrap items-end justify-between gap-4 sm:flex' : 'flex flex-wrap items-end justify-between gap-4'}>
                     <div className="max-w-3xl space-y-1.5">
                         <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-primary">
                             <Sparkles size={14} aria-hidden="true"/>
@@ -114,7 +117,7 @@ export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 
 
                 <CustomerShopCategoryStrip activeKey={activeCategoryKey} onSelect={handleSelectCategory}/>
 
-                <div className="uav-bezel">
+                <div className={compactMobile ? 'uav-bezel hidden sm:block' : 'uav-bezel'}>
                     <div className="uav-bezel-core grid grid-cols-1 gap-2.5 px-4 py-3 text-xs text-slate-800 tabular-nums sm:grid-cols-3">
                         <div className="flex items-center gap-2">
                             <Lock size={15} className="shrink-0 text-slate-900" aria-hidden="true"/>
@@ -139,6 +142,7 @@ export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 
                     pricingModel={pricingModel}
                     province={province}
                     sortBy={sortBy}
+                    compactMobileDrawer={compactMobile}
                     onKeywordChange={val => { setKeyword(val); setPage(0); }}
                     onListingTypeChange={val => {
                         setListingType(val);

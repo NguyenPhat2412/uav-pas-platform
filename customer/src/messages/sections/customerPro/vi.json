@@ -411,6 +411,15 @@
     "pubOnSiteHours": "Thời gian triển khai dự kiến {hours} giờ · minh hoạ",
     "pubDeliveryHours": "Bàn giao dữ liệu dự kiến {hours} giờ · minh hoạ",
     "pubOpenRfqLink": "Cần tư vấn khu vực bay rộng? Liên hệ điều phối UAV PAS →",
-    "pubEscrowNote": "Khoản ký quỹ minh hoạ (hạn {days} ngày) được giữ an toàn và chỉ đối soát sau khi bạn nghiệm thu dữ liệu bàn giao."
+    "pubEscrowNote": "Khoản ký quỹ minh hoạ (hạn {days} ngày) được giữ an toàn và chỉ đối soát sau khi bạn nghiệm thu dữ liệu bàn giao.",
+    "providerRatingBadge": "{rating} ({count} lượt đánh giá đội bay)",
+    "reviewsEmptyWithProviderRating": "Chưa có nhận xét riêng cho gói dịch vụ này · Đội bay đạt {rating}/5 từ {count} chuyến bay đã xác thực.",
+    "mobileFilterToggle": "Bộ lọc",
+    "mobileFilterApply": "Xem {count} dịch vụ",
+    "bookingAuthHeading": "Tiếp tục đặt dịch vụ đã chọn",
+    "bookingAuthEscrow": "Ký quỹ {total} · Bảo vệ nghiệm thu {days} ngày",
+    "heroTrustEscrow": "Bảo vệ ký quỹ 7 ngày",
+    "heroTrustKyc": "100% đội bay thẩm định hồ sơ",
+    "heroTrustWorkflow": "Theo dõi bay & nghiệm thu số"
   }
 }

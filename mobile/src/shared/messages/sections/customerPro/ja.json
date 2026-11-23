@@ -411,6 +411,15 @@
     "pubOnSiteHours": "出動目安 {hours}時間 · 参考表示",
     "pubDeliveryHours": "データ納品目安 {hours}時間 · 参考表示",
     "pubOpenRfqLink": "広域エリアや個別要件のご相談はこちら →",
-    "pubEscrowNote": "エスクロー参考残高（期限 {days} 日）は安全に保全され、納品データの検収完了後に精算されます。"
+    "pubEscrowNote": "エスクロー参考残高（期限 {days} 日）は安全に保全され、納品データの検収完了後に精算されます。",
+    "providerRatingBadge": "{rating}（認証チーム評価 {count}件）",
+    "reviewsEmptyWithProviderRating": "このパッケージ個別のレビューはまだありません · 認証チームは過去 {count} 件の飛行で {rating}/5 の評価を獲得しています。",
+    "mobileFilterToggle": "絞り込み",
+    "mobileFilterApply": "{count}件のサービスを表示",
+    "bookingAuthHeading": "選択したサービスの登録を続行",
+    "bookingAuthEscrow": "エスクロー {total} · {days}日間の検収保護",
+    "heroTrustEscrow": "7日間のエスクロー保護",
+    "heroTrustKyc": "審査済み運航チームのみ掲載",
+    "heroTrustWorkflow": "飛行追跡とデジタル納品検収"
   }
 }

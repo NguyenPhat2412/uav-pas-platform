@@ -49,20 +49,28 @@ export const INITIAL_REGISTER_DRAFT: RegisterDraftState = {
 
 export type RunAuthAction = (fallbackError: string, action: () => Promise<void>) => Promise<void>;
 
+export interface AuthBookingContext {
+    title: string;
+    unitsSummary: string;
+    totalFormatted: string;
+    escrowDays: number;
+}
+
 interface AuthModalTopBarProps {
     view: AuthModalView;
+    staffGate?: boolean;
     onSwitchMode: (mode: 'login' | 'register') => void;
     onClose: () => void;
 }
 
-export function AuthModalTopBar({view, onSwitchMode, onClose}: AuthModalTopBarProps) {
+export function AuthModalTopBar({view, staffGate = false, onSwitchMode, onClose}: AuthModalTopBarProps) {
     return (
         <>
             <div className="flex items-center justify-between border-b border-slate-200 bg-slate-900 px-5 py-3 text-white">
                 <div className="flex items-center gap-2.5">
                     <span className="inline-block h-2 w-2 rounded-badge bg-primary" aria-hidden="true"/>
                     <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-slate-200">
-                        UAV PAS · CỔNG XÁC THỰC
+                        {staffGate ? 'UAV PAS · CỔNG NỘI BỘ' : 'UAV PAS · CỔNG XÁC THỰC'}
                     </span>
                 </div>
                 <Button
@@ -77,7 +85,7 @@ export function AuthModalTopBar({view, onSwitchMode, onClose}: AuthModalTopBarPr
                 </Button>
             </div>
 
-            {(view === 'login' || view === 'register') && (
+            {!staffGate && (view === 'login' || view === 'register') && (
                 <div className="grid grid-cols-2 border-b border-slate-200 bg-slate-50">
                     <Button
                         type="button"

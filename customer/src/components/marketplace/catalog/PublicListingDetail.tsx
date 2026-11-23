@@ -4,17 +4,20 @@ import {useState} from 'react';
 import Link from 'next/link';
 import {CheckCircle2, Lock, MapPin, ShieldCheck, Star} from 'lucide-react';
 import {ListingBookingCalculator} from '@/components/marketplace/catalog/ListingBookingCalculator';
-import {resolveListingPhoto} from '@/components/marketplace/catalog/MarketplaceListingCard';
+import {
+    localizeOfficialListingTitle,
+    resolveListingPhoto,
+} from '@/components/marketplace/catalog/MarketplaceListingCard';
 import {ServiceCategoryIcon} from '@/components/marketplace/shop/ServiceCategoryIcon';
 import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplace';
-import {resolveListingBadge, sanitizeMarketplaceName, sanitizeMarketplaceText} from '@/forms/project/project-form';
+import {resolveListingBadge, sanitizeMarketplaceText} from '@/forms/project/project-form';
 import {iconNameForMissionType} from '@/lib/marketplace/service-categories';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 import type {ListingType} from '@/types/marketplace/marketplace.types';
 
 export function PublicListingDetail({slug}: { slug: string }) {
-    const {t} = useI18n();
+    const {t, locale} = useI18n();
     const [imgFailed, setImgFailed] = useState(false);
     const query = usePublicListingDetail(slug);
     const listing = query.data?.listing;
@@ -58,8 +61,11 @@ export function PublicListingDetail({slug}: { slug: string }) {
         );
     }
 
-    const photo = resolveListingPhoto(listing);
+    const photo = resolveListingPhoto(listing, true);
     const badge = resolveListingBadge(listing);
+    const displayTitle = localizeOfficialListingTitle(listing.title, locale);
+    const listingReviewCount = reviews.length;
+    const providerReviewCount = badge.reviewCount;
 
     return (
         <div className="bg-slate-50/60 py-10 sm:py-14">
@@ -115,7 +121,7 @@ export function PublicListingDetail({slug}: { slug: string }) {
 
                             <div className="p-6 sm:p-8">
                                 <h1 className="m-0 text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
-                                    {sanitizeMarketplaceName(listing.title)}
+                                    {displayTitle}
                                 </h1>
                                 {listing.summary && (
                                     <p className="mt-2 text-sm font-normal leading-relaxed text-muted">
@@ -134,9 +140,14 @@ export function PublicListingDetail({slug}: { slug: string }) {
                                     </span>
                                     <span className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-amber-600">
                                         <Star size={14} className="fill-amber-400 text-amber-500" aria-hidden="true"/>
-                                        {badge.reviewCount > 0
-                                            ? `${badge.ratingAvg.toFixed(1)} (${badge.reviewCount})`
-                                            : t('publicSite.catalog.newListing')}
+                                        {listingReviewCount > 0
+                                            ? `${badge.ratingAvg.toFixed(1)} (${listingReviewCount})`
+                                            : providerReviewCount > 0
+                                                ? t('marketplaceShop.providerRatingBadge', {
+                                                      rating: badge.ratingAvg.toFixed(1),
+                                                      count: providerReviewCount,
+                                                  })
+                                                : t('publicSite.catalog.newListing')}
                                     </span>
                                 </div>
 
@@ -188,7 +199,14 @@ export function PublicListingDetail({slug}: { slug: string }) {
                                 {t('marketplaceShop.reviewsHeading')} ({reviews.length})
                             </h2>
                             {reviews.length === 0 ? (
-                                <p className="mt-2 text-xs text-slate-500">{t('marketplaceShop.reviewsEmpty')}</p>
+                                <p className="mt-2 text-xs text-slate-500">
+                                    {providerReviewCount > 0
+                                        ? t('marketplaceShop.reviewsEmptyWithProviderRating', {
+                                              rating: badge.ratingAvg.toFixed(1),
+                                              count: providerReviewCount,
+                                          })
+                                        : t('marketplaceShop.reviewsEmpty')}
+                                </p>
                             ) : (
                                 <div className="mt-4 divide-y divide-slate-100">
                                     {reviews.map(rev => (

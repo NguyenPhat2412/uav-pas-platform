@@ -18,6 +18,7 @@ export interface AuthLoginStepProps {
     usernameOrEmail: string;
     password: string;
     passwordLoginOpen: boolean;
+    staffGate?: boolean;
     submitting: boolean;
     invalid: (name: string) => true | undefined;
     onUsernameOrEmailChange: (value: string) => void;
@@ -32,6 +33,7 @@ export function AuthLoginStep({
     usernameOrEmail,
     password,
     passwordLoginOpen,
+    staffGate = false,
     submitting,
     invalid,
     onUsernameOrEmailChange,
@@ -55,18 +57,25 @@ export function AuthLoginStep({
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <div className="text-center">
+            <div className="space-y-1 text-center">
                 <h2 id="auth-modal-title" className="text-lg font-extrabold tracking-tight text-slate-900">
-                    Đăng nhập hệ thống
+                    {staffGate ? 'Đăng nhập cổng nội bộ' : 'Đăng nhập hệ thống'}
                 </h2>
+                {staffGate && (
+                    <p className="m-0 text-xs text-slate-500">
+                        Dành cho nhân sự vận hành và quản trị viên được cấp tài khoản.
+                    </p>
+                )}
             </div>
 
-            <AuthGoogleEntry
-                text="signin_with"
-                disabled={submitting}
-                runAuthAction={runAuthAction}
-                onSignInResult={onSignInResult}
-            />
+            {!staffGate && (
+                <AuthGoogleEntry
+                    text="signin_with"
+                    disabled={submitting}
+                    runAuthAction={runAuthAction}
+                    onSignInResult={onSignInResult}
+                />
+            )}
 
             {!passwordLoginOpen ? (
                 <Button
@@ -93,7 +102,8 @@ export function AuthLoginStep({
                             aria-invalid={invalid('usernameOrEmail')}
                             type="text"
                             autoComplete="username"
-                            aria-required
+                            required
+                            aria-required="true"
                             disabled={submitting}
                             value={usernameOrEmail}
                             onChange={(e) => onUsernameOrEmailChange(e.target.value)}
@@ -124,7 +134,8 @@ export function AuthLoginStep({
                                 aria-invalid={invalid('password')}
                                 type={showPassword ? 'text' : 'password'}
                                 autoComplete="current-password"
-                                aria-required
+                                required
+                                aria-required="true"
                                 disabled={submitting}
                                 value={password}
                                 onChange={(e) => onPasswordChange(e.target.value)}

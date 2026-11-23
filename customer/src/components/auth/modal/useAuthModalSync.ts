@@ -3,7 +3,11 @@
 import {useCallback, useEffect, useState} from 'react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import type {AuthModalView, TwoFactorMethod} from '@/types/auth/auth.types';
-import {type AuthChallengeState, INITIAL_CHALLENGE} from '@/components/auth/modal/AuthModalChrome';
+import {
+    type AuthBookingContext,
+    type AuthChallengeState,
+    INITIAL_CHALLENGE,
+} from '@/components/auth/modal/AuthModalChrome';
 
 interface UseAuthModalSyncOptions {
     eventName: string;
@@ -23,6 +27,7 @@ export function useAuthModalSync({
     const [isOpen, setIsOpen] = useState(false);
     const [view, setView] = useState<AuthModalView>('login');
     const [nextPath, setNextPath] = useState<string | null>(null);
+    const [bookingContext, setBookingContext] = useState<AuthBookingContext | null>(null);
     const [passwordLoginOpen, setPasswordLoginOpen] = useState(() =>
         isStaffPortalPath(searchParams.get('next')),
     );
@@ -45,19 +50,25 @@ export function useAuthModalSync({
         }
         if (authQuery === 'login' || authQuery === 'register' || authQuery === 'forgot') {
             onClearFeedback();
-            setPasswordLoginOpen(isStaffPortalPath(nextQuery));
-            setView(authQuery === 'forgot' ? 'forgot-password' : authQuery);
+            const isStaff = isStaffPortalPath(nextQuery);
+            setPasswordLoginOpen(isStaff);
+            setBookingContext(null);
+            setView(authQuery === 'forgot' ? 'forgot-password' : isStaff ? 'login' : authQuery);
             setIsOpen(true);
         }
     }
 
     useEffect(() => {
         const handleCustomOpen = (event: Event) => {
-            const detail = (event as CustomEvent<{ view: AuthModalView; next?: string }>).detail;
+            const detail = (
+                event as CustomEvent<{view: AuthModalView; next?: string; bookingContext?: AuthBookingContext}>
+            ).detail;
             onClearFeedback();
-            setView(detail?.view ?? 'login');
-            setPasswordLoginOpen(isStaffPortalPath(detail?.next));
-            if (detail?.next) setNextPath(detail.next);
+            const isStaff = isStaffPortalPath(detail?.next);
+            setView(isStaff ? 'login' : (detail?.view ?? 'login'));
+            setPasswordLoginOpen(isStaff);
+            setNextPath(detail?.next ?? null);
+            setBookingContext(detail?.bookingContext ?? null);
             setIsOpen(true);
         };
         window.addEventListener(eventName, handleCustomOpen);
@@ -76,6 +87,7 @@ export function useAuthModalSync({
         setIsOpen(false);
         // A later open (e.g. from the header) must not reuse the deep link this one was opened for.
         setNextPath(null);
+        setBookingContext(null);
         onClearFeedback();
         if (searchParams.has('auth') || searchParams.has('next')) {
             const params = new URLSearchParams(searchParams.toString());
@@ -137,6 +149,8 @@ export function useAuthModalSync({
         setView,
         nextPath,
         setNextPath,
+        bookingContext,
+        setBookingContext,
         passwordLoginOpen,
         setPasswordLoginOpen,
         challenge,

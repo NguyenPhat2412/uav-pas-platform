@@ -213,7 +213,7 @@ export function PublicHeader() {
                 <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="UAV PAS">
                     <Image
                         src="/uav-pas-logo.svg"
-                        alt=""
+                        alt="UAV PAS"
                         width={42}
                         height={42}
                         priority

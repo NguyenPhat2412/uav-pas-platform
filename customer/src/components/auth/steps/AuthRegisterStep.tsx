@@ -109,7 +109,8 @@ export function AuthRegisterStep({
                                 aria-invalid={invalid('username')}
                                 type="text"
                                 autoComplete="username"
-                                aria-required
+                                required
+                                aria-required="true"
                                 disabled={submitting}
                                 value={draft.username}
                                 onChange={(e) => onDraftChange({username: e.target.value})}
@@ -129,7 +130,8 @@ export function AuthRegisterStep({
                                 aria-invalid={invalid('phoneNumber')}
                                 type="tel"
                                 autoComplete="tel"
-                                aria-required
+                                required
+                                aria-required="true"
                                 disabled={submitting}
                                 value={draft.phoneNumber}
                                 onChange={(e) => onDraftChange({phoneNumber: e.target.value})}
@@ -151,7 +153,8 @@ export function AuthRegisterStep({
                             aria-invalid={invalid('email')}
                             type="email"
                             autoComplete="email"
-                            aria-required
+                            required
+                            aria-required="true"
                             disabled={submitting}
                             value={draft.email}
                             onChange={(e) => onDraftChange({email: e.target.value})}
@@ -174,7 +177,8 @@ export function AuthRegisterStep({
                                     aria-invalid={invalid('password')}
                                     type={showPassword ? 'text' : 'password'}
                                     autoComplete="new-password"
-                                    aria-required
+                                    required
+                                    aria-required="true"
                                     disabled={submitting}
                                     value={draft.password}
                                     onChange={(e) => onDraftChange({password: e.target.value})}
@@ -205,7 +209,8 @@ export function AuthRegisterStep({
                                 aria-invalid={invalid('confirmPassword')}
                                 type={showPassword ? 'text' : 'password'}
                                 autoComplete="new-password"
-                                aria-required
+                                required
+                                aria-required="true"
                                 disabled={submitting}
                                 value={draft.confirmPassword}
                                 onChange={(e) => onDraftChange({confirmPassword: e.target.value})}

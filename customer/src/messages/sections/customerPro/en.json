@@ -411,6 +411,15 @@
     "pubOnSiteHours": "Estimated deployment within {hours}h · illustrative",
     "pubDeliveryHours": "Estimated data handover within {hours}h · illustrative",
     "pubOpenRfqLink": "Large flight area or custom scope? Contact UAV PAS coordination →",
-    "pubEscrowNote": "Illustrative escrow (due in {days} days) is held safely and settled only after you accept deliverables."
+    "pubEscrowNote": "Illustrative escrow (due in {days} days) is held safely and settled only after you accept deliverables.",
+    "providerRatingBadge": "{rating} ({count} verified fleet ratings)",
+    "reviewsEmptyWithProviderRating": "No direct reviews for this package yet · Verified team holds {rating}/5 across {count} completed flights.",
+    "mobileFilterToggle": "Filters",
+    "mobileFilterApply": "Show {count} services",
+    "bookingAuthHeading": "Continue with your selected service",
+    "bookingAuthEscrow": "Escrow {total} · {days}-day handover protection",
+    "heroTrustEscrow": "7-day escrow protection",
+    "heroTrustKyc": "100% KYC-verified flight teams",
+    "heroTrustWorkflow": "Live flight tracking & digital handover"
   }
 }

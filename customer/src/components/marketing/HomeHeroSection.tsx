@@ -4,8 +4,9 @@ import {useEffect, useState, type FormEvent} from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
-import {ArrowRight, Search, ShieldCheck} from 'lucide-react';
+import {ArrowRight, CheckCircle2, Lock, Search, ShieldCheck} from 'lucide-react';
 import {customerUrl} from '@/content/marketing/origins';
+import {trackAbEvent, useAbExperiment} from '@/lib/experiments/ab-experiments';
 import {useI18n} from '@/providers/I18nContext';
 
 const HERO_SLIDES = [
@@ -17,6 +18,7 @@ const HERO_SLIDES = [
 export function HomeHeroSection() {
     const {t} = useI18n();
     const router = useRouter();
+    const heroTrustVariant = useAbExperiment('hero_trust_strip');
     const [query, setQuery] = useState('');
     const [slideIdx, setSlideIdx] = useState(0);
 
@@ -83,6 +85,7 @@ export function HomeHeroSection() {
                     <div className="flex flex-wrap items-center gap-2.5 pt-1">
                         <Link
                             href="/services"
+                            onClick={() => trackAbEvent('hero_trust_strip', heroTrustVariant, 'hero_cta_click', {target: '/services'})}
                             className="inline-flex min-h-11 items-center gap-1.5 rounded-control bg-primary px-5 text-xs font-bold whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary-hover sm:text-sm"
                         >
                             <span>{t('publicSite.homeRedesign.heroPrimaryCta')}</span>
@@ -90,11 +93,29 @@ export function HomeHeroSection() {
                         </Link>
                         <Link
                             href={`${customerUrl}/provider/onboarding`}
+                            onClick={() => trackAbEvent('hero_trust_strip', heroTrustVariant, 'hero_secondary_cta_click', {target: '/customer/provider/onboarding'})}
                             className="inline-flex min-h-11 items-center justify-center rounded-control border border-slate-300 bg-white px-5 text-xs font-bold whitespace-nowrap text-slate-800 transition-colors hover:border-primary hover:text-primary sm:text-sm"
                         >
                             {t('publicSite.homeRedesign.heroSecondaryCta')}
                         </Link>
                     </div>
+
+                    {heroTrustVariant === 'treatment' && (
+                        <ul className="m-0 flex list-none flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-100 pt-3 p-0 text-xs font-medium text-slate-600">
+                            <li className="inline-flex items-center gap-1.5">
+                                <Lock size={13} className="shrink-0 text-slate-800" aria-hidden="true"/>
+                                <span>{t('marketplaceShop.heroTrustEscrow')}</span>
+                            </li>
+                            <li className="inline-flex items-center gap-1.5">
+                                <CheckCircle2 size={13} className="shrink-0 text-primary" aria-hidden="true"/>
+                                <span>{t('marketplaceShop.heroTrustKyc')}</span>
+                            </li>
+                            <li className="inline-flex items-center gap-1.5">
+                                <ShieldCheck size={13} className="shrink-0 text-slate-800" aria-hidden="true"/>
+                                <span>{t('marketplaceShop.heroTrustWorkflow')}</span>
+                            </li>
+                        </ul>
+                    )}
                 </div>
 
                 <div className="lg:col-span-5">

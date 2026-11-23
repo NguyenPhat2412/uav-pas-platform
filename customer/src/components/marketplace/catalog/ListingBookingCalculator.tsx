@@ -3,15 +3,21 @@
 import {useState} from 'react';
 import Link from 'next/link';
 import {ArrowUpRight, Clock3} from 'lucide-react';
+import {openAuthModal} from '@/components/auth/modal/AuthModalPopup';
+import {localizeOfficialListingTitle} from '@/components/marketplace/catalog/MarketplaceListingCard';
 import {RequiredMark} from '@/components/ui';
 import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
 import {estimateBookingSubtotal, formatVndCompact} from '@/forms/marketplace/marketplace-forms';
+import {trackAbEvent, useAbExperiment} from '@/lib/experiments/ab-experiments';
+import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import type {MarketplaceListing, PricingModel} from '@/types/marketplace/marketplace.types';
 
 export function ListingBookingCalculator({listing}: { listing: MarketplaceListing }) {
-    const {t} = useI18n();
+    const {t, locale} = useI18n();
+    const {user} = useAuth();
     const {invoiceDueDays, rfqEnabled} = useSiteInfo();
+    const authVariant = useAbExperiment('in_place_booking_auth');
     const [unitsInput, setUnitsInput] = useState<string>('');
 
     const unitTextOf = (model: PricingModel) => {
@@ -120,15 +126,47 @@ export function ListingBookingCalculator({listing}: { listing: MarketplaceListin
                         )}
                     </div>
 
-                    <Link
-                        href={`/customer/services/${encodeURIComponent(listing.slug)}?subscribe=1&units=${encodeURIComponent(String(Math.max(parsedUnits || minUnits, minUnits)))}`}
-                        className="group inline-flex min-h-11 w-full items-center justify-between rounded-control bg-primary pr-3 pl-5 text-xs font-semibold whitespace-nowrap text-primary-foreground shadow-xs transition-[background-color,transform] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-primary-hover active:scale-[0.985]"
-                    >
-                        <span>{t('marketplaceShop.subscribeForProject')}</span>
-                        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/15 transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5">
-                            <ArrowUpRight size={14} aria-hidden="true"/>
-                        </span>
-                    </Link>
+                    {!user && authVariant === 'treatment' ? (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const effectiveUnits = Math.max(parsedUnits || minUnits, minUnits);
+                                const nextHref = `/customer/services/${encodeURIComponent(listing.slug)}?subscribe=1&units=${encodeURIComponent(String(effectiveUnits))}`;
+                                trackAbEvent('in_place_booking_auth', 'treatment', 'click_subscribe_cta', {
+                                    slug: listing.slug,
+                                    units: effectiveUnits,
+                                });
+                                openAuthModal('login', nextHref, {
+                                    title: localizeOfficialListingTitle(listing.title, locale),
+                                    unitsSummary: `${effectiveUnits} ${unitText}`,
+                                    totalFormatted: formatVndCompact(subtotal + deposit),
+                                    escrowDays: invoiceDueDays,
+                                });
+                            }}
+                            className="group inline-flex min-h-11 w-full cursor-pointer items-center justify-between rounded-control bg-primary pr-3 pl-5 text-xs font-semibold whitespace-nowrap text-primary-foreground shadow-xs transition-[background-color,transform] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-primary-hover active:scale-[0.985]"
+                        >
+                            <span>{t('marketplaceShop.subscribeForProject')}</span>
+                            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/15 transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5">
+                                <ArrowUpRight size={14} aria-hidden="true"/>
+                            </span>
+                        </button>
+                    ) : (
+                        <Link
+                            href={`/customer/services/${encodeURIComponent(listing.slug)}?subscribe=1&units=${encodeURIComponent(String(Math.max(parsedUnits || minUnits, minUnits)))}`}
+                            onClick={() =>
+                                trackAbEvent('in_place_booking_auth', authVariant, 'click_subscribe_cta', {
+                                    slug: listing.slug,
+                                    units: Math.max(parsedUnits || minUnits, minUnits),
+                                })
+                            }
+                            className="group inline-flex min-h-11 w-full items-center justify-between rounded-control bg-primary pr-3 pl-5 text-xs font-semibold whitespace-nowrap text-primary-foreground shadow-xs transition-[background-color,transform] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-primary-hover active:scale-[0.985]"
+                        >
+                            <span>{t('marketplaceShop.subscribeForProject')}</span>
+                            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/15 transition-transform duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5">
+                                <ArrowUpRight size={14} aria-hidden="true"/>
+                            </span>
+                        </Link>
+                    )}
 
                     {rfqEnabled && (
                         <Link

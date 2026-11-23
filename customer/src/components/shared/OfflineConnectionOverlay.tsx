@@ -154,15 +154,17 @@ function LostLinkDroneSvg() {
 
 /** Full-screen UAV PAS Connection & Maintenance status overlay across Customer, Operations, and Admin portals. */
 export function OfflineConnectionOverlay() {
-    const [browserOffline, setBrowserOffline] = useState(false);
+    const [browserOffline, setBrowserOffline] = useState<boolean>(() =>
+        typeof window !== 'undefined' ? !window.navigator.onLine : false,
+    );
     const [transportState, setTransportState] = useState<TransportState>('online');
     const [dismissed, setDismissed] = useState(false);
     const [checking, setChecking] = useState(false);
-    const [lang, setLang] = useState<SupportedLang>('vi');
+    const [lang, setLang] = useState<SupportedLang>(() => readLang());
 
     useEffect(() => {
-        setLang(readLang());
         const syncNetwork = () => {
+            setLang(readLang());
             const offline = !window.navigator.onLine;
             setBrowserOffline(offline);
             if (!offline) {
@@ -170,12 +172,12 @@ export function OfflineConnectionOverlay() {
             }
         };
         const onTransport = (event: Event) => {
+            setLang(readLang());
             const detail = (event as CustomEvent<{ state?: TransportState }>).detail;
             if (!detail?.state) return;
             setTransportState(detail.state);
             if (detail.state === 'online') setDismissed(false);
         };
-        setBrowserOffline(!window.navigator.onLine);
         window.addEventListener('offline', syncNetwork);
         window.addEventListener('online', syncNetwork);
         window.addEventListener(TRANSPORT_EVENT, onTransport);

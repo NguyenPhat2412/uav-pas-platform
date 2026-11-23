@@ -1,9 +1,12 @@
 'use client';
 
 import React, {useCallback, useRef, useState} from 'react';
+import {Lock} from 'lucide-react';
 import {Alert} from '@/components/ui';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
+import {trackAbEvent} from '@/lib/experiments/ab-experiments';
 import {useAuth} from '@/providers/AuthContext';
+import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import {authErrorMessage, authFieldErrors} from '@/forms/auth/auth-form';
 import type {AuthModalView, AuthResponse} from '@/types/auth/auth.types';
@@ -11,6 +14,7 @@ import {availablePortalsForRole, canUsePortal, type Portal, portalForRole, porta
 import {navigatePortalPath, safeNextPath} from '@/utils/auth/auth-entry';
 import {AuthLoginStep} from '@/components/auth/steps/AuthLoginStep';
 import {
+    type AuthBookingContext,
     AuthModalTopBar,
     INITIAL_REGISTER_DRAFT,
     type RegisterDraftState,
@@ -21,15 +25,19 @@ import {AuthRegisterStep} from '@/components/auth/steps/AuthRegisterStep';
 import {AuthVerificationStep} from '@/components/auth/steps/AuthVerificationStep';
 import {useAuthModalSync} from '@/components/auth/modal/useAuthModalSync';
 
-export type {AuthModalView};
+export type {AuthBookingContext, AuthModalView};
 
 export const OPEN_AUTH_MODAL_EVENT = 'uav:open-auth-modal';
 
-export function openAuthModal(view: 'login' | 'register' | 'forgot-password' = 'login', next?: string) {
+export function openAuthModal(
+    view: 'login' | 'register' | 'forgot-password' = 'login',
+    next?: string,
+    bookingContext?: AuthBookingContext,
+) {
     if (typeof window === 'undefined') return;
     window.dispatchEvent(
-        new CustomEvent<{ view: AuthModalView; next?: string }>(OPEN_AUTH_MODAL_EVENT, {
-            detail: {view, next},
+        new CustomEvent<{view: AuthModalView; next?: string; bookingContext?: AuthBookingContext}>(OPEN_AUTH_MODAL_EVENT, {
+            detail: {view, next, bookingContext},
         }),
     );
 }
@@ -57,6 +65,7 @@ function isStaffPortalPath(next: string | null | undefined): boolean {
 
 export function AuthModalPopup() {
     const {completeAuth} = useAuth();
+    const {t} = useI18n();
     const dialogRef = useRef<HTMLDivElement>(null);
 
     const [submitting, setSubmitting] = useState(false);
@@ -82,6 +91,8 @@ export function AuthModalPopup() {
         setView,
         nextPath,
         setNextPath,
+        bookingContext,
+        setBookingContext,
         passwordLoginOpen,
         setPasswordLoginOpen,
         challenge,
@@ -102,6 +113,11 @@ export function AuthModalPopup() {
     const finishAuthentication = (response: AuthResponse, welcomeMessage: string) => {
         completeAuth(response);
         toast.success(welcomeMessage, 'Xác thực thành công');
+        if (bookingContext) {
+            trackAbEvent('in_place_booking_auth', 'treatment', 'auth_completed_booking_start', {
+                destination: nextPath ?? '',
+            });
+        }
         const portals = availablePortalsForRole(response.user?.role);
         if (!nextPath && portals.length > 1) {
             setAuthenticatedPortals(portals);
@@ -111,6 +127,7 @@ export function AuthModalPopup() {
         setIsOpen(false);
         const dest = resolvePostLoginPath(response.user?.role, nextPath);
         setNextPath(null);
+        setBookingContext(null);
         navigatePortalPath(dest, (href) => router.push(href));
     };
 
@@ -171,6 +188,8 @@ export function AuthModalPopup() {
         setView(target);
     };
 
+    const staffGate = isStaffPortalPath(nextPath);
+
     return (
         <div
             ref={dialogRef}
@@ -184,9 +203,32 @@ export function AuthModalPopup() {
             }}
         >
             <div className="relative w-full max-w-[440px] overflow-hidden rounded-overlay border border-slate-200 bg-white text-slate-900 shadow-2xl">
-                <AuthModalTopBar view={view} onSwitchMode={switchView} onClose={closeModal}/>
+                <AuthModalTopBar view={view} staffGate={staffGate} onSwitchMode={switchView} onClose={closeModal}/>
 
                 <div className="p-6">
+                    {bookingContext && (view === 'login' || view === 'register') && (
+                        <div className="mb-4 rounded-panel border border-slate-200 bg-slate-50 p-3 text-xs tabular-nums">
+                            <div className="flex items-center justify-between gap-2">
+                                <span className="font-semibold text-primary">
+                                    {t('marketplaceShop.bookingAuthHeading')}
+                                </span>
+                                <span className="font-bold text-slate-900">{bookingContext.totalFormatted}</span>
+                            </div>
+                            <p className="m-0 mt-1 line-clamp-1 font-semibold text-slate-800">
+                                {bookingContext.title} · {bookingContext.unitsSummary}
+                            </p>
+                            <p className="m-0 mt-1 flex items-center gap-1.5 text-[11px] text-slate-600">
+                                <Lock size={12} className="shrink-0 text-slate-700" aria-hidden="true"/>
+                                <span>
+                                    {t('marketplaceShop.bookingAuthEscrow', {
+                                        total: bookingContext.totalFormatted,
+                                        days: bookingContext.escrowDays,
+                                    })}
+                                </span>
+                            </p>
+                        </div>
+                    )}
+
                     {error && (
                         <Alert
                             variant="error"
@@ -201,6 +243,7 @@ export function AuthModalPopup() {
                             usernameOrEmail={usernameOrEmail}
                             password={loginPassword}
                             passwordLoginOpen={passwordLoginOpen}
+                            staffGate={staffGate}
                             submitting={submitting}
                             invalid={invalid}
                             onUsernameOrEmailChange={setUsernameOrEmail}
