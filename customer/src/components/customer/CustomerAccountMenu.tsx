@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {ChevronDown, CreditCard, LogOut, Radar, ShieldCheck, UserRound} from 'lucide-react';
+import {ChevronDown, CreditCard, LogOut, Radar, ShieldCheck, Store, UserRound} from 'lucide-react';
 import {Avatar} from '@/components/shared/Avatar';
 import {Button, Card} from '@/components/ui';
 import {useDropdownMenu} from '@/hooks/useDropdownMenu';
@@ -62,6 +62,9 @@ export function CustomerAccountMenu({name}: { name: string }) {
                     </Link>
                     <Link role="menuitem" href="/customer/billing" onClick={close} className={itemClass}>
                         <CreditCard size={16} aria-hidden="true"/>{t('account.billing')}
+                    </Link>
+                    <Link role="menuitem" href="/customer/provider/listings" onClick={close} className={itemClass}>
+                        <Store size={16} aria-hidden="true"/>{t('marketplaceShop.sellerStudioTitle')}
                     </Link>
                     {canUsePortal(user?.role, 'operations') && (
                         <a role="menuitem" href={resolvePortalHref('/operations/overview')} onClick={close} className={itemClass}>

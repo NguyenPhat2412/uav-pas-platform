@@ -64,10 +64,10 @@ export function PricingPageView() {
             scene="rentalFleet"
         >
             <div className="space-y-12">
-                {/* Customer Free Account Card */}
+                {/* Customer Free Account Card — prominently highlighted above Partner SaaS tiers */}
                 <section
                     aria-labelledby="pricing-customer-heading"
-                    className="flex flex-col justify-between gap-5 rounded-2xl border border-slate-200 bg-slate-50/70 p-6 sm:flex-row sm:items-center"
+                    className="flex flex-col justify-between gap-5 rounded-2xl border-2 border-primary/25 bg-uav-red-light/40 p-6 shadow-xs sm:flex-row sm:items-center"
                 >
                     <div className="space-y-2">
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-uav-red-light px-3 py-1 text-xs font-bold text-primary">

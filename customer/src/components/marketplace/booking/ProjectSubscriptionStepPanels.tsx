@@ -139,16 +139,21 @@ export function ProjectStepPanel({
     );
 }
 
-export function AreaStepPanel({
-    areaGeoJson,
-    flightPlan,
-    onFlightPlanChange,
-}: {
-    areaGeoJson: string;
-    flightPlan: FlightPlanInput;
-    onFlightPlanChange: (next: FlightPlanInput) => void;
+const QUICK_REGION_PRESETS = [
+    {label: 'TP. Hồ Chí Minh', lat: 10.7769, lng: 106.7009}, {label: 'Hà Nội', lat: 21.0285, lng: 105.8542},
+    {label: 'Đà Nẵng', lat: 16.0544, lng: 108.2022}, {label: 'Cần Thơ', lat: 10.0452, lng: 105.7469},
+    {label: 'Bình Dương', lat: 10.9804, lng: 106.6519}, {label: 'Bắc Ninh', lat: 21.1861, lng: 106.0763},
+] as const;
+
+export function AreaStepPanel({areaGeoJson, flightPlan, onFlightPlanChange}: {
+    areaGeoJson: string; flightPlan: FlightPlanInput; onFlightPlanChange: (next: FlightPlanInput) => void;
 }) {
     const {t} = useI18n();
+    const jumpToRegion = (lat: number, lng: number) => {
+        const d = 0.004;
+        onFlightPlanChange({...flightPlan, areaType: 'POLYGON', takeoffLatitude: lat, takeoffLongitude: lng, vertices: [[lat - d, lng - d], [lat - d, lng + d], [lat + d, lng + d], [lat + d, lng - d]]});
+    };
+
     return (
         <div className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -161,6 +166,18 @@ export function AreaStepPanel({
                     <MapPin size={12} aria-hidden="true"/>
                     {areaGeoJson ? t('marketplaceShop.areaReady') : t('marketplaceShop.stepArea')}
                 </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label={t('marketplaceShop.projectProvince')}>
+                {QUICK_REGION_PRESETS.map(region => (
+                    <button
+                        key={region.label}
+                        type="button"
+                        onClick={() => jumpToRegion(region.lat, region.lng)}
+                        className="min-h-8 cursor-pointer rounded-badge border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 transition-colors hover:border-primary hover:bg-uav-red-light hover:text-primary"
+                    >
+                        {region.label}
+                    </button>
+                ))}
             </div>
             <LocationPicker plan={flightPlan} onChange={nextPlan => onFlightPlanChange(nextPlan)}/>
         </div>

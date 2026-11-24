@@ -2,8 +2,6 @@
 
 import {useState} from 'react';
 import {ArrowUpDown, Search, SlidersHorizontal, X} from 'lucide-react';
-import {missionTypes} from '@/forms/mission/mission-form';
-import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 import type {ListingSortOption, ListingType, PricingModel} from '@/types/marketplace/marketplace.types';
 import type {MissionType} from '@/types/mission/mission.types';
@@ -19,7 +17,6 @@ export function MarketplaceFilterBar({
     compactMobileDrawer = false,
     onKeywordChange,
     onListingTypeChange,
-    onMissionTypeChange,
     onPricingModelChange,
     onProvinceChange,
     onSortByChange,
@@ -34,7 +31,7 @@ export function MarketplaceFilterBar({
     compactMobileDrawer?: boolean;
     onKeywordChange: (val: string) => void;
     onListingTypeChange: (val: ListingType | '') => void;
-    onMissionTypeChange: (val: MissionType | '') => void;
+    onMissionTypeChange?: (val: MissionType | '') => void;
     onPricingModelChange: (val: PricingModel | '') => void;
     onProvinceChange: (val: string) => void;
     onSortByChange: (val: ListingSortOption) => void;
@@ -154,7 +151,7 @@ export function MarketplaceFilterBar({
                     </label>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 rounded-panel border border-slate-200 bg-slate-50/80 p-3.5 sm:grid-cols-2 lg:grid-cols-6">
+                <div className="grid grid-cols-1 gap-3 rounded-panel border border-slate-200 bg-slate-50/80 p-3.5 sm:grid-cols-2 lg:grid-cols-4">
                     <label className={`relative lg:col-span-2 ${compactMobileDrawer ? 'hidden sm:block' : ''}`}>
                         <span className="sr-only">{t('common.search')}</span>
                         <Search size={15} aria-hidden="true" className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"/>
@@ -166,24 +163,6 @@ export function MarketplaceFilterBar({
                             className="h-10 w-full rounded-control border border-slate-200 bg-white pr-3 pl-9 text-xs font-medium text-slate-900 outline-none focus:border-primary"
                         />
                     </label>
-                    <select
-                        aria-label={t('publicSite.catalog.allListingTypes')}
-                        value={listingType}
-                        onChange={e => onListingTypeChange(e.target.value as ListingType | '')}
-                        className="h-10 w-full rounded-control border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 outline-none focus:border-primary"
-                    >
-                        <option value="">{t('publicSite.catalog.allListingTypes')}</option>
-                        {listingTypes.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                    </select>
-                    <select
-                        aria-label={t('publicSite.catalog.allMissionTypes')}
-                        value={missionType}
-                        onChange={e => onMissionTypeChange(e.target.value as MissionType | '')}
-                        className="h-10 w-full rounded-control border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 outline-none focus:border-primary"
-                    >
-                        <option value="">{t('publicSite.catalog.allMissionTypes')}</option>
-                        {missionTypes.map(type => <option key={type} value={type}>{displayLabel(type)}</option>)}
-                    </select>
                     <select
                         aria-label={t('publicSite.catalog.allPricingModels')}
                         value={pricingModel}

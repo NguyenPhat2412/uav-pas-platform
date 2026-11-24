@@ -37,13 +37,20 @@ export function SarCockpitPanel() {
     if (missionsQuery.isPending) return <div className="flex min-h-[320px] items-center justify-center"><Spinner label={t('opsShared.sar.cockpit.loading')}/></div>;
     if (missionsQuery.isError) return <p role="alert" className="m-0 rounded-panel border border-l-4 border-rose-200 border-l-primary bg-uav-red-light p-4 text-sm text-primary">
         {t('opsShared.sar.cockpit.loadError')}</p>;
-    if (!mission) return <div className="rounded-panel border border-border bg-card p-8 text-center">
-        <LifeBuoy size={28} className="mx-auto text-slate-400" aria-hidden="true"/>
-        <h2 className="mt-3 text-base font-bold text-slate-900">{t('opsShared.sar.cockpit.emptyTitle')}</h2>
-        <p className="mx-auto mt-1 max-w-md text-sm text-slate-500">{t('opsShared.sar.cockpit.emptyBody')}</p>
-        <Link href="/operations/dispatch/missions" className="mt-4 inline-flex text-sm font-semibold text-primary hover:underline">
-            {t('opsShared.sar.cockpit.openDispatch')}</Link>
-    </div>;
+    if (!mission) {
+        const canDispatch = can('MISSION_CONFIRM') || can('MISSION_VIEW_ALL');
+        return <div className="rounded-panel border border-border bg-card p-8 text-center">
+            <LifeBuoy size={28} className="mx-auto text-slate-400" aria-hidden="true"/>
+            <h2 className="mt-3 text-base font-bold text-slate-900">{t('opsShared.sar.cockpit.emptyTitle')}</h2>
+            <p className="mx-auto mt-1 max-w-md text-sm text-slate-500">{t('opsShared.sar.cockpit.emptyBody')}</p>
+            <Link
+                href={canDispatch ? '/operations/dispatch/missions' : '/operations/assigned-missions'}
+                className="mt-4 inline-flex text-sm font-semibold text-primary hover:underline"
+            >
+                {canDispatch ? t('opsShared.sar.cockpit.openDispatch') : t('opsNav.assignedMissions')}
+            </Link>
+        </div>;
+    }
 
     return <MissionCockpit key={mission.missionId} mission={mission} missions={missions} onChoose={setChosenId}
                            canOperate={can('MISSION_STATUS_UPDATE') || can('MISSION_VIEW_ALL')}/>;

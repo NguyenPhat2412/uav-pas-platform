@@ -244,8 +244,9 @@
   "marketplaceShop": {
     "illustrative": "illustrative",
     "illustrativePriceNote": "Illustrative rate",
-    "subscribeForProject": "Subscribe for project",
+    "subscribeForProject": "Book for project",
     "exploreCatalog": "Explore services",
+    "sellerStudioTitle": "Provider Studio",
     "platformManagedTitle": "Managed by UAV PAS",
     "platformManagedDesc": "UAV PAS verifies partner capabilities and automatically dispatches a suitable crew near your project.",
     "searchPlaceholder": "Search inspection, aerial video, UAV rental…",

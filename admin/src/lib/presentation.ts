@@ -58,6 +58,7 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         FLIGHT_SERVICE: 'Flight service', WET_LEASE: 'Wet lease', DRY_LEASE: 'Equipment lease',
         PER_HOUR: 'Per hour', PER_HECTARE: 'Per hectare', PER_DAY: 'Per day', PER_PACKAGE: 'Per package',
         ARCHIVED: 'Archived', ENDED: 'Ended', ONE_TIME: 'One-time', WEEKLY: 'Weekly',
+        MARKETPLACE: 'Marketplace', PAYOUT: 'Settlement & Payouts', SUPPORT: 'Support',
     },
     ja: {
         DRAFT: '下書き', PENDING_CONFIRMATION: '確認待ち', CONFIRMED: '確認済み', RESOURCE_RESERVED: 'リソース手配済み',
@@ -99,6 +100,7 @@ const labelTranslations: Record<'en' | 'ja', Record<string, string>> = {
         FLIGHT_SERVICE: '飛行サービス', WET_LEASE: '操縦士付き', DRY_LEASE: '機体レンタル',
         PER_HOUR: '時間単位', PER_HECTARE: 'ha単位', PER_DAY: '日単位', PER_PACKAGE: 'パッケージ',
         ARCHIVED: 'アーカイブ済み', ENDED: '終了', ONE_TIME: '単発', WEEKLY: '毎週',
+        MARKETPLACE: 'マーケットプレイス', PAYOUT: '精算・出金', SUPPORT: 'サポート',
     },
 };
 
@@ -252,6 +254,9 @@ const labels: Record<string, string> = {
     ENDED: 'Đã kết thúc',
     ONE_TIME: 'Một lần',
     WEEKLY: 'Hàng tuần',
+    MARKETPLACE: 'Sàn dịch vụ UAV',
+    PAYOUT: 'Đối soát & Giải ngân',
+    SUPPORT: 'Hỗ trợ khách hàng',
 };
 
 export function displayLabel(value?: string | null): string {

@@ -244,8 +244,9 @@
   "marketplaceShop": {
     "illustrative": "minh hoạ",
     "illustrativePriceNote": "Đơn giá minh hoạ",
-    "subscribeForProject": "Đăng ký cho dự án",
+    "subscribeForProject": "Đặt dịch vụ cho dự án",
     "exploreCatalog": "Khám phá dịch vụ",
+    "sellerStudioTitle": "Kênh đối tác cung cấp",
     "platformManagedTitle": "Dịch vụ điều phối bởi UAV PAS",
     "platformManagedDesc": "Nền tảng UAV PAS thẩm định năng lực và tự động ghép đội bay phù hợp gần khu vực dự án của bạn.",
     "searchPlaceholder": "Tìm dịch vụ khảo sát, quay chụp, thuê UAV…",
