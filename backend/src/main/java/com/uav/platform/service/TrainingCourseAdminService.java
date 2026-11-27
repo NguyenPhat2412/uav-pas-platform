@@ -1,0 +1,35 @@
+package com.uav.platform.service;
+
+import com.uav.platform.dto.request.CreateTrainingAssetRequest;
+import com.uav.platform.dto.request.UpdateCourseCoverRequest;
+import com.uav.platform.dto.request.UpsertTrainingLessonRequest;
+import com.uav.platform.dto.response.TrainingAssetResponse;
+import com.uav.platform.dto.response.TrainingAssetUploadResponse;
+import com.uav.platform.dto.response.TrainingLessonAdminResponse;
+
+import org.springframework.security.core.Authentication;
+
+import java.io.InputStream;
+import java.util.List;
+
+/** Course authoring: lessons, cover and uploaded media. Callers hold USER_PERMISSION_MANAGE. */
+public interface TrainingCourseAdminService {
+
+    List<TrainingLessonAdminResponse> listLessons(Long courseId);
+
+    TrainingLessonAdminResponse createLesson(UpsertTrainingLessonRequest request);
+
+    TrainingLessonAdminResponse updateLesson(Long lessonId, UpsertTrainingLessonRequest request);
+
+    /** Soft delete: the lesson becomes inactive, learner progress is kept. */
+    void deleteLesson(Long lessonId);
+
+    void setCover(Long courseId, UpdateCourseCoverRequest request);
+
+    TrainingAssetUploadResponse createAsset(CreateTrainingAssetRequest request, String actor);
+
+    void uploadAssetContent(
+            Long assetId, Long exp, String sig, InputStream body, Authentication authentication);
+
+    TrainingAssetResponse confirmAsset(Long assetId);
+}

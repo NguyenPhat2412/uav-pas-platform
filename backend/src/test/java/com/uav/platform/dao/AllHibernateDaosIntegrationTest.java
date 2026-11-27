@@ -7,11 +7,10 @@ import static org.mockito.Mockito.*;
 
 import com.uav.platform.dao.base.HibernateGenericDao;
 import com.uav.platform.dao.base.HibernateSpecification;
-import com.uav.platform.dao.impl.training.TrainingLessonProgressDaoImpl;
-import com.uav.platform.dao.impl.training.UserTrainingProgressDaoImpl;
-import com.uav.platform.dao.impl.uav.UavTelemetryDaoImpl;
-import com.uav.platform.dao.training.ITrainingLessonProgressDao;
-import com.uav.platform.entity.uav.UavTelemetry;
+import com.uav.platform.dao.impl.TrainingLessonProgressDaoImpl;
+import com.uav.platform.dao.impl.UavTelemetryDaoImpl;
+import com.uav.platform.dao.impl.UserTrainingProgressDaoImpl;
+import com.uav.platform.entity.UavTelemetry;
 
 import jakarta.persistence.EntityManager;
 

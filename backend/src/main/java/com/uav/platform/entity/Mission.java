@@ -1,0 +1,195 @@
+package com.uav.platform.entity;
+
+import com.uav.platform.common.entity.BaseEntity;
+import com.uav.platform.enums.*;
+import com.uav.platform.enums.PricingModel;
+import com.uav.platform.enums.ProviderOrderStatus;
+
+import jakarta.persistence.*;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(
+        name = "missions",
+        uniqueConstraints = @UniqueConstraint(name = "uk_mission_code", columnNames = "code"))
+@Getter
+@Setter
+@NoArgsConstructor
+public class Mission extends BaseEntity {
+    @Version
+    @Column(nullable = false, columnDefinition = "bigint default 0")
+    private long version;
+
+    @Column(nullable = false, unique = true, length = 30)
+    private String code;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private AppUser customer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_id")
+    private ServiceOffering service;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mission_type", nullable = false, length = 30)
+    private MissionType missionType;
+
+    @Column(nullable = false, length = 180)
+    private String title;
+
+    @Column(length = 2000)
+    private String description;
+
+    @Column(name = "requested_date", nullable = false)
+    private LocalDate requestedDate;
+
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime;
+
+    @Column(name = "expected_end_time", nullable = false)
+    private LocalDateTime expectedEndTime;
+
+    @Column(name = "location_name", nullable = false, length = 255)
+    private String locationName;
+
+    @Column(precision = 10, scale = 7)
+    private BigDecimal latitude;
+
+    @Column(precision = 10, scale = 7)
+    private BigDecimal longitude;
+
+    /** JSON of FlightPlanResponse: flight area, altitude, GSD, overlap, sensors and site safety notes. */
+    @Column(name = "flight_plan", columnDefinition = "TEXT")
+    private String flightPlan;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "station_id")
+    private Station station;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uav_id")
+    private Uav uav;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "operator_id")
+    private AppUser operator;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private MissionPriority priority;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private MissionStatus status = MissionStatus.DRAFT;
+
+    @Column(length = 2000)
+    private String notes;
+
+    @Column(name = "cancelled_at")
+    private LocalDateTime cancelledAt;
+
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
+
+    @Column(name = "completion_note", length = 2000)
+    private String completionNote;
+
+    @Column(name = "equipment_condition", length = 500)
+    private String equipmentCondition;
+
+    @Column(name = "failure_reason", length = 500)
+    private String failureReason;
+
+    @Column(name = "failure_notes", length = 2000)
+    private String failureNotes;
+
+    @Column(name = "operator_accepted", nullable = false)
+    private boolean operatorAccepted;
+
+    @Column(name = "billing_status", nullable = false, length = 20)
+    private String billingStatus = "NOT_REQUESTED";
+
+    @Column(name = "operator_conflict_note", length = 1000)
+    private String operatorConflictNote;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "permit_status", nullable = false, length = 20)
+    private FlightPermitStatus permitStatus = FlightPermitStatus.NOT_REQUIRED;
+
+    @Column(name = "permit_number", length = 80)
+    private String permitNumber;
+
+    @Column(name = "permit_authority", length = 180)
+    private String permitAuthority;
+
+    @Column(name = "permit_valid_from")
+    private LocalDateTime permitValidFrom;
+
+    @Column(name = "permit_valid_until")
+    private LocalDateTime permitValidUntil;
+
+    @Column(name = "permit_max_altitude_m")
+    private Integer permitMaxAltitudeM;
+
+    @Column(name = "permit_media_id")
+    private Long permitMediaId;
+
+    @Column(name = "permit_verified_by", length = 100)
+    private String permitVerifiedBy;
+
+    @Column(name = "permit_verified_at")
+    private LocalDateTime permitVerifiedAt;
+
+    @Column(name = "permit_note", length = 1000)
+    private String permitNote;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "provider_id")
+    private ProviderProfile provider;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "listing_id")
+    private MarketplaceListing listing;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "pricing_model_snapshot", length = 30)
+    private PricingModel pricingModelSnapshot;
+
+    @Column(name = "unit_price_snapshot_vnd", precision = 14, scale = 2)
+    private BigDecimal unitPriceSnapshotVnd;
+
+    @Column(name = "booking_units", precision = 10, scale = 2)
+    private BigDecimal bookingUnits;
+
+    @Column(name = "quoted_subtotal_vnd", precision = 14, scale = 2)
+    private BigDecimal quotedSubtotalVnd;
+
+    @Column(name = "security_deposit_vnd", precision = 14, scale = 2)
+    private BigDecimal securityDepositVnd;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider_response_status", nullable = false, length = 30)
+    private ProviderOrderStatus providerResponseStatus = ProviderOrderStatus.NOT_APPLICABLE;
+
+    @Column(name = "provider_response_note", length = 1000)
+    private String providerResponseNote;
+
+    @Column(name = "provider_responded_at")
+    private LocalDateTime providerRespondedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subscription_id")
+    private ProjectSubscription subscription;
+}

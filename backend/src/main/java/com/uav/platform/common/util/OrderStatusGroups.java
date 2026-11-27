@@ -1,6 +1,6 @@
 package com.uav.platform.common.util;
 
-import com.uav.platform.enums.mission.MissionStatus;
+import com.uav.platform.enums.MissionStatus;
 
 import java.util.List;
 import java.util.Locale;

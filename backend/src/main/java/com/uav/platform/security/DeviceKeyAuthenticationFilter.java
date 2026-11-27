@@ -2,8 +2,8 @@ package com.uav.platform.security;
 
 import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_HEADER;
 
-import com.uav.platform.dto.record.devicekey.DevicePrincipal;
-import com.uav.platform.service.devicekey.DeviceKeyService;
+import com.uav.platform.dto.record.DevicePrincipal;
+import com.uav.platform.service.DeviceKeyService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -19,7 +19,7 @@ const load = async (path, replace = s => s) => {
 };
 const weatherFiles = dir => readdirSync(new URL(`src/${dir}/weather`, root)).map(name => `src/${dir}/weather/${name}`);
 
-const hasBackend = existsSync(new URL('../backend/src/main/java/com/uav/platform/config/routes/ApiRoutes.java', root));
+const hasBackend = existsSync(new URL('../backend/src/main/java/com/uav/platform/config/ApiRoutes.java', root));
 
 test('Weather: routes match the backend ApiRoutes.Weather contract', async () => {
     const {API_ROUTES} = await load('src/lib/api/routes.ts');
@@ -28,7 +28,7 @@ test('Weather: routes match the backend ApiRoutes.Weather contract', async () =>
     assert.equal(API_ROUTES.weather.stations, '/api/v1/weather/stations');
     assert.equal(API_ROUTES.weather.adminProvider, '/api/v1/admin/weather/provider');
     if (hasBackend) {
-        const java = read('../backend/src/main/java/com/uav/platform/config/routes/ApiRoutes.java');
+        const java = read('../backend/src/main/java/com/uav/platform/config/ApiRoutes.java');
         assert.match(java, /BASE = API_V1_PREFIX \+ "\/weather"/);
         assert.match(java, /ADMIN_PROVIDER = API_V1_PREFIX \+ "\/admin\/weather\/provider"/);
     }

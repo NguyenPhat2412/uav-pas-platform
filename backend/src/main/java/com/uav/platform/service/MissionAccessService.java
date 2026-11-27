@@ -1,0 +1,36 @@
+package com.uav.platform.service;
+
+import com.uav.platform.entity.AppUser;
+import com.uav.platform.entity.Mission;
+
+import org.springframework.security.core.Authentication;
+
+/** Resolves mission ownership and locks before a workflow reads or mutates it. */
+public interface MissionAccessService {
+    Mission accessibleForUpdate(Long id, Authentication authentication);
+
+    Mission accessible(Long id, Authentication authentication);
+
+    void requireAssignedOperator(Mission mission, Authentication authentication);
+
+    void enforceVisibility(Mission mission, Authentication authentication);
+
+    boolean isCustomerOrOperator(Mission mission, String username);
+
+    default void requirePermitEditor(Mission mission, Authentication authentication) {}
+
+    default void requirePermitVerifier(Authentication authentication) {}
+
+    default boolean hasAuthority(Authentication authentication, String permissionCode) {
+        return false;
+    }
+
+    /** Active staff who may confirm a submitted mission. */
+    default java.util.List<AppUser> dispatchers() {
+        return java.util.List.of();
+    }
+
+    Mission find(Long id);
+
+    AppUser user(String username);
+}

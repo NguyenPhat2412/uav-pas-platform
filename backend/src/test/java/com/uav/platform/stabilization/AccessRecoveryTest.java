@@ -2,21 +2,16 @@ package com.uav.platform.stabilization;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.uav.platform.dao.permission.IUserPermissionDao;
-import com.uav.platform.dao.user.IUserDao;
-import com.uav.platform.entity.user.AppUser;
-import com.uav.platform.enums.audit.*;
-import com.uav.platform.enums.inventory.*;
-import com.uav.platform.enums.media.*;
-import com.uav.platform.enums.mission.*;
-import com.uav.platform.enums.permission.PermissionCode;
-import com.uav.platform.enums.station.*;
-import com.uav.platform.enums.uav.*;
-import com.uav.platform.enums.user.UserStatus;
+import com.uav.platform.dao.IUserDao;
+import com.uav.platform.dao.IUserPermissionDao;
+import com.uav.platform.entity.AppUser;
+import com.uav.platform.enums.*;
+import com.uav.platform.enums.PermissionCode;
+import com.uav.platform.enums.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.service.permission.PermissionService;
-import com.uav.platform.service.role.RoleTemplateService;
-import com.uav.platform.service.user.account.UserService;
+import com.uav.platform.service.PermissionService;
+import com.uav.platform.service.RoleTemplateService;
+import com.uav.platform.service.UserService;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;

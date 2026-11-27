@@ -16,7 +16,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
- * Guards the source layout: layers (controller, service, dao, entity, dto, ...) sit beside common
+ * Guards the source layout: layers (controller, service, dao, entity, dto, ...)
+ * sit beside common
  * and config, each split into one subpackage per feature.
  */
 class ArchitecturePackageTest {
@@ -79,10 +80,10 @@ class ArchitecturePackageTest {
     }
 
     @Test
-    void layersSitBesideCommonAndConfigWithFeatureSubpackages() throws IOException {
+    void layersSitBesideCommonAndConfigInFlatRolePackages() throws IOException {
         assertFalse(
                 Files.exists(MAIN_SOURCE.resolve("com/uav/platform/modules")),
-                "Layers live at com.uav.platform.<layer>.<feature>; the modules package is retired");
+                "Layers live at com.uav.platform.<layer>; the modules package is retired");
         List<Path> files = javaFiles(MAIN_SOURCE).toList();
         for (Path file : files) {
             String relative =
@@ -107,12 +108,15 @@ class ArchitecturePackageTest {
                 continue;
             }
             String name = file.getFileName().toString();
-            boolean nested =
-                    ("service".equals(layer) || "dao".equals(layer)) && "impl".equals(parts[4])
+            boolean hasRoleSubdir =
+                    ("service".equals(layer) && "impl".equals(parts[4]))
+                            || ("dao".equals(layer)
+                                    && ("impl".equals(parts[4]) || "base".equals(parts[4])))
                             || "dto".equals(layer);
+            int expectedDepth = hasRoleSubdir ? 6 : 5;
             assertTrue(
-                    parts.length >= (nested ? 7 : 6),
-                    "Classes must be inside <layer>/<feature> (service/impl/<feature>, dao/impl/<feature>, dto/<role>/<feature>): "
+                    parts.length == expectedDepth,
+                    "Classes must sit directly in flat layer/role packages (dao, dao/impl, dao/base, service, service/impl, dto/request|response|record, controller, entity, enums, mapper, specification, transport): "
                             + relative);
             if (name.endsWith("Controller.java")) {
                 assertTrue(
@@ -124,7 +128,7 @@ class ArchitecturePackageTest {
                     && !"HibernateGenericDao.java".equals(name)) {
                 assertTrue(
                         name.startsWith("I") && "dao".equals(layer) && !"impl".equals(parts[4]),
-                        "DAO interfaces must follow I*Dao naming in dao/<feature>: " + relative);
+                        "DAO interfaces must follow I*Dao naming in dao/: " + relative);
                 assertTrue(
                         Files.readString(file).contains("extends IGenericDao"),
                         "DAO interfaces must extend IGenericDao: " + relative);
@@ -132,7 +136,7 @@ class ArchitecturePackageTest {
             if (name.endsWith("DaoImpl.java")) {
                 assertTrue(
                         "dao".equals(layer) && "impl".equals(parts[4]),
-                        "DAO implementations must be in dao/impl/<feature>: " + relative);
+                        "DAO implementations must be in dao/impl/: " + relative);
                 String source = Files.readString(file);
                 assertTrue(
                         source.contains("extends HibernateGenericDao"),
@@ -168,25 +172,6 @@ class ArchitecturePackageTest {
                 assertTrue(
                         "enums".equals(layer),
                         "Domain enums must be in the enums package: " + relative);
-            }
-            Set<String> subpackagedFeatures =
-                    Set.of(
-                            "mission",
-                            "billing",
-                            "marketplace",
-                            "auth",
-                            "user",
-                            "storage",
-                            "training",
-                            "notification");
-            String feature = nested ? parts[5] : parts[4];
-            if (subpackagedFeatures.contains(feature)
-                    && Set.of("controller", "service", "dto", "mapper", "specification")
-                            .contains(layer)) {
-                assertTrue(
-                        parts.length >= (nested ? 8 : 7),
-                        "Large domain modules must organize classes into <feature>/<sub-domain> sub-packages: "
-                                + relative);
             }
         }
     }
@@ -248,8 +233,8 @@ class ArchitecturePackageTest {
             }
             if (file.getFileName().toString().endsWith("Mapper.java")) {
                 assertTrue(
-                        relative.matches("com/uav/platform/mapper/(?:[^/]+/)+[^/]+Mapper\\.java"),
-                        "Mappers must be in mapper/<feature>[/<sub-domain>]: " + relative);
+                        relative.matches("com/uav/platform/mapper/[^/]+Mapper\\.java"),
+                        "Mappers must be directly in mapper/: " + relative);
             }
             if (file.getFileName().toString().endsWith("Controller.java")) {
                 assertFalse(

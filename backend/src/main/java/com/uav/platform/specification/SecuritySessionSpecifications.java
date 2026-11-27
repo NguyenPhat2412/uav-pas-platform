@@ -1,0 +1,29 @@
+package com.uav.platform.specification;
+
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.entity.AppUser;
+import com.uav.platform.entity.RefreshToken;
+
+import java.time.Instant;
+
+/** User filters specific to the admin session list. */
+public final class SecuritySessionSpecifications {
+
+    private SecuritySessionSpecifications() {}
+
+    /** Users holding a refresh token that is neither revoked nor expired. */
+    public static HibernateSpecification<AppUser> hasActiveSession(
+            boolean activeOnly, Instant now) {
+        return (root, query, cb) -> {
+            if (!activeOnly) return null;
+            var sub = query.subquery(Long.class);
+            var token = sub.from(RefreshToken.class);
+            sub.select(token.get("id"))
+                    .where(
+                            cb.equal(token.get("user").get("id"), root.get("id")),
+                            cb.isFalse(token.get("revoked")),
+                            cb.greaterThan(token.get("expiryDate"), now));
+            return cb.exists(sub);
+        };
+    }
+}

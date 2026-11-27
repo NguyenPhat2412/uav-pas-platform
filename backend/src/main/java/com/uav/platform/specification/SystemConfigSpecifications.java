@@ -1,0 +1,23 @@
+package com.uav.platform.specification;
+
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.entity.SystemConfiguration;
+
+public final class SystemConfigSpecifications {
+
+    private SystemConfigSpecifications() {}
+
+    public static HibernateSpecification<SystemConfiguration> hasCategory(String category) {
+        return (root, query, cb) ->
+                (category == null || category.isBlank())
+                        ? null
+                        : cb.equal(root.get("category"), category);
+    }
+
+    public static HibernateSpecification<SystemConfiguration> hasConfigKey(String configKey) {
+        return (root, query, cb) ->
+                (configKey == null || configKey.isBlank())
+                        ? null
+                        : cb.equal(root.get("configKey"), configKey);
+    }
+}

@@ -2,7 +2,7 @@ package com.uav.platform.error;
 
 import com.uav.platform.common.constant.CoreConstants;
 import com.uav.platform.common.dto.response.ErrorResponse;
-import com.uav.platform.config.routes.ApiRoutes;
+import com.uav.platform.config.ApiRoutes;
 
 import jakarta.servlet.http.HttpServletRequest;
 

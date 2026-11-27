@@ -1,6 +1,6 @@
 package com.uav.platform.config;
 
-import com.uav.platform.enums.permission.PermissionCode;
+import com.uav.platform.enums.PermissionCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

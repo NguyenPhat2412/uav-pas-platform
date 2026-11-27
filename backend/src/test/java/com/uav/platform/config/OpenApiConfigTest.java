@@ -2,12 +2,7 @@ package com.uav.platform.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.uav.platform.enums.audit.*;
-import com.uav.platform.enums.inventory.*;
-import com.uav.platform.enums.media.*;
-import com.uav.platform.enums.mission.*;
-import com.uav.platform.enums.station.*;
-import com.uav.platform.enums.uav.*;
+import com.uav.platform.enums.*;
 
 import io.swagger.v3.oas.models.OpenAPI;
 

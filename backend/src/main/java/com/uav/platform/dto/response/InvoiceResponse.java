@@ -1,0 +1,122 @@
+package com.uav.platform.dto.response;
+
+import com.uav.platform.enums.EscrowStatus;
+import com.uav.platform.enums.InvoiceStatus;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+public record InvoiceResponse(
+        Long id,
+        String code,
+        Long userId,
+        String username,
+        Long missionId,
+        String missionTitle,
+        Long planId,
+        String planName,
+        BigDecimal amount,
+        InvoiceStatus status,
+        LocalDateTime dueDate,
+        LocalDateTime paidAt,
+        String notes,
+        LocalDateTime createdAt,
+        Long providerId,
+        String providerDisplayName,
+        EscrowStatus escrowStatus,
+        BigDecimal platformFeeRate,
+        BigDecimal platformFeeVnd,
+        BigDecimal providerNetVnd,
+        LocalDateTime escrowReleasedAt,
+        LocalDateTime lastEmailedAt,
+        String lastEmailedTo) {
+
+    public InvoiceResponse(
+            Long id,
+            String code,
+            Long userId,
+            String username,
+            Long missionId,
+            String missionTitle,
+            Long planId,
+            String planName,
+            BigDecimal amount,
+            InvoiceStatus status,
+            LocalDateTime dueDate,
+            LocalDateTime paidAt,
+            String notes,
+            LocalDateTime createdAt,
+            Long providerId,
+            String providerDisplayName,
+            EscrowStatus escrowStatus,
+            BigDecimal platformFeeRate,
+            BigDecimal platformFeeVnd,
+            BigDecimal providerNetVnd,
+            LocalDateTime escrowReleasedAt) {
+        this(
+                id,
+                code,
+                userId,
+                username,
+                missionId,
+                missionTitle,
+                planId,
+                planName,
+                amount,
+                status,
+                dueDate,
+                paidAt,
+                notes,
+                createdAt,
+                providerId,
+                providerDisplayName,
+                escrowStatus,
+                platformFeeRate,
+                platformFeeVnd,
+                providerNetVnd,
+                escrowReleasedAt,
+                null,
+                null);
+    }
+
+    public InvoiceResponse(
+            Long id,
+            String code,
+            Long userId,
+            String username,
+            Long missionId,
+            String missionTitle,
+            Long planId,
+            String planName,
+            BigDecimal amount,
+            InvoiceStatus status,
+            LocalDateTime dueDate,
+            LocalDateTime paidAt,
+            String notes,
+            LocalDateTime createdAt) {
+        this(
+                id,
+                code,
+                userId,
+                username,
+                missionId,
+                missionTitle,
+                planId,
+                planName,
+                amount,
+                status,
+                dueDate,
+                paidAt,
+                notes,
+                createdAt,
+                null,
+                null,
+                EscrowStatus.NONE,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+    }
+}

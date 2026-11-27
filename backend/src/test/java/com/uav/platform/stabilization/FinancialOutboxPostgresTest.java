@@ -3,20 +3,17 @@ package com.uav.platform.stabilization;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.uav.platform.dao.webhook.IFinancialOutboxDao;
-import com.uav.platform.dto.request.billing.invoice.*;
-import com.uav.platform.dto.request.billing.plan.*;
-import com.uav.platform.dto.request.billing.quota.*;
-import com.uav.platform.dto.request.billing.reconciliation.*;
-import com.uav.platform.entity.user.AppUser;
-import com.uav.platform.enums.permission.PermissionCode;
-import com.uav.platform.enums.user.UserStatus;
-import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
-import com.uav.platform.service.impl.webhook.FinancialOutboxServiceImpl;
-import com.uav.platform.service.impl.webhook.WebhookServiceImpl;
-import com.uav.platform.service.notification.inbox.NotificationService;
-import com.uav.platform.service.webhook.FinancialOutboxService;
-import com.uav.platform.transport.webhook.WebhookTransport;
+import com.uav.platform.dao.IFinancialOutboxDao;
+import com.uav.platform.dto.request.*;
+import com.uav.platform.entity.AppUser;
+import com.uav.platform.enums.PermissionCode;
+import com.uav.platform.enums.UserStatus;
+import com.uav.platform.service.FinancialOutboxService;
+import com.uav.platform.service.NotificationService;
+import com.uav.platform.service.impl.BillingServiceImpl;
+import com.uav.platform.service.impl.FinancialOutboxServiceImpl;
+import com.uav.platform.service.impl.WebhookServiceImpl;
+import com.uav.platform.transport.WebhookTransport;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -66,12 +63,12 @@ class FinancialOutboxPostgresTest {
     @Autowired WebhookServiceImpl hooks;
     @Autowired NotificationService notifications;
     @Autowired PlatformTransactionManager manager;
-    @Autowired com.uav.platform.dao.user.IUserDao users;
-    @Autowired com.uav.platform.service.permission.PermissionService permissions;
-    @Autowired com.uav.platform.dao.billing.IInvoiceDao invoices;
-    @Autowired com.uav.platform.dao.webhook.IWebhookDeliveryLogDao logs;
+    @Autowired com.uav.platform.dao.IUserDao users;
+    @Autowired com.uav.platform.service.PermissionService permissions;
+    @Autowired com.uav.platform.dao.IInvoiceDao invoices;
+    @Autowired com.uav.platform.dao.IWebhookDeliveryLogDao logs;
 
-    @Autowired com.uav.platform.dao.webhook.IWebhookSubscriptionDao subscriptions;
+    @Autowired com.uav.platform.dao.IWebhookSubscriptionDao subscriptions;
 
     @BeforeEach
     void reset() {
@@ -195,7 +192,7 @@ class FinancialOutboxPostgresTest {
                             eq("PAYMENT_COMPLETED"),
                             eq(paymentId));
             assertEquals(
-                    com.uav.platform.enums.billing.InvoiceStatus.PAID,
+                    com.uav.platform.enums.InvoiceStatus.PAID,
                     invoices.findById(response.id()).orElseThrow().getStatus());
             assertEquals(
                     2,
@@ -358,7 +355,7 @@ class FinancialOutboxPostgresTest {
                 "UPDATE webhook_delivery_logs SET delivery_status='RETRYING',retry_count=1,response_status_code=503 WHERE id=?",
                 retryId);
         var failed =
-                new com.uav.platform.entity.webhook.WebhookDeliveryLog(
+                new com.uav.platform.entity.WebhookDeliveryLog(
                         logs.findById(pendingId).orElseThrow().getSubscription(),
                         "TEST",
                         "{}",
@@ -416,7 +413,7 @@ class FinancialOutboxPostgresTest {
                         invoice.id()));
         assertEquals(2, events.count());
         assertEquals(
-                com.uav.platform.enums.billing.InvoiceStatus.PAID,
+                com.uav.platform.enums.InvoiceStatus.PAID,
                 invoices.findById(invoice.id()).orElseThrow().getStatus());
     }
 

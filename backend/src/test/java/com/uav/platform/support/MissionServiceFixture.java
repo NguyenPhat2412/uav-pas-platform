@@ -1,37 +1,25 @@
 package com.uav.platform.support;
 
-import com.uav.platform.dao.inventory.IEquipmentDao;
-import com.uav.platform.dao.media.IMediaAssetDao;
-import com.uav.platform.dao.mission.IMissionDao;
-import com.uav.platform.dao.mission.IMissionEquipmentReservationDao;
-import com.uav.platform.dao.mission.IMissionEventDao;
-import com.uav.platform.dao.mission.IMissionMediaDao;
-import com.uav.platform.dao.mission.IServiceOfferingDao;
-import com.uav.platform.dao.station.IStationDao;
-import com.uav.platform.dao.uav.IUavDao;
-import com.uav.platform.dao.user.IUserDao;
-import com.uav.platform.dto.request.mission.catalog.*;
-import com.uav.platform.dto.request.mission.dispatch.*;
-import com.uav.platform.dto.request.mission.flightplan.*;
-import com.uav.platform.dto.request.mission.lifecycle.*;
-import com.uav.platform.dto.response.mission.catalog.*;
-import com.uav.platform.dto.response.mission.dispatch.*;
-import com.uav.platform.dto.response.mission.flightplan.*;
-import com.uav.platform.dto.response.mission.lifecycle.*;
-import com.uav.platform.entity.mission.*;
-import com.uav.platform.enums.mission.*;
-import com.uav.platform.service.audit.AuditLogService;
-import com.uav.platform.service.impl.mission.catalog.*;
-import com.uav.platform.service.impl.mission.dispatch.*;
-import com.uav.platform.service.impl.mission.flightplan.*;
-import com.uav.platform.service.impl.mission.lifecycle.*;
-import com.uav.platform.service.inventory.InventoryService;
-import com.uav.platform.service.mission.catalog.*;
-import com.uav.platform.service.mission.dispatch.*;
-import com.uav.platform.service.mission.flightplan.*;
-import com.uav.platform.service.mission.lifecycle.*;
-import com.uav.platform.service.notification.inbox.NotificationService;
-import com.uav.platform.service.permission.PermissionService;
+import com.uav.platform.dao.IEquipmentDao;
+import com.uav.platform.dao.IMediaAssetDao;
+import com.uav.platform.dao.IMissionDao;
+import com.uav.platform.dao.IMissionEquipmentReservationDao;
+import com.uav.platform.dao.IMissionEventDao;
+import com.uav.platform.dao.IMissionMediaDao;
+import com.uav.platform.dao.IServiceOfferingDao;
+import com.uav.platform.dao.IStationDao;
+import com.uav.platform.dao.IUavDao;
+import com.uav.platform.dao.IUserDao;
+import com.uav.platform.dto.request.*;
+import com.uav.platform.dto.response.*;
+import com.uav.platform.entity.*;
+import com.uav.platform.enums.*;
+import com.uav.platform.service.*;
+import com.uav.platform.service.AuditLogService;
+import com.uav.platform.service.InventoryService;
+import com.uav.platform.service.NotificationService;
+import com.uav.platform.service.PermissionService;
+import com.uav.platform.service.impl.*;
 
 /** Keeps unit-test fixture wiring outside the production service constructors. */
 public final class MissionServiceFixture {
@@ -106,7 +94,7 @@ public final class MissionServiceFixture {
             IMissionEquipmentReservationDao reservations,
             IMediaAssetDao mediaAssets,
             IMissionMediaDao missionMedia,
-            com.uav.platform.service.uav.UavService uavService) {
+            com.uav.platform.service.UavService uavService) {
         return create(
                 missions,
                 services,
@@ -139,21 +127,21 @@ public final class MissionServiceFixture {
             IMissionEquipmentReservationDao reservations,
             IMediaAssetDao mediaAssets,
             IMissionMediaDao missionMedia,
-            com.uav.platform.service.uav.UavService uavService,
+            com.uav.platform.service.UavService uavService,
             NotificationService notifications) {
         jakarta.persistence.EntityManager entityManager = null;
-        com.uav.platform.service.media.MediaAccessService mediaAccess = null;
-        com.uav.platform.service.billing.quota.QuotaService quotaService = null;
-        com.uav.platform.service.billing.invoice.MissionInvoiceService missionInvoiceService = null;
+        com.uav.platform.service.MediaAccessService mediaAccess = null;
+        com.uav.platform.service.QuotaService quotaService = null;
+        com.uav.platform.service.MissionInvoiceService missionInvoiceService = null;
         var missionMapper =
                 org.mapstruct.factory.Mappers.getMapper(
-                        com.uav.platform.mapper.mission.lifecycle.MissionMapper.class);
+                        com.uav.platform.mapper.MissionMapper.class);
         var missionEventMapper =
                 org.mapstruct.factory.Mappers.getMapper(
-                        com.uav.platform.mapper.mission.lifecycle.MissionEventMapper.class);
+                        com.uav.platform.mapper.MissionEventMapper.class);
         var missionMediaMapper =
                 org.mapstruct.factory.Mappers.getMapper(
-                        com.uav.platform.mapper.mission.flightplan.MissionMediaMapper.class);
+                        com.uav.platform.mapper.MissionMediaMapper.class);
         var access = new MissionAccessServiceImpl(entityManager, missions, users, permissions);
         var missionEvents = new MissionEventServiceImpl(events, notifications, access);
         var resources =

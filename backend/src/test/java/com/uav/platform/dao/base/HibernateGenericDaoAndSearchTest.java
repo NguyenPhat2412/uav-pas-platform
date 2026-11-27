@@ -3,15 +3,15 @@ package com.uav.platform.dao.base;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.uav.platform.config.HibernateConfig;
-import com.uav.platform.dao.airspace.IAirspaceZoneDao;
-import com.uav.platform.dao.mission.IMissionDao;
-import com.uav.platform.dao.user.IUserDao;
-import com.uav.platform.entity.airspace.AirspaceZone;
-import com.uav.platform.entity.user.AppUser;
-import com.uav.platform.enums.airspace.AirspaceGeometryType;
-import com.uav.platform.enums.airspace.AirspaceZoneType;
-import com.uav.platform.enums.user.UserRole;
-import com.uav.platform.enums.user.UserStatus;
+import com.uav.platform.dao.IAirspaceZoneDao;
+import com.uav.platform.dao.IMissionDao;
+import com.uav.platform.dao.IUserDao;
+import com.uav.platform.entity.AirspaceZone;
+import com.uav.platform.entity.AppUser;
+import com.uav.platform.enums.AirspaceGeometryType;
+import com.uav.platform.enums.AirspaceZoneType;
+import com.uav.platform.enums.UserRole;
+import com.uav.platform.enums.UserStatus;
 
 import jakarta.persistence.EntityManager;
 

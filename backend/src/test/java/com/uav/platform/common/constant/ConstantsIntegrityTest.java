@@ -2,13 +2,8 @@ package com.uav.platform.common.constant;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.uav.platform.config.routes.ApiRoutes;
-import com.uav.platform.enums.audit.*;
-import com.uav.platform.enums.inventory.*;
-import com.uav.platform.enums.media.*;
-import com.uav.platform.enums.mission.*;
-import com.uav.platform.enums.station.*;
-import com.uav.platform.enums.uav.*;
+import com.uav.platform.config.ApiRoutes;
+import com.uav.platform.enums.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

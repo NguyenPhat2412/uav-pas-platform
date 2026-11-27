@@ -1,0 +1,24 @@
+package com.uav.platform.specification;
+
+import com.uav.platform.dao.base.HibernateSpecification;
+import com.uav.platform.entity.ProjectSubscription;
+import com.uav.platform.enums.ProjectSubscriptionStatus;
+
+public final class ProjectSubscriptionSpecifications {
+
+    private ProjectSubscriptionSpecifications() {}
+
+    public static HibernateSpecification<ProjectSubscription> notDeleted() {
+        return (root, query, cb) -> cb.isFalse(root.get("deleted"));
+    }
+
+    public static HibernateSpecification<ProjectSubscription> belongsToProject(Long projectId) {
+        return (root, query, cb) ->
+                projectId == null ? null : cb.equal(root.get("project").get("id"), projectId);
+    }
+
+    public static HibernateSpecification<ProjectSubscription> hasStatus(
+            ProjectSubscriptionStatus status) {
+        return (root, query, cb) -> status == null ? null : cb.equal(root.get("status"), status);
+    }
+}

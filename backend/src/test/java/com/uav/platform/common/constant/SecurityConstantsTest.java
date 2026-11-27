@@ -2,7 +2,7 @@ package com.uav.platform.common.constant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.uav.platform.enums.user.UserRole;
+import com.uav.platform.enums.UserRole;
 
 import org.junit.jupiter.api.Test;
 

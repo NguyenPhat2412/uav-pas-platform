@@ -1,29 +1,32 @@
 # Backend structure and naming
 
-The backend remains one Spring Boot application. Packages group code by business feature; this refactor does not change HTTP routes, request/response JSON fields, database tables, or published Flyway migrations.
+The backend remains one Spring Boot application. Packages are organized in **flat layer/role directories** without repeated per-feature subdirectories; this layout keeps HTTP routes, request/response JSON fields, database tables, and Flyway migrations stable while keeping navigation concise.
 
-## Feature layout
+## Flat layer layout
 
 ```text
 com.uav.platform
-├── config                  Spring, security, routes (ApiRoutes), WebSocket & infrastructure configuration
+├── config                  Spring, security, routes (ApiRoutes), seed & infrastructure configuration
 ├── error                   Shared exception handling & validation error mapping
 ├── common                  Shared base entities, pagination, constants & utilities
-├── controller/<feature>[/<sub-domain>]        HTTP endpoints (paths strictly from ApiRoutes)
-├── dto/request/<feature>[/<sub-domain>]       Validated API inputs (*Request records)
-├── dto/response/<feature>[/<sub-domain>]      API outputs (*Response records)
-├── dto/record/<feature>[/<sub-domain>]        Internal working data, filters & commands
-├── entity/<feature>                           Persistent JPA domain state
-├── enums/<feature>                            Domain enums
-├── mapper/<feature>[/<sub-domain>]            Entity-to-DTO conversion
-├── repository/<feature>                       Spring Data JPA + JpaSpecificationExecutor
-├── specification/<feature>[/<sub-domain>]     Reusable query predicates
-└── service
-    ├── <feature>[/<sub-domain>]               Service contracts & stateless domain policies
-    └── impl/<feature>[/<sub-domain>]          *ServiceImpl & *Operations implementations
+├── security                JWT, device-key, cookie & access-recovery security filters
+├── transport               WebSocket & pinned webhook transport adapters
+├── controller              HTTP endpoints (paths strictly from ApiRoutes)
+├── dto/request             Validated API inputs (*Request records)
+├── dto/response            API outputs (*Response records)
+├── dto/record              Internal working data, filters & commands
+├── entity                  Persistent JPA domain state
+├── enums                   Domain enums
+├── mapper                  MapStruct & DTO mappers
+├── dao                     Hibernate DAO contracts (I*Dao extending IGenericDao)
+│   ├── base                IGenericDao, HibernateGenericDao, HibernateSpecification
+│   └── impl                Concrete Hibernate DAO implementations (*DaoImpl)
+├── specification           Reusable HibernateSpecification query predicates
+└── service                 Service contracts & stateless domain policies
+    └── impl                *ServiceImpl & *Operations implementations
 ```
 
-Large domain modules (`mission`, `billing`, `marketplace`, `auth`, `user`, `storage`, `training`) organize `controller`, `service`, `service/impl`, `dto/{request,response,record}`, `mapper`, and `specification` into explicit `<feature>/<sub-domain>` sub-packages (enforced by `ArchitecturePackageTest`).
+All layers above are enforced as flat packages by `ArchitecturePackageTest` and `ModuleDtoStructureTest` (no per-feature nesting inside `controller`, `dao`, `dao/impl`, `dto/{request,response,record}`, `entity`, `enums`, `mapper`, `service`, `service/impl`, `specification`, `config`, `security`, or `transport`).
 
 Create only the layers a feature needs. A small internal service does not need an otherwise unused interface. When a contract exists, use `StationService` for the interface and `StationServiceImpl` for the implementation. Provider implementations may have descriptive names such as `S3CompatibleStorageService`.
 

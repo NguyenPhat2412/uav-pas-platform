@@ -1,11 +1,11 @@
 package com.uav.platform.security;
 
-import com.uav.platform.dao.permission.IPermissionDao;
-import com.uav.platform.dao.user.IUserDao;
-import com.uav.platform.enums.permission.PermissionCode;
+import com.uav.platform.dao.IPermissionDao;
+import com.uav.platform.dao.IUserDao;
+import com.uav.platform.enums.PermissionCode;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.service.impl.user.account.UserAccountServiceImpl;
-import com.uav.platform.service.permission.PermissionService;
+import com.uav.platform.service.PermissionService;
+import com.uav.platform.service.impl.UserAccountServiceImpl;
 
 import jakarta.persistence.EntityManager;
 

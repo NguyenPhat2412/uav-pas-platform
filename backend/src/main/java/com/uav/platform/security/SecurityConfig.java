@@ -3,9 +3,8 @@ package com.uav.platform.security;
 import static com.uav.platform.common.constant.SecurityConstants.AUTHORIZATION_HEADER;
 import static com.uav.platform.common.constant.SecurityConstants.BEARER_PREFIX;
 
-import com.uav.platform.config.routes.ApiRoutes;
-import com.uav.platform.security.jwt.JwtAuthenticationFilter;
-import com.uav.platform.service.devicekey.DeviceKeyService;
+import com.uav.platform.config.ApiRoutes;
+import com.uav.platform.service.DeviceKeyService;
 
 import lombok.RequiredArgsConstructor;
 

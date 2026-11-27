@@ -59,6 +59,7 @@ class V67CleanDemoDataPostgresTest {
                     .schemas(schema)
                     .defaultSchema(schema)
                     .createSchemas(true)
+                    .target(MigrationVersion.fromVersion("67"))
                     .load()
                     .migrate();
 

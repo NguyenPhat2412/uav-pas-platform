@@ -1,0 +1,22 @@
+package com.uav.platform.service;
+
+import com.uav.platform.common.dto.response.PageResponse;
+import com.uav.platform.dto.request.AuditLogQueryRequest;
+import com.uav.platform.dto.response.AuditLogResponse;
+import com.uav.platform.enums.AuditAction;
+
+import org.springframework.data.domain.Pageable;
+
+public interface AuditLogService {
+    void record(
+            Long actorUserId,
+            String actorUsername,
+            AuditAction action,
+            String entityType,
+            String entityId,
+            String details);
+
+    PageResponse<AuditLogResponse> findAll(Pageable pageable);
+
+    PageResponse<AuditLogResponse> findAll(AuditLogQueryRequest query, Pageable pageable);
+}

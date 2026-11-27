@@ -2,9 +2,9 @@ package com.uav.platform.stabilization;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.uav.platform.dao.training.ITrainingLessonDao;
-import com.uav.platform.dao.training.ITrainingLessonProgressDao;
-import com.uav.platform.dao.training.IUserTrainingProgressDao;
+import com.uav.platform.dao.ITrainingLessonDao;
+import com.uav.platform.dao.ITrainingLessonProgressDao;
+import com.uav.platform.dao.IUserTrainingProgressDao;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
@@ -195,8 +195,10 @@ class TrainingProgressPostgresTest {
                 db.queryForObject(
                         "SELECT count(*) FROM training_lessons WHERE active AND section_title = 'Nội dung' AND sort_order = 10",
                         Integer.class));
+        // V35 deactivated V34-generated ARTICLE lessons and V45 subsequently deleted those retired
+        // rows so fresh schemas carry zero active or inactive V34 auto-generated ARTICLE rows.
         assertEquals(
-                documents,
+                0,
                 db.queryForObject(
                         "SELECT count(*) FROM training_lessons WHERE NOT active AND lesson_type = 'ARTICLE'",
                         Integer.class));

@@ -10,43 +10,43 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.uav.platform.controller.audit.AuditLogController;
-import com.uav.platform.dao.billing.IInvoiceDao;
-import com.uav.platform.dao.billing.IPaymentTransactionDao;
-import com.uav.platform.dao.billing.IServicePlanDao;
-import com.uav.platform.dao.media.IMediaAssetDao;
-import com.uav.platform.dao.mission.IMissionDao;
-import com.uav.platform.dao.sar.IAiDetectionDao;
-import com.uav.platform.dao.sar.IAiTaskDao;
-import com.uav.platform.dao.sar.ISarMissionDao;
-import com.uav.platform.dao.station.IStationDao;
-import com.uav.platform.dao.uav.IUavDao;
-import com.uav.platform.dao.user.IUserDao;
-import com.uav.platform.dto.request.billing.reconciliation.PaymentIpnRequest;
-import com.uav.platform.dto.request.sar.VerifyDetectionRequest;
-import com.uav.platform.entity.billing.Invoice;
-import com.uav.platform.entity.billing.PaymentTransaction;
-import com.uav.platform.entity.mission.Mission;
-import com.uav.platform.entity.sar.AiDetection;
-import com.uav.platform.entity.sar.SarMission;
-import com.uav.platform.entity.user.AppUser;
-import com.uav.platform.entity.webhook.WebhookSubscription;
-import com.uav.platform.enums.billing.InvoiceStatus;
-import com.uav.platform.enums.mission.MissionPriority;
-import com.uav.platform.enums.mission.MissionType;
-import com.uav.platform.enums.sar.SarStatus;
-import com.uav.platform.enums.user.UserStatus;
+import com.uav.platform.controller.AuditLogController;
+import com.uav.platform.dao.IAiDetectionDao;
+import com.uav.platform.dao.IAiTaskDao;
+import com.uav.platform.dao.IInvoiceDao;
+import com.uav.platform.dao.IMediaAssetDao;
+import com.uav.platform.dao.IMissionDao;
+import com.uav.platform.dao.IPaymentTransactionDao;
+import com.uav.platform.dao.ISarMissionDao;
+import com.uav.platform.dao.IServicePlanDao;
+import com.uav.platform.dao.IStationDao;
+import com.uav.platform.dao.IUavDao;
+import com.uav.platform.dao.IUserDao;
+import com.uav.platform.dto.request.PaymentIpnRequest;
+import com.uav.platform.dto.request.VerifyDetectionRequest;
+import com.uav.platform.entity.AiDetection;
+import com.uav.platform.entity.AppUser;
+import com.uav.platform.entity.Invoice;
+import com.uav.platform.entity.Mission;
+import com.uav.platform.entity.PaymentTransaction;
+import com.uav.platform.entity.SarMission;
+import com.uav.platform.entity.WebhookSubscription;
+import com.uav.platform.enums.InvoiceStatus;
+import com.uav.platform.enums.MissionPriority;
+import com.uav.platform.enums.MissionType;
+import com.uav.platform.enums.SarStatus;
+import com.uav.platform.enums.UserStatus;
 import com.uav.platform.error.SystemException;
-import com.uav.platform.mapper.webhook.WebhookMapper;
-import com.uav.platform.service.audit.AuditLogService;
-import com.uav.platform.service.impl.billing.invoice.BillingServiceImpl;
-import com.uav.platform.service.impl.mission.lifecycle.MissionOperations;
-import com.uav.platform.service.impl.reporting.ReportServiceImpl;
-import com.uav.platform.service.impl.sar.AiServiceImpl;
-import com.uav.platform.service.impl.sar.SarMissionOperations;
-import com.uav.platform.service.impl.sar.SarServiceImpl;
-import com.uav.platform.service.impl.webhook.WebhookServiceImpl;
-import com.uav.platform.service.permission.PermissionService;
+import com.uav.platform.mapper.WebhookMapper;
+import com.uav.platform.service.AuditLogService;
+import com.uav.platform.service.PermissionService;
+import com.uav.platform.service.impl.AiServiceImpl;
+import com.uav.platform.service.impl.BillingServiceImpl;
+import com.uav.platform.service.impl.MissionOperations;
+import com.uav.platform.service.impl.ReportServiceImpl;
+import com.uav.platform.service.impl.SarMissionOperations;
+import com.uav.platform.service.impl.SarServiceImpl;
+import com.uav.platform.service.impl.WebhookServiceImpl;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -98,8 +98,7 @@ class SecurityAuditHardeningTest {
         org.springframework.test.util.ReflectionTestUtils.setField(
                 billingService,
                 "financialEvents",
-                org.mockito.Mockito.mock(
-                        com.uav.platform.service.webhook.FinancialOutboxService.class));
+                org.mockito.Mockito.mock(com.uav.platform.service.FinancialOutboxService.class));
         AppUser owner = user(1L, "customer1");
         Invoice invoice = invoice(10L, "INV-2026-0001", owner, new BigDecimal("500.00"));
 
@@ -135,8 +134,7 @@ class SecurityAuditHardeningTest {
         org.springframework.test.util.ReflectionTestUtils.setField(
                 billingService,
                 "financialEvents",
-                org.mockito.Mockito.mock(
-                        com.uav.platform.service.webhook.FinancialOutboxService.class));
+                org.mockito.Mockito.mock(com.uav.platform.service.FinancialOutboxService.class));
         AppUser owner = user(1L, "customer1");
         AppUser attacker = user(2L, "customer2");
         Authentication attackerAuth = auth("customer2");
@@ -173,8 +171,7 @@ class SecurityAuditHardeningTest {
         org.springframework.test.util.ReflectionTestUtils.setField(
                 billingService,
                 "financialEvents",
-                org.mockito.Mockito.mock(
-                        com.uav.platform.service.webhook.FinancialOutboxService.class));
+                org.mockito.Mockito.mock(com.uav.platform.service.FinancialOutboxService.class));
         AppUser owner = user(1L, "customer1");
         Invoice invoice = invoice(10L, "INV-2026-0001", owner, new BigDecimal("500.00"));
         when(invoiceRepository.findById(10L)).thenReturn(Optional.of(invoice));

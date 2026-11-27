@@ -15,8 +15,11 @@ class ModuleDtoStructureTest {
         int checked = 0;
         try (var files = Files.walk(dto)) {
             for (Path file : files.filter(p -> p.toString().endsWith(".java")).toList()) {
-                // dto/<role>/<feature>/<Name>.java
-                String role = dto.relativize(file).getName(0).toString();
+                // dto/<role>/<Name>.java
+                Path rel = dto.relativize(file);
+                assertEquals(
+                        2, rel.getNameCount(), "DTOs must sit directly in dto/<role>/: " + file);
+                String role = rel.getName(0).toString();
                 assertTrue(
                         java.util.Set.of("request", "response", "record").contains(role),
                         file.toString());
