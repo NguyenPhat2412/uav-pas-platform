@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Báo Cáo Tiến Độ Tuần — Hệ Thống UAV PAS (19/11 – 27/11/2026)</title>
+    <style>
+        :root {
+            --crimson: #AB2523;
+            --crimson-light: #E03131;
+            --slate-950: #090D16;
+            --slate-900: #0F172A;
+            --slate-800: #1E293B;
+            --slate-400: #94A3B8;
+            --slate-200: #E2E8F0;
+            --emerald: #10B981;
+            --sky: #0EA5E9;
+            --white: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--slate-950);
+            color: var(--white);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0; left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--crimson), var(--crimson-light), var(--sky));
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        .slide-deck {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            padding: 46px 64px 68px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s ease;
+            background: radial-gradient(circle at 88% 12%, rgba(171, 37, 35, 0.18), transparent 42%),
+                        radial-gradient(circle at 12% 88%, rgba(14, 165, 233, 0.12), transparent 40%),
+                        var(--slate-900);
+        }
+
+        .slide.active { opacity: 1; visibility: visible; }
+
+        .slide-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+            padding-bottom: 14px;
+        }
+
+        .brand-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--slate-200);
+        }
+
+        .brand-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--crimson-light);
+            box-shadow: 0 0 12px var(--crimson-light);
+        }
+
+        .slide-tag {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 999px;
+            background: rgba(171, 37, 35, 0.22);
+            border: 1px solid rgba(224, 49, 49, 0.45);
+            color: #FCA5A5;
+            letter-spacing: 0.05em;
+        }
+
+        .slide-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 22px;
+            padding: 14px 0;
+        }
+
+        .slide-title {
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1.22;
+            letter-spacing: -0.02em;
+            color: var(--white);
+        }
+
+        .slide-subtitle {
+            font-size: 16.5px;
+            color: var(--slate-400);
+            line-height: 1.5;
+            max-width: 960px;
+            margin-top: 6px;
+        }
+
+        .hero-center {
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        .hero-title {
+            font-size: 46px;
+            font-weight: 900;
+            line-height: 1.18;
+            max-width: 1020px;
+            background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 60%, #FCA5A5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+        .card {
+            background: rgba(30, 41, 59, 0.78);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 16px;
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-accent { border-top: 4px solid var(--crimson-light); }
+        .card-emerald { border-top: 4px solid var(--emerald); }
+        .card-sky { border-top: 4px solid var(--sky); }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--white);
+            letter-spacing: -0.02em;
+        }
+
+        .metric-value span { color: #F87171; }
+
+        .card-title {
+            font-size: 17.5px;
+            font-weight: 800;
+            color: var(--white);
+        }
+
+        .card-text, .bullet-list li {
+            font-size: 14.5px;
+            line-height: 1.58;
+            color: var(--slate-200);
+        }
+
+        .bullet-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bullet-list li {
+            position: relative;
+            padding-left: 18px;
+        }
+
+        .bullet-list li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: var(--crimson-light);
+            font-weight: bold;
+        }
+
+        table.slide-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background: rgba(30, 41, 59, 0.65);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        table.slide-table th {
+            background: rgba(15, 23, 42, 0.9);
+            color: #F8FAFC;
+            text-align: left;
+            padding: 12px 14px;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        table.slide-table td {
+            padding: 11px 14px;
+            color: var(--slate-200);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+            line-height: 1.48;
+        }
+
+        .badge-ok {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            background: rgba(16, 185, 129, 0.2);
+            color: #6EE7B7;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            width: fit-content;
+        }
+
+        .bar-row { display: flex; flex-direction: column; gap: 7px; }
+        .bar-label { display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; }
+        .bar-track {
+            height: 14px;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--emerald), var(--sky));
+        }
+
+        .slide-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12.5px;
+            color: var(--slate-400);
+            border-top: 1px solid rgba(148, 163, 184, 0.15);
+            padding-top: 12px;
+        }
+
+        .nav-controls {
+            position: fixed;
+            bottom: 18px;
+            right: 64px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: var(--white);
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover { background: var(--crimson); border-color: var(--crimson-light); }
+        .slide-counter { font-size: 13px; font-weight: 700; color: var(--slate-200); }
+
+        @media print {
+            @page { size: 13.333in 7.5in; margin: 0; }
+            body {
+                overflow: visible;
+                background: var(--slate-900);
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .progress-bar, .nav-controls { display: none !important; }
+            .slide-deck { width: 13.333in; height: auto; overflow: visible; }
+            .slide {
+                position: relative !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                width: 13.333in !important;
+                height: 7.5in !important;
+                page-break-after: always;
+                break-after: page;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="slide-deck">
+
+        <!-- SLIDE 1 -->
+        <section class="slide active">
+            <div class="slide-header">
+                <div class="brand-pill"><span class="brand-dot"></span> HỆ THỐNG UAV PAS · BÁO CÁO TIẾN ĐỘ TUẦN</div>
+                <span class="slide-tag">SLIDE 01 / 10</span>
+            </div>
+            <div class="slide-body hero-center">
+                <span class="slide-tag" style="font-size: 14px; padding: 8px 18px;">TUẦN LÀM VIỆC: 19/11/2026 – 27/11/2026</span>
+                <h1 class="hero-title">NÂNG CẤP NỀN TẢNG DỮ LIỆU, BẢO MẬT &amp; PHÁT HÀNH ĐA THIẾT BỊ</h1>
+                <p class="slide-subtitle" style="font-size: 19px; max-width: 860px;">
+                    Chuyển đổi toàn bộ hệ thống sang mô hình DAO + Hibernate, mã hóa bảo mật dữ liệu &amp; giấy tờ, kiểm thử tự động đạt trên 90%, hoàn thiện 3 trang Web và phát hành ứng dụng iPhone lên TestFlight.
+                </p>
+                <div style="display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; justify-content: center;">
+                    <span class="badge-ok" style="font-size: 13px; padding: 6px 14px;">76 Cặp DAO + Hibernate (0 JPA)</span>
+                    <span class="badge-ok" style="font-size: 13px; padding: 6px 14px;">Mã hóa bảo mật chuẩn AES-256</span>
+                    <span class="badge-ok" style="font-size: 13px; padding: 6px 14px;">Hơn 1.399 bài Test (&gt; 90% độ phủ)</span>
+                    <span class="badge-ok" style="font-size: 13px; padding: 6px 14px;">App iPhone TestFlight (Bản số 5)</span>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Người thực hiện: Nguyễn Phát · Dự án UAV PAS</span>
+                <span>Ngày lập báo cáo: 27/11/2026</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 2 -->
+        <section class="slide">
+            <div class="slide-header">
+                <div class="brand-pill"><span class="brand-dot"></span> TỔNG QUAN TUẦN QUA</div>
+                <span class="slide-tag">SLIDE 02 / 10</span>
+            </div>
+            <div class="slide-body">
+                <div>
+                    <h2 class="slide-title">6 KẾT QUẢ CHÍNH ĐẠT ĐƯỢC TRONG TUẦN</h2>
+                    <p class="slide-subtitle">Song song với việc chuyển đổi sang DAO + Hibernate, toàn bộ hệ thống máy chủ, Web và ứng dụng di động đều đã được nâng cấp đồng bộ.</p>
+                </div>
+                <div class="grid-3">
+                    <div class="card card-accent">
+                        <div class="metric-value">76 <span>Cặp DAO</span></div>
+                        <div class="card-title">1. Chuyển sang DAO + Hibernate</div>
+                        <p class="card-text">Bỏ hoàn toàn Spring Data JPA cũ (0 file còn lại), viết lại toàn bộ tầng dữ liệu cho 30 nhóm chức năng kèm tìm kiếm dùng chung.</p>
+                    </div>
+                    <div class="card card-emerald">
+                        <div class="metric-value">Mã hóa <span>AES-256</span></div>
+                        <div class="card-title">2. Bảo mật Thông tin &amp; Giấy tờ</div>
+                        <p class="card-text">Tự động mã hóa 12 loại thông tin cá nhân nhạy cảm trong cơ sở dữ liệu và toàn bộ giấy tờ PDF, Word, Excel tải lên.</p>
+                    </div>
+                    <div class="card card-sky">
+                        <div class="metric-value">&gt; 90% <span>Độ phủ</span></div>
+                        <div class="card-title">3. Hơn 1.399 Bài Kiểm Thử</div>
+                        <p class="card-text">Bổ sung 23 bộ kiểm tra tự động mới cho máy chủ; toàn bộ bài kiểm tra chạy đạt 100%, không còn lỗi.</p>
+                    </div>
+                    <div class="card card-emerald">
+                        <div class="metric-value">5 – 7 <span>Giấy tờ</span></div>
+                        <div class="card-title">4. Duyệt Hồ sơ &amp; Chống Trùng Lịch</div>
+                        <p class="card-text">Quản trị viên duyệt từng giấy tờ đối tác, khóa xóa giấy tờ đã duyệt, chặn xếp trùng lịch máy bay và phi công.</p>
+                    </div>
+                    <div class="card card-accent">
+                        <div class="metric-value">3 Web <span>+ 4 Test UI</span></div>
+                        <div class="card-title">5. Nâng cấp Web &amp; Phân Quyền</div>
+                        <p class="card-text">Làm mới trang chủ, chạy 4 thử nghiệm giao diện đặt bay, chặn khách vào trang Vận hành và nâng cấp màn hình phân quyền Admin.</p>
+                    </div>
+                    <div class="card card-sky">
+                        <div class="metric-value">Bản số <span>#5</span></div>
+                        <div class="card-title">6. App iPhone lên TestFlight</div>
+                        <p class="card-text">Hoàn thiện đăng nhập nhanh bằng Google &amp; Apple trên điện thoại, đóng gói và phát hành bản mới nhất lên Apple TestFlight.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Hệ thống UAV PAS · Báo cáo tuần 19/11 – 27/11/2026</span>
+                <span>Tất cả thay đổi đã được kiểm tra và đồng bộ lên bản chạy chính</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 3 -->
+        <section class="slide">
+            <div class="slide-header">
+                <div class="brand-pill"><span class="brand-dot"></span> VIỆC 1 · XỬ LÝ DỮ LIỆU MÁY CHỦ</div>
+                <span class="slide-tag">SLIDE 03 / 10</span>
+            </div>
+            <div class="slide-body">
+                <div>
+                    <h2 class="slide-title">CHUYỂN ĐỔI TỪ SPRING DATA JPA SANG DAO + HIBERNATE THUẦN</h2>
+                    <p class="slide-subtitle">Làm chủ hoàn toàn cách truy xuất cơ sở dữ liệu, giúp hệ thống chạy ổn định và dễ tối ưu hơn về lâu dài.</p>
+                </div>
+                <div class="grid-2">
+                    <div class="card card-accent">
+                        <div class="card-title">So Sánh Cách Làm Cũ và Cách Làm Mới</div>
+                        <table class="slide-table" style="margin-top: 6px;">
+                            <thead>
+                                <tr>
+                                    <th>Nội dung</th>
+                                    <th>Trước (Spring Data JPA)</th>
+                                    <th>Hiện tại (DAO + Hibernate)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Cách truy vấn</strong></td>
+                                    <td>Phụ thuộc thư viện tự sinh</td>
+                                    <td>Chủ động điều khiển qua Hibernate</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Quy mô chuyển đổi</strong></td>
+                                    <td>Dùng Repository rải rác</td>
+                                    <td><strong>76 cặp lớp DAO</strong> trên <strong>30 phân hệ</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tìm kiếm &amp; Lọc</strong></td>
+                                    <td>Viết lặp lại cho từng bảng</td>
+                                    <td>Tích hợp sẵn bộ lọc &amp; phân trang chung</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Kiểm soát tốc độ</strong></td>
+                                    <td>Khó tinh chỉnh bảng liên kết</td>
+                                    <td>Chủ động tải đúng dữ liệu cần thiết</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card card-sky">
+                        <div class="card-title">3 Lợi Ích Thực Tế Sau Khi Chuyển Đổi</div>
+                        <ul class="bullet-list">
+                            <li><strong>Tìm kiếm linh hoạt trên mọi bảng</strong>: Tất cả các phân hệ đều dùng chung cơ chế lọc theo nhiều điều kiện, sắp xếp và phân trang đồng nhất.</li>
+                            <li><strong>An toàn khi nhiều người dùng cùng lúc</strong>: Chủ động khóa bản ghi khi xử lý tiền cọc thanh toán và khi điều phối máy bay để tránh sai lệch dữ liệu.</li>
+                            <li><strong>Tự động ghi nhận thời gian</strong>: Tự cập nhật ngày tạo và ngày chỉnh sửa dữ liệu sạch sẽ, không phụ thuộc thư viện cũ.</li>
+                            <li><strong>Giữ kỷ luật lâu dài</strong>: Đã có bài kiểm tra tự động chặn không cho viết nhầm quay lại dùng JPA cũ.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Hệ thống máy chủ (Backend) · 30 phân hệ nghiệp vụ</span>
+                <span>Trạng thái: Hoàn thành 100%</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 4 -->
+        <section class="slide">
+            <div class="slide-header">
+                <div class="brand-pill"><span class="brand-dot"></span> VIỆC 2 · BẢO MẬT DỮ LIỆU</div>
+                <span class="slide-tag">SLIDE 04 / 10</span>
+            </div>
+            <div class="slide-body">
+                <div>
+                    <h2 class="slide-title">MÃ HÓA BẢO MẬT THÔNG TIN CÁ NHÂN &amp; GIẤY TỜ (CHUẨN AES-256)</h2>
+                    <p class="slide-subtitle">Bảo vệ chặt chẽ thông tin nhạy cảm của khách hàng, tài khoản ngân hàng của đối tác và toàn bộ hồ sơ pháp lý bay.</p>
+                </div>
+                <div class="grid-2">
+                    <div class="card card-emerald">
+                        <div class="card-title">1. Mã Hóa Tự Động 12 Thông Tin Trong Cơ Sở Dữ Liệu</div>
+                        <ul class="bullet-list">
+                            <li><strong>Tài khoản người dùng</strong>: Khóa bảo mật xác thực 2 lớp (2FA).</li>
+                            <li><strong>Thông tin hóa đơn của khách hàng</strong>: Mã số thuế, địa chỉ xuất hóa đơn, email hóa đơn, tên và số điện thoại liên hệ khẩn cấp.</li>
+                            <li><strong>Hồ sơ đối tác đội bay</strong>: Số CCCD/Mã số thuế, số giấy phép bay, số điện thoại, số tài khoản và tên chủ tài khoản ngân hàng nhận tiền.</li>
+                            <li><strong>Vận hành liền mạch</strong>: Tự động mã hóa khi lưu, tự động giải mã khi người có quyền xem và vẫn đọc bình thường các dữ liệu cũ.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-accent">
+                        <div class="card-title">2. Mã Hóa Tự Động Giấy Tờ Tải Lên Hệ Thống</div>
+                        <ul class="bullet-list">
+                            <li><strong>Phạm vi bảo vệ</strong>: Tự động mã hóa mọi tệp tài liệu quan trọng khi tải lên (PDF, Word, Excel, tệp nén ZIP, tệp dữ liệu...).</li>
+                            <li><strong>Chống chỉnh sửa trái phép</strong>: Mỗi lần mở tệp, hệ thống tự kiểm tra tính nguyên vẹn — nếu tệp bị sửa đổi bên ngoài sẽ lập tức từ chối và báo cảnh báo.</li>
+                            <li><strong>An toàn cấu hình hệ thống</strong>: Tách riêng mã khóa bảo vệ cho các kết nối bên ngoài (email, thời tiết, trợ lý AI và kho lưu trữ).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Tiêu chuẩn mã hóa: AES-256-GCM</span>
+                <span>Áp dụng đồng thời cho Database và Kho lưu trữ tài liệu</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 5 -->
+        <section class="slide">
+            <div class="slide-header">
+                <div class="brand-pill"><span class="brand-dot"></span> VIỆC 3 · NGHIỆP VỤ ĐỐI TÁC &amp; ĐIỀU PHỐI</div>
+                <span class="slide-tag">SLIDE 05 / 10</span>
+            </div>
+            <div class="slide-body">
+                <div>
+                    <h2 class="slide-title">QUY TRÌNH DUYỆT HỒ SƠ ĐỐI TÁC &amp; CHỐNG TRÙNG LỊCH BAY</h2>
+                    <p class="slide-subtitle">Đảm bảo mọi đội bay trên sàn đều đủ giấy tờ hợp lệ trước khi nhận đơn và không bị xếp chồng lịch khi vận hành.</p>
+                </div>
+                <div class="grid-4">
+                    <div class="card card-sky">
+                        <span class="badge-ok">BƯỚC 1</span>
+                        <div class="card-title">Khai Báo Thông Tin</div>
+                        <p class="card-text">Đối tác chọn loại hình Cá nhân hoặc Doanh nghiệp, điền thông tin pháp lý và tài khoản ngân hàng nhận tiền.</p>
+                    </div>
+                    <div class="card card-sky">
+                        <span class="badge-ok">BƯỚC 2</span>
+                        <div class="card-title">Nộp Đủ 5–7 Giấy Tờ</div>
+                        <p class="card-text">Cá nhân nộp tối thiểu <strong>5 giấy tờ</strong>; Doanh nghiệp nộp tối thiểu <strong>7 giấy tờ</strong>. Tệp tải lên được mã hóa tự động.</p>
+                    </div>
+                    <div class="card card-accent">
+                        <span class="badge-ok">BƯỚC 3</span>
+                        <div class="card-title">Duyệt Từng Giấy Tờ</div>
+                        <p class="card-text">Quản trị viên xem trực tiếp từng tệp, duyệt đạt hoặc yêu cầu sửa. Giấy tờ đã duyệt sẽ bị <strong>khóa không cho xóa</strong>.</p>
+                    </div>
+                    <div class="card card-emerald">
+                        <span class="badge-ok">BƯỚC 4</span>
+                        <div class="card-title">Mở Bán Dịch Vụ</div>
+                        <p class="card-text">Khi toàn bộ giấy tờ bắt buộc đạt chuẩn, đối tác được mở bán gói dịch vụ và nhận tiền cọc an toàn trên sàn.</p>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-title">Chặn Xếp Trùng Lịch Máy Bay &amp; Phi Công</div>
+                        <p class="card-text">Hệ thống kiểm tra tự động khung giờ hoạt động, không cho phép phân công cùng 1 máy bay hoặc 1 phi công cho 2 chuyến bay diễn ra trùng giờ.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Hoàn Thiện Dữ Liệu Dịch Vụ &amp; Hồ Sơ Mẫu</div>
+                        <p class="card-text">Cập nhật cơ sở dữ liệu lên phiên bản mới nhất (V70), nạp đầy đủ danh sách gói dịch vụ bay, sửa lỗi học liệu đào tạo và bổ sung bộ hồ sơ đối tác mẫu.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Nghiệp vụ Sàn dịch vụ &amp; Vận hành bay</span>
+                <span>Cơ sở dữ liệu đã đồng bộ đến phiên bản V70</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 6 -->
+        <section class="slide">
+            <div class="slide-header">
+                <div class="brand-pill"><span class="brand-dot"></span> VIỆC 4 · KIỂM THỬ TỰ ĐỘNG</div>
+                <span class="slide-tag">SLIDE 06 / 10</span>
+            </div>
+            <div class="slide-body">
+                <div>
+                    <h2 class="slide-title">ĐẢM BẢO CHẤT LƯỢNG: HƠN 1.399 BÀI KIỂM THỬ &amp; ĐỘ PHỦ &gt; 90%</h2>
+                    <p class="slide-subtitle">Kiểm tra toàn diện sau khi chuyển sang DAO + Hibernate để chắc chắn mọi tính năng cũ và mới đều chạy chính xác.</p>
+                </div>
+                <div class="grid-2">
+                    <div class="card card-emerald" style="justify-content: space-around;">
+                        <div class="card-title">Tỷ Lệ Độ Phủ Kiểm Thử Tự Động (Mục tiêu &gt; 80%)</div>
+                        <div class="bar-row">
+                            <div class="bar-label"><span>Tầng tiếp nhận yêu cầu (Controller)</span><span style="color:#6EE7B7;">99,37%</span></div>
+                            <div class="bar-track"><div class="bar-fill" style="width: 99.37%;"></div></div>
+                        </div>
+                        <div class="bar-row">
+                            <div class="bar-label"><span>Tầng làm việc dữ liệu (Hibernate DAO)</span><span style="color:#6EE7B7;">97,30%</span></div>
+                            <div class="bar-track"><div class="bar-fill" style="width: 97.30%;"></div></div>
+                        </div>
+                        <div class="bar-row">
+                            <div class="bar-label"><span>Tầng xử lý nghiệp vụ (Service)</span><span style="color:#6EE7B7;">&gt; 90%</span></div>
+                            <div class="bar-track"><div class="bar-fill" style="width: 91.5%;"></div></div>
+                        </div>
+                        <div class="bar-row">
+                            <div class="bar-label"><span>Tổng thể toàn hệ thống máy chủ</span><span style="color:#6EE7B7;">&gt; 90%</span></div>
+                            <div class="bar-track"><div class="bar-fill" style="width: 91.2%;"></div></div>
+                        </div>
+                    </div>
+                    <div class="card card-sky">
+                        <div class="card-title">Các Nhóm Kiểm Tra Đã Bổ Sung Trong Tuần</div>
+                        <ul class="bullet-list">
+                            <li><strong>Bổ sung 23 bộ kiểm thử mới</strong>: Bao phủ các phần phức tạp như xác thực OTP, phân bổ hạn mức, chuyển khoản ngân hàng, quản lý đội bay, vùng trời và trợ lý AI.</li>
+                            <li><strong>Kiểm tra toàn bộ 76 lớp DAO</strong>: Đảm bảo thêm, sửa, xóa, tìm kiếm và phân trang hoạt động chuẩn trên Hibernate.</li>
+                            <li><strong>Kiểm tra mã hóa bảo mật</strong>: Xác nhận mã hóa/giải mã thông tin người dùng và phát hiện tệp bị chỉnh sửa trái phép.</li>
+                            <li><strong>Kết quả chạy toàn bộ</strong>: <strong>Hơn 1.399 bài kiểm tra đạt 100%</strong>, không có lỗi nào.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Kiểm thử tự động bằng JUnit 5 &amp; báo cáo độ phủ JaCoCo</span>
+                <span>0 lỗi phát sinh trên toàn bộ bộ kiểm thử</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 7 -->
+        <section class="slide">
+            <div class="slide-header">
+                <div class="brand-pill"><span class="brand-dot"></span> VIỆC 5 · GIAO DIỆN WEB &amp; PHÂN QUYỀN</div>
+                <span class="slide-tag">SLIDE 07 / 10</span>
+            </div>
+            <div class="slide-body">
+                <div>
+                    <h2 class="slide-title">NÂNG CẤP 3 TRANG WEB, PHÂN QUYỀN &amp; THỬ NGHIỆM GIAO DIỆN</h2>
+                    <p class="slide-subtitle">Cải thiện trải nghiệm người dùng trên cả 3 trang Web, hiển thị mượt trên màn hình điện thoại nhỏ và siết chặt quyền truy cập.</p>
+                </div>
+                <div class="grid-3">
+                    <div class="card card-accent">
+                        <div class="card-title">1. Trang Khách Hàng</div>
+                        <ul class="bullet-list">
+                            <li>Thiết kế lại trang chủ và trang danh sách dịch vụ bay gọn gàng, rõ ràng hơn.</li>
+                            <li>Rút gọn bộ lọc tìm kiếm và hỗ trợ chia sẻ thẳng đường link đang lọc.</li>
+                            <li><strong>Triển khai 4 thử nghiệm giao diện (A/B Testing)</strong>: So sánh cách hiển thị tiêu đề trang chủ, bộ lọc, thẻ giá và bảng tính chi phí để tối ưu đặt bay.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-sky">
+                        <div class="card-title">2. Trang Vận Hành</div>
+                        <ul class="bullet-list">
+                            <li><strong>Chặn truy cập nhầm quyền</strong>: Không cho phép tài khoản khách hàng thông thường vào trang Vận hành nội bộ.</li>
+                            <li>Cải thiện khung chọn máy bay hiển thị rõ 2 dòng (mã máy &amp; dòng máy).</li>
+                            <li>Hiển thị thông báo lỗi bằng tiếng Việt dễ hiểu khi trùng lịch và sửa các nút điều hướng bị lỗi.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-emerald">
+                        <div class="card-title">3. Trang Quản Trị (Admin)</div>
+                        <ul class="bullet-list">
+                            <li>Bổ sung màn hình quản lý vai trò và quyền hạn trực quan, dễ thao tác.</li>
+                            <li>Rút gọn thanh menu trên cùng và đồng bộ nút truy cập nhanh.</li>
+                            <li>Chuẩn hóa đủ 3 ngôn ngữ (Việt / Anh / Nhật) và khắc phục hoàn toàn lỗi chữ bị tràn trên màn hình điện thoại.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Đồng bộ 3 trang Web: Khách hàng · Vận hành · Quản trị</span>
+                <span>Hiển thị chuẩn trên cả máy tính và điện thoại</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 8 -->
+        <section class="slide">
+            <div class="slide-header">
+                <div class="brand-pill"><span class="brand-dot"></span> VIỆC 6 · ỨNG DỤNG DI ĐỘNG iPHONE</div>
+                <span class="slide-tag">SLIDE 08 / 10</span>
+            </div>
+            <div class="slide-body">
+                <div>
+                    <h2 class="slide-title">ỨNG DỤNG iPHONE: ĐĂNG NHẬP GOOGLE/APPLE &amp; TESTFLIGHT</h2>
+                    <p class="slide-subtitle">Hoàn thiện đăng nhập một chạm trên điện thoại và phát hành bản cập nhật mới nhất lên Apple TestFlight.</p>
+                </div>
+                <div class="grid-2">
+                    <div class="card card-sky">
+                        <div class="card-title">Các Cải Tiến Đã Hoàn Thành Trên Mobile</div>
+                        <ul class="bullet-list">
+                            <li><strong>Đăng nhập bằng Google &amp; Apple</strong>: Cấu hình đầy đủ mã kết nối cho cả máy chủ và ứng dụng iPhone để khách hàng đăng nhập nhanh bằng 1 chạm.</li>
+                            <li><strong>Đồng bộ nội dung từ Web</strong>: Cập nhật toàn bộ từ điển 3 ngôn ngữ (Việt / Anh / Nhật) và cách hiển thị trạng thái đồng nhất với trang Web.</li>
+                            <li><strong>Dọn dẹp &amp; tối ưu cấu hình</strong>: Xử lý tránh trùng lặp thư viện khi đóng gói bản cài đặt cho iPhone.</li>
+                        </ul>
+                    </div>
+                    <div class="card card-emerald">
+                        <div class="card-title">Thông Tin Kiểm Tra &amp; Phát Hành TestFlight</div>
+                        <table class="slide-table" style="margin-top: 6px;">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Kiểm tra mã nguồn</strong></td>
+                                    <td><span class="badge-ok">273 / 273 tệp đạt chuẩn</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Kiểm thử tự động Mobile</strong></td>
+                                    <td><span class="badge-ok">56 / 56 bài kiểm tra đạt</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Phiên bản phát hành</strong></td>
+                                    <td><strong>v1.0.0 — Bản dựng số 5</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Kênh cài đặt thử nghiệm</strong></td>
+                                    <td><strong>Apple TestFlight</strong> (Đẩy tự động)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cách cập nhật</strong></td>
+                                    <td>Mở ứng dụng TestFlight trên iPhone và bấm Cập nhật</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Ứng dụng di động UAV PAS (iOS)</span>
+                <span>Sẵn sàng cài đặt và thử nghiệm trực tiếp trên iPhone</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 9 -->
+        <section class="slide">
+            <div class="slide-header">
+                <div class="brand-pill"><span class="brand-dot"></span> TIẾN ĐỘ THEO NGÀY</div>
+                <span class="slide-tag">SLIDE 09 / 10</span>
+            </div>
+            <div class="slide-body">
+                <div>
+                    <h2 class="slide-title">TÓM TẮT LỊCH TRÌNH CÔNG VIỆC TRONG TUẦN (19/11 – 27/11)</h2>
+                    <p class="slide-subtitle">Theo dõi nhanh từng cột mốc đã bàn giao từ đầu tuần đến cuối tuần.</p>
+                </div>
+                <table class="slide-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 17%;">Thời gian</th>
+                            <th style="width: 55%;">Công việc chính đã thực hiện</th>
+                            <th style="width: 28%;">Kết quả bàn giao</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>19/11/2026</strong></td>
+                            <td>Thiết kế lại trang chủ gọn đẹp; thêm khóa chống đặt trùng lịch máy bay &amp; phi công; sửa lỗi vỡ khung giao diện điện thoại cho 3 trang Web &amp; Mobile.</td>
+                            <td><span class="badge-ok">Giao diện mượt · Chống trùng lịch</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>21/11/2026</strong></td>
+                            <td>Dọn 19 ảnh cũ không dùng; đồng bộ câu chữ đa ngôn ngữ sang Mobile; cấu hình đăng nhập Google/Apple và phát hành bản iPhone số 5.</td>
+                            <td><span class="badge-ok">App iPhone lên TestFlight (#5)</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>23/11/2026</strong></td>
+                            <td>Chuyển đổi xong 100% sang DAO + Hibernate (76 cặp DAO); thêm mã hóa AES-256 cho dữ liệu &amp; giấy tờ; nâng kiểm thử đạt &gt; 90%; thêm 4 thử nghiệm UI.</td>
+                            <td><span class="badge-ok">Thuần Hibernate · Test &gt; 90%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>24/11 – 27/11</strong></td>
+                            <td>Chặn tài khoản khách vào nhầm trang Vận hành; nạp đủ gói dịch vụ &amp; hồ sơ đối tác mẫu (V70); mở rộng màn hình phân quyền trên trang Admin.</td>
+                            <td><span class="badge-ok">Hệ thống đồng bộ toàn diện</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="slide-footer">
+                <span>Tổng kết tiến độ tuần 19/11 – 27/11/2026</span>
+                <span>Tất cả hạng mục đã được đưa lên bản chạy chính thức</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 10 -->
+        <section class="slide">
+            <div class="slide-header">
+                <div class="brand-pill"><span class="brand-dot"></span> ĐỊNH HƯỚNG TIẾP THEO</div>
+                <span class="slide-tag">SLIDE 10 / 10</span>
+            </div>
+            <div class="slide-body">
+                <div>
+                    <h2 class="slide-title">KẾ HOẠCH CÔNG VIỆC TUẦN TIẾP THEO</h2>
+                    <p class="slide-subtitle">Tập trung đánh giá hiệu quả sử dụng thực tế, đo tốc độ chịu tải và hoàn thiện trải nghiệm người dùng.</p>
+                </div>
+                <div class="grid-3">
+                    <div class="card card-accent">
+                        <span class="badge-ok">ƯU TIÊN 1</span>
+                        <div class="card-title">Đánh Giá 4 Thử Nghiệm Giao Diện</div>
+                        <p class="card-text">Tổng hợp số liệu người dùng trên trang Khách hàng để chọn ra kiểu hiển thị và nút đặt bay hiệu quả nhất cho bản chính thức.</p>
+                    </div>
+                    <div class="card card-sky">
+                        <span class="badge-ok">ƯU TIÊN 2</span>
+                        <div class="card-title">Kiểm Tra Tốc Độ Chịu Tải</div>
+                        <p class="card-text">Đo tốc độ phản hồi của hệ thống DAO + Hibernate và luồng giải mã tài liệu khi có nhiều người truy cập cùng lúc.</p>
+                    </div>
+                    <div class="card card-emerald">
+                        <span class="badge-ok">ƯU TIÊN 3</span>
+                        <div class="card-title">Dùng Thử Thực Tế Trên iPhone</div>
+                        <p class="card-text">Thu thập phản hồi trực tiếp từ bản TestFlight số 5 (đăng nhập Google/Apple, đặt dịch vụ, theo dõi đơn) để tinh chỉnh chi tiết.</p>
+                    </div>
+                </div>
+                <div class="card" style="text-align: center; padding: 18px; background: rgba(171, 37, 35, 0.16); border-color: rgba(224, 49, 49, 0.4);">
+                    <div class="card-title" style="font-size: 19px;">CẢM ƠN ĐÃ THEO DÕI — SẴN SÀNG TRAO ĐỔI &amp; DEMO HỆ THỐNG</div>
+                    <p class="card-text">Hệ thống UAV PAS · Báo cáo tiến độ tuần 19/11 – 27/11/2026</p>
+                </div>
+            </div>
+            <div class="slide-footer">
+                <span>Người thực hiện: Nguyễn Phát</span>
+                <span>Bộ tài liệu gồm: Báo cáo PDF · Bộ Slide PDF · Kịch bản chi tiết</span>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="prevSlide()" aria-label="Slide trước">←</button>
+        <span class="slide-counter"><span id="current">1</span> / <span id="total">10</span></span>
+        <button class="nav-btn" onclick="nextSlide()" aria-label="Slide tiếp theo">→</button>
+    </div>
+
+    <script>
+        let current = 1;
+        const slides = document.querySelectorAll('.slide');
+        const total = slides.length;
+        document.getElementById('total').textContent = total;
+
+        function showSlide(n) {
+            if (n < 1) n = 1;
+            if (n > total) n = total;
+            current = n;
+            slides.forEach((s, i) => s.classList.toggle('active', i === n - 1));
+            document.getElementById('current').textContent = n;
+            document.getElementById('progressBar').style.width = ((n / total) * 100) + '%';
+        }
+
+        function nextSlide() { showSlide(current + 1); }
+        function prevSlide() { showSlide(current - 1); }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); nextSlide(); }
+            else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prevSlide(); }
+        });
+
+        showSlide(1);
+    </script>
+</body>
+</html>
