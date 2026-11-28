@@ -255,16 +255,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
         if (RegistrationOperations.awaitsApproval(user)) {
             // Email confirmed, but a staff account opens only after an administrator activates it.
             userRepository.save(user);
-            return new AuthResponse(
-                    null,
-                    null,
-                    null,
-                    userMapper.toResponse(user),
-                    false,
-                    "PENDING_APPROVAL",
-                    null,
-                    null,
-                    null);
+            return AuthOtpOperations.pendingApprovalResponse(userMapper.toResponse(user));
         }
         userRepository.save(user);
         // Proving the email never reopens an account an administrator suspended or deactivated.
@@ -713,9 +704,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
     }
 
     public static boolean usesTotp(AppUser user) {
-        return METHOD_TOTP.equalsIgnoreCase(user.getTwoFactorMethod())
-                && user.getTotpSecret() != null
-                && !user.getTotpSecret().isBlank();
+        return AuthOtpOperations.usesTotp(user);
     }
 
     /** Accepts a TOTP code once: a code from an already used (or older) time step is a replay. */
@@ -729,28 +718,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
     }
 
     private void applyPendingSignup(AppUser user, AuthOtpToken token) {
-        String username = token.getPendingUsername();
-        if (username != null && !username.equals(user.getUsername())) {
-            if (!username.equalsIgnoreCase(user.getUsername())
-                    && userRepository.existsByUsernameIgnoreCase(username)) {
-                throw SystemException.conflict(
-                                RegistrationOperations.TAKEN_USERNAME, "REGISTER_USERNAME_TAKEN")
-                        .at("username");
-            }
-            user.setUsername(username);
-        }
-        String phone = token.getPendingPhoneNumber();
-        if (phone != null && !phone.equals(user.getPhoneNumber())) {
-            if (userRepository.existsByPhoneNumber(phone)) {
-                throw SystemException.conflict(
-                                RegistrationOperations.TAKEN_PHONE, "REGISTER_PHONE_TAKEN")
-                        .at("phoneNumber");
-            }
-            user.setPhoneNumber(phone);
-        }
-        if (token.getPendingPasswordHash() != null) {
-            user.setPasswordHash(token.getPendingPasswordHash());
-        }
+        AuthOtpOperations.applyPendingSignup(user, token, userRepository);
     }
 
     private void terminateSessions(AppUser user, String reason) {
@@ -784,17 +752,11 @@ public class AuthOtpServiceImpl implements AuthOtpService {
     }
 
     private static String cooldownKey(String email, String purpose) {
-        return purpose + "|" + (email == null ? "" : email.trim());
+        return AuthOtpOperations.cooldownKey(email, purpose);
     }
 
     private TwoFactorStatusResponse to2faStatus(AppUser user) {
-        return new TwoFactorStatusResponse(
-                user.isTwoFactorEnabled(),
-                user.getTwoFactorMethod() != null ? user.getTwoFactorMethod() : METHOD_EMAIL,
-                user.isEmailVerified(),
-                user.getTotpSecret() != null && !user.getTotpSecret().isBlank(),
-                user.getEmail(),
-                AuthMailService.maskEmail(user.getEmail()));
+        return AuthOtpOperations.to2faStatus(user);
     }
 
     private AuthResponse issueFullSession(AppUser user) {
@@ -811,15 +773,8 @@ public class AuthOtpServiceImpl implements AuthOtpService {
 
     private AuthOtpToken createTotpChallengeToken(AppUser user) {
         invalidateExistingTokens(user.getEmail(), PURPOSE_LOGIN_2FA);
-        AuthOtpToken token = new AuthOtpToken();
-        token.setUser(user);
-        token.setEmail(user.getEmail());
-        token.setPurpose(PURPOSE_LOGIN_2FA);
-        token.setCodeHash(TOTP_CHALLENGE);
-        token.setChallengeToken(UUID.randomUUID().toString());
-        token.setAttempts(0);
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(effectiveOtpTtlMinutes()));
-        return otpTokenRepository.save(token);
+        return otpTokenRepository.save(
+                AuthOtpOperations.buildTotpChallengeToken(user, effectiveOtpTtlMinutes()));
     }
 
     private IssuedChallenge issueOtpToken(
@@ -856,20 +811,15 @@ public class AuthOtpServiceImpl implements AuthOtpService {
         String challengeToken = UUID.randomUUID().toString();
         int ttlMinutes = effectiveOtpTtlMinutes();
 
-        AuthOtpToken token = new AuthOtpToken();
-        token.setUser(user);
-        token.setEmail(email);
-        token.setPurpose(purpose);
-        token.setCodeHash(passwordEncoder.encode(rawCode));
-        token.setChallengeToken(challengeToken);
-        token.setAttempts(0);
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(ttlMinutes));
-        if (pending != null) {
-            token.setPendingUsername(pending.username());
-            token.setPendingPhoneNumber(pending.phoneNumber());
-            token.setPendingPasswordHash(pending.passwordHash());
-        }
-        otpTokenRepository.save(token);
+        otpTokenRepository.save(
+                AuthOtpOperations.buildOtpToken(
+                        user,
+                        email,
+                        purpose,
+                        passwordEncoder.encode(rawCode),
+                        challengeToken,
+                        ttlMinutes,
+                        pending));
 
         authMailService.sendOtpEmail(email, emailPurposeLabel, rawCode, ttlMinutes);
         if (rateLimiter != null) rateLimiter.startResendCooldown(cooldownKey(email, purpose));
@@ -877,29 +827,20 @@ public class AuthOtpServiceImpl implements AuthOtpService {
         return new IssuedChallenge(challengeToken, devPreview);
     }
 
-    /**
-     * Stand-in reset challenge for an email without an account: stored like a real one (so resend,
-     * attempts and expiry behave the same) but its hash is of a random secret no 6-digit code can
-     * match, and no email is sent.
-     */
     /** A random value no 6-digit code can match; short enough for BCrypt (max 72 bytes). */
     static String decoyResetSecret() {
-        return "decoy-" + UUID.randomUUID();
+        return AuthOtpOperations.decoyResetSecret();
     }
 
     private IssuedChallenge issueDecoyResetToken(String email) {
         invalidateExistingTokens(email, PURPOSE_PASSWORD_RESET);
         String challengeToken = UUID.randomUUID().toString();
-        AuthOtpToken token = new AuthOtpToken();
-        token.setUser(null);
-        token.setEmail(email);
-        token.setPurpose(PURPOSE_PASSWORD_RESET);
-        // BCrypt rejects inputs over 72 bytes, so the never-matching secret stays one UUID long.
-        token.setCodeHash(passwordEncoder.encode(decoyResetSecret()));
-        token.setChallengeToken(challengeToken);
-        token.setAttempts(0);
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(effectiveOtpTtlMinutes()));
-        otpTokenRepository.save(token);
+        otpTokenRepository.save(
+                AuthOtpOperations.buildDecoyResetToken(
+                        email,
+                        passwordEncoder.encode(decoyResetSecret()),
+                        challengeToken,
+                        effectiveOtpTtlMinutes()));
         if (rateLimiter != null) {
             rateLimiter.startResendCooldown(cooldownKey(email, PURPOSE_PASSWORD_RESET));
         }
@@ -923,10 +864,6 @@ public class AuthOtpServiceImpl implements AuthOtpService {
         }
     }
 
-    /**
-     * Loads the challenge with a row lock and checks it is alive and was issued for this purpose:
-     * a reset, sign-up or 2FA-enable code must never answer a login challenge (or vice versa).
-     */
     private AuthOtpToken resolveActiveToken(
             String challengeToken, String email, String expectedPurpose) {
         Optional<AuthOtpToken> candidate = Optional.empty();
@@ -947,27 +884,7 @@ public class AuthOtpServiceImpl implements AuthOtpService {
                         () ->
                                 SystemException.badRequest(
                                         "Phiên xác thực OTP không tồn tại hoặc đã hết hạn. Vui lòng yêu cầu gửi lại mã."));
-        if (!expectedPurpose.equals(token.getPurpose())) {
-            throw PURPOSE_REGISTER_VERIFY.equals(expectedPurpose)
-                    ? SystemException.badRequest(
-                            "Phiên đăng ký không hợp lệ. Vui lòng đăng ký lại.",
-                            "REGISTER_CHALLENGE_REQUIRED")
-                    : SystemException.badRequest(
-                            "Phiên xác thực không hợp lệ cho thao tác này. Vui lòng bắt đầu lại.",
-                            "OTP_CHALLENGE_PURPOSE_MISMATCH");
-        }
-        if (consumed(token)) {
-            throw SystemException.badRequest(
-                    "Mã OTP này đã được sử dụng. Vui lòng yêu cầu gửi mã mới.");
-        }
-        if (expired(token)) {
-            throw SystemException.badRequest(
-                    "Mã OTP đã hết hạn hiệu lực. Vui lòng bấm Gửi lại mã.");
-        }
-        if (token.getAttempts() >= effectiveMaxOtpAttempts()) {
-            throw SystemException.badRequest(
-                    "Bạn đã nhập sai OTP quá số lần cho phép. Vui lòng yêu cầu gửi mã mới.");
-        }
+        AuthOtpOperations.validateActiveToken(token, expectedPurpose, effectiveMaxOtpAttempts());
         return token;
     }
 
@@ -996,10 +913,10 @@ public class AuthOtpServiceImpl implements AuthOtpService {
     }
 
     private static boolean expired(AuthOtpToken token) {
-        return token.getExpiresAt() == null || LocalDateTime.now().isAfter(token.getExpiresAt());
+        return AuthOtpOperations.expired(token);
     }
 
     private static boolean consumed(AuthOtpToken token) {
-        return token.getConsumedAt() != null;
+        return AuthOtpOperations.consumed(token);
     }
 }

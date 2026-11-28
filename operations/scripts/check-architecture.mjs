@@ -94,6 +94,14 @@ for (const file of files.filter(name => /\.[cm]?[jt]sx?$/.test(name))) {
     if (parts[0] === 'src' && flatLayers.has(parts[1])) {
         assert.equal(parts.length, 3, `${rel}: keep src/${parts[1]}/ flat without nested feature folders`);
     }
+    if (parts[0] === 'src' && parts[1] === 'components') {
+        const lineCount = readFileSync(file, 'utf8').trim().split('\n').length;
+        assert.ok(lineCount <= 600, `${rel}: component too large (${lineCount} lines > 600 max); split into focused subcomponents`);
+    }
+    if (parts[0] === 'src' && parts[1] === 'components') {
+        const lines = readFileSync(file, 'utf8').trim().split('\n').length;
+        assert.ok(lines <= 600, `${rel}: component too large (${lines} > 600 LOC); split into focused subcomponents`);
+    }
     if (parts[0] === 'src' && parts[1] === 'components' && subpackagedComponents.has(parts[2])) {
         assert.ok(parts.length >= 5, `${rel}: organize large component modules into src/components/${parts[2]}/<sub-domain>/`);
     }

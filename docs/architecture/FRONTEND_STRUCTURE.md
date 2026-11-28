@@ -10,72 +10,32 @@ uav-pas-platform/
 │   │   │   ├── (public)/        # Website công khai ở /
 │   │   │   ├── (customer)/customer/
 │   │   │   └── health/
-│   │   ├── api/<tính năng>/     # Chỉ chứa API client dùng bởi Customer & Public
-│   │   ├── hooks/<tính năng>/   # Chỉ chứa React Query hooks của Customer & Public
-│   │   ├── components/<tính năng>/ # Chỉ chứa UI của Customer & Public + base ui/layout/shared
-│   │   ├── types/<tính năng>/
-│   │   ├── utils/<tính năng>/
-│   │   ├── forms/<tính năng>/
+│   │   ├── api/                 # Phẳng: *.api.ts
+│   │   ├── hooks/               # Phẳng: use*.ts & *-query-keys.ts
+│   │   ├── forms/               # Phẳng: *-form.ts (pure TypeScript)
+│   │   ├── types/               # Phẳng: *.types.ts
+│   │   ├── utils/               # Phẳng: *.ts & *-workflows.ts
+│   │   ├── components/<nhóm>/   # Nhóm UI theo domain + ui/layout/shared
 │   │   ├── content/marketing/   # Nội dung tĩnh trang chủ & giải pháp
-│   │   ├── providers/
-│   │   ├── lib/
-│   │   ├── config/
-│   │   ├── i18n/
-│   │   ├── messages/
-│   │   └── styles/
+│   │   ├── providers/  lib/  config/  i18n/  messages/  styles/
 │   ├── scripts/check-architecture.mjs
 │   └── package.json             # uav-pas-customer (next dev -p 3100)
 │
 ├── operations/                  # Cổng Vận hành & Mô phỏng bay (:3200, nhánh operations)
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── (operations)/operations/
-│   │   │   ├── health/
-│   │   │   └── page.tsx         # Cổng đăng nhập trực tiếp tại :3200/
-│   │   ├── api/<tính năng>/     # Chỉ chứa API client của Operations (mission, uav, station, simulation, sar...)
-│   │   ├── hooks/<tính năng>/
-│   │   ├── components/<tính năng>/
-│   │   ├── types/<tính năng>/
-│   │   ├── utils/<tính năng>/
-│   │   ├── forms/<tính năng>/
-│   │   ├── providers/
-│   │   ├── lib/
-│   │   ├── config/
-│   │   ├── i18n/
-│   │   ├── messages/
-│   │   └── styles/
-│   ├── scripts/check-architecture.mjs
-│   └── package.json             # uav-pas-operations (next dev -p 3200)
+│   └── src/                     # Cùng cấu trúc phẳng (api, hooks, forms, types, utils) + app/(operations)/
 │
 └── admin/                       # Cổng Quản trị hệ thống (:3300, nhánh admin)
-    ├── src/
-    │   ├── app/
-    │   │   ├── (admin)/admin/
-    │   │   ├── health/
-    │   │   └── page.tsx         # Cổng đăng nhập trực tiếp tại :3300/
-    │   ├── api/<tính năng>/     # Chỉ chứa API client của Admin (access, audit, dashboard, reporting, settings...)
-    │   ├── hooks/<tính năng>/
-    │   ├── components/<tính năng>/
-    │   ├── types/<tính năng>/
-    │   ├── utils/<tính năng>/
-    │   ├── forms/<tính năng>/
-    │   ├── providers/
-    │   ├── lib/
-    │   ├── config/
-    │   ├── i18n/
-    │   ├── messages/
-    │   └── styles/
-    ├── scripts/check-architecture.mjs
-    └── package.json             # uav-pas-admin (next dev -p 3300)
+    └── src/                     # Cùng cấu trúc phẳng (api, hooks, forms, types, utils) + app/(admin)/
 ```
 
 ## Quy tắc phát triển và cô lập mã nguồn
 
 - **Cô lập tuyệt đối theo cổng (`check-architecture.mjs`):**
-  - `customer/` chỉ chứa `(public)` và `(customer)` (31 route, 373 file nguồn); cấm tồn tại `(operations)` hoặc `(admin)`.
-  - `operations/` chỉ chứa `(operations)` (25 route, 354 file nguồn); cấm tồn tại `(public)`, `(customer)` hoặc `(admin)`.
-  - `admin/` chỉ chứa `(admin)` (51 route, 438 file nguồn); cấm tồn tại `(public)`, `(customer)` hoặc `(operations)`.
-- **Chia theo tầng rồi theo tính năng bên trong mỗi cổng:** `src/api/<tính năng>`, `src/hooks/<tính năng>`, `src/components/<tính năng>`, `src/types/<tính năng>`, `src/utils/<tính năng>`, `src/forms/<tính năng>`. Không tạo lại `src/features`. Luồng dữ liệu: component → `hooks/<tính năng>` → `api/<tính năng>` → `@/lib/api`.
+  - `customer/` chỉ chứa `(public)` và `(customer)`; cấm tồn tại `(operations)` hoặc `(admin)`.
+  - `operations/` chỉ chứa `(operations)`; cấm tồn tại `(public)`, `(customer)` hoặc `(admin)`.
+  - `admin/` chỉ chứa `(admin)`; cấm tồn tại `(public)`, `(customer)` hoặc `(operations)`.
+- **5 tầng dữ liệu/logic phẳng hoàn toàn:** `src/api/`, `src/hooks/`, `src/forms/`, `src/types/`, `src/utils/` không tạo thư mục con theo tính năng (được kiểm soát tự động bởi `check-architecture.mjs`). Luồng dữ liệu: component → `hooks/` → `api/` → `@/lib/api`.
+- **Chống drift xuyên cổng (`scripts/sync-web-shared.mjs`):** Các module nền tảng dùng chung giữa 3 cổng Web được kiểm soát đồng bộ bằng `node scripts/sync-web-shared.mjs --check`.
 - **Liên kết xuyên cổng (Cross-Portal Redirects):**
   - Mỗi cổng định nghĩa `redirects()` trong `next.config.ts` thông qua các biến môi trường `NEXT_PUBLIC_CUSTOMER_URL` (`http://localhost:3100`), `NEXT_PUBLIC_OPERATIONS_URL` (`http://localhost:3200`) và `NEXT_PUBLIC_ADMIN_URL` (`http://localhost:3300`).
   - Khi người dùng chuyển cổng qua `PortalSwitcher` hoặc đăng nhập với vai trò thuộc cổng khác, trình duyệt tự động điều hướng sang đúng cổng tương ứng và dùng chung phiên cookie xác thực với Backend (`:8080`).

@@ -6,10 +6,7 @@ import {useRouter} from 'next/navigation';
 import {
     Calendar,
     CheckCircle2,
-    Clock,
     ExternalLink,
-    FileCheck2,
-    FileUp,
     Gamepad2,
     MapPin,
     PackageCheck,
@@ -24,6 +21,8 @@ import {
     IllustrativeBadge,
     IllustrativeFooterNote,
 } from '@/components/marketplace/provider/IllustrativeDisclaimer';
+import {ProviderOrderInFlightSection} from '@/components/marketplace/provider/ProviderOrderInFlightSection';
+import {ProviderOrderTabsBar} from '@/components/marketplace/provider/ProviderOrderTabsBar';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
 import {ProviderUavSelectField} from '@/components/marketplace/provider/ProviderUavSelectField';
 import {
@@ -45,17 +44,9 @@ import {
 } from '@/forms/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
 import type {Mission} from '@/types/mission.types';
-import {MEDIA_ACCEPT} from '@/utils/media-policy';
 
 const INPUT_CLASS =
     'h-10 w-full rounded-control border border-slate-300 bg-white px-3 text-xs font-medium text-slate-900 outline-none focus:border-primary';
-
-const ORDER_TABS: readonly { key: SellerOrderTab; icon: typeof Clock }[] = [
-    {key: 'PENDING_ACCEPT', icon: Clock},
-    {key: 'WAITING_FLIGHT', icon: Calendar},
-    {key: 'IN_FLIGHT', icon: PlaneTakeoff},
-    {key: 'DELIVERED', icon: PackageCheck},
-] as const;
 
 export function ProviderOrdersView() {
     const {t} = useI18n();
@@ -311,36 +302,7 @@ export function ProviderOrdersView() {
             ) : (
                 <div className="mx-auto max-w-6xl space-y-5">
                     {/* Thanh 4 tab trạng thái đơn kiểu Shopee Seller */}
-                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4" role="tablist">
-                        {ORDER_TABS.map(tab => {
-                            const Icon = tab.icon;
-                            const active = activeTab === tab.key;
-                            return (
-                                <button
-                                    key={tab.key}
-                                    type="button"
-                                    role="tab"
-                                    aria-selected={active}
-                                    onClick={() => setActiveTab(tab.key)}
-                                    className={`flex min-h-14 items-center justify-between gap-2 rounded-2xl border px-3.5 py-2.5 text-left transition-colors ${
-                                        active
-                                            ? 'border-primary bg-uav-red-light text-primary'
-                                            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-                                    }`}
-                                >
-                                    <span className="inline-flex items-center gap-2 min-w-0">
-                                        <Icon size={18} className={active ? 'text-primary' : 'text-slate-500'} aria-hidden="true"/>
-                                        <span className="line-clamp-2 break-words text-xs font-semibold leading-tight">
-                                            {t(`opsMarketplace.orders.tabs.${tab.key}`)}
-                                        </span>
-                                    </span>
-                                    <strong className="rounded-full bg-white px-2 py-0.5 text-xs font-bold tabular-nums text-slate-900 shadow-2xs">
-                                        {counts[tab.key]}
-                                    </strong>
-                                </button>
-                            );
-                        })}
-                    </div>
+                    <ProviderOrderTabsBar activeTab={activeTab} counts={counts} onSelect={setActiveTab}/>
 
                     {errorMsg && (
                         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-danger" role="alert">
@@ -569,106 +531,25 @@ export function ProviderOrdersView() {
 
                                         {/* Tab Đang bay: Màn bay mô phỏng + Hoàn thành kèm tài liệu bàn giao */}
                                         {tab === 'IN_FLIGHT' && (
-                                            <div className="mt-4 space-y-3 rounded-xl bg-slate-50 p-4">
-                                                <div className="flex flex-wrap items-center justify-between gap-2">
-                                                    <div className="flex flex-wrap items-center gap-2">
-                                                        <Link
-                                                            href={`/operations/simulation?missionId=${mission.id}${mission.uavId ? `&uavId=${mission.uavId}` : ''}`}
-                                                            className="inline-flex min-h-10 items-center gap-1.5 rounded-control bg-slate-900 px-4 text-xs font-semibold whitespace-nowrap text-white hover:bg-slate-800"
-                                                        >
-                                                            <Gamepad2 size={15} aria-hidden="true"/>
-                                                            {t('opsMarketplace.orders.card.openSimulation')}
-                                                        </Link>
-                                                        <label className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-control border border-dashed border-primary bg-uav-red-light/60 px-3.5 text-xs font-semibold whitespace-nowrap text-primary hover:bg-uav-red-light">
-                                                            <FileUp size={15} aria-hidden="true"/>
-                                                            <span>
-                                                                {uploadingMissionId === mission.id
-                                                                    ? t('opsMarketplace.pilotToday.uploading')
-                                                                    : t('opsMarketplace.pilotToday.uploadDeliverable')}
-                                                            </span>
-                                                            <input
-                                                                type="file"
-                                                                accept={MEDIA_ACCEPT}
-                                                                className="sr-only"
-                                                                disabled={uploadingMissionId === mission.id}
-                                                                onChange={e => {
-                                                                    const file = e.target.files?.[0];
-                                                                    if (file) void handleUploadDeliverable(mission.id, file);
-                                                                    e.target.value = '';
-                                                                }}
-                                                            />
-                                                        </label>
-                                                    </div>
-                                                    <Link
-                                                        href={`/operations/missions/${mission.id}`}
-                                                        className="inline-flex min-h-10 items-center gap-1.5 rounded-control border border-slate-200 bg-white px-3.5 text-xs font-semibold whitespace-nowrap text-slate-700 hover:border-primary hover:text-primary"
-                                                    >
-                                                        <FileCheck2 size={15} aria-hidden="true"/>
-                                                        {t('opsMarketplace.orders.card.openDetail')}
-                                                    </Link>
-                                                </div>
-
-                                                {(uploadedNamesByMission[mission.id]?.length ?? 0) > 0 && (
-                                                    <div className="text-xs font-semibold text-slate-700">
-                                                        {t('opsMarketplace.pilotToday.uploadedFiles', {
-                                                            count: uploadedNamesByMission[mission.id].length,
-                                                        })}
-                                                        : {uploadedNamesByMission[mission.id].join(', ')}
-                                                    </div>
-                                                )}
-
-                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                                    <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                                                        <span>
-                                                            {t('opsMarketplace.orders.card.handoverNote')}
-                                                            <RequiredMark/>
-                                                        </span>
-                                                        <input
-                                                            className={INPUT_CLASS}
-                                                            value={handoverNoteByMission[mission.id] ?? ''}
-                                                            onChange={e =>
-                                                                setHandoverNoteByMission(s => ({
-                                                                    ...s,
-                                                                    [mission.id]: e.target.value,
-                                                                }))
-                                                            }
-                                                            placeholder={t('opsMarketplace.orders.card.handoverPlaceholder')}
-                                                        />
-                                                    </label>
-
-                                                    <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                                                        <span>
-                                                            {t('opsMarketplace.orders.card.equipmentCondition')}
-                                                            <OptionalMark/>
-                                                        </span>
-                                                        <input
-                                                            className={INPUT_CLASS}
-                                                            value={
-                                                                conditionByMission[mission.id] ??
-                                                                t('opsMarketplace.orders.card.equipmentConditionDefault')
-                                                            }
-                                                            onChange={e =>
-                                                                setConditionByMission(s => ({
-                                                                    ...s,
-                                                                    [mission.id]: e.target.value,
-                                                                }))
-                                                            }
-                                                        />
-                                                    </label>
-                                                </div>
-
-                                                <div className="flex justify-end">
-                                                    <Button
-                                                        type="button"
-                                                        disabled={completeOrder.isPending}
-                                                        onClick={() => void handleComplete(mission)}
-                                                        className="min-h-11 whitespace-nowrap"
-                                                    >
-                                                        <PackageCheck size={15} className="mr-1.5 inline" aria-hidden="true"/>
-                                                        {t('opsMarketplace.orders.card.completeOrder')}
-                                                    </Button>
-                                                </div>
-                                            </div>
+                                            <ProviderOrderInFlightSection
+                                                mission={mission}
+                                                uploading={uploadingMissionId === mission.id}
+                                                completing={completeOrder.isPending}
+                                                uploadedNames={uploadedNamesByMission[mission.id] ?? []}
+                                                handoverNote={handoverNoteByMission[mission.id] ?? ''}
+                                                equipmentCondition={
+                                                    conditionByMission[mission.id] ??
+                                                    t('opsMarketplace.orders.card.equipmentConditionDefault')
+                                                }
+                                                onHandoverNoteChange={val =>
+                                                    setHandoverNoteByMission(s => ({...s, [mission.id]: val}))
+                                                }
+                                                onEquipmentConditionChange={val =>
+                                                    setConditionByMission(s => ({...s, [mission.id]: val}))
+                                                }
+                                                onUploadDeliverable={file => void handleUploadDeliverable(mission.id, file)}
+                                                onComplete={() => void handleComplete(mission)}
+                                            />
                                         )}
 
                                         {/* Tab Đã bàn giao */}

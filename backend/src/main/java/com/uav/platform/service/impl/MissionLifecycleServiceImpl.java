@@ -11,13 +11,10 @@ import com.uav.platform.dto.request.AirspaceCheckRequest;
 import com.uav.platform.dto.request.CreateNotificationRequest;
 import com.uav.platform.dto.response.*;
 import com.uav.platform.dto.response.AirspaceCheckResponse;
-import com.uav.platform.dto.response.WeatherAssessmentResponse;
 import com.uav.platform.entity.*;
 import com.uav.platform.entity.AppUser;
-import com.uav.platform.entity.MediaAsset;
 import com.uav.platform.enums.*;
 import com.uav.platform.enums.AuditAction;
-import com.uav.platform.enums.FlightClearanceLevel;
 import com.uav.platform.enums.NotificationType;
 import com.uav.platform.enums.UavStatus;
 import com.uav.platform.error.SystemException;
@@ -279,50 +276,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
                                                             "Không tìm thấy dịch vụ trên sàn.",
                                                             "LISTING_NOT_FOUND")
                                                     .at("listingId"));
-            if (listing.getModerationStatus()
-                    != com.uav.platform.enums.ListingModerationStatus.PUBLISHED) {
-                throw SystemException.conflict(
-                                "Tin đăng dịch vụ hiện không mở đặt thuê.", "LISTING_NOT_PUBLISHED")
-                        .at("listingId");
-            }
-            if (listing.getProvider() != null
-                    && listing.getProvider().getUser() != null
-                    && java.util.Objects.equals(
-                            listing.getProvider().getUser().getId(), customer.getId())) {
-                throw SystemException.conflict(
-                        "Bạn không thể tự đặt thuê dịch vụ do chính mình đăng bán.",
-                        "SELF_BOOKING_FORBIDDEN");
-            }
-            java.math.BigDecimal minUnits =
-                    listing.getMinBookingUnits() != null
-                            ? listing.getMinBookingUnits()
-                            : java.math.BigDecimal.ONE;
-            java.math.BigDecimal units =
-                    request.bookingUnits() != null ? request.bookingUnits() : minUnits;
-            if (units.compareTo(minUnits) < 0) {
-                throw SystemException.badRequest(
-                                "Khối lượng đặt thuê tối thiểu là " + minUnits + " đơn vị.",
-                                "MIN_BOOKING_UNITS")
-                        .at("bookingUnits");
-            }
-            mission.setListing(listing);
-            mission.setProvider(listing.getProvider());
-            if (mission.getService() == null && listing.getCategoryService() != null) {
-                mission.setService(listing.getCategoryService());
-            }
-            mission.setPricingModelSnapshot(listing.getPricingModel());
-            mission.setUnitPriceSnapshotVnd(listing.getBasePriceVnd());
-            mission.setBookingUnits(units);
-            mission.setQuotedSubtotalVnd(
-                    listing.getBasePriceVnd()
-                            .multiply(units)
-                            .setScale(0, java.math.RoundingMode.HALF_UP));
-            mission.setSecurityDepositVnd(listing.getSecurityDepositVnd());
-            mission.setProviderResponseStatus(
-                    listing.getProvider() != null
-                            ? com.uav.platform.enums.ProviderOrderStatus.PENDING_PROVIDER
-                            : com.uav.platform.enums.ProviderOrderStatus.NOT_APPLICABLE);
-            listing.setBookingCount(listing.getBookingCount() + 1);
+            MissionLifecycleOperations.applyListingBooking(mission, listing, request, customer);
             marketplaceListings.save(listing);
         } else if (Boolean.TRUE.equals(request.openRfq())) {
             if (!com.uav.platform.service.impl.SystemConfigurationOperations.boolOrDefault(
@@ -517,12 +471,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
 
     @Override
     public MissionResponse cancel(Long id, String reason, Authentication authentication) {
-        String note = reason == null || reason.isBlank() ? null : reason.trim();
-        if (note != null && note.length() > 500)
-            throw SystemException.badRequest(
-                            "Lý do hủy không được vượt quá 500 ký tự.",
-                            "MISSION_CANCEL_REASON_TOO_LONG")
-                    .at("reason");
+        String note = MissionLifecycleOperations.validateCancelReason(reason);
         Mission mission = access.accessibleForUpdate(id, authentication);
         if (marketplaceEscrow != null && marketplaceEscrow.hasReleasedEscrow(mission.getId())) {
             throw SystemException.conflict(
@@ -672,33 +621,10 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         requireAcceptance(mission);
         requirePreflightClearance(mission);
         FlightPlanResponse storedPlan = FlightPlanOperations.read(mission.getFlightPlan());
-        long plannedMinutes =
-                mission.getStartTime() != null && mission.getExpectedEndTime() != null
-                        ? Math.max(
-                                30L,
-                                java.time.Duration.between(
-                                                mission.getStartTime(),
-                                                mission.getExpectedEndTime())
-                                        .toMinutes())
-                        : 60L;
-        java.time.LocalDateTime effectiveStart =
-                mission.getStartTime() != null && mission.getStartTime().isBefore(now)
-                        ? mission.getStartTime()
-                        : now;
-        java.time.LocalDateTime actualEnd = now.plusMinutes(plannedMinutes);
-        java.time.LocalDateTime effectiveEnd =
-                mission.getExpectedEndTime() != null
-                                && mission.getExpectedEndTime().isAfter(actualEnd)
-                        ? mission.getExpectedEndTime()
-                        : actualEnd;
         AirspaceCheckResponse airspaceCheck =
                 checkAirspace(
-                        MissionPermitOperations.toCheckRequest(
-                                storedPlan,
-                                mission.getLatitude(),
-                                mission.getLongitude(),
-                                effectiveStart,
-                                effectiveEnd));
+                        MissionLifecycleOperations.buildStartAirspaceCheck(
+                                mission, storedPlan, now));
         boolean airspaceRequiresPermit =
                 (airspaceCheck != null && airspaceCheck.requiresPermit())
                         || (storedPlan != null && storedPlan.permitSupport());
@@ -740,22 +666,8 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         access.requireAssignedOperator(mission, authentication);
         if (mission.getStatus() != MissionStatus.IN_PROGRESS)
             throw new IllegalStateException("MISSION_INVALID_STATUS");
-        if (request == null
-                || request.completionNote() == null
-                || request.completionNote().isBlank()
-                || request.equipmentCondition() == null
-                || request.equipmentCondition().isBlank()
-                || request.completionNote().length() > 500
-                || request.equipmentCondition().length() > 500) {
-            throw SystemException.badRequest("MISSION_HANDOVER_NOTES_REQUIRED");
-        }
-        boolean needsResult =
-                java.util.Set.of(
-                                MissionType.AREA_INSPECTION,
-                                MissionType.AERIAL_RECORDING,
-                                MissionType.DATA_COLLECTION)
-                        .contains(mission.getMissionType());
-        if (needsResult
+        MissionLifecycleOperations.validateCompletionRequest(request);
+        if (MissionLifecycleOperations.requiresHandoverResult(mission.getMissionType())
                 && (missionMedia == null
                         || !missionMedia
                                 .existsByMissionIdAndMediaRoleInAndMediaConfirmedTrueAndMediaDeletedFalse(
@@ -830,25 +742,10 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     @Override
     public MissionResponse forceFail(
             Long id, MissionForceFailRequest request, Authentication authentication) {
-        if (request == null
-                || request.reason() == null
-                || request.reason().isBlank()
-                || request.reason().trim().length() > 500)
-            throw SystemException.badRequest(
-                            "Phải nêu lý do (tối đa 500 ký tự) khi buộc kết thúc nhiệm vụ.",
-                            "MISSION_FORCE_FAIL_REASON_REQUIRED")
-                    .at("reason");
-        if (request.notes() != null && request.notes().length() > 2000)
-            throw SystemException.badRequest(
-                            "Ghi chú không được vượt quá 2000 ký tự.", "MISSION_NOTES_TOO_LONG")
-                    .at("notes");
+        String reason = MissionLifecycleOperations.validateForceFailRequest(request);
         Mission mission = access.accessibleForUpdate(id, authentication);
         MissionStatus old = mission.getStatus();
-        if (old != MissionStatus.IN_PROGRESS
-                && old != MissionStatus.READY
-                && old != MissionStatus.RESOURCE_RESERVED)
-            throw new IllegalStateException("MISSION_INVALID_STATUS");
-        String reason = request.reason().trim();
+        MissionLifecycleOperations.requireForceFailAllowedStatus(old);
         resources.releaseResources(mission, authentication.getName());
         MissionOperations.fail(mission, reason, request.notes());
         String forceFailReason = "nhiệm vụ " + mission.getCode() + " buộc kết thúc";
@@ -892,16 +789,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
             Long id, MissionAcceptanceRequest request, Authentication authentication) {
         Mission mission = access.accessibleForUpdate(id, authentication);
         access.requireAssignedOperator(mission, authentication);
-        if (mission.getStatus() != MissionStatus.CONFIRMED
-                && mission.getStatus() != MissionStatus.RESOURCE_RESERVED
-                && mission.getStatus() != MissionStatus.READY)
-            throw new IllegalStateException("MISSION_INVALID_STATUS");
-        if (request == null || request.expectedVersion() == null || request.expectedVersion() < 0) {
-            throw SystemException.badRequest("MISSION_ACCEPTANCE_VERSION_REQUIRED");
-        }
-        if (request.expectedVersion() != mission.getVersion() || mission.isOperatorAccepted()) {
-            throw SystemException.conflict("MISSION_ACCEPTANCE_STALE");
-        }
+        MissionLifecycleOperations.validateOperatorAcceptance(mission, request);
         MissionOperations.acceptOperator(mission);
         missionEvents.record(
                 mission,
@@ -930,25 +818,11 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     private void requirePreflightClearance(Mission mission) {
         IMissionPreflightLogDao repo =
                 preflightLogs == null ? null : preflightLogs.getIfAvailable();
-        if (repo == null || mission.getId() == null) {
-            if (preflightSignoffRequired) {
-                throw SystemException.conflict(
-                        "Nhiệm vụ phải hoàn tất biên bản kiểm tra an toàn tiền bay trước khi cất cánh.",
-                        "MISSION_PREFLIGHT_NOT_CLEARED");
-            }
-            return;
-        }
-        java.util.Optional<MissionPreflightLog> existing = repo.findByMissionId(mission.getId());
-        if (existing.isPresent() && !existing.get().isClearedForTakeoff()) {
-            throw SystemException.conflict(
-                    "Biên bản tiền bay chưa đạt đủ điều kiện an toàn để cất cánh hoặc cần ký lại sau khi thay đổi thiết bị.",
-                    "MISSION_PREFLIGHT_NOT_CLEARED");
-        }
-        if (existing.isEmpty() && preflightSignoffRequired) {
-            throw SystemException.conflict(
-                    "Nhiệm vụ phải hoàn tất biên bản kiểm tra an toàn tiền bay trước khi cất cánh.",
-                    "MISSION_PREFLIGHT_NOT_CLEARED");
-        }
+        java.util.Optional<MissionPreflightLog> existing =
+                (repo == null || mission.getId() == null)
+                        ? null
+                        : repo.findByMissionId(mission.getId());
+        MissionLifecycleOperations.verifyPreflightClearance(existing, preflightSignoffRequired);
     }
 
     @Override
@@ -984,7 +858,12 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         Mission mission = access.accessibleForUpdate(id, authentication);
         access.requirePermitEditor(mission, authentication);
         if (request.permitMediaId() != null) {
-            validatePermitMedia(mission, request.permitMediaId(), authentication);
+            MissionLifecycleOperations.validateAndLinkPermitMedia(
+                    mission,
+                    request.permitMediaId(),
+                    authentication,
+                    access,
+                    mediaAssets == null ? null : mediaAssets.getIfAvailable());
         }
         MissionPermitOperations.applyUpsert(mission, request);
         missionEvents.record(
@@ -1014,14 +893,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         MissionEventType eventType =
                 approved ? MissionEventType.PERMIT_VERIFIED : MissionEventType.PERMIT_REJECTED;
         String detail =
-                approved
-                        ? "Giấy phép bay " + mission.getPermitNumber() + " đã được xác minh hợp lệ."
-                        : "Giấy phép bay "
-                                + mission.getPermitNumber()
-                                + " bị từ chối thẩm định"
-                                + (mission.getPermitNote() != null
-                                        ? ": " + mission.getPermitNote()
-                                        : ".");
+                MissionLifecycleOperations.formatPermitVerificationDetail(mission, approved);
         missionEvents.record(
                 mission,
                 eventType,
@@ -1054,47 +926,6 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
         return result;
     }
 
-    private void validatePermitMedia(
-            Mission mission, Long permitMediaId, Authentication authentication) {
-        IMediaAssetDao repo = mediaAssets == null ? null : mediaAssets.getIfAvailable();
-        if (repo == null) return;
-        MediaAsset asset =
-                repo.findById(permitMediaId)
-                        .orElseThrow(
-                                () ->
-                                        SystemException.notFound(
-                                                        "Tệp đính kèm giấy phép không tồn tại.",
-                                                        "PERMIT_MEDIA_NOT_FOUND")
-                                                .at("permitMediaId"));
-        String missionIdStr = mission.getId() == null ? null : mission.getId().toString();
-        String actorName = authentication == null ? null : authentication.getName();
-        boolean linkedToMission =
-                "MISSION".equals(asset.getLinkedEntityType())
-                        && missionIdStr != null
-                        && missionIdStr.equals(asset.getLinkedEntityId());
-        boolean unlinkedAndAuthorized =
-                asset.getLinkedEntityType() == null
-                        && ((actorName != null
-                                        && java.util.Objects.equals(
-                                                asset.getUploadedBy(), actorName))
-                                || access.hasAuthority(authentication, "MISSION_CONFIRM"));
-        if (!linkedToMission && !unlinkedAndAuthorized) {
-            throw new org.springframework.security.access.AccessDeniedException(
-                    "Not authorized to attach this media asset to mission permit");
-        }
-        if (asset.isDeleted() || !asset.isConfirmed()) {
-            throw SystemException.conflict(
-                            "Tệp đính kèm giấy phép chưa được xác nhận tải lên hoặc đã bị xóa.",
-                            "PERMIT_MEDIA_NOT_CONFIRMED")
-                    .at("permitMediaId");
-        }
-        if (unlinkedAndAuthorized && missionIdStr != null) {
-            asset.setLinkedEntityType("MISSION");
-            asset.setLinkedEntityId(missionIdStr);
-            repo.save(asset);
-        }
-    }
-
     private void fallbackNotifyCustomer(
             Mission mission,
             Authentication actor,
@@ -1123,7 +954,7 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     }
 
     private static String missionLabel(Mission mission) {
-        return mission.getCode() != null ? mission.getCode() : String.valueOf(mission.getId());
+        return MissionLifecycleOperations.missionLabel(mission);
     }
 
     @Override
@@ -1134,71 +965,16 @@ public class MissionLifecycleServiceImpl implements MissionLifecycleService {
     /** Stores the validated plan and moves the mission's map point to the centre of its flight area. */
     private static void applyFlightPlan(
             Mission mission, com.uav.platform.dto.request.FlightPlanRequest plan) {
-        if (plan == null) return;
-        var resolved = FlightPlanOperations.resolve(plan);
-        mission.setFlightPlan(FlightPlanOperations.write(resolved));
-        mission.setLatitude(java.math.BigDecimal.valueOf(resolved.centerLatitude()));
-        mission.setLongitude(java.math.BigDecimal.valueOf(resolved.centerLongitude()));
+        MissionLifecycleOperations.applyFlightPlan(mission, plan);
     }
 
-    /**
-     * Weather at the site right now. NO_GO stops the start only when an administrator enabled the
-     * preflight block; otherwise the verdict is recorded in the start event. A weather failure never
-     * blocks a start.
-     */
     private String preflightWeather(Mission mission) {
-        WeatherService service = weather == null ? null : weather.getIfAvailable();
-        if (service == null || mission.getLatitude() == null || mission.getLongitude() == null)
-            return null;
-        WeatherAssessmentResponse assessment;
-        boolean block;
-        try {
-            Double serviceMaxWind =
-                    mission.getService() == null ? null : mission.getService().getMaxWindMs();
-            assessment =
-                    service.assess(
-                            mission.getLatitude().doubleValue(),
-                            mission.getLongitude().doubleValue(),
-                            null,
-                            serviceMaxWind);
-            block = service.preflightBlockEnabled();
-        } catch (RuntimeException ex) {
-            return null;
-        }
-        if (assessment.clearance() == FlightClearanceLevel.NO_GO && block)
-            throw SystemException.conflict("MISSION_WEATHER_UNSAFE");
-        return assessment.windSpeed80mMs() == null
-                ? "weather " + assessment.clearance()
-                : String.format(
-                        java.util.Locale.ROOT,
-                        "weather %s, wind 80 m %.1f m/s",
-                        assessment.clearance(),
-                        assessment.windSpeed80mMs());
+        return MissionLifecycleOperations.assessPreflightWeather(
+                mission, weather == null ? null : weather.getIfAvailable());
     }
 
     private MissionResponse toViewerSafeResponse(Mission mission, Authentication authentication) {
-        MissionResponse response = missionMapper.toResponse(mission);
-        if (response == null) {
-            return null;
-        }
-        boolean anonymizeForCustomer =
-                authentication != null
-                        && mission.getCustomer() != null
-                        && authentication
-                                .getName()
-                                .equalsIgnoreCase(mission.getCustomer().getUsername())
-                        && !access.hasAuthority(authentication, "MISSION_VIEW_ALL")
-                        && !access.hasAuthority(authentication, "MARKETPLACE_MODERATE")
-                        && !(mission.getProvider() != null
-                                && mission.getProvider().getUser() != null
-                                && authentication
-                                        .getName()
-                                        .equalsIgnoreCase(
-                                                mission.getProvider().getUser().getUsername()));
-        if (!anonymizeForCustomer) {
-            return response;
-        }
-        MissionResponse masked = response.withOrderContext(false, true);
-        return masked != null ? masked : response;
+        return MissionLifecycleOperations.toViewerSafeResponse(
+                mission, missionMapper.toResponse(mission), authentication, access);
     }
 }

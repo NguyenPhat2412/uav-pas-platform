@@ -35,6 +35,10 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run architecture:check
+      - name: Verify Cross-Portal Shared Module Parity
+        if: matrix.portal == 'admin'
+        working-directory: .
+        run: node scripts/sync-web-shared.mjs --check
       - name: Run Architecture & API Contract Tests
         run: npm test
       - run: npm run build

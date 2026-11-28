@@ -1,7 +1,6 @@
 package com.uav.platform.service.impl;
 
 import com.uav.platform.common.dto.response.PageResponse;
-import com.uav.platform.common.util.Hashing;
 import com.uav.platform.dao.ICustomerBillingProfileDao;
 import com.uav.platform.dao.IInvoiceDao;
 import com.uav.platform.dao.IMissionDao;
@@ -10,7 +9,6 @@ import com.uav.platform.dao.IServicePlanDao;
 import com.uav.platform.dao.IUserDao;
 import com.uav.platform.dao.IUserQuotaDao;
 import com.uav.platform.dto.record.InvoiceReceiptData;
-import com.uav.platform.dto.record.IpnSignaturePayload;
 import com.uav.platform.dto.record.PaymentAccountSettings;
 import com.uav.platform.dto.request.CreateInvoiceRequest;
 import com.uav.platform.dto.request.CreateNotificationRequest;
@@ -292,17 +290,7 @@ public class BillingServiceImpl implements BillingService {
     /** Customers are always pinned to their own invoices; managers see every invoice. */
     static com.uav.platform.dao.base.HibernateSpecification<Invoice> invoiceFilter(
             Long ownerId, InvoiceStatus status, boolean overdue, LocalDateTime now) {
-        return (root, query, cb) -> {
-            java.util.List<jakarta.persistence.criteria.Predicate> where =
-                    new java.util.ArrayList<>();
-            if (ownerId != null) where.add(cb.equal(root.get("user").get("id"), ownerId));
-            if (status != null) where.add(cb.equal(root.get("status"), status));
-            if (overdue) {
-                where.add(cb.equal(root.get("status"), InvoiceStatus.PENDING));
-                where.add(cb.lessThan(root.get("dueDate"), now));
-            }
-            return cb.and(where.toArray(jakarta.persistence.criteria.Predicate[]::new));
-        };
+        return BillingPaymentOperations.invoiceFilter(ownerId, status, overdue, now);
     }
 
     @Override
@@ -453,18 +441,8 @@ public class BillingServiceImpl implements BillingService {
                     "Payment method is not supported yet", "PAYMENT_METHOD_UNSUPPORTED");
         }
         if (invoice.getStatus() == InvoiceStatus.PAID) {
-            PaymentTransaction settled = resolveSettledTransaction(invoice.getId());
-            return new PaymentResponse(
-                    settled != null ? settled.getId() : null,
-                    settled != null ? settled.getTransactionCode() : null,
-                    invoice.getId(),
-                    invoice.getCode(),
-                    invoice.getAmount(),
-                    method,
-                    "PAID",
-                    InvoiceStatus.PAID,
-                    invoice.getPaidAt(),
-                    null);
+            return BillingPaymentOperations.paidPaymentResponse(
+                    invoice, resolveSettledTransaction(invoice.getId()), method);
         }
         if (invoice.getStatus() != InvoiceStatus.PENDING) {
             throw SystemException.conflict("Invoice is not pending payment", "INVOICE_NOT_PENDING");
@@ -475,17 +453,8 @@ public class BillingServiceImpl implements BillingService {
         String qrPayload =
                 VietQrOperations.build(
                         settings.bankBin(), settings.accountNumber(), totalDong, transferMemo);
-        return new PaymentResponse(
-                null,
-                transferMemo,
-                invoice.getId(),
-                invoice.getCode(),
-                totalDong,
-                method,
-                "AWAITING_TRANSFER",
-                InvoiceStatus.PENDING,
-                null,
-                qrPayload);
+        return BillingPaymentOperations.pendingTransferResponse(
+                invoice, totalDong, method, transferMemo, qrPayload);
     }
 
     @Override
@@ -510,13 +479,7 @@ public class BillingServiceImpl implements BillingService {
             throw SystemException.unauthorized(
                     "Invalid or missing payment provider signature", "IPN_SIGNATURE_INVALID");
         }
-        if (!"SUCCESS".equals(request.status())
-                || request.transactionCode() == null
-                || request.transactionCode().isBlank()
-                || request.transactionCode().length() > 100) {
-            throw SystemException.badRequest(
-                    "Successful provider transaction and transaction code are required");
-        }
+        BillingPaymentOperations.validateIpnSuccessPayload(request);
         // Serialize provider transaction IDs, including attempts to reuse one across invoices.
         billingJdbc.queryForObject(
                 "SELECT id FROM billing_payment_guard WHERE id=1 FOR UPDATE", Long.class);
@@ -533,22 +496,11 @@ public class BillingServiceImpl implements BillingService {
             throw SystemException.notFound("INVOICE_NOT_FOUND");
         }
 
-        if ((invoiceCode != null
-                        && !invoiceCode.isBlank()
-                        && !invoiceCode.equals(invoice.getCode()))
-                || (request.invoiceId() != null && !request.invoiceId().equals(invoice.getId()))) {
-            throw SystemException.conflict("Invoice identifiers do not match");
-        }
+        BillingPaymentOperations.validateIpnInvoiceIdentifiers(invoice, request);
         var existing =
                 paymentRepository.findByTransactionCode(request.transactionCode()).orElse(null);
         if (existing != null) {
-            if (!existing.getInvoice().getId().equals(invoice.getId())
-                    || request.amount() == null
-                    || existing.getAmount().compareTo(request.amount()) != 0
-                    || !"SUCCESS".equals(existing.getStatus())) {
-                throw SystemException.conflict(
-                        "Payment transaction code already used with different payload");
-            }
+            BillingPaymentOperations.validateDuplicateIpnTransaction(existing, invoice, request);
             return paymentResult(invoice, request.transactionCode());
         }
         if (invoice.getStatus() != InvoiceStatus.PENDING) {
@@ -732,23 +684,16 @@ public class BillingServiceImpl implements BillingService {
                 () -> {
                     if (paymentRepository.findByTransactionCode(transactionCode).isPresent())
                         return;
-                    PaymentTransaction txn =
-                            PaymentTransactionOperations.create(
+                    paymentRepository.save(
+                            BillingPaymentOperations.buildTransaction(
                                     invoice,
-                                    invoice.getUser(),
                                     transactionCode,
-                                    amount != null ? amount : BigDecimal.ZERO);
-                    txn.setGatewayName(gateway);
-                    if (bankAccountNumber != null && !bankAccountNumber.isBlank()) {
-                        String trimmedAcct = bankAccountNumber.trim();
-                        txn.setBankAccountNumber(
-                                trimmedAcct.length() > 50
-                                        ? trimmedAcct.substring(0, 50)
-                                        : trimmedAcct);
-                    }
-                    txn.setStatus(status);
-                    txn.setRawIpnCallback(rawCallback);
-                    paymentRepository.save(txn);
+                                    amount,
+                                    gateway,
+                                    bankAccountNumber,
+                                    status,
+                                    rawCallback,
+                                    null));
                 };
         try {
             if (transactionManager == null) {
@@ -804,19 +749,16 @@ public class BillingServiceImpl implements BillingService {
             quotaService.applyPaidPlan(invoice.getUser().getId(), invoice.getPlan());
         }
 
-        PaymentTransaction txn =
-                PaymentTransactionOperations.create(
-                        invoice, invoice.getUser(), transactionCode, amount);
-        txn.setGatewayName(gateway);
-        if (bankAccountNumber != null && !bankAccountNumber.isBlank()) {
-            String trimmedAcct = bankAccountNumber.trim();
-            txn.setBankAccountNumber(
-                    trimmedAcct.length() > 50 ? trimmedAcct.substring(0, 50) : trimmedAcct);
-        }
-        txn.setStatus("SUCCESS");
-        txn.setCompletedAt(LocalDateTime.now());
-        txn.setRawIpnCallback(raw);
-        paymentRepository.save(txn);
+        paymentRepository.save(
+                BillingPaymentOperations.buildTransaction(
+                        invoice,
+                        transactionCode,
+                        amount,
+                        gateway,
+                        bankAccountNumber,
+                        "SUCCESS",
+                        raw,
+                        LocalDateTime.now()));
         if (financialEvents != null) {
             financialEvents.recordPaymentCompleted(invoice);
         }
@@ -943,21 +885,9 @@ public class BillingServiceImpl implements BillingService {
                             plan.getCode(), plan.getMaxMonthlyFlightHours()));
             return null;
         }
-        String code =
-                "INV-"
-                        + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-                        + "-"
-                        + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-        Invoice invoice =
-                new Invoice(
-                        code,
-                        user,
-                        null,
-                        plan,
-                        wholeDong(plan.getPrice()),
-                        LocalDateTime.now().plusDays(configuredDueDays()),
-                        "PLAN_SUBSCRIPTION:" + plan.getCode());
-        Invoice saved = invoiceRepository.save(invoice);
+        Invoice saved =
+                invoiceRepository.save(
+                        BillingPaymentOperations.buildPlanInvoice(user, plan, configuredDueDays()));
         if (financialEvents != null) {
             financialEvents.recordInvoiceIssued(saved);
         }
@@ -981,11 +911,7 @@ public class BillingServiceImpl implements BillingService {
         if (invoice.getStatus() != InvoiceStatus.PENDING) {
             throw SystemException.conflict("Invoice is not pending payment", "INVOICE_NOT_PENDING");
         }
-        String note = reason == null || reason.isBlank() ? null : reason.trim();
-        if (note != null && note.length() > 200) {
-            throw SystemException.badRequest(
-                    "Reason is too long", "INVOICE_CANCEL_REASON_TOO_LONG");
-        }
+        String note = BillingPaymentOperations.validateCancelReason(reason);
         close(
                 invoice,
                 InvoiceStatus.CANCELLED,
@@ -1029,35 +955,21 @@ public class BillingServiceImpl implements BillingService {
 
     /** Ends a pending invoice without payment and tells the customer's open screens. */
     private void close(Invoice invoice, InvoiceStatus status, String note) {
-        invoice.setStatus(status);
-        String joined = (invoice.getNotes() == null ? "" : invoice.getNotes() + " ") + note.trim();
-        invoice.setNotes(joined.length() > 500 ? joined.substring(0, 500) : joined);
+        BillingPaymentOperations.applyCloseStatus(invoice, status, note);
         invoiceRepository.save(invoice);
         publishInvoiceRealtime(invoice);
     }
 
     private PaymentIpnResponse paymentResult(Invoice invoice, String transactionCode) {
-        return new PaymentIpnResponse(
-                "00",
-                "PAYMENT_PROCESSED_SUCCESSFULLY",
-                "Đã ghi nhận thanh toán có xác thực từ nhà cung cấp.",
-                invoice.getCode(),
-                transactionCode);
+        return BillingPaymentOperations.paymentResult(invoice, transactionCode);
     }
 
     public String computeIpnSignature(PaymentIpnRequest request) {
-        String canonical = IpnSignaturePayload.from(request).canonical();
-        return Hashing.hmacSha256Hex(this.ipnSecret, canonical);
+        return BillingPaymentOperations.computeIpnSignature(this.ipnSecret, request);
     }
 
     private boolean isValidIpnSignature(PaymentIpnRequest request, String providedSignature) {
-        if (providedSignature == null || providedSignature.isBlank()) {
-            return false;
-        }
-        byte[] providedBytes =
-                providedSignature.trim().getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        String expectedHmac = computeIpnSignature(request);
-        return java.security.MessageDigest.isEqual(
-                providedBytes, expectedHmac.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        return BillingPaymentOperations.isValidIpnSignature(
+                this.ipnSecret, request, providedSignature);
     }
 }

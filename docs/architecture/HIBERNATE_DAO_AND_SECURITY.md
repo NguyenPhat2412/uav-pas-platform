@@ -129,7 +129,7 @@ Domain-isolated operational secrets also use dedicated SHA-256 domain-separated 
 ### 4.1. Automated Architecture Tests (`ArchitecturePackageTest`)
 Every build verifies:
 1. Zero `spring-boot-starter-data-jpa`, `JpaRepository`, `org.springframework.data.jpa`, or `com.uav.platform.repository` references anywhere in `pom.xml` or `src/main/java`.
-2. Every `I*Dao` extends `IGenericDao` under `dao/<feature>/`; every `*DaoImpl` extends `HibernateGenericDao`, is `@Repository`, and injects `final EntityManager entityManager` under `dao/impl/<feature>/`.
+2. Every `I*Dao` extends `IGenericDao` under `dao/`; every `*DaoImpl` extends `HibernateGenericDao`, is `@Repository`, and injects `final EntityManager entityManager` under `dao/impl/`.
 3. Controllers only reference `ApiRoutes` constants, service interfaces, and DTOs (never DAOs, entities, or mappers).
 
 ### 4.2. Verification & JaCoCo Coverage Summary

@@ -5,33 +5,23 @@ import {
     Building2,
     CheckCircle2,
     Clock,
-    ExternalLink,
     FileCheck2,
-    FileText,
     MapPin,
-    Plus,
     RefreshCw,
     ShieldAlert,
     Star,
-    Trash2,
 } from 'lucide-react';
 import {Button, OptionalMark, RequiredMark} from '@/components/ui';
+import {ProviderOnboardingAreaStep} from '@/components/marketplace/provider/ProviderOnboardingAreaStep';
+import {ProviderOnboardingDocumentsStep} from '@/components/marketplace/provider/ProviderOnboardingDocumentsStep';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
-import {
-    ProviderDocumentChecklist,
-    ProviderVerificationStepper,
-} from '@/components/marketplace/provider/ProviderVerificationStepper';
+import {ProviderVerificationStepper} from '@/components/marketplace/provider/ProviderVerificationStepper';
 import {useMyProviderProfile, useProviderOnboardingActions} from '@/hooks/useMarketplace';
 import {useSiteInfo} from '@/hooks/useSiteInfo';
-import {
-    DOCUMENT_TYPE_CODES,
-    extractActionableError,
-    initialOnboardingForm,
-} from '@/forms/marketplace-forms';
+import {extractActionableError, initialOnboardingForm} from '@/forms/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
 import type {
     ProviderDocumentInput,
-    ProviderDocumentType,
     ProviderOnboardingInput,
     ProviderProfile,
     ProviderType,
@@ -162,7 +152,6 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
 
     return (
         <div className="mx-auto max-w-4xl space-y-5">
-            {/* Trạng thái chờ duyệt / xác minh */}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
                 <div className="flex items-start gap-3">
                     <span
@@ -230,14 +219,12 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
                 )}
             </div>
 
-            {/* Tiến trình xác minh 5 bước */}
             <ProviderVerificationStepper
                 profile={profile}
                 providerType={form.providerType}
                 profileDone={step1Done && step3Done}
             />
 
-            {/* Thanh tiến trình 3 bước kiểu Shopee */}
             <div className="grid grid-cols-3 gap-2 rounded-2xl border border-slate-200 bg-white p-2" role="tablist">
                 {[
                     {id: 1 as const, label: t('opsMarketplace.onboarding.steps.profile'), icon: Building2, done: step1Done},
@@ -279,7 +266,6 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
                 </div>
             )}
 
-            {/* Bước 1: Hồ sơ */}
             {step === 1 && (
                 <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
                     <div className="flex items-center gap-2">
@@ -390,279 +376,30 @@ function OnboardingWizard({profile}: { profile: ProviderProfile | null }) {
                 </section>
             )}
 
-            {/* Bước 2: Giấy tờ */}
             {step === 2 && (
-                <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
-                    <div className="flex items-center gap-2">
-                        <FileCheck2 size={18} className="text-primary" aria-hidden="true"/>
-                        <div>
-                            <h2 className="m-0 text-base font-semibold text-slate-900">
-                                {t('opsMarketplace.onboarding.documents.title')}
-                            </h2>
-                            <p className="m-0 text-xs text-slate-500">
-                                {t('opsMarketplace.onboarding.documents.subtitle')}
-                            </p>
-                        </div>
-                    </div>
-
-                    <ProviderDocumentChecklist
-                        providerType={form.providerType}
-                        documents={profile?.documents ?? []}
-                        onSelectType={code =>
-                            setDocForm(prev => ({
-                                ...prev,
-                                documentType: code,
-                            }))
-                        }
-                    />
-
-                    <form onSubmit={handleAddDocument} className="grid grid-cols-1 items-end gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2 lg:grid-cols-4">
-                        <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                            <span>
-                                {t('opsMarketplace.onboarding.documents.type')}
-                                <RequiredMark/>
-                            </span>
-                            <select
-                                className={INPUT_CLASS}
-                                value={docForm.documentType}
-                                onChange={e => setDocForm(s => ({...s, documentType: e.target.value as ProviderDocumentType}))}
-                            >
-                                {DOCUMENT_TYPE_CODES.map(code => (
-                                    <option key={code} value={code}>
-                                        {t(`opsMarketplace.onboarding.documents.types.${code}`)}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
-
-                        <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                            <span>
-                                {t('opsMarketplace.onboarding.documents.docTitle')}
-                                <RequiredMark/>
-                            </span>
-                            <input
-                                required
-                                className={INPUT_CLASS}
-                                value={docForm.title}
-                                onChange={e => setDocForm(s => ({...s, title: e.target.value}))}
-                                placeholder={t('opsMarketplace.onboarding.documents.docTitlePlaceholder')}
-                            />
-                        </label>
-
-                        <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                            <span>
-                                {t('opsMarketplace.onboarding.documents.docNumber')}
-                                <OptionalMark/>
-                            </span>
-                            <input
-                                className={INPUT_CLASS}
-                                value={docForm.documentNumber ?? ''}
-                                onChange={e => setDocForm(s => ({...s, documentNumber: e.target.value}))}
-                            />
-                        </label>
-
-                        <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                            <span>
-                                {t('opsMarketplace.onboarding.documents.fileUrl')}
-                                <OptionalMark/>
-                            </span>
-                            <input
-                                type="url"
-                                className={INPUT_CLASS}
-                                value={docForm.fileUrl ?? ''}
-                                onChange={e => setDocForm(s => ({...s, fileUrl: e.target.value}))}
-                                placeholder="https://..."
-                            />
-                        </label>
-
-                        <div className="sm:col-span-2 lg:col-span-4 flex justify-end">
-                            <Button type="submit" variant="secondary" disabled={addDocument.isPending || upsertProfile.isPending}>
-                                <Plus size={14} className="mr-1 inline" aria-hidden="true"/>
-                                {t('opsMarketplace.onboarding.documents.add')}
-                            </Button>
-                        </div>
-                    </form>
-
-                    {!profile || profile.documents.length === 0 ? (
-                        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/50 p-6 text-center text-xs text-slate-500">
-                            {t('opsMarketplace.onboarding.documents.empty')}
-                        </div>
-                    ) : (
-                        <ul className="m-0 list-none divide-y divide-slate-100 p-0">
-                            {profile.documents.map(doc => {
-                                const safeHref = doc.fileUrl && /^https?:\/\//i.test(doc.fileUrl) ? doc.fileUrl : null;
-                                const isApproved = doc.status === 'APPROVED';
-                                const statusTone =
-                                    doc.status === 'APPROVED'
-                                        ? 'bg-slate-900 text-white'
-                                        : doc.status === 'REJECTED'
-                                          ? 'bg-rose-100 text-danger'
-                                          : 'bg-amber-100 text-amber-800';
-                                return (
-                                    <li key={doc.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-xs">
-                                        <div className="flex items-center gap-2.5 min-w-0">
-                                            <FileText size={18} className="shrink-0 text-primary" aria-hidden="true"/>
-                                            <div className="min-w-0">
-                                                {safeHref ? (
-                                                    <a
-                                                        href={safeHref}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1 font-semibold text-slate-900 hover:text-primary"
-                                                    >
-                                                        <span className="truncate">{doc.title}</span>
-                                                        <ExternalLink size={12} aria-hidden="true"/>
-                                                    </a>
-                                                ) : (
-                                                    <strong className="font-semibold text-slate-900">{doc.title}</strong>
-                                                )}
-                                                <div className="text-slate-500">
-                                                    {t(`opsMarketplace.onboarding.documents.types.${doc.documentType}`)}
-                                                    {doc.documentNumber ? ` · ${doc.documentNumber}` : ''}
-                                                </div>
-                                                {doc.reviewerNote && (
-                                                    <div className="mt-0.5 text-amber-800">
-                                                        {t('opsMarketplace.onboarding.workflow.reviewerNoteLabel', {
-                                                            note: doc.reviewerNote,
-                                                        })}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${statusTone}`}>
-                                                {t(`opsMarketplace.onboarding.documents.status.${doc.status}`)}
-                                            </span>
-                                            <button
-                                                type="button"
-                                                disabled={isApproved || deleteDocument.isPending}
-                                                title={isApproved ? t('opsMarketplace.onboarding.workflow.approvedLockedHint') : undefined}
-                                                onClick={() => deleteDocument.mutate(doc.id)}
-                                                className="inline-flex h-9 w-9 items-center justify-center rounded-control text-slate-400 hover:bg-rose-50 hover:text-danger disabled:cursor-not-allowed disabled:opacity-40"
-                                                aria-label={t('opsMarketplace.common.delete')}
-                                            >
-                                                <Trash2 size={15} aria-hidden="true"/>
-                                            </button>
-                                        </div>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    )}
-
-                    <div className="flex flex-wrap justify-between gap-2.5 border-t border-slate-100 pt-4">
-                        <Button type="button" variant="secondary" onClick={() => setStep(1)}>
-                            {t('opsMarketplace.common.back')}
-                        </Button>
-                        <Button type="button" onClick={() => setStep(3)}>
-                            {t('opsMarketplace.common.next')}
-                        </Button>
-                    </div>
-                </section>
+                <ProviderOnboardingDocumentsStep
+                    profile={profile}
+                    providerType={form.providerType}
+                    docForm={docForm}
+                    isSaving={addDocument.isPending || upsertProfile.isPending}
+                    isDeleting={deleteDocument.isPending}
+                    onDocFormChange={setDocForm}
+                    onAddDocument={e => void handleAddDocument(e)}
+                    onDeleteDocument={docId => deleteDocument.mutate(docId)}
+                    onBack={() => setStep(1)}
+                    onNext={() => setStep(3)}
+                />
             )}
 
-            {/* Bước 3: Khu vực phục vụ & Đối soát */}
             {step === 3 && (
-                <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
-                    <div className="flex items-center gap-2">
-                        <MapPin size={18} className="text-primary" aria-hidden="true"/>
-                        <h2 className="m-0 text-base font-semibold text-slate-900">
-                            {t('opsMarketplace.onboarding.steps.area')}
-                        </h2>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <label className="grid gap-1.5 text-xs font-semibold text-slate-700">
-                            <span>
-                                {t('opsMarketplace.onboarding.fields.province')}
-                                <RequiredMark/>
-                            </span>
-                            <input
-                                required
-                                className={INPUT_CLASS}
-                                value={form.province}
-                                onChange={e => setForm(s => ({...s, province: e.target.value}))}
-                                placeholder={t('opsMarketplace.onboarding.fields.provincePlaceholder')}
-                            />
-                        </label>
-
-                        <label className="grid gap-1.5 text-xs font-semibold text-slate-700">
-                            <span>
-                                {t('opsMarketplace.onboarding.fields.serviceRadiusKm')}
-                                <OptionalMark/>
-                            </span>
-                            <input
-                                type="number"
-                                min={5}
-                                max={2000}
-                                className={INPUT_CLASS}
-                                value={form.serviceRadiusKm ?? defaultServiceRadiusKm}
-                                onChange={e => setForm(s => ({...s, serviceRadiusKm: Number(e.target.value)}))}
-                            />
-                        </label>
-
-                        <label className="grid gap-1.5 text-xs font-semibold text-slate-700">
-                            <span>
-                                {t('opsMarketplace.onboarding.fields.bankName')}
-                                <OptionalMark/>
-                            </span>
-                            <input
-                                className={INPUT_CLASS}
-                                value={form.bankName ?? ''}
-                                onChange={e => setForm(s => ({...s, bankName: e.target.value}))}
-                            />
-                        </label>
-
-                        <label className="grid gap-1.5 text-xs font-semibold text-slate-700">
-                            <span>
-                                {t('opsMarketplace.onboarding.fields.bankAccountNumber')}
-                                <OptionalMark/>
-                            </span>
-                            <input
-                                className={INPUT_CLASS}
-                                value={form.bankAccountNumber ?? ''}
-                                onChange={e => setForm(s => ({...s, bankAccountNumber: e.target.value}))}
-                            />
-                        </label>
-
-                        <label className="grid gap-1.5 text-xs font-semibold text-slate-700 sm:col-span-2">
-                            <span>
-                                {t('opsMarketplace.onboarding.fields.bankAccountHolder')}
-                                <OptionalMark/>
-                            </span>
-                            <input
-                                className={INPUT_CLASS}
-                                value={form.bankAccountHolder ?? ''}
-                                onChange={e => setForm(s => ({...s, bankAccountHolder: e.target.value}))}
-                            />
-                        </label>
-                    </div>
-
-                    <div className="flex flex-wrap justify-between gap-2.5 border-t border-slate-100 pt-4">
-                        <Button type="button" variant="secondary" onClick={() => setStep(2)}>
-                            {t('opsMarketplace.common.back')}
-                        </Button>
-                        <div className="flex flex-wrap gap-2.5">
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                disabled={upsertProfile.isPending}
-                                onClick={() => void saveProfile(false)}
-                            >
-                                {t('opsMarketplace.onboarding.actions.saveDraft')}
-                            </Button>
-                            <Button
-                                type="button"
-                                disabled={upsertProfile.isPending}
-                                onClick={() => void saveProfile(true)}
-                            >
-                                {upsertProfile.isPending
-                                    ? t('opsMarketplace.onboarding.actions.submitting')
-                                    : t('opsMarketplace.onboarding.actions.submitReview')}
-                            </Button>
-                        </div>
-                    </div>
-                </section>
+                <ProviderOnboardingAreaStep
+                    form={form}
+                    defaultServiceRadiusKm={defaultServiceRadiusKm}
+                    isPending={upsertProfile.isPending}
+                    onFormChange={setForm}
+                    onBack={() => setStep(2)}
+                    onSave={submitForReview => void saveProfile(submitForReview)}
+                />
             )}
         </div>
     );

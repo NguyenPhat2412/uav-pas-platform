@@ -23,7 +23,6 @@ import com.uav.platform.dto.response.StorageDriveNodeResponse;
 import com.uav.platform.dto.response.StoragePoolOverviewResponse;
 import com.uav.platform.dto.response.StorageR2MigrationResponse;
 import com.uav.platform.entity.StorageDriveNode;
-import com.uav.platform.entity.StorageDriveObject;
 import com.uav.platform.entity.SystemConfiguration;
 import com.uav.platform.enums.AuditAction;
 import com.uav.platform.enums.DriveAuthType;
@@ -43,22 +42,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -164,27 +158,9 @@ public class StoragePoolServiceImpl implements StoragePoolService {
         long driveObjCount = driveObjects.count();
         long driveBytes = driveObjCount == 0 ? 0L : driveObjects.sumAllBytes();
 
-        boolean anyUnlimited =
-                allNodes.stream()
-                        .anyMatch(
-                                n ->
-                                        n.isEnabled()
-                                                && (n.getQuotaLimitBytes() == null
-                                                        || n.getQuotaLimitBytes() <= 0));
-        Long totalLimit = null;
-        Long totalFree = null;
-        if (!allNodes.isEmpty() && !anyUnlimited) {
-            long sumLimit = 0L;
-            long sumFree = 0L;
-            for (StorageDriveNode n : allNodes) {
-                if (!n.isEnabled() || n.getQuotaLimitBytes() == null) continue;
-                sumLimit += n.getQuotaLimitBytes();
-                long used = n.getQuotaUsedBytes() == null ? 0L : n.getQuotaUsedBytes();
-                sumFree += Math.max(0L, n.getQuotaLimitBytes() - used);
-            }
-            totalLimit = sumLimit;
-            totalFree = sumFree;
-        }
+        Long[] totals = StoragePoolOperations.computeQuotaTotals(allNodes);
+        Long totalLimit = totals[0];
+        Long totalFree = totals[1];
 
         Map<String, Object> r2Row = jdbc.queryForMap(R2_TOTALS_SQL);
         long r2Count = ((Number) r2Row.getOrDefault("cnt", 0L)).longValue();
@@ -298,35 +274,9 @@ public class StoragePoolServiceImpl implements StoragePoolService {
                 sanitizeReturnOrigin(request == null ? null : request.returnOrigin());
 
         try {
-            Map<String, Object> stateMap = new LinkedHashMap<>();
-            stateMap.put("actor", actor);
-            stateMap.put(
-                    "displayName",
-                    request != null && StringUtils.hasText(request.displayName())
-                            ? request.displayName().trim()
-                            : "");
-            stateMap.put(
-                    "rootFolderId",
-                    request != null && StringUtils.hasText(request.rootFolderId())
-                            ? request.rootFolderId().trim()
-                            : "");
-            stateMap.put(
-                    "priorityWeight",
-                    request != null && request.priorityWeight() != null
-                            ? request.priorityWeight()
-                            : 100);
-            stateMap.put(
-                    "maxUsagePercent",
-                    request != null && request.maxUsagePercent() != null
-                            ? request.maxUsagePercent()
-                            : 92);
-            stateMap.put(
-                    "routedModules",
-                    normalizeModules(request == null ? null : request.routedModules()));
-            stateMap.put("redirectUri", redirectUri);
-            stateMap.put("returnOrigin", safeReturnOrigin);
-            stateMap.put("exp", Instant.now().plusSeconds(600).getEpochSecond());
-
+            Map<String, Object> stateMap =
+                    StoragePoolOperations.buildOAuthStateMap(
+                            request, actor, redirectUri, safeReturnOrigin);
             String encodedPayload =
                     Base64.getUrlEncoder()
                             .withoutPadding()
@@ -381,25 +331,8 @@ public class StoragePoolServiceImpl implements StoragePoolService {
                                     .orElseGet(StorageDriveNode::new)
                             : new StorageDriveNode();
 
-            if (node.getCode() == null) {
-                node.setCode(generateNodeCode(about.email()));
-            }
-            String displayName = stateJson.path("displayName").asText("");
-            node.setDisplayName(
-                    StringUtils.hasText(displayName)
-                            ? displayName
-                            : (StringUtils.hasText(about.email())
-                                    ? "Google Drive · " + about.email()
-                                    : "Google Drive #" + node.getCode()));
-            node.setAuthType(DriveAuthType.OAUTH2);
-            node.setAccountEmail(about.email());
-            node.setEncryptedCredentials(encrypted);
-            node.setRootFolderId(probe.getRootFolderId());
-            node.setEnabled(true);
-            node.setPriorityWeight(stateJson.path("priorityWeight").asInt(100));
-            node.setMaxUsagePercent(stateJson.path("maxUsagePercent").asInt(92));
-            node.setRoutedModules(normalizeModules(stateJson.path("routedModules").asText("ALL")));
-            applyAboutQuota(node, about);
+            StoragePoolOperations.applyOAuthCallbackNode(
+                    node, stateJson, about, encrypted, probe.getRootFolderId());
             StorageDriveNode saved = driveNodes.save(node);
             driveClient.evictToken(saved.getId());
 
@@ -758,21 +691,12 @@ public class StoragePoolServiceImpl implements StoragePoolService {
                     "DRIVE_MIGRATION_SIZE_MISMATCH");
         }
 
-        StorageDriveObject obj = new StorageDriveObject();
-        obj.setObjectKey(objectKey);
-        obj.setNode(node);
-        obj.setDriveFileId(uploaded.driveFileId());
-        obj.setDriveFolderId(uploaded.driveFolderId());
-        obj.setModuleFolder(uploaded.moduleFolder());
-        obj.setFileName(uploaded.fileName());
-        obj.setContentType(uploaded.contentType());
-        obj.setSizeBytes(uploaded.sizeBytes());
-        driveObjects.save(obj);
+        driveObjects.save(StoragePoolOperations.buildDriveObject(objectKey, node, uploaded));
 
         if (node.getQuotaUsedBytes() != null) {
             node.setQuotaUsedBytes(node.getQuotaUsedBytes() + uploaded.sizeBytes());
         }
-        applyHealthFromQuota(node);
+        StoragePoolOperations.applyHealthFromQuota(node);
         driveNodes.save(node);
 
         mediaAssets
@@ -821,57 +745,17 @@ public class StoragePoolServiceImpl implements StoragePoolService {
     }
 
     private StorageDriveNodeResponse toNodeDto(StorageDriveNode n) {
-        Long limit = n.getQuotaLimitBytes();
-        Long used = n.getQuotaUsedBytes();
-        Long free =
-                limit != null && limit > 0
-                        ? Math.max(0L, limit - (used == null ? 0L : used))
-                        : null;
-        Double pct =
-                limit != null && limit > 0 && used != null
-                        ? Math.round((used * 1000.0) / limit) / 10.0
-                        : null;
         long objCount = n.getId() == null ? 0L : driveObjects.countByNodeId(n.getId());
         long objBytes = objCount == 0L ? 0L : driveObjects.sumBytesByNodeId(n.getId());
-        return new StorageDriveNodeResponse(
-                n.getId(),
-                n.getCode(),
-                n.getDisplayName(),
-                n.getAuthType(),
-                n.getAccountEmail(),
-                n.getRootFolderId(),
-                n.isEnabled(),
-                n.getPriorityWeight(),
-                n.getMaxUsagePercent(),
-                n.getRoutedModules(),
-                limit,
-                used,
-                n.getQuotaDriveBytes(),
-                free,
-                pct,
-                objCount,
-                objBytes,
-                n.getHealthStatus(),
-                n.getLastError(),
-                n.getLastCheckedAt(),
-                n.getCreatedAt());
+        return StoragePoolOperations.toNodeDto(n, objCount, objBytes);
     }
 
     private void applyAboutQuota(StorageDriveNode node, DriveAboutInfo about) {
-        node.setQuotaLimitBytes(about.limitBytes());
-        node.setQuotaUsedBytes(about.usedBytes());
-        node.setQuotaDriveBytes(about.driveBytes());
-        node.setLastError(null);
-        node.setLastCheckedAt(LocalDateTime.now());
-        applyHealthFromQuota(node);
+        StoragePoolOperations.applyAboutQuota(node, about);
     }
 
     private static void applyHealthFromQuota(StorageDriveNode node) {
-        if (!StorageAllocationOperations.hasCapacity(node, 0L)) {
-            node.setHealthStatus(DriveNodeHealth.QUOTA_FULL);
-        } else {
-            node.setHealthStatus(DriveNodeHealth.UP);
-        }
+        StoragePoolOperations.applyHealthFromQuota(node);
     }
 
     private OAuthAppCredentials resolveOAuthApp(boolean required) {
@@ -901,55 +785,15 @@ public class StoragePoolServiceImpl implements StoragePoolService {
     }
 
     private JsonNode verifyAndParseState(String state) {
-        if (!StringUtils.hasText(state) || !state.contains(".")) {
-            throw SystemException.badRequest(
-                    "Phiên xác thực OAuth không hợp lệ.", "DRIVE_OAUTH_STATE_INVALID");
-        }
-        int dot = state.lastIndexOf('.');
-        String encoded = state.substring(0, dot);
-        String sig = state.substring(dot + 1);
-        if (!allocator.verifyOAuthState(encoded, sig)) {
-            throw SystemException.badRequest(
-                    "Chữ ký phiên xác thực OAuth không hợp lệ.", "DRIVE_OAUTH_STATE_INVALID");
-        }
-        try {
-            byte[] decoded = Base64.getUrlDecoder().decode(encoded);
-            JsonNode json = mapper.readTree(decoded);
-            long exp = json.path("exp").asLong(0L);
-            if (Instant.now().getEpochSecond() > exp) {
-                throw SystemException.badRequest(
-                        "Phiên xác thực Google OAuth đã hết hạn (quá 10 phút).",
-                        "DRIVE_OAUTH_STATE_EXPIRED");
-            }
-            return json;
-        } catch (SystemException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw SystemException.badRequest(
-                    "Dữ liệu trạng thái OAuth không hợp lệ.", "DRIVE_OAUTH_STATE_INVALID");
-        }
+        return StoragePoolOperations.verifyAndParseState(state, allocator, mapper);
     }
 
     private String sanitizeReturnOrigin(String candidate) {
-        if (StringUtils.hasText(candidate)) {
-            String trimmed = candidate.trim().replaceAll("/+$", "");
-            if (allowedOrigins.contains(trimmed)
-                    || trimmed.matches("^https?://(localhost|127\\.0\\.0\\.1)(:\\d+)?$")) {
-                return trimmed;
-            }
-        }
-        return publicAppUrl.replaceAll("/+$", "");
+        return StoragePoolOperations.sanitizeReturnOrigin(candidate, allowedOrigins, publicAppUrl);
     }
 
     private static URI buildCallbackRedirect(String origin, boolean ok, String info) {
-        UriComponentsBuilder b =
-                UriComponentsBuilder.fromUriString(origin + "/admin/infrastructure/storage");
-        if (ok) {
-            b.queryParam("driveConnected", info);
-        } else {
-            b.queryParam("driveError", info);
-        }
-        return b.build().encode().toUri();
+        return StoragePoolOperations.buildCallbackRedirect(origin, ok, info);
     }
 
     private void upsertSetting(String key, String value, SettingValueType type, String actor) {
@@ -975,39 +819,14 @@ public class StoragePoolServiceImpl implements StoragePoolService {
     }
 
     private static String normalizeModules(String raw) {
-        if (!StringUtils.hasText(raw)) return "ALL";
-        List<String> parts =
-                Arrays.stream(raw.split(","))
-                        .map(s -> s.trim().toUpperCase(Locale.ROOT))
-                        .filter(StringUtils::hasText)
-                        .distinct()
-                        .toList();
-        return parts.isEmpty() || parts.contains("ALL") ? "ALL" : String.join(",", parts);
+        return StoragePoolOperations.normalizeModules(raw);
     }
 
     private String generateNodeCode(String email) {
-        String prefix = "gdrive";
-        if (StringUtils.hasText(email) && email.contains("@")) {
-            String local =
-                    email.substring(0, email.indexOf('@'))
-                            .toLowerCase(Locale.ROOT)
-                            .replaceAll("[^a-z0-9]+", "-");
-            if (StringUtils.hasText(local)) {
-                prefix =
-                        "gdrive-"
-                                + (local.length() > 14 ? local.substring(0, 14) : local)
-                                        .replaceAll("^-|-$", "");
-            }
-        }
-        String suffix = UUID.randomUUID().toString().substring(0, 6);
-        return prefix + "-" + suffix;
+        return StoragePoolOperations.generateNodeCode(email);
     }
 
     private static String maskClientId(String clientId) {
-        if (!StringUtils.hasText(clientId)) return null;
-        String trimmed = clientId.trim();
-        if (trimmed.length() <= 14)
-            return trimmed.substring(0, Math.min(4, trimmed.length())) + "…";
-        return trimmed.substring(0, 10) + "…" + trimmed.substring(trimmed.length() - 12);
+        return StoragePoolOperations.maskClientId(clientId);
     }
 }

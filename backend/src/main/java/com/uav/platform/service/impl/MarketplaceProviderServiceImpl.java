@@ -56,15 +56,10 @@ import com.uav.platform.enums.ListingModerationStatus;
 import com.uav.platform.enums.MissionBidStatus;
 import com.uav.platform.enums.MissionEventType;
 import com.uav.platform.enums.MissionStatus;
-import com.uav.platform.enums.PayoutStatus;
-import com.uav.platform.enums.PricingModel;
 import com.uav.platform.enums.ProviderDocumentStatus;
-import com.uav.platform.enums.ProviderDocumentType;
 import com.uav.platform.enums.ProviderOrderStatus;
-import com.uav.platform.enums.ProviderType;
 import com.uav.platform.enums.ProviderVerificationStatus;
 import com.uav.platform.enums.UavStatus;
-import com.uav.platform.enums.WalletTransactionType;
 import com.uav.platform.error.SystemException;
 import com.uav.platform.mapper.MarketplaceMapper;
 import com.uav.platform.mapper.MissionMapper;
@@ -77,20 +72,16 @@ import com.uav.platform.service.SystemConfigService;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -99,24 +90,6 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
 
     private static final Set<MissionStatus> OPEN_RFQ_STATUSES =
             Set.of(MissionStatus.DRAFT, MissionStatus.PENDING_CONFIRMATION);
-
-    private static final List<ProviderDocumentType> INDIVIDUAL_REQUIRED_DOCUMENTS =
-            List.of(
-                    ProviderDocumentType.IDENTITY_CARD,
-                    ProviderDocumentType.PILOT_CERTIFICATE,
-                    ProviderDocumentType.UAV_REGISTRATION,
-                    ProviderDocumentType.INSURANCE_POLICY,
-                    ProviderDocumentType.PLATFORM_FEE_AGREEMENT);
-
-    private static final List<ProviderDocumentType> COMPANY_REQUIRED_DOCUMENTS =
-            List.of(
-                    ProviderDocumentType.IDENTITY_CARD,
-                    ProviderDocumentType.BUSINESS_LICENSE,
-                    ProviderDocumentType.PILOT_CERTIFICATE,
-                    ProviderDocumentType.UAV_REGISTRATION,
-                    ProviderDocumentType.INSURANCE_POLICY,
-                    ProviderDocumentType.PLATFORM_FEE_AGREEMENT,
-                    ProviderDocumentType.TAX_SETTLEMENT_DOSSIER);
 
     private final IUserDao users;
     private final IProviderProfileDao providers;
@@ -229,26 +202,10 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                     "Tài khoản đối tác đang bị tạm đình chỉ, vui lòng liên hệ quản trị viên.",
                     "PROVIDER_SUSPENDED");
         }
-        profile.setDisplayName(request.displayName().trim());
-        profile.setProviderType(request.providerType());
-        profile.setTaxOrIdNumber(trimOrNull(request.taxOrIdNumber()));
-        profile.setFlightLicenseNumber(trimOrNull(request.flightLicenseNumber()));
-        profile.setBio(trimOrNull(request.bio()));
-        profile.setProvince(request.province().trim());
         int defaultRadius =
                 SystemConfigurationOperations.intOrDefault(
                         systemConfig, "marketplace.default_service_radius_km", 100);
-        profile.setServiceRadiusKm(
-                request.serviceRadiusKm() != null ? request.serviceRadiusKm() : defaultRadius);
-        profile.setContactPhone(trimOrNull(request.contactPhone()));
-        profile.setBankName(trimOrNull(request.bankName()));
-        profile.setBankAccountNumber(trimOrNull(request.bankAccountNumber()));
-        profile.setBankAccountHolder(trimOrNull(request.bankAccountHolder()));
-
-        if (Boolean.TRUE.equals(request.submitForReview())
-                && profile.getVerificationStatus() != ProviderVerificationStatus.VERIFIED) {
-            profile.setVerificationStatus(ProviderVerificationStatus.PENDING_REVIEW);
-        }
+        MarketplaceProviderOperations.applyProfileFields(profile, request, defaultRadius);
 
         ProviderProfile saved = providers.save(profile);
         if (wallets.findByProviderId(saved.getId()).isEmpty()) {
@@ -281,20 +238,8 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
         }
         List<ProviderDocument> docs =
                 documents.findByProviderIdOrderByCreatedAtDesc(provider.getId());
-        List<ProviderDocumentType> requiredTypes =
-                provider.getProviderType() == ProviderType.COMPANY
-                        ? COMPANY_REQUIRED_DOCUMENTS
-                        : INDIVIDUAL_REQUIRED_DOCUMENTS;
-        Set<ProviderDocumentType> activeUploadedTypes =
-                docs.stream()
-                        .filter(d -> d.getStatus() != ProviderDocumentStatus.REJECTED)
-                        .map(ProviderDocument::getDocumentType)
-                        .collect(java.util.stream.Collectors.toSet());
         List<String> missing =
-                requiredTypes.stream()
-                        .filter(t -> !activeUploadedTypes.contains(t))
-                        .map(Enum::name)
-                        .toList();
+                MarketplaceProviderOperations.missingRequiredDocuments(provider, docs);
         if (!missing.isEmpty()) {
             throw SystemException.badRequest(
                             "Thiếu hồ sơ pháp lý bắt buộc trước khi gửi thẩm định: "
@@ -513,18 +458,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
             Long missionId, ProviderOrderActionRequest request, String username) {
         ProviderProfile provider = requireOwnedVerifiedProfile(username);
         Mission mission = requireFleetOrderForUpdate(missionId, provider, username, true);
-        if (request == null || request.accept() == null) {
-            throw SystemException.badRequest(
-                            "Vui lòng xác nhận chấp nhận hoặc từ chối đơn.", "VALIDATION_ERROR")
-                    .at("accept");
-        }
-
-        if (mission.getStatus() == MissionStatus.COMPLETED
-                || mission.getStatus() == MissionStatus.CANCELLED
-                || mission.getStatus() == MissionStatus.REJECTED) {
-            throw SystemException.conflict(
-                    "Đơn hàng đã kết thúc, không thể phản hồi lại.", "ORDER_ALREADY_CLOSED");
-        }
+        MarketplaceProviderOperations.validateRespondRequest(mission, request);
 
         MissionStatus previous = mission.getStatus();
         mission.setProviderResponseNote(request.effectiveNote());
@@ -533,17 +467,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
         if (request.accept()) {
             if (request.uavId() != null) {
                 Uav uav = resources.lockUav(request.uavId());
-                if (uav.getProvider() == null
-                        || !Objects.equals(uav.getProvider().getId(), provider.getId())) {
-                    throw SystemException.forbidden(
-                            "Chỉ được gán UAV thuộc quyền sở hữu của đối tác.",
-                            "PROVIDER_UAV_MISMATCH");
-                }
-                if (uav.getStatus() == UavStatus.MAINTENANCE
-                        || uav.getStatus() == UavStatus.INACTIVE) {
-                    throw SystemException.conflict(
-                            "Thiết bị bay đang bảo trì hoặc ngừng khai thác.", "UAV_NOT_AVAILABLE");
-                }
+                MarketplaceProviderOperations.validateProviderUav(uav, provider);
                 resources.requireUavFreeFor(uav, mission);
                 mission.setUav(uav);
             }
@@ -579,12 +503,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
         } else {
             // CONTRACT §1: Fleet declines -> return order to PENDING_DISPATCH queue for platform
             // re-dispatch.
-            mission.setProvider(null);
-            mission.setUav(null);
-            mission.setOperator(null);
-            mission.setOperatorAccepted(false);
-            mission.setProviderResponseStatus(ProviderOrderStatus.PENDING_DISPATCH);
-            mission.setStatus(MissionStatus.PENDING_CONFIRMATION);
+            MarketplaceProviderOperations.resetDeclinedOrder(mission);
             Mission saved = missions.save(mission);
             missionEvents.save(
                     new MissionEvent(
@@ -707,20 +626,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
             Long missionId, ProviderOrderCompleteRequest request, String username) {
         ProviderProfile provider = requireVerifiedProfile(username);
         Mission mission = requireFleetOrderForUpdate(missionId, provider, username, false);
-        if (request == null
-                || request.completionNote() == null
-                || request.completionNote().isBlank()) {
-            throw SystemException.badRequest(
-                            "Nhập biên bản kết quả bàn giao cho khách hàng.", "VALIDATION_ERROR")
-                    .at("completionNote");
-        }
-        if (mission.getStatus() != MissionStatus.IN_PROGRESS
-                && mission.getStatus() != MissionStatus.READY
-                && mission.getStatus() != MissionStatus.CONFIRMED) {
-            throw SystemException.conflict(
-                    "Trạng thái đơn hiện tại không thể hoàn thành bàn giao.",
-                    "ORDER_CANNOT_COMPLETE");
-        }
+        MarketplaceProviderOperations.validateCompleteOrder(mission, request);
         if (mission.getUav() != null) {
             Uav uav = mission.getUav();
             if (simulationService != null) {
@@ -802,16 +708,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
         Mission mission =
                 missions.findByIdForUpdate(missionId)
                         .orElseThrow(() -> SystemException.notFound("MISSION_NOT_FOUND"));
-        if (mission.getProviderResponseStatus() != ProviderOrderStatus.OPEN_RFQ
-                || !OPEN_RFQ_STATUSES.contains(mission.getStatus())) {
-            throw SystemException.conflict(
-                    "Yêu cầu này không còn mở nhận chào thầu.", "RFQ_CLOSED");
-        }
-        if (mission.getCustomer() != null
-                && Objects.equals(mission.getCustomer().getId(), provider.getUser().getId())) {
-            throw SystemException.conflict(
-                    "Không thể tự báo giá cho yêu cầu của chính mình.", "SELF_BID_FORBIDDEN");
-        }
+        MarketplaceProviderOperations.validateOpenRfqForBid(mission, provider, OPEN_RFQ_STATUSES);
         MissionBid bid =
                 bids.findByMissionIdAndProviderId(missionId, provider.getId())
                         .orElseGet(
@@ -821,16 +718,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                                     created.setProvider(provider);
                                     return created;
                                 });
-        if (bid.getId() != null && bid.getStatus() == MissionBidStatus.ACCEPTED) {
-            throw SystemException.conflict(
-                    "Báo giá đã được khách hàng chốt, không thể chỉnh sửa.",
-                    "BID_ALREADY_ACCEPTED");
-        }
-        bid.setProposedPriceVnd(request.proposedPriceVnd().setScale(0, RoundingMode.HALF_UP));
-        bid.setEstimatedDeliveryHours(request.estimatedDeliveryHours());
-        bid.setProposalNote(request.proposalNote().trim());
-        bid.setProposedUavModel(trimOrNull(request.proposedUavModel()));
-        bid.setStatus(MissionBidStatus.PENDING);
+        MarketplaceProviderOperations.applyBidFields(bid, request);
         MissionBid savedBid = bids.save(bid);
         notifyUser(
                 mission.getCustomer(),
@@ -867,31 +755,16 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
             Long missionId, Long bidId, Authentication authentication) {
         Mission mission = missionAccess.accessibleForUpdate(missionId, authentication);
         String actorUsername = authentication == null ? null : authentication.getName();
-        boolean isCustomerOwner =
-                mission.getCustomer() != null
-                        && Objects.equals(mission.getCustomer().getUsername(), actorUsername);
-        if (!isCustomerOwner && !missionAccess.hasAuthority(authentication, "USER_MANAGE")) {
-            throw new AccessDeniedException("Chỉ chủ nhiệm vụ mới được chọn nhà thầu.");
-        }
-        if (mission.getProviderResponseStatus() != ProviderOrderStatus.OPEN_RFQ
-                || !OPEN_RFQ_STATUSES.contains(mission.getStatus())) {
-            throw SystemException.conflict(
-                    "Yêu cầu báo giá đã đóng hoặc đã chọn nhà thầu.", "RFQ_CLOSED");
-        }
+        MarketplaceProviderOperations.validateRfqOpenForAcceptance(
+                mission,
+                actorUsername,
+                missionAccess.hasAuthority(authentication, "USER_MANAGE"),
+                OPEN_RFQ_STATUSES);
         MissionBid winning =
                 bids.findById(bidId)
                         .filter(b -> Objects.equals(b.getMission().getId(), missionId))
                         .orElseThrow(() -> SystemException.notFound("BID_NOT_FOUND"));
-        if (winning.getStatus() != MissionBidStatus.PENDING) {
-            throw SystemException.conflict("Báo giá này không còn hiệu lực.", "BID_NOT_PENDING");
-        }
-        if (winning.getProvider() == null
-                || winning.getProvider().getVerificationStatus()
-                        != ProviderVerificationStatus.VERIFIED) {
-            throw SystemException.conflict(
-                    "Đối tác chào thầu hiện không còn trạng thái xác minh hợp lệ để nhận nhiệm vụ.",
-                    "PROVIDER_NOT_VERIFIED");
-        }
+        MarketplaceProviderOperations.validateWinningBid(winning);
 
         LocalDateTime now = LocalDateTime.now();
         for (MissionBid candidate :
@@ -908,17 +781,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
 
         MissionStatus previous = mission.getStatus();
         ProviderProfile provider = winning.getProvider();
-        mission.setProvider(provider);
-        mission.setOperator(provider.getUser());
-        mission.setOperatorAccepted(true);
-        mission.setPricingModelSnapshot(PricingModel.PER_PACKAGE);
-        mission.setUnitPriceSnapshotVnd(winning.getProposedPriceVnd());
-        mission.setBookingUnits(BigDecimal.ONE);
-        mission.setQuotedSubtotalVnd(winning.getProposedPriceVnd());
-        mission.setProviderResponseStatus(ProviderOrderStatus.ACCEPTED);
-        mission.setProviderRespondedAt(now);
-        mission.setProviderResponseNote("Trúng thầu báo giá RFQ #" + winning.getId());
-        mission.setStatus(MissionStatus.CONFIRMED);
+        MarketplaceProviderOperations.applyAcceptedBid(mission, winning, now);
         Mission saved = missions.save(mission);
 
         escrowService.issueOrSyncEscrowInvoiceForMission(saved.getId());
@@ -961,18 +824,10 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                 payouts.findByProviderIdOrderByCreatedAtDesc(provider.getId()).stream()
                         .map(mapper::toPayoutResponse)
                         .toList();
-        return new ProviderWalletResponse(
-                provider.getId(),
-                provider.getDisplayName(),
+        return MarketplaceProviderOperations.buildWalletResponse(
+                provider,
+                wallet,
                 escrowService.effectivePlatformFeeRate(provider.getId()),
-                wallet.getEscrowHeldVnd(),
-                wallet.getAvailableBalanceVnd(),
-                wallet.getPendingPayoutVnd(),
-                wallet.getTotalEarnedVnd(),
-                wallet.getTotalWithdrawnVnd(),
-                provider.getBankName(),
-                provider.getBankAccountNumber(),
-                provider.getBankAccountHolder(),
                 txs.stream().map(mapper::toWalletTransactionResponse).toList(),
                 myPayouts);
     }
@@ -980,23 +835,13 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     @Override
     public ProviderPayoutResponse requestPayout(PayoutCreateRequest request, String username) {
         ProviderProfile provider = requireVerifiedProfile(username);
-        if (provider.getBankName() == null
-                || provider.getBankName().isBlank()
-                || provider.getBankAccountNumber() == null
-                || provider.getBankAccountNumber().isBlank()
-                || provider.getBankAccountHolder() == null
-                || provider.getBankAccountHolder().isBlank()) {
-            throw SystemException.badRequest(
-                    "Vui lòng cập nhật đầy đủ thông tin tài khoản ngân hàng trong Hồ sơ Đối tác trước khi rút tiền.",
-                    "BANK_INFO_REQUIRED");
-        }
+        MarketplaceProviderOperations.requireBankInfo(provider);
         if (wallets.findByProviderId(provider.getId()).isEmpty()) {
             ProviderWallet created = new ProviderWallet();
             created.setProvider(provider);
             wallets.saveAndFlush(created);
         }
         ProviderWallet wallet = wallets.findByProviderIdForUpdate(provider.getId()).orElseThrow();
-        BigDecimal amount = request.amountVnd().setScale(0, RoundingMode.HALF_UP);
         BigDecimal minPayout =
                 BigDecimal.valueOf(
                         SystemConfigurationOperations.longOrDefault(
@@ -1005,57 +850,19 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
                 BigDecimal.valueOf(
                         SystemConfigurationOperations.longOrDefault(
                                 systemConfig, "marketplace.max_payout_vnd", 500_000_000L));
-        if (amount.compareTo(minPayout) < 0) {
-            throw SystemException.badRequest(
-                            "Số tiền rút tối thiểu theo cấu hình hệ thống là "
-                                    + minPayout.toPlainString()
-                                    + " VNĐ.",
-                            "PAYOUT_BELOW_MINIMUM")
-                    .at("amountVnd");
-        }
-        if (amount.compareTo(maxPayout) > 0) {
-            throw SystemException.badRequest(
-                            "Số tiền rút tối đa mỗi lệnh là " + maxPayout.toPlainString() + " VNĐ.",
-                            "PAYOUT_EXCEEDS_MAXIMUM")
-                    .at("amountVnd");
-        }
-        if (wallet.getAvailableBalanceVnd().compareTo(amount) < 0) {
-            throw SystemException.conflict(
-                            "Số dư khả dụng không đủ để thực hiện lệnh rút tiền.",
-                            "INSUFFICIENT_WALLET_BALANCE")
-                    .at("amountVnd");
-        }
+        BigDecimal amount =
+                MarketplaceProviderOperations.validatePayoutAmount(
+                        wallet, request, minPayout, maxPayout);
 
         wallet.setAvailableBalanceVnd(wallet.getAvailableBalanceVnd().subtract(amount));
         wallet.setPendingPayoutVnd(wallet.getPendingPayoutVnd().add(amount));
         wallets.save(wallet);
 
-        ProviderPayout payout = new ProviderPayout();
-        payout.setCode(
-                "PO-"
-                        + provider.getId()
-                        + "-"
-                        + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        payout.setProvider(provider);
-        payout.setAmountVnd(amount);
-        payout.setBankName(provider.getBankName());
-        payout.setBankAccountNumber(provider.getBankAccountNumber());
-        payout.setBankAccountHolder(provider.getBankAccountHolder());
-        payout.setStatus(PayoutStatus.PENDING);
-        payout.setProviderNote(trimOrNull(request.providerNote()));
-        ProviderPayout saved = payouts.save(payout);
-
-        WalletTransaction tx = new WalletTransaction();
-        tx.setWallet(wallet);
-        tx.setPayout(saved);
-        tx.setTransactionType(WalletTransactionType.PAYOUT_REQUEST);
-        tx.setGrossAmountVnd(amount);
-        tx.setFeeAmountVnd(BigDecimal.ZERO);
-        tx.setNetAmountVnd(amount.negate());
-        tx.setBalanceAfterVnd(wallet.getAvailableBalanceVnd());
-        tx.setDescription("Yêu cầu rút tiền " + saved.getCode() + " về " + saved.getBankName());
-        ledger.save(tx);
-
+        ProviderPayout saved =
+                payouts.save(
+                        MarketplaceProviderOperations.buildPayout(
+                                provider, amount, request.providerNote()));
+        ledger.save(MarketplaceProviderOperations.buildPayoutLedgerTx(wallet, saved, amount));
         return mapper.toPayoutResponse(saved);
     }
 
@@ -1073,30 +880,10 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
         } else {
             listing.setCategoryService(null);
         }
-        listing.setTitle(request.title().trim());
-        listing.setSummary(trimOrNull(request.summary()));
-        listing.setDescription(trimOrNull(request.description()));
-        listing.setListingType(request.listingType());
-        listing.setMissionType(request.missionType());
-        listing.setPricingModel(request.pricingModel());
-        listing.setBasePriceVnd(request.basePriceVnd().setScale(0, RoundingMode.HALF_UP));
-        listing.setMinBookingUnits(
-                request.minBookingUnits() != null ? request.minBookingUnits() : BigDecimal.ONE);
-        listing.setSecurityDepositVnd(
-                request.securityDepositVnd() != null
-                        ? request.securityDepositVnd().setScale(0, RoundingMode.HALF_UP)
-                        : BigDecimal.ZERO);
-        listing.setProvince(request.province().trim());
         int defaultRadius =
                 SystemConfigurationOperations.intOrDefault(
                         systemConfig, "marketplace.default_service_radius_km", 100);
-        listing.setServiceRadiusKm(
-                request.serviceRadiusKm() != null ? request.serviceRadiusKm() : defaultRadius);
-        listing.setEquipmentSpecs(trimOrNull(request.equipmentSpecs()));
-        listing.setDeliverablesSummary(trimOrNull(request.deliverablesSummary()));
-        listing.setCoverImageUrl(validateOptionalHttpUrl(request.coverImageUrl(), "coverImageUrl"));
-        listing.setOnSiteSlaHours(request.onSiteSlaHours());
-        listing.setDeliverySlaHours(request.deliverySlaHours());
+        MarketplaceProviderOperations.applyListingCoreFields(listing, request, defaultRadius);
     }
 
     private MarketplaceListing requireOwnedListing(Long listingId, ProviderProfile provider) {
@@ -1134,10 +921,7 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     }
 
     private boolean isFleetOwner(ProviderProfile provider, String username) {
-        return provider != null
-                && provider.getUser() != null
-                && username != null
-                && username.equalsIgnoreCase(provider.getUser().getUsername());
+        return MarketplaceProviderOperations.isFleetOwner(provider, username);
     }
 
     private ProviderProfile requireOwnedProfile(String username) {
@@ -1199,28 +983,10 @@ public class MarketplaceProviderServiceImpl implements MarketplaceProviderServic
     }
 
     private static String validateOptionalHttpUrl(String raw, String field) {
-        String trimmed = trimOrNull(raw);
-        if (trimmed == null) return null;
-        try {
-            URI uri = new URI(trimmed);
-            String scheme = uri.getScheme();
-            if (scheme == null
-                    || !(scheme.equalsIgnoreCase("https") || scheme.equalsIgnoreCase("http"))
-                    || uri.getHost() == null
-                    || uri.getHost().isBlank()) {
-                throw new IllegalArgumentException();
-            }
-            return trimmed;
-        } catch (Exception ex) {
-            throw SystemException.badRequest(
-                            "Địa chỉ liên kết phải bắt đầu bằng https:// hoặc http:// hợp lệ.",
-                            "INVALID_EXTERNAL_URL")
-                    .at(field);
-        }
+        return MarketplaceProviderOperations.validateOptionalHttpUrl(raw, field);
     }
 
     private static String trimOrNull(String value) {
-        if (value == null || value.isBlank()) return null;
-        return value.trim();
+        return MarketplaceProviderOperations.trimOrNull(value);
     }
 }

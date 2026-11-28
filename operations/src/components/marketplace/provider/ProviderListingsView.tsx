@@ -4,22 +4,15 @@ import {useState} from 'react';
 import Link from 'next/link';
 import {
     Boxes,
-    Clock,
-    Edit3,
-    MapPin,
-    PauseCircle,
-    PlayCircle,
     Plus,
     RefreshCw,
     ShieldAlert,
     Sparkles,
-    Trash2,
 } from 'lucide-react';
-import {Button, OptionalMark, RequiredMark} from '@/components/ui';
-import {
-    IllustrativeBadge,
-    IllustrativeFooterNote,
-} from '@/components/marketplace/provider/IllustrativeDisclaimer';
+import {Button} from '@/components/ui';
+import {IllustrativeFooterNote} from '@/components/marketplace/provider/IllustrativeDisclaimer';
+import {ProviderListingEditorForm} from '@/components/marketplace/provider/ProviderListingEditorForm';
+import {ProviderListingGrid} from '@/components/marketplace/provider/ProviderListingGrid';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
 import {
     useMyProviderListings,
@@ -30,26 +23,17 @@ import {
 import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {
     extractActionableError,
-    formatVndCompact,
     initialListingForm,
-    LISTING_TYPE_CODES,
     listingFormFromTemplate,
-    PRICING_MODEL_CODES,
     sanitizeEntityName,
-    sanitizeMarketplaceText,
 } from '@/forms/marketplace-forms';
 import {displayLabel, serviceName} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 import type {UavService} from '@/types/mission.types';
 import type {
-    ListingType,
     MarketplaceListing,
     MarketplaceListingUpsertInput,
-    PricingModel,
 } from '@/types/marketplace.types';
-
-const INPUT_CLASS =
-    'h-11 w-full rounded-control border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900 outline-none focus:border-primary';
 
 export function ProviderListingsView() {
     const {t} = useI18n();
@@ -297,343 +281,28 @@ export function ProviderListingsView() {
 
                     {/* Form Tạo từ mẫu / Sửa dịch vụ */}
                     {editingId !== null && (
-                        <form
-                            onSubmit={e => {
-                                e.preventDefault();
-                                void handleSave(true);
-                            }}
-                            className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6"
-                        >
-                            <div className="flex items-center justify-between gap-2">
-                                <h2 className="m-0 text-base font-semibold text-slate-900">
-                                    {editingId === 'template'
-                                        ? t('opsMarketplace.listings.actions.createFromTemplate')
-                                        : editingId === 'new'
-                                          ? t('opsMarketplace.listings.customCreate')
-                                          : t('opsMarketplace.listings.actions.edit')}
-                                </h2>
-                                <IllustrativeBadge/>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                <label className="grid gap-1 text-xs font-semibold text-slate-700 sm:col-span-2">
-                                    <span>
-                                        {t('opsMarketplace.listings.fields.title')}
-                                        <RequiredMark/>
-                                    </span>
-                                    <input
-                                        required
-                                        className={INPUT_CLASS}
-                                        value={form.title}
-                                        onChange={e => setForm(s => ({...s, title: e.target.value}))}
-                                    />
-                                </label>
-
-                                <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                                    <span>
-                                        {t('opsMarketplace.listings.fields.listingType')}
-                                        <RequiredMark/>
-                                    </span>
-                                    <select
-                                        className={INPUT_CLASS}
-                                        value={form.listingType}
-                                        onChange={e => setForm(s => ({...s, listingType: e.target.value as ListingType}))}
-                                    >
-                                        {LISTING_TYPE_CODES.map(code => (
-                                            <option key={code} value={code}>
-                                                {t(`opsMarketplace.listings.types.${code}`)}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </label>
-
-                                <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                                    <span>
-                                        {t('opsMarketplace.listings.fields.basePriceVnd')}
-                                        <RequiredMark/>
-                                    </span>
-                                    <input
-                                        required
-                                        type="number"
-                                        min={50000}
-                                        step={50000}
-                                        className={INPUT_CLASS}
-                                        value={form.basePriceVnd}
-                                        onChange={e => setForm(s => ({...s, basePriceVnd: Number(e.target.value)}))}
-                                    />
-                                </label>
-
-                                <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                                    <span>
-                                        {t('opsMarketplace.listings.fields.pricingModel')}
-                                        <RequiredMark/>
-                                    </span>
-                                    <select
-                                        className={INPUT_CLASS}
-                                        value={form.pricingModel}
-                                        onChange={e => setForm(s => ({...s, pricingModel: e.target.value as PricingModel}))}
-                                    >
-                                        {PRICING_MODEL_CODES.map(code => (
-                                            <option key={code} value={code}>
-                                                {t(`opsMarketplace.listings.pricing.${code}`)}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </label>
-
-                                <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                                    <span>
-                                        {t('opsMarketplace.listings.fields.minBookingUnits')}
-                                        <OptionalMark/>
-                                    </span>
-                                    <input
-                                        type="number"
-                                        min={1}
-                                        className={INPUT_CLASS}
-                                        value={form.minBookingUnits ?? 1}
-                                        onChange={e => setForm(s => ({...s, minBookingUnits: Number(e.target.value)}))}
-                                    />
-                                </label>
-
-                                <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                                    <span>
-                                        {t('opsMarketplace.listings.fields.province')}
-                                        <RequiredMark/>
-                                    </span>
-                                    <input
-                                        required
-                                        className={INPUT_CLASS}
-                                        value={form.province}
-                                        onChange={e => setForm(s => ({...s, province: e.target.value}))}
-                                    />
-                                </label>
-
-                                <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                                    <span>
-                                        {t('opsMarketplace.listings.fields.serviceRadiusKm')}
-                                        <OptionalMark/>
-                                    </span>
-                                    <input
-                                        type="number"
-                                        min={5}
-                                        max={2000}
-                                        className={INPUT_CLASS}
-                                        value={form.serviceRadiusKm ?? defaultServiceRadiusKm}
-                                        onChange={e => setForm(s => ({...s, serviceRadiusKm: Number(e.target.value)}))}
-                                    />
-                                </label>
-
-                                <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                                    <span>
-                                        {t('opsMarketplace.listings.fields.deliveryHours')}
-                                        <OptionalMark/>
-                                    </span>
-                                    <input
-                                        type="number"
-                                        min={1}
-                                        className={INPUT_CLASS}
-                                        value={form.deliverySlaHours ?? 48}
-                                        onChange={e => setForm(s => ({...s, deliverySlaHours: Number(e.target.value)}))}
-                                    />
-                                </label>
-
-                                <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                                    <span>
-                                        {t('opsMarketplace.listings.fields.equipmentSpecs')}
-                                        <OptionalMark/>
-                                    </span>
-                                    <input
-                                        className={INPUT_CLASS}
-                                        value={form.equipmentSpecs ?? ''}
-                                        onChange={e => setForm(s => ({...s, equipmentSpecs: e.target.value}))}
-                                    />
-                                </label>
-
-                                <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                                    <span>
-                                        {t('opsMarketplace.listings.fields.deliverablesSummary')}
-                                        <OptionalMark/>
-                                    </span>
-                                    <input
-                                        className={INPUT_CLASS}
-                                        value={form.deliverablesSummary ?? ''}
-                                        onChange={e => setForm(s => ({...s, deliverablesSummary: e.target.value}))}
-                                    />
-                                </label>
-
-                                <label className="grid gap-1 text-xs font-semibold text-slate-700">
-                                    <span>
-                                        {t('opsMarketplace.listings.fields.coverImageUrl')}
-                                        <OptionalMark/>
-                                    </span>
-                                    <input
-                                        type="url"
-                                        className={INPUT_CLASS}
-                                        value={form.coverImageUrl ?? ''}
-                                        onChange={e => setForm(s => ({...s, coverImageUrl: e.target.value}))}
-                                        placeholder="https://..."
-                                    />
-                                </label>
-                            </div>
-
-                            <div className="flex flex-wrap justify-end gap-2.5 border-t border-slate-100 pt-4">
-                                <Button type="button" variant="secondary" onClick={() => setEditingId(null)}>
-                                    {t('opsMarketplace.common.cancel')}
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    disabled={
-                                        createListing.isPending ||
-                                        createFromTemplate.isPending ||
-                                        updateListing.isPending
-                                    }
-                                    onClick={() => void handleSave(false)}
-                                >
-                                    {t('opsMarketplace.listings.actions.saveDraft')}
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={
-                                        createListing.isPending ||
-                                        createFromTemplate.isPending ||
-                                        updateListing.isPending
-                                    }
-                                >
-                                    {editingId === 'template'
-                                        ? t('opsMarketplace.listings.actions.createFromTemplate')
-                                        : t('opsMarketplace.listings.actions.submitReview')}
-                                </Button>
-                            </div>
-                        </form>
+                        <ProviderListingEditorForm
+                            editingId={editingId}
+                            form={form}
+                            defaultServiceRadiusKm={defaultServiceRadiusKm}
+                            isPending={
+                                createListing.isPending ||
+                                createFromTemplate.isPending ||
+                                updateListing.isPending
+                            }
+                            onFormChange={setForm}
+                            onCancel={() => setEditingId(null)}
+                            onSave={submitForReview => void handleSave(submitForReview)}
+                        />
                     )}
 
                     {/* Khối 2: Danh sách dịch vụ của tôi */}
-                    <section className="space-y-3">
-                        <div className="flex items-center justify-between">
-                            <h2 className="m-0 text-base font-semibold text-slate-900">
-                                {t('opsMarketplace.listings.myListingsTitle')} ({listings.length})
-                            </h2>
-                        </div>
-
-                        {listings.length === 0 ? (
-                            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
-                                <Boxes size={28} className="mx-auto text-slate-400" aria-hidden="true"/>
-                                <p className="m-0 mt-2 text-sm text-slate-600">{t('opsMarketplace.listings.empty')}</p>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                {listings.map(item => (
-                                    <article
-                                        key={item.id}
-                                        className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-2xs"
-                                    >
-                                        <div className="space-y-2.5">
-                                            <div className="flex flex-wrap items-center justify-between gap-2">
-                                                <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap text-slate-700">
-                                                    {t(`opsMarketplace.listings.types.${item.listingType}`)}
-                                                </span>
-                                                <span
-                                                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${
-                                                        item.moderationStatus === 'PUBLISHED'
-                                                            ? 'bg-slate-900 text-white'
-                                                            : item.moderationStatus === 'PENDING_REVIEW'
-                                                              ? 'bg-amber-100 text-amber-800'
-                                                              : item.moderationStatus === 'REJECTED'
-                                                                ? 'bg-rose-100 text-danger'
-                                                                : 'bg-slate-100 text-slate-700'
-                                                    }`}
-                                                >
-                                                    {t(`opsMarketplace.listings.status.${item.moderationStatus}`)}
-                                                </span>
-                                            </div>
-
-                                            <h3 className="m-0 line-clamp-2 text-base font-semibold text-slate-900">
-                                                {sanitizeMarketplaceText(item.title)}
-                                            </h3>
-
-                                            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-                                                <span className="inline-flex items-center gap-1 whitespace-nowrap">
-                                                    <MapPin size={13} className="text-primary" aria-hidden="true"/>
-                                                    {item.province} · {item.serviceRadiusKm} km
-                                                </span>
-                                                {item.deliverySlaHours != null && (
-                                                    <span className="inline-flex items-center gap-1 whitespace-nowrap">
-                                                        <Clock size={13} aria-hidden="true"/>
-                                                        {item.deliverySlaHours}h
-                                                    </span>
-                                                )}
-                                                <span className="whitespace-nowrap">
-                                                    {t('opsMarketplace.listings.actions.bookings', {
-                                                        count: item.bookingCount,
-                                                    })}
-                                                </span>
-                                            </div>
-
-                                            {item.moderationNote && (
-                                                <p className="m-0 rounded-lg bg-amber-50 px-3 py-1.5 text-xs text-amber-900">
-                                                    {t('opsMarketplace.listings.actions.moderationNote', {
-                                                        note: item.moderationNote,
-                                                    })}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
-                                            <div className="flex flex-wrap items-center gap-1.5">
-                                                <strong className="text-base font-bold text-primary tabular-nums">
-                                                    {formatVndCompact(item.basePriceVnd)}
-                                                </strong>
-                                                <span className="text-xs text-slate-500">
-                                                    / {t(`opsMarketplace.listings.pricing.${item.pricingModel}`)}
-                                                </span>
-                                                <IllustrativeBadge/>
-                                            </div>
-
-                                            <div className="flex flex-wrap items-center gap-1.5">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => openEdit(item)}
-                                                    className="inline-flex min-h-9 items-center gap-1 rounded-control border border-slate-200 px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 hover:border-primary hover:text-primary"
-                                                >
-                                                    <Edit3 size={13} aria-hidden="true"/>
-                                                    {t('opsMarketplace.listings.actions.edit')}
-                                                </button>
-                                                {(item.moderationStatus === 'PUBLISHED' ||
-                                                    item.moderationStatus === 'PAUSED') && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => togglePause.mutate(item.id)}
-                                                        className="inline-flex min-h-9 items-center gap-1 rounded-control border border-slate-200 px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 hover:bg-slate-50"
-                                                    >
-                                                        {item.moderationStatus === 'PUBLISHED' ? (
-                                                            <>
-                                                                <PauseCircle size={13} aria-hidden="true"/>
-                                                                {t('opsMarketplace.listings.actions.pause')}
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <PlayCircle size={13} aria-hidden="true"/>
-                                                                {t('opsMarketplace.listings.actions.resume')}
-                                                            </>
-                                                        )}
-                                                    </button>
-                                                )}
-                                                <button
-                                                    type="button"
-                                                    onClick={() => deleteListing.mutate(item.id)}
-                                                    className="inline-flex h-9 w-9 items-center justify-center rounded-control text-slate-400 hover:bg-rose-50 hover:text-danger"
-                                                    aria-label={t('opsMarketplace.listings.actions.delete')}
-                                                >
-                                                    <Trash2 size={14} aria-hidden="true"/>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </article>
-                                ))}
-                            </div>
-                        )}
-                    </section>
+                    <ProviderListingGrid
+                        listings={listings}
+                        onEdit={openEdit}
+                        onTogglePause={id => togglePause.mutate(id)}
+                        onDelete={id => deleteListing.mutate(id)}
+                    />
 
                     <IllustrativeFooterNote/>
                 </div>

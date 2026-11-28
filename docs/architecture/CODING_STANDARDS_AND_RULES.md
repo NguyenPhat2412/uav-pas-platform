@@ -10,7 +10,7 @@
    - **CẤM** khai báo `spring-boot-starter-data-jpa` trong `backend/pom.xml`.
    - Chỉ sử dụng `spring-boot-starter-jdbc` + `spring-boot-hibernate` (Hibernate ORM 7 + `spring-orm`).
    - **CẤM** import `JpaRepository`, `org.springframework.data.jpa.*`, hoặc `com.uav.platform.repository.*` trong toàn bộ `backend/src/main/java`.
-2. **Cấu trúc phân thư mục chuẩn hóa**:
+2. **Cấu trúc phân thư mục chuẩn hóa (phẳng theo tầng/vai trò, không lặp thư mục `<feature>`):**
    ```text
    backend/src/main/java/com/uav/platform/
    ├── config/HibernateConfig.java               # Bean sharedEntityManager & mở Hibernate SessionFactory
@@ -20,19 +20,20 @@
    │   │   ├── HibernateGenericDao.java          # Lớp cha Hibernate Session DAO<PK, T>
    │   │   ├── HibernateSpecification.java       # Criteria API Specification thuần Hibernate
    │   │   └── HibernateSearchQueryParser.java   # Parser FIQL/RSQL Search, Sort & Pagination nhúng trong DAO
-   │   ├── <feature>/I<Entity>Dao.java           # 76 interface DAO theo chuẩn I*Dao
-   │   └── impl/<feature>/<Entity>DaoImpl.java   # 76 lớp cài đặt @Repository
-   ├── specification/<feature>/*Specifications.java
-   ├── service/<feature>/*Service.java
-   ├── service/impl/<feature>/*ServiceImpl.java
-   ├── controller/<feature>/*Controller.java
-   ├── entity/<feature>/*.java
-   ├── dto/{request,response,record}/<feature>/*.java
-   └── mapper/<feature>/*Mapper.java
+   │   ├── I<Entity>Dao.java                     # 76 interface DAO theo chuẩn I*Dao
+   │   └── impl/<Entity>DaoImpl.java             # 76 lớp cài đặt @Repository
+   ├── specification/*Specifications.java
+   ├── service/*Service.java
+   ├── service/impl/*ServiceImpl.java            # + các helper *Operations
+   ├── controller/*Controller.java
+   ├── entity/*.java
+   ├── enums/*.java
+   ├── dto/{request,response,record}/*.java
+   └── mapper/*Mapper.java
    ```
 3. **Quy chuẩn viết lớp DAO bắt buộc**:
-   - Mọi interface DAO đặt tên `I<Entity>Dao` trong `com.uav.platform.dao.<feature>` và kế thừa `IGenericDao<PK, Entity>`.
-   - Mọi implementation đặt tên `<Entity>DaoImpl` trong `com.uav.platform.dao.impl.<feature>`, gắn `@Repository`, kế thừa `HibernateGenericDao<PK, Entity>`, khai báo SLF4J `Logger`, và inject `EntityManager` qua constructor:
+   - Mọi interface DAO đặt tên `I<Entity>Dao` trong `com.uav.platform.dao` và kế thừa `IGenericDao<PK, Entity>`.
+   - Mọi implementation đặt tên `<Entity>DaoImpl` trong `com.uav.platform.dao.impl`, gắn `@Repository`, kế thừa `HibernateGenericDao<PK, Entity>`, khai báo SLF4J `Logger`, và inject `EntityManager` qua constructor:
      ```java
      @Repository
      public class MissionDaoImpl extends HibernateGenericDao<Long, Mission> implements IMissionDao {
@@ -80,7 +81,7 @@
 
 1. **Controller** chỉ phụ thuộc vào **Service interface** và **Request/Response DTO records**; **CẤM** import trực tiếp `.service.impl.`, `.dao.`, `.entity.`, `.mapper.`.
 2. Mọi đường dẫn API trong Controller phải khai báo hằng số trong `ApiRoutes` (không viết chuỗi path cứng trong `@GetMapping`/`@PostMapping`/...).
-3. Mọi DTO nằm trong `dto/{request,response,record}/<feature>[/<sub-domain>]` và dùng Java `record`.
+3. Mọi DTO nằm trong `dto/{request,response,record}/` và dùng Java `record`.
 4. Mọi thay đổi schema Database bắt buộc viết Flyway migration tuần tự (`V<N>__<mo_ta>.sql`), chạy `HIBERNATE_DDL_AUTO=validate` (không dùng `update`/`create` trên Staging/Production).
 
 ---
@@ -94,7 +95,7 @@
    - **Tổng thể Backend (TOTAL)** > 80%
 2. **Lệnh xác minh bắt buộc trước khi commit/deploy**:
    ```bash
-   cd backend && ./mvnw clean spotless:apply test spotless:check
+   cd backend && ./mvnw -B clean spotless:apply verify
    ```
 3. Format mã nguồn Java tuân thủ tuyệt đối Spotless (Google Java Format AOSP).
 

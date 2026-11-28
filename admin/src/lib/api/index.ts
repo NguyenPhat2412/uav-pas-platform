@@ -21,9 +21,12 @@ function currentLocale(): PresentationLocale {
     return 'vi';
 }
 
+let nextErrorToastSeq = 0;
+
 function dispatchErrorToast(message: string, title: string) {
     if (typeof window !== 'undefined' && typeof CustomEvent !== 'undefined') {
-        const id = 'toast_' + Math.random().toString(36).substring(2, 9);
+        nextErrorToastSeq += 1;
+        const id = `toast_${Date.now()}_${nextErrorToastSeq}`;
         window.dispatchEvent(new CustomEvent('uav:toast', { detail: { id, type: 'error', message, title } }));
     }
 }
