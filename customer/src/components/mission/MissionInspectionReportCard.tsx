@@ -3,8 +3,8 @@
 import {useState} from 'react';
 import {Award, CheckCircle2, Clock, Download, FileCheck2, Layers, MapPin, Printer, ShieldCheck, SlidersHorizontal} from 'lucide-react';
 import {Button} from '@/components/ui';
-import {sanitizeMarketplaceName, sanitizeMarketplaceText} from '@/forms/project/project-form';
-import {useMissionInspectionReport} from '@/hooks/mission/useCustomerMissions';
+import {sanitizeMarketplaceName, sanitizeMarketplaceText} from '@/forms/project-form';
+import {useMissionInspectionReport} from '@/hooks/useCustomerMissions';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 

@@ -6,12 +6,12 @@ import {ArrowLeft, CheckCircle2, Play, Radio} from 'lucide-react';
 import {MissionMonitoring} from '@/components/mission/customer/MissionMonitoring';
 import {MissionRequestDetails} from '@/components/mission/MissionRequestDetails';
 import {Alert, Button, Card, CardContent, CardFooter, CardHeader, CardTitle, StatusBadge} from '@/components/ui';
-import {sanitizeEntityName} from '@/forms/marketplace/marketplace-forms';
-import type {useMissionWorkflow} from '@/hooks/mission/useMissionWorkflow';
+import {sanitizeEntityName} from '@/forms/marketplace-forms';
+import type {useMissionWorkflow} from '@/hooks/useMissionWorkflow';
 import {displayLabel, formatDate, missionHint} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
-import type {Mission, MissionConfirmationKind, MissionDetailSection} from '@/types/mission/mission.types';
-import type {missionControls} from '@/utils/mission/presentation';
+import type {Mission, MissionConfirmationKind, MissionDetailSection} from '@/types/mission.types';
+import type {missionControls} from '@/utils/presentation';
 
 export interface OperationsMissionOverviewSectionProps {
     mission: Mission;

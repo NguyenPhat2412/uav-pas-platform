@@ -14,13 +14,13 @@ import {Button, OptionalMark} from '@/components/ui';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
 import {ProviderDocumentReviewList} from '@/components/marketplace/ProviderDocumentReviewList';
 import {ProviderVerificationWorkflowCard} from '@/components/marketplace/ProviderVerificationWorkflowCard';
-import {sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
+import {sanitizeMarketplaceText} from '@/forms/admin-marketplace-form';
 import {useI18n} from '@/providers/I18nContext';
 import type {
     AdminProviderDocument,
     AdminProviderProfile,
     ProviderVerificationStatus,
-} from '@/types/marketplace/marketplace.types';
+} from '@/types/marketplace.types';
 
 export function ProviderKycDrawer({
     provider,

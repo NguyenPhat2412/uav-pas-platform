@@ -6,16 +6,16 @@ import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useMapConfig} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
-import {useForecastAssessment, useForecastMany, useStationsWeather} from '@/hooks/weather/useWeather';
+import {useForecastAssessment, useForecastMany, useStationsWeather} from '@/hooks/useWeather';
 import {PreflightWeatherCard} from '@/components/weather/PreflightWeatherCard';
 import {WeatherIcon} from '@/components/weather/WeatherIcon';
 import {WeatherPointMap, type WeatherMapPlace} from '@/components/weather/WeatherPointMap';
 import {
     WEATHER_DAY_OFFSETS, WEATHER_HOUR_SLOTS, WEATHER_MAX_DAY_OFFSET, WEATHER_MIN_DAY_OFFSET,
     buildWeatherSlotIso, clampDayOffset, dateAtDayOffset, dayOffsetFromIso, hourFromIso, localDateIso,
-} from '@/utils/weather/flight-window';
-import {conditionOf, isDaytime} from '@/utils/weather/conditions';
-import type {WeatherAssessment} from '@/types/weather/weather.types';
+} from '@/utils/flight-window';
+import {conditionOf, isDaytime} from '@/utils/conditions';
+import type {WeatherAssessment} from '@/types/weather.types';
 
 const PRESETS = [
     {key: 'home', lat: 0, lng: 0}, {key: 'hanoi', lat: 21.0285, lng: 105.8048},

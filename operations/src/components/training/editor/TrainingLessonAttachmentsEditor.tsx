@@ -3,7 +3,7 @@
 import {ArrowDown, ArrowUp, Paperclip, Trash2} from 'lucide-react';
 import {Button, Input} from '@/components/ui';
 import {OptionalMark} from '@/components/shared/RequiredMark';
-import type {TrainingLessonDraft} from '@/forms/training/training-form';
+import type {TrainingLessonDraft} from '@/forms/training-form';
 import {TrainingAssetUpload} from '@/components/training/editor/TrainingAssetUpload';
 import {RESOURCE_ICONS} from '@/components/training/player/TrainingLessonViewers';
 import {
@@ -11,7 +11,7 @@ import {
     formatFileSize,
     moveItem,
     resourceFileKind,
-} from '@/utils/training/course-helpers';
+} from '@/utils/course-helpers';
 
 const iconBtnClass = 'h-7 w-7 shrink-0 px-0';
 

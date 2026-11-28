@@ -4,12 +4,12 @@ import {Button} from '@/components/ui';
 import {Drawer} from '@/components/data/Drawer';
 import {ApiError} from '@/lib/api';
 import type {Uav} from "@/types/resources";
-import type {MaintenanceSchedule} from "@/types/maintenance/maintenance.types";
+import type {MaintenanceSchedule} from "@/types/maintenance.types";
 import {ScheduleFieldsForm, UavField} from "@/components/maintenance/Fields";
 import {ActionFeedback} from "@/components/maintenance/Feedback";
-import {useMaintenanceAction} from '@/hooks/maintenance/useMaintenanceAction';
-import {createMaintenanceScheduleDraft} from "@/forms/maintenance/maintenance-form";
-import {positiveId} from "@/utils/maintenance/workflows";
+import {useMaintenanceAction} from '@/hooks/useMaintenanceAction';
+import {createMaintenanceScheduleDraft} from "@/forms/maintenance-form";
+import {positiveId} from "@/utils/maintenance-workflows";
 import {useI18n} from '@/providers/I18nContext';
 
 export function ScheduleForm({schedule, uavId: initialUavId, uavs, canRead, onClose, refresh}: {

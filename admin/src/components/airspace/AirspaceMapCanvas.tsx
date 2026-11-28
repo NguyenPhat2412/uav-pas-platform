@@ -16,10 +16,10 @@ import {
     renderOverviewZonesLayer,
     syncBasemapTileLayer,
 } from '@/components/airspace/airspace-map-layers';
-import {formatPolygonVerticesText, type AirspaceZoneDraft} from '@/forms/airspace/airspace-zone-form';
+import {formatPolygonVerticesText, type AirspaceZoneDraft} from '@/forms/airspace-zone-form';
 import {syncScaleControl, useMapConfig} from '@/lib/map-config';
 import {useI18n} from '@/providers/I18nContext';
-import type {AirspaceZone} from '@/types/airspace/airspace.types';
+import type {AirspaceZone} from '@/types/airspace.types';
 
 export {parseDraftVerticesPreview};
 

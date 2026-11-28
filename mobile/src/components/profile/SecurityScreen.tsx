@@ -3,7 +3,7 @@ import {StyleSheet, View} from 'react-native';
 import {KeyRound, ShieldCheck, ShieldOff, UserX} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, Screen, SectionTitle, TextField} from '@/components/ui';
 import {AccountDeletionModal} from '@/components/profile/AccountDeletionModal';
-import {useAccountDeletionPolicy, useProfile} from '@/hooks/profile/useProfile';
+import {useAccountDeletionPolicy, useProfile} from '@/hooks/useProfile';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
@@ -14,8 +14,8 @@ import {
     toPasswordChangePayload,
     type PasswordChangeDraft,
     type PasswordChangeFieldErrors,
-} from '@/shared/forms/profile/profile-form';
-import {signInErrorText} from '@/forms/auth/sign-in-flow';
+} from '@/shared/forms/profile-form';
+import {signInErrorText} from '@/forms/sign-in-flow';
 import {colors, spacing} from '@/styles/tokens';
 
 export function SecurityScreen() {

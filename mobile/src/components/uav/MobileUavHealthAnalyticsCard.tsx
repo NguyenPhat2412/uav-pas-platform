@@ -2,8 +2,8 @@ import React from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {Activity, AlertTriangle, BatteryCharging, CheckCircle2, Cpu, Wrench} from 'lucide-react-native';
 import {AppText, Badge, Card, LoadingState, SectionTitle} from '@/components/ui';
-import {useUavHealthAnalytics} from '@/hooks/uav/useFleetAndMaintenance';
-import type {UavHealthProfile} from '@/shared/types/uav/telemetry.types';
+import {useUavHealthAnalytics} from '@/hooks/useFleetAndMaintenance';
+import type {UavHealthProfile} from '@/shared/types/telemetry.types';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 interface Props {

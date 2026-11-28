@@ -3,11 +3,11 @@ import {StyleSheet, View} from 'react-native';
 import {ShieldAlert} from 'lucide-react-native';
 import {AppText, Badge, Card, LoadingState, SectionTitle} from '@/components/ui';
 import {Verdict} from '@/components/weather/WeatherCard';
-import {useMissionWeather} from '@/hooks/weather/useWeather';
+import {useMissionWeather} from '@/hooks/useWeather';
 import {useI18n} from '@/providers/I18nContext';
-import type {AirspaceCheckResult} from '@/shared/types/airspace/airspace.types';
-import type {Mission} from '@/shared/types/mission/mission.types';
-import {progressStep} from '@/utils/mission/status';
+import type {AirspaceCheckResult} from '@/shared/types/airspace.types';
+import type {Mission} from '@/shared/types/mission.types';
+import {progressStep} from '@/utils/status';
 import {colors, spacing} from '@/styles/tokens';
 
 const STEPS = ['draft', 'pending', 'confirmed', 'completed'] as const;

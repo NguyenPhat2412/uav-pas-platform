@@ -8,7 +8,7 @@ import {QueryState} from '@/components/data/WorkspaceState';
 import {
     useNotificationModuleActions,
     useNotificationModules,
-} from '@/hooks/notification/useNotifications';
+} from '@/hooks/useNotifications';
 import {NotificationModuleRowCard} from './NotificationModuleRowCard';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';

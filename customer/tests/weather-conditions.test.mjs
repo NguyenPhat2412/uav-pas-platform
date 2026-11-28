@@ -11,7 +11,7 @@ async function loadTs(path) {
     return import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
 }
 
-const {conditionOf, isDaytime, windLevel, rainLevel, visibilityLevel} = await loadTs('../src/utils/weather/conditions.ts');
+const {conditionOf, isDaytime, windLevel, rainLevel, visibilityLevel} = await loadTs('../src/utils/conditions.ts');
 
 test('weather conditions: WMO codes map to the icon families', () => {
     const cases = {0: 'clear', 1: 'partly', 2: 'partly', 3: 'cloudy', 45: 'fog', 48: 'fog', 51: 'drizzle', 57: 'drizzle',
@@ -44,7 +44,7 @@ test('weather conditions: wind, rain and visibility read as levels', () => {
     assert.equal(visibilityLevel(800), 'poor');
 });
 
-const {skyTheme} = await loadTs('../src/utils/weather/sky-theme.ts');
+const {skyTheme} = await loadTs('../src/utils/sky-theme.ts');
 
 test('sky theme: each sky gets its effect, and night or storms switch to a dark card', () => {
     assert.deepEqual([skyTheme('clear', false).effect, skyTheme('clear', false).dark], ['sun', false]);

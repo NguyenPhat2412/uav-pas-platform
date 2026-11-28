@@ -4,8 +4,8 @@ import {useEffect, useRef, useState} from 'react';
 import type {ReactNode} from 'react';
 import {Upload} from 'lucide-react';
 import {Button} from '@/components/ui';
-import {useTrainingUploads} from '@/hooks/training/useTraining';
-import type {TrainingAssetConfirmation} from '@/types/training/training.types';
+import {useTrainingUploads} from '@/hooks/useTraining';
+import type {TrainingAssetConfirmation} from '@/types/training.types';
 import {
     formatFileSize,
     TRAINING_IMAGE_MAX_BYTES,
@@ -18,8 +18,8 @@ import {
     TRAINING_VIDEO_TYPES,
     trainingAssetError,
     trainingFileContentType,
-} from '@/utils/training/course-helpers';
-import type {TrainingAssetKind} from '@/utils/training/course-helpers';
+} from '@/utils/course-helpers';
+import type {TrainingAssetKind} from '@/utils/course-helpers';
 
 const KIND_RULES: Record<TrainingAssetKind, {accept: string; hint: string}> = {
     video: {

@@ -16,7 +16,7 @@ import {
     ZoomOut,
 } from 'lucide-react';
 import {Button, Input} from '@/components/ui';
-import {nextPdfZoom, PDF_ZOOM_STEPS, pdfPageStep, pdfSpreadLabel} from '@/utils/training/course-helpers';
+import {nextPdfZoom, PDF_ZOOM_STEPS, pdfPageStep, pdfSpreadLabel} from '@/utils/course-helpers';
 import {THUMB_WIDTH} from '@/components/training/player/training-pdf-helpers';
 
 const iconBtnClass = 'h-8 w-8 shrink-0 px-0';

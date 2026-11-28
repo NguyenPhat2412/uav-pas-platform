@@ -4,15 +4,15 @@ import {useId, useState} from 'react';
 import {FolderOpen} from 'lucide-react';
 import {Badge, Card} from '@/components/ui';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
-import {useTrainingCourseChecklist} from '@/hooks/training/useTraining';
+import {useTrainingCourseChecklist} from '@/hooks/useTraining';
 import type {
     TrainingCourseDetail,
     TrainingCourseLessonItem,
     TrainingLessonDetail,
-} from '@/types/training/training.types';
+} from '@/types/training.types';
 import {LessonResourceList} from '@/components/training/player/TrainingLessonViewers';
-import {flattenLessons} from '@/utils/training/course-helpers';
-import {LEVEL_LABELS, trainingCategoryLabel} from '@/utils/training/training-meta';
+import {flattenLessons} from '@/utils/course-helpers';
+import {LEVEL_LABELS, trainingCategoryLabel} from '@/utils/training-meta';
 
 type LessonTab = 'overview' | 'resources' | 'checklist';
 

@@ -10,9 +10,9 @@ import {FilterSelect} from '@/components/shared/FilterSelect';
 import {confirmDialog} from '@/providers/ConfirmContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import {useAssistantConversation, useAssistantConversations, useDeleteConversation} from '@/hooks/assistant/useAssistant';
-import {type ConversationFilter} from '@/types/assistant/assistant.types';
-import type {AssistantConversation, AssistantPortal} from '@/types/assistant/assistant.types';
+import {useAssistantConversation, useAssistantConversations, useDeleteConversation} from '@/hooks/useAssistant';
+import {type ConversationFilter} from '@/types/assistant.types';
+import type {AssistantConversation, AssistantPortal} from '@/types/assistant.types';
 import {ChatMessages} from '@/components/assistant/widget/ChatMessages';
 import {cn} from '@/lib/utils';
 

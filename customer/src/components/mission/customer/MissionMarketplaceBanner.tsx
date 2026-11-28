@@ -5,8 +5,8 @@ import {
     formatVndCompact,
     listingTypeLabel,
     pricingUnitLabel,
-} from '@/forms/marketplace/marketplace-forms';
-import type {MarketplaceListing} from '@/types/marketplace/marketplace.types';
+} from '@/forms/marketplace-forms';
+import type {MarketplaceListing} from '@/types/marketplace.types';
 
 interface MissionMarketplaceBannerProps {
     activeListing?: MarketplaceListing | null;

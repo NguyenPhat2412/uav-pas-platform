@@ -16,20 +16,20 @@ import {OperationsMissionOverviewSection} from '@/components/mission/operations/
 import {SmartDispatchCard} from '@/components/mission/operations/SmartDispatchCard';
 import {UavLoader} from '@/components/ui';
 import {PreflightWeatherCard} from '@/components/weather/PreflightWeatherCard';
-import {operationsMissionNotice} from '@/forms/mission/operations-mission-form';
-import {useMissionDispatchSources, useMissionWorkflow} from '@/hooks/mission/useMissionWorkflow';
-import {useInvalidateOperationsMissionQueries, useOperationsMissionReview} from '@/hooks/mission/useOperationsMissions';
-import {useSimulationMutations} from '@/hooks/simulation/useSimulation';
-import {useMissionWeather} from '@/hooks/weather/useWeather';
+import {operationsMissionNotice} from '@/forms/operations-mission-form';
+import {useMissionDispatchSources, useMissionWorkflow} from '@/hooks/useMissionWorkflow';
+import {useInvalidateOperationsMissionQueries, useOperationsMissionReview} from '@/hooks/useOperationsMissions';
+import {useSimulationMutations} from '@/hooks/useSimulation';
+import {useMissionWeather} from '@/hooks/useWeather';
 import {collectPages} from '@/lib/api/collection';
 import {parseEntityId} from '@/lib/url-slugs';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import type {DispatchResources, MediaRole, Mission, MissionConfirmationKind as Confirmation, MissionDetailSection as Section, MissionEvent, MissionMedia, MissionNoticeMessage as Message} from '@/types/mission/mission.types';
+import type {DispatchResources, MediaRole, Mission, MissionConfirmationKind as Confirmation, MissionDetailSection as Section, MissionEvent, MissionMedia, MissionNoticeMessage as Message} from '@/types/mission.types';
 import type {Equipment, Operator, Station, Uav} from '@/types/resources';
-import {missionControls} from '@/utils/mission/presentation';
-import {handoverEvidence} from '@/utils/mission/workflows';
+import {missionControls} from '@/utils/presentation';
+import {handoverEvidence} from '@/utils/mission-workflows';
 
 interface DetailSnapshot {
     dispatch: DispatchResources | null; events: MissionEvent[]; media: MissionMedia[];

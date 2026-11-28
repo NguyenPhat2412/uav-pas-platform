@@ -1,5 +1,5 @@
 import type {InvoiceStatus} from '@/types';
-import type {PublicSupportThreadSession} from '@/types/support/support.types';
+import type {PublicSupportThreadSession} from '@/types/support.types';
 
 export type RealtimeConnectionStatus = 'connecting' | 'connected' | 'disconnected';
 

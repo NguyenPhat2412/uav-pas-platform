@@ -1,7 +1,7 @@
 "use client";
 
 import {Download, Lock, LockOpen, Search, UserPlus, X} from 'lucide-react';
-import {userStatuses} from '@/hooks/user/useAdminUsers';
+import {userStatuses} from '@/hooks/useAdminUsers';
 import {roles, type UserRole, type UserStatus} from '@/types/admin';
 import {displayLabel} from '@/lib/presentation';
 import {Badge, Button, Input, Select} from '@/components/ui';

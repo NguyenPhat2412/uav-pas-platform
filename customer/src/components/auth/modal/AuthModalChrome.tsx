@@ -3,9 +3,9 @@
 import React from 'react';
 import {Lock, UserPlus, X} from 'lucide-react';
 import {Alert, Button} from '@/components/ui';
-import {useAuthFlow} from '@/hooks/auth/useAuthFlow';
+import {useAuthFlow} from '@/hooks/useAuthFlow';
 import {useI18n} from '@/providers/I18nContext';
-import type {AppleCredentialPayload, AuthModalView, AuthResponse, TwoFactorMethod} from '@/types/auth/auth.types';
+import type {AppleCredentialPayload, AuthModalView, AuthResponse, TwoFactorMethod} from '@/types/auth.types';
 import {AppleSignInButton} from '@/components/auth/social/AppleSignInButton';
 import {GoogleSignInButton} from '@/components/auth/social/GoogleSignInButton';
 

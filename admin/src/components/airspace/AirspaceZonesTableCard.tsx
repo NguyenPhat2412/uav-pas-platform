@@ -6,10 +6,10 @@ import {DataTable} from '@/components/data/ResourceState';
 import {EmptyState} from '@/components/data/WorkspaceState';
 import {Badge, Button, Card, CardContent, Input, StatusBadge, Switch} from '@/components/ui';
 import {AIRSPACE_ZONE_TYPE_TONE} from '@/components/airspace/MissionAirspaceAdvisor';
-import {AIRSPACE_ZONE_TYPES} from '@/forms/airspace/airspace-zone-form';
+import {AIRSPACE_ZONE_TYPES} from '@/forms/airspace-zone-form';
 import {cn} from '@/lib/utils';
 import {useI18n} from '@/providers/I18nContext';
-import type {AirspaceZone, AirspaceZoneType} from '@/types/airspace/airspace.types';
+import type {AirspaceZone, AirspaceZoneType} from '@/types/airspace.types';
 
 export interface AirspaceZonesTableCardProps {
     zones: readonly AirspaceZone[];

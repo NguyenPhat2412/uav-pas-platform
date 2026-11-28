@@ -5,9 +5,9 @@ import {Check, Copy, KeyRound, ShieldCheck} from 'lucide-react';
 import {Badge, Button, FormField, Input, PasswordInput} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import {useSaveGoogleOAuthConfig} from '@/hooks/storage/useStoragePool';
-import {validateGoogleOAuthConfigInput} from '@/forms/storage/storage-pool-form';
-import type {StoragePoolOverview} from '@/types/storage/storage-pool.types';
+import {useSaveGoogleOAuthConfig} from '@/hooks/useStoragePool';
+import {validateGoogleOAuthConfigInput} from '@/forms/storage-pool-form';
+import type {StoragePoolOverview} from '@/types/storage-pool.types';
 
 export function GoogleDriveOAuthSetupBox({
     overview,

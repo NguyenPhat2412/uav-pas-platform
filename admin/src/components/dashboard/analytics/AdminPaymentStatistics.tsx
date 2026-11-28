@@ -5,10 +5,10 @@ import {AlertTriangle, ArrowRight, Wallet} from 'lucide-react';
 import {Badge, Card, CardContent, CardHeader, CardTitle, KpiCard} from '@/components/ui';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {BarList, ColumnChart, Delta, Legend, SegmentBar, seriesColors} from '@/components/dashboard/analytics/AdminCharts';
-import {useAdminPaymentStatistics} from '@/hooks/dashboard/useAdminDashboard';
+import {useAdminPaymentStatistics} from '@/hooks/useAdminDashboard';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import type {PaymentStatistics, PaymentStatsSlice} from '@/types/billing/billing-admin.types';
+import type {PaymentStatistics, PaymentStatsSlice} from '@/types/billing-admin.types';
 
 const P = 'adminCommerce.payments';
 const statusColors: Record<string, string> = {

@@ -4,9 +4,9 @@ import {useId, type ReactNode} from 'react';
 import {BatteryMedium, Clock3, CloudSun, Compass, Droplets, Eye, Gauge, Magnet, Thermometer, Wind} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
-import {CLEARANCE_TONE, compassPoint} from '@/utils/weather/clearance';
-import {isHistoricalWeatherTime} from '@/utils/weather/flight-window';
-import type {FlightClearanceLevel, WeatherAssessment} from '@/types/weather/weather.types';
+import {CLEARANCE_TONE, compassPoint} from '@/utils/clearance';
+import {isHistoricalWeatherTime} from '@/utils/flight-window';
+import type {FlightClearanceLevel, WeatherAssessment} from '@/types/weather.types';
 
 interface PreflightWeatherCardProps {
     assessment?: WeatherAssessment | null;

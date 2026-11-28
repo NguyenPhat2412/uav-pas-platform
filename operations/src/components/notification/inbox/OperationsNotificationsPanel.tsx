@@ -3,7 +3,7 @@
 import {useState} from 'react';
 import {AlertCircle, Bell, CheckCheck, CheckCircle2, Clock, Info, Search, ShieldAlert} from 'lucide-react';
 import {Alert, Badge, type BadgeProps, Button, Card, FormField, Input, Select, Spinner} from '@/components/ui';
-import {useNotifications} from '@/hooks/notification/useNotifications';
+import {useNotifications} from '@/hooks/useNotifications';
 import {OperationsPage} from '@/components/layout/OperationsPage';
 import {useI18n} from '@/providers/I18nContext';
 import {UserNotificationPreferencesCard} from '@/components/notification/policy/UserNotificationPreferencesCard';

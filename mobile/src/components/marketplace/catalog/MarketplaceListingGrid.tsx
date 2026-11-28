@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import {MarketplaceListingCard} from '@/components/marketplace/catalog/MarketplaceListingCard';
-import type {MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
+import type {MarketplaceListing} from '@/shared/types/marketplace.types';
 import {spacing} from '@/styles/tokens';
 
 /**

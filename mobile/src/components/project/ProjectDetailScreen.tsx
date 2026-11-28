@@ -20,7 +20,7 @@ import {
     IllustrativeBadge,
     IllustrativeFooterNote,
 } from '@/components/shared/IllustrativeDisclaimer';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
+import {cleanEntityName} from '@/utils/clean-text';
 import {
     AppText,
     Badge,
@@ -32,16 +32,16 @@ import {
     Screen,
     SectionTitle,
 } from '@/components/ui';
-import {useMissionList} from '@/hooks/mission/useCustomerMissions';
+import {useMissionList} from '@/hooks/useCustomerMissions';
 import {
     useProjectDetail,
     useProjectMutations,
     useProjectSubscriptions,
-} from '@/hooks/project/useProjects';
+} from '@/hooks/useProjects';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {extractActionableError, formatVndCompact} from '@/shared/forms/marketplace/marketplace-forms';
-import type {ProjectScheduleType, ProjectSubscriptionStatus} from '@/shared/types/project/project.types';
+import {extractActionableError, formatVndCompact} from '@/shared/forms/marketplace-forms';
+import type {ProjectScheduleType, ProjectSubscriptionStatus} from '@/shared/types/project.types';
 import {colors, spacing} from '@/styles/tokens';
 
 function scheduleLabel(type: ProjectScheduleType, t: (key: string) => string): string {

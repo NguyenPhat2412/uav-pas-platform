@@ -1,9 +1,9 @@
 import type {Metadata} from 'next';
-import {marketplaceApi} from '@/api/marketplace/marketplace.api';
+import {marketplaceApi} from '@/api/marketplace.api';
 import {scenes, serviceScenes} from '@/components/marketing/UavPhoto';
 import {pageMetadata} from '@/content/marketing/metadata';
 import {services} from '@/content/marketing/site-content';
-import {formatListingSeoMeta} from '@/forms/project/project-form';
+import {formatListingSeoMeta} from '@/forms/project-form';
 
 export async function buildPublicServiceMetadata(slug: string): Promise<Metadata> {
     const path = `/services/${encodeURIComponent(slug)}`;

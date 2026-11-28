@@ -6,7 +6,7 @@ import {displayLabel, serviceName} from "@/lib/presentation";
 import {PageGuard} from "@/components/customer/CustomerLayout";
 import {Button, Panel} from "@/components/customer/CustomerUi";
 import {useAuth} from '@/providers/AuthContext';
-import {useMission, useMissionActions, useServices} from '@/hooks/mission/useCustomerMissions';
+import {useMission, useMissionActions, useServices} from '@/hooks/useCustomerMissions';
 import {
     focusMissionErrors,
     MissionErrorSummary,
@@ -18,7 +18,7 @@ import {
     type MissionFormErrors,
     missionFieldErrors,
     missionFormFromDetail
-} from "@/forms/mission/mission-form";
+} from "@/forms/mission-form";
 import type {Mission} from "@/types/customer";
 import {parseEntityId, toMissionSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/providers/I18nContext';

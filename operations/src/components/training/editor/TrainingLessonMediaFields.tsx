@@ -15,11 +15,11 @@ import {
 } from 'lucide-react';
 import {Button, FormField, Input, Textarea} from '@/components/ui';
 import {RequiredMark} from '@/components/shared/RequiredMark';
-import type {TrainingLessonDraft} from '@/forms/training/training-form';
+import type {TrainingLessonDraft} from '@/forms/training-form';
 import {TrainingAssetUpload} from '@/components/training/editor/TrainingAssetUpload';
 import {TrainingLessonAttachmentsEditor} from '@/components/training/editor/TrainingLessonAttachmentsEditor';
 import {MarkdownSopRenderer} from '@/components/training/player/MarkdownSopRenderer';
-import {moveItem} from '@/utils/training/course-helpers';
+import {moveItem} from '@/utils/course-helpers';
 
 const iconBtnClass = 'h-7 w-7 shrink-0 px-0';
 

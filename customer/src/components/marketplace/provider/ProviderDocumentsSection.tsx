@@ -22,14 +22,14 @@ import {
 import {
     DOCUMENT_TYPE_OPTIONS,
     extractActionableError,
-} from '@/forms/marketplace/marketplace-forms';
+} from '@/forms/marketplace-forms';
 import type {
     ProviderDocument,
     ProviderDocumentInput,
     ProviderDocumentType,
     ProviderProfile,
     ProviderType,
-} from '@/types/marketplace/marketplace.types';
+} from '@/types/marketplace.types';
 
 const INPUT_CLASS =
     'h-10 w-full rounded-control border border-slate-300 bg-white px-3 text-xs font-medium text-slate-900 outline-none focus:border-primary';

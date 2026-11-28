@@ -31,7 +31,7 @@ export type {
     MissionReviewUpsertInput,
     DeliverableGeoPin,
     MissionInspectionReport,
-} from '@/shared/types/mission/mission.types';
+} from '@/shared/types/mission.types';
 
 export type {
     ProjectScheduleType,
@@ -47,4 +47,4 @@ export type {
     OrderTrackingSnapshot,
     CustomerProjectPage,
     ProjectSubscriptionPage,
-} from '@/shared/types/project/project.types';
+} from '@/shared/types/project.types';

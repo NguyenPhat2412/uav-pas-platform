@@ -3,12 +3,12 @@
 import {CheckCircle2, MapPin, Plus} from 'lucide-react';
 import {LocationPicker} from '@/components/mission/customer/LocationPicker';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
-import {formatVndCompact} from '@/forms/marketplace/marketplace-forms';
-import {PROJECT_SCHEDULE_TYPES} from '@/forms/project/project-form';
+import {formatVndCompact} from '@/forms/marketplace-forms';
+import {PROJECT_SCHEDULE_TYPES} from '@/forms/project-form';
 import {useI18n} from '@/providers/I18nContext';
-import type {MarketplaceListing} from '@/types/marketplace/marketplace.types';
-import type {FlightPlanInput} from '@/types/mission/flight-plan.types';
-import type {CustomerProject, ProjectScheduleType} from '@/types/project/project.types';
+import type {MarketplaceListing} from '@/types/marketplace.types';
+import type {FlightPlanInput} from '@/types/flight-plan.types';
+import type {CustomerProject, ProjectScheduleType} from '@/types/project.types';
 
 export function ProjectStepPanel({
     existingProjects,

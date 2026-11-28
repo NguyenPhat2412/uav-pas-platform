@@ -35,7 +35,7 @@ test('S3 marketplace API boundary uses CONTRACT.md provider endpoints through sh
         assert.match(routes, new RegExp(expected.replaceAll('/', '\\/')), expected);
     }
 
-    const api = read('src/api/marketplace/marketplace.api.ts');
+    const api = read('src/api/marketplace.api.ts');
     assert.match(api, /API_ROUTES\.marketplace\.providerMe/);
     assert.match(api, /API_ROUTES\.marketplace\.providerListingsFromTemplate/);
     assert.match(api, /API_ROUTES\.marketplace\.providerFleetUavs/);
@@ -104,7 +104,7 @@ test('S3 marketplace form helpers classify order tabs, UAV/pilot status cards, a
         listingFormFromTemplate,
         sanitizeEntityName,
         sanitizeMarketplaceText,
-    } = await import('../src/forms/marketplace/marketplace-forms.ts');
+    } = await import('../src/forms/marketplace-forms.ts');
 
     assert.equal(
         sanitizeMarketplaceText('Khảo sát RTK (minh hoạ)'),
@@ -198,7 +198,7 @@ test('S3 marketplace form helpers classify order tabs, UAV/pilot status cards, a
 test('S3 control engineer today workspace wires preflight checklist, simulation launch, and deliverable upload', () => {
     const pilotWorkspace = read('src/components/mission/operations/PilotTodayWorkspace.tsx');
     const assignedPanel = read('src/components/mission/operations/AssignedMissionsPanel.tsx');
-    const marketplaceHooks = read('src/hooks/marketplace/useMarketplace.ts');
+    const marketplaceHooks = read('src/hooks/useMarketplace.ts');
     assert.match(assignedPanel, /PilotTodayWorkspace/);
     assert.match(pilotWorkspace, /MissionPreflightCard/);
     assert.match(pilotWorkspace, /\/operations\/simulation\?missionId=/);

@@ -1,4 +1,4 @@
-import type {Readiness} from '@/types/marketing/marketing.types';
+import type {Readiness} from '@/types/marketing.types';
 
 export type {Readiness};
 

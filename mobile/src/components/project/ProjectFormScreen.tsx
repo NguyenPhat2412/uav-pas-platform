@@ -3,12 +3,12 @@ import {useLocalSearchParams, useRouter} from 'expo-router';
 import {Save} from 'lucide-react-native';
 import {ProjectZoneMapField} from '@/components/project/ProjectZoneMapField';
 import {Button, Card, ErrorState, KeyboardAnchor, LoadingState, Screen, TextField} from '@/components/ui';
-import {useProjectDetail, useProjectMutations} from '@/hooks/project/useProjects';
+import {useProjectDetail, useProjectMutations} from '@/hooks/useProjects';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {extractActionableError} from '@/shared/forms/marketplace/marketplace-forms';
-import {validateProjectInput} from '@/shared/forms/project/project-form';
-import type {CustomerProject} from '@/shared/types/project/project.types';
+import {extractActionableError} from '@/shared/forms/marketplace-forms';
+import {validateProjectInput} from '@/shared/forms/project-form';
+import type {CustomerProject} from '@/shared/types/project.types';
 
 function ProjectFormBody({project}: { project?: CustomerProject }) {
     const {t} = useI18n();

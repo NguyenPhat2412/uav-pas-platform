@@ -8,10 +8,10 @@ import {MissionBookingOptionsCard} from '@/components/mission/MissionBookingOpti
 import {MissionCheckoutStepper, MissionCheckoutSummaryCard, type CheckoutStep} from '@/components/mission/MissionCheckoutStepper';
 import {MissionFlightPlanSection, sitePlanToInput} from '@/components/mission/MissionFlightPlanSection';
 import {MissionScheduleWeatherCard} from '@/components/mission/MissionScheduleWeatherCard';
-import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplaceCatalog';
-import {useMissionActions, useMissionDetail, useSavedFlightSites, useServices} from '@/hooks/mission/useCustomerMissions';
-import {useDeviceLocation} from '@/hooks/location/useDeviceLocation';
-import {usePointForecast} from '@/hooks/weather/useWeather';
+import {usePublicListingDetail} from '@/hooks/useMarketplaceCatalog';
+import {useMissionActions, useMissionDetail, useSavedFlightSites, useServices} from '@/hooks/useCustomerMissions';
+import {useDeviceLocation} from '@/hooks/useDeviceLocation';
+import {usePointForecast} from '@/hooks/useWeather';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
@@ -22,13 +22,13 @@ import {
     missionFormFromDetail,
     missionTypeForService,
     type MissionFormErrors,
-} from '@/shared/forms/mission/mission-form';
+} from '@/shared/forms/mission-form';
 import {displayLabel} from '@/shared/lib/presentation';
-import {applyFlightWindow} from '@/shared/utils/weather/flight-window';
-import type {MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
-import type {Mission, MissionInput, MissionPriority, SavedFlightSite} from '@/shared/types/mission/mission.types';
-import {newMissionDraft, withEnd, withPoint, withStart} from '@/forms/mission/mission-draft';
-import {isFinitePoint} from '@/utils/operations/map-shapes';
+import {applyFlightWindow} from '@/shared/utils/flight-window';
+import type {MarketplaceListing} from '@/shared/types/marketplace.types';
+import type {Mission, MissionInput, MissionPriority, SavedFlightSite} from '@/shared/types/mission.types';
+import {newMissionDraft, withEnd, withPoint, withStart} from '@/forms/mission-draft';
+import {isFinitePoint} from '@/utils/map-shapes';
 import {colors, spacing} from '@/styles/tokens';
 
 function MissionForm({initial, mission, initialListing}: { initial: MissionInput; mission?: Mission; initialListing?: MarketplaceListing | null }) {

@@ -251,7 +251,7 @@ test('realtime-ws: guards unauthenticated empty sockets and connects immediately
 });
 
 test('mobile support & billing hooks and screens wire realtime WebSocket cleanly', () => {
-    const publicHook = readSrc('hooks/support/usePublicSupportMobile.ts');
+    const publicHook = readSrc('hooks/usePublicSupportMobile.ts');
     assert.match(publicHook, /SUPPORT_THREAD_UPDATED/);
     assert.match(publicHook, /SUPPORT_THREAD_DELETED/);
     assert.match(publicHook, /SUPPORT_ADMIN_TYPING/);
@@ -262,7 +262,7 @@ test('mobile support & billing hooks and screens wire realtime WebSocket cleanly
     assert.match(publicScreen, /mobile\.support\.adminTyping/);
     assert.match(publicScreen, /notifyVisitorTyping/);
 
-    const adminHook = readSrc('hooks/support/useAdminSupportMobile.ts');
+    const adminHook = readSrc('hooks/useAdminSupportMobile.ts');
     assert.match(adminHook, /ADMIN_SUPPORT_UPDATED/);
     assert.match(adminHook, /SUPPORT_SUMMARY_UPDATED/);
     assert.match(adminHook, /SUPPORT_THREAD_DELETED/);
@@ -277,7 +277,7 @@ test('mobile support & billing hooks and screens wire realtime WebSocket cleanly
     assert.match(adminThreadCard, /mobile\.support\.visitorTyping/);
     assert.match(adminThreadCard, /notifyAdminTyping/);
 
-    const billingHook = readSrc('hooks/billing/useCustomerBilling.ts');
+    const billingHook = readSrc('hooks/useCustomerBilling.ts');
     assert.match(billingHook, /INVOICE_UPDATED/);
     assert.match(billingHook, /wsConnected/);
 

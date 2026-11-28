@@ -24,7 +24,7 @@ import {AdminAnalyticsBreakdowns} from '@/components/dashboard/analytics/AdminAn
 import {AdminPaymentStatistics} from '@/components/dashboard/analytics/AdminPaymentStatistics';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {useAdminAnalytics} from '@/hooks/dashboard/useAdminDashboard';
+import {useAdminAnalytics} from '@/hooks/useAdminDashboard';
 import type {AdminAnalytics as Analytics} from '@/types/admin';
 
 const ranges = [7, 30, 90] as const;

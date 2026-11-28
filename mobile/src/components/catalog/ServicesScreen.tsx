@@ -11,8 +11,8 @@ import {
 } from '@/components/ui';
 import {GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
 import {MarketplaceListingGrid} from '@/components/marketplace/catalog/MarketplaceListingGrid';
-import {usePublicListings} from '@/hooks/marketplace/useMarketplaceCatalog';
-import {useServices} from '@/hooks/mission/useCustomerMissions';
+import {usePublicListings} from '@/hooks/useMarketplaceCatalog';
+import {useServices} from '@/hooks/useCustomerMissions';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {
@@ -20,10 +20,10 @@ import {
     WEB_SERVICE_CATEGORIES,
 } from '@/shared/lib/marketplace/service-categories';
 import {displayLabel, serviceName} from '@/shared/lib/presentation';
-import type {ListingSortOption, ListingType} from '@/shared/types/marketplace/marketplace.types';
-import type {MissionType} from '@/shared/types/mission/mission.types';
+import type {ListingSortOption, ListingType} from '@/shared/types/marketplace.types';
+import type {MissionType} from '@/shared/types/mission.types';
 import {colors, radius, spacing} from '@/styles/tokens';
-import {cleanDescriptionText, cleanEntityName} from '@/utils/marketplace/clean-text';
+import {cleanDescriptionText, cleanEntityName} from '@/utils/clean-text';
 
 type LeaseFilter = ListingType | 'ALL';
 const VALID_LEASE_FILTERS: readonly LeaseFilter[] = ['ALL', 'FLIGHT_SERVICE', 'WET_LEASE', 'DRY_LEASE'];

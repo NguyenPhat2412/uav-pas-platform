@@ -21,14 +21,14 @@ import {MarketplaceListingCard} from '@/components/marketplace/catalog/Marketpla
 import {CustomerShopHeroBanner} from '@/components/marketplace/shop/CustomerShopHeroBanner';
 import {OrderStatusBar} from '@/components/mission/customer/OrderStatusBar';
 import {Alert, Button} from '@/components/ui';
-import {summarizeOrdersFromMissions} from '@/forms/project/project-form';
-import {usePublicListings} from '@/hooks/marketplace/useMarketplace';
-import {useMissions} from '@/hooks/mission/useCustomerMissions';
-import {useCustomerProjects, useOrderSummary} from '@/hooks/project/useCustomerProjects';
-import {useForecastTimeline} from '@/hooks/weather/useWeather';
+import {summarizeOrdersFromMissions} from '@/forms/project-form';
+import {usePublicListings} from '@/hooks/useMarketplace';
+import {useMissions} from '@/hooks/useCustomerMissions';
+import {useCustomerProjects, useOrderSummary} from '@/hooks/useCustomerProjects';
+import {useForecastTimeline} from '@/hooks/useWeather';
 import {useMapConfig} from '@/lib/map-config';
 import {useI18n} from '@/providers/I18nContext';
-import {weatherTimelineForDay} from '@/utils/weather/flight-window';
+import {weatherTimelineForDay} from '@/utils/flight-window';
 
 export default function CustomerShopeeHome() {
     return (

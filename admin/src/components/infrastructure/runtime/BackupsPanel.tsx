@@ -3,9 +3,9 @@
 import {Archive, CloudUpload, Terminal} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
-import type {BackupState, BackupStatus} from '@/types/infrastructure/infrastructure.types';
+import type {BackupState, BackupStatus} from '@/types/infrastructure.types';
 import {Facts, formatBytes, Note, Panel, Stat, StatGrid, StatusBanner, type Tone} from './InfraUi';
-import {useBackupStatus} from '@/hooks/infrastructure/useInfrastructure';
+import {useBackupStatus} from '@/hooks/useInfrastructure';
 
 export const backupTone: Record<BackupState, Tone> = {OK: 'good', STALE: 'warn', MISSING: 'bad', NOT_CONFIGURED: 'neutral'};
 

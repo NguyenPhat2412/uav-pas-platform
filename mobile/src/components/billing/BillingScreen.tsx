@@ -3,13 +3,13 @@ import {Alert, StyleSheet, View} from 'react-native';
 import {useRouter} from 'expo-router';
 import {CheckCircle2, ChevronRight, Gauge, MessageCircle, Radio, Receipt} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
-import {useBilling, useBillingActions} from '@/hooks/billing/useCustomerBilling';
+import {useBilling, useBillingActions} from '@/hooks/useCustomerBilling';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {escrowStatusLabel} from '@/shared/forms/marketplace/marketplace-forms';
+import {escrowStatusLabel} from '@/shared/forms/marketplace-forms';
 import {planName} from '@/shared/lib/presentation';
 import type {InvoiceStatus, ServicePlan} from '@/shared/types/customer';
-import {signInErrorText} from '@/forms/auth/sign-in-flow';
+import {signInErrorText} from '@/forms/sign-in-flow';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 const INVOICE_TONE: Record<InvoiceStatus, { background: string; color: string }> = {

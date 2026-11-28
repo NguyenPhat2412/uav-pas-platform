@@ -12,13 +12,13 @@ import {
     Square,
 } from 'lucide-react-native';
 import {AppText, Badge, Button, Card, TextField} from '@/components/ui';
-import {canSubmitMaintenanceCompletion} from '@/forms/operations/field-report-form';
+import {canSubmitMaintenanceCompletion} from '@/forms/field-report-form';
 import {useI18n} from '@/providers/I18nContext';
-import type {OrderStatus, RepairOrder} from '@/shared/types/maintenance/maintenance.types';
-import type {FleetStation, FleetUav, UavStatus} from '@/shared/types/uav/fleet-map.types';
-import type {UavTelemetry} from '@/shared/types/uav/telemetry.types';
-import {calendarDate, formatVnd, orderControls} from '@/shared/utils/maintenance/workflows';
-import {isFinitePoint} from '@/utils/operations/map-shapes';
+import type {OrderStatus, RepairOrder} from '@/shared/types/maintenance.types';
+import type {FleetStation, FleetUav, UavStatus} from '@/shared/types/fleet-map.types';
+import type {UavTelemetry} from '@/shared/types/telemetry.types';
+import {calendarDate, formatVnd, orderControls} from '@/shared/utils/maintenance-workflows';
+import {isFinitePoint} from '@/utils/map-shapes';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export function UavStatusBadge({status}: { status: UavStatus }) {

@@ -4,9 +4,9 @@ import {useEffect, useMemo, useState} from 'react';
 import {Activity, AlertTriangle, CheckCircle2, Compass, Mountain, Pause, Play, RotateCcw} from 'lucide-react';
 import {Button} from '@/components/ui';
 import {UavModelViewer} from '@/components/visuals/UavModelViewer';
-import {useMissionTelemetryReplay} from '@/hooks/uav/useTelemetry';
+import {useMissionTelemetryReplay} from '@/hooks/useTelemetry';
 import {useI18n} from '@/providers/I18nContext';
-import type {UavAirframeClass} from '@/utils/uav/uav-3d-model';
+import type {UavAirframeClass} from '@/utils/uav-3d-model';
 
 export interface Mission3DReplayAndTerrainCardProps {
     missionId: number;

@@ -3,12 +3,12 @@
 import {useEffect, useRef, useState} from 'react';
 import {Files, Upload} from 'lucide-react';
 import {Button, Card, FormField, Input} from '@/components/ui';
-import {useTrainingUploads} from '@/hooks/training/useTraining';
+import {useTrainingUploads} from '@/hooks/useTraining';
 import {
     planBulkLessons,
     trainingFileContentType,
-} from '@/utils/training/course-helpers';
-import type {BulkRejectReason} from '@/utils/training/course-helpers';
+} from '@/utils/course-helpers';
+import type {BulkRejectReason} from '@/utils/course-helpers';
 import {
     BULK_ACCEPT,
     BULK_REJECT_MESSAGES,

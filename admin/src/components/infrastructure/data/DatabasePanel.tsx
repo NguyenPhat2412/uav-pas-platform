@@ -4,9 +4,9 @@ import {Database, Gauge, Table2} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {cn} from '@/lib/utils';
-import type {DatabaseStatus} from '@/types/infrastructure/infrastructure.types';
+import type {DatabaseStatus} from '@/types/infrastructure.types';
 import {formatBytes, Note, Panel, Stat, StatGrid} from '@/components/infrastructure/runtime/InfraUi';
-import {useDatabaseStatus} from '@/hooks/infrastructure/useInfrastructure';
+import {useDatabaseStatus} from '@/hooks/useInfrastructure';
 
 export function DatabasePanel() {
     const {t} = useI18n();

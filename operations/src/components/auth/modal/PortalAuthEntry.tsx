@@ -6,8 +6,8 @@ import {PortalProviders} from '@/providers/PortalProviders';
 import {AuthModalPopup, openAuthModal} from '@/components/auth/modal/AuthModalPopup';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {canUsePortal, portalForRole, portalHome} from '@/utils/auth/portal';
-import {navigatePortalPath} from '@/utils/auth/auth-entry';
+import {canUsePortal, portalForRole, portalHome} from '@/utils/portal';
+import {navigatePortalPath} from '@/utils/auth-entry';
 import {Button} from '@/components/ui';
 
 function PortalAuthGate({area, home}: { area: 'operations' | 'admin'; home: string }) {

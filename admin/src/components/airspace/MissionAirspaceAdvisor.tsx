@@ -3,13 +3,13 @@
 import {useEffect, useId, useMemo, useState} from 'react';
 import {AlertTriangle, CheckCircle2, ShieldAlert, ShieldBan} from 'lucide-react';
 import {Alert, Badge, Button, Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
-import {toAirspaceCheckInput} from '@/forms/airspace/airspace-zone-form';
-import {useAirspaceCheck} from '@/hooks/airspace/useAirspace';
+import {toAirspaceCheckInput} from '@/forms/airspace-zone-form';
+import {useAirspaceCheck} from '@/hooks/useAirspace';
 import {cn} from '@/lib/utils';
 import {useI18n} from '@/providers/I18nContext';
-import type {AirspaceClearance, AirspaceZoneType} from '@/types/airspace/airspace.types';
-import {defaultFlightPlan} from '@/types/mission/flight-plan.types';
-import type {MissionInput} from '@/types/mission/mission.types';
+import type {AirspaceClearance, AirspaceZoneType} from '@/types/airspace.types';
+import {defaultFlightPlan} from '@/types/flight-plan.types';
+import type {MissionInput} from '@/types/mission.types';
 
 type PlannedAirspaceForm = Pick<MissionInput, 'flightPlan' | 'latitude' | 'longitude'> &
     Partial<Pick<MissionInput, 'startTime' | 'expectedEndTime'>>;

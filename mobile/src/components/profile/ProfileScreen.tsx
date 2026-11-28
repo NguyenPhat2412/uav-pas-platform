@@ -4,11 +4,11 @@ import {usePathname} from 'expo-router';
 import {RefreshCw, Save} from 'lucide-react-native';
 import {AppText, Button, Card, ErrorState, LoadingState, Screen, SectionTitle, TextField} from '@/components/ui';
 import {MobileBillingProfileCard, MobileSellerDossierCard} from '@/components/profile/MobileBillingProfileCard';
-import {useBillingProfile, useProfile} from '@/hooks/profile/useProfile';
+import {useBillingProfile, useProfile} from '@/hooks/useProfile';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {profileError, type CustomerProfile, type ProfileErrors, type ProfileFields} from '@/shared/forms/profile/profile-form';
+import {profileError, type CustomerProfile, type ProfileErrors, type ProfileFields} from '@/shared/forms/profile-form';
 import {colors} from '@/styles/tokens';
 
 function ProfileForm({profile, onReload}: { profile: CustomerProfile; onReload: () => void }) {

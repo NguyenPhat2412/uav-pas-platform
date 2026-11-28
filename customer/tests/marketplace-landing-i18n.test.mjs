@@ -61,7 +61,7 @@ test('redesigned 6-block landing architecture enforces palette, live API listing
     assert.doesNotMatch(combined, /Đội bay Chính hãng UAV-PAS|Đội bay UAV PAS/, 'legacy 1P fleet badge must not appear');
     assert.doesNotMatch(combined, /phí sàn|hoa hồng sàn|chiết khấu sàn|ăn chênh lệch/i, 'crude fee wording must not appear on marketing/public copy');
 
-    const forms = read('src/forms/marketplace/marketplace-forms.ts');
+    const forms = read('src/forms/marketplace-forms.ts');
     assert.match(forms, /PLATFORM_FEE_AGREEMENT/);
     assert.match(forms, /TAX_SETTLEMENT_DOSSIER/);
     assert.match(forms, /FLIGHT_OPERATION_PERMIT/);

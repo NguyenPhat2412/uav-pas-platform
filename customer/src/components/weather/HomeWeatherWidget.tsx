@@ -6,7 +6,7 @@ import {AlertTriangle, ArrowUp, Ban, ChevronLeft, ChevronRight, Eye, HelpCircle,
 import {useI18n} from '@/providers/I18nContext';
 import {useMapConfig} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
-import {useForecastTimeline} from '@/hooks/weather/useWeather';
+import {useForecastTimeline} from '@/hooks/useWeather';
 import {WeatherIcon} from '@/components/weather/WeatherIcon';
 import {WeatherBackdrop} from '@/components/weather/WeatherBackdrop';
 import {
@@ -15,11 +15,11 @@ import {
     clampDayOffset,
     dateAtDayOffset,
     weatherTimelineForDay,
-} from '@/utils/weather/flight-window';
-import {CLEARANCE_TONE} from '@/utils/weather/clearance';
-import {skyTheme} from '@/utils/weather/sky-theme';
-import {conditionOf, isDaytime, rainLevel, visibilityLevel, windLevel, type Level} from '@/utils/weather/conditions';
-import type {FlightClearanceLevel} from '@/types/weather/weather.types';
+} from '@/utils/flight-window';
+import {CLEARANCE_TONE} from '@/utils/clearance';
+import {skyTheme} from '@/utils/sky-theme';
+import {conditionOf, isDaytime, rainLevel, visibilityLevel, windLevel, type Level} from '@/utils/conditions';
+import type {FlightClearanceLevel} from '@/types/weather.types';
 
 const QUICK_DAYS = [
     {offset: -1, key: 'yesterday'},

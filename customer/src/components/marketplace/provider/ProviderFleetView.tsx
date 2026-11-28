@@ -6,9 +6,9 @@ import {Cpu, Plane, Plus} from 'lucide-react';
 import {Button} from '@/components/customer/CustomerUi';
 import {OptionalMark, RequiredMark} from '@/components/ui';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
-import {useMyProviderFleet, useMyProviderProfile, useProviderFleetActions} from '@/hooks/marketplace/useMarketplace';
-import {EQUIPMENT_CATEGORY_OPTIONS, extractActionableError, initialEquipmentForm, initialUavForm} from '@/forms/marketplace/marketplace-forms';
-import type {ProviderEquipmentCategory} from '@/types/marketplace/marketplace.types';
+import {useMyProviderFleet, useMyProviderProfile, useProviderFleetActions} from '@/hooks/useMarketplace';
+import {EQUIPMENT_CATEGORY_OPTIONS, extractActionableError, initialEquipmentForm, initialUavForm} from '@/forms/marketplace-forms';
+import type {ProviderEquipmentCategory} from '@/types/marketplace.types';
 
 const INPUT_CLASS = 'h-10 w-full rounded-control border border-slate-300 bg-white px-3 text-xs font-medium text-slate-900 outline-none focus:border-primary';
 

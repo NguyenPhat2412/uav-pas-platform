@@ -9,8 +9,8 @@ import {
     TRAINING_IMAGE_TYPES,
     TRAINING_PDF_TYPE,
     TRAINING_VIDEO_TYPES,
-} from '@/utils/training/course-helpers';
-import type {BulkLessonType, BulkRejectReason} from '@/utils/training/course-helpers';
+} from '@/utils/course-helpers';
+import type {BulkLessonType, BulkRejectReason} from '@/utils/course-helpers';
 
 export type BulkStatus = 'waiting' | 'uploading' | 'saving' | 'done' | 'error';
 export type BulkFile = {key: string; file: File; fraction: number; assetId: number | null; error: string | null};

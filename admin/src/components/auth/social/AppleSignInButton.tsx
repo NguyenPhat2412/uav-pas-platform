@@ -3,7 +3,7 @@
 import {useEffect, useState} from 'react';
 import {toast} from '@/providers/ToastContext';
 import {useI18n} from '@/providers/I18nContext';
-import type {AppleCredentialPayload} from '@/types/auth/auth.types';
+import type {AppleCredentialPayload} from '@/types/auth.types';
 
 const APPLE_SDK_SRC = 'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js';
 const CLIENT_ID = process.env.NEXT_PUBLIC_APPLE_CLIENT_ID?.trim() ?? '';

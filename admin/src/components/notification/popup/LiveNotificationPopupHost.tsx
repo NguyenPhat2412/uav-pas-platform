@@ -7,16 +7,16 @@ import {
     useNotificationReadActions,
     useRealtimeNotificationFeed,
     type IncomingRealtimeNotificationEvent,
-} from '@/hooks/notification/useNotifications';
+} from '@/hooks/useNotifications';
 import {
     formatModuleBadgeLabel,
     popupDurationMs,
     resolveNotificationPortalHref,
-} from '@/forms/notification/notification-policy-form';
+} from '@/forms/notification-policy-form';
 import type {
     NotificationSeverity,
     RealtimeNotificationPopupPayload,
-} from '@/types/notification/notification.types';
+} from '@/types/notification.types';
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
 

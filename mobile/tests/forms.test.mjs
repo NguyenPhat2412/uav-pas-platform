@@ -10,10 +10,10 @@ import {
     normalizeCode,
     registerVerifyParams,
     signInErrorText,
-} from '../src/forms/auth/sign-in-flow.ts';
-import {fromLocalIso, newMissionDraft, toLocalIso, withEnd, withPoint, withStart} from '../src/forms/mission/mission-draft.ts';
-import {canCancel, MISSION_FILTERS, progressStep, statusTone} from '../src/utils/mission/status.ts';
-import {gradientStops, nextHours} from '../src/utils/weather/gradient.ts';
+} from '../src/forms/sign-in-flow.ts';
+import {fromLocalIso, newMissionDraft, toLocalIso, withEnd, withPoint, withStart} from '../src/forms/mission-draft.ts';
+import {canCancel, MISSION_FILTERS, progressStep, statusTone} from '../src/utils/status.ts';
+import {gradientStops, nextHours} from '../src/utils/gradient.ts';
 
 test('sign-in flow: finished, second factor, email verification and pending approval', () => {
     assert.deepEqual(nextSignInStep({accessToken: 'a', refreshToken: 'r', user: {id: 1}, tokenType: 'Bearer'}), {kind: 'done'});
@@ -101,7 +101,7 @@ test('apple sign-in: fullName formatting, cancel/503 guards and horizontal socia
     assert.equal(appJson.expo.ios.usesAppleSignIn, true);
     assert.ok(appJson.expo.plugins.includes('expo-apple-authentication'));
 
-    const authApi = readFileSync(new URL('../src/api/auth/auth.api.ts', import.meta.url), 'utf8');
+    const authApi = readFileSync(new URL('../src/api/auth.api.ts', import.meta.url), 'utf8');
     assert.match(authApi, /loginWithApple:/);
     assert.match(authApi, /API_ROUTES\.auth\.apple/);
 
@@ -159,7 +159,7 @@ test('account deletion & compact account controls: 100% Admin-policy driven with
         true,
     );
 
-    const profileApi = readFileSync(new URL('../src/api/profile/profile.api.ts', import.meta.url), 'utf8');
+    const profileApi = readFileSync(new URL('../src/api/profile.api.ts', import.meta.url), 'utf8');
     assert.match(profileApi, /API_ROUTES\.users\.deletionPolicy/);
     assert.match(profileApi, /API_ROUTES\.users\.deleteOwnAccount/);
 

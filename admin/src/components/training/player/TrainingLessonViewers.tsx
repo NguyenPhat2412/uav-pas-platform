@@ -16,7 +16,7 @@ import type {
     TrainingLessonDocument,
     TrainingLessonDocumentFile,
     TrainingLessonResource,
-} from '@/types/training/training.types';
+} from '@/types/training.types';
 import {MarkdownSopRenderer} from '@/components/training/player/MarkdownSopRenderer';
 import {PdfPageViewer} from '@/components/training/player/TrainingPdfViewer';
 import {LessonMediaEmpty} from '@/components/training/player/TrainingVideoAndStage';
@@ -24,7 +24,7 @@ import {
     formatFileSize,
     isDocumentEmbedUrl,
     resourceFileKind,
-} from '@/utils/training/course-helpers';
+} from '@/utils/course-helpers';
 
 export {
     ExternalVideoLesson,

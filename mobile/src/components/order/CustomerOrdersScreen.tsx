@@ -14,10 +14,10 @@ import {
     ErrorState,
     LoadingState,
 } from '@/components/ui';
-import {useMissionList} from '@/hooks/mission/useCustomerMissions';
+import {useMissionList} from '@/hooks/useCustomerMissions';
 import {useI18n} from '@/providers/I18nContext';
-import type {OrderStatusGroup} from '@/shared/types/project/project.types';
-import {matchesOrderStatusGroup, ORDER_STATUS_GROUPS} from '@/utils/mission/order-groups';
+import type {OrderStatusGroup} from '@/shared/types/project.types';
+import {matchesOrderStatusGroup, ORDER_STATUS_GROUPS} from '@/utils/order-groups';
 import {colors, spacing} from '@/styles/tokens';
 
 type GroupFilter = OrderStatusGroup | 'ALL';

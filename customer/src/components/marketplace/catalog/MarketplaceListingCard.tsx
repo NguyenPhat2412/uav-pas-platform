@@ -4,12 +4,12 @@ import {useState} from 'react';
 import Link from 'next/link';
 import {CheckCircle2, Clock3, MapPin, Star} from 'lucide-react';
 import {ServiceCategoryIcon} from '@/components/marketplace/shop/ServiceCategoryIcon';
-import {formatVndCompact} from '@/forms/marketplace/marketplace-forms';
-import {resolveListingBadge, sanitizeMarketplaceName} from '@/forms/project/project-form';
+import {formatVndCompact} from '@/forms/marketplace-forms';
+import {resolveListingBadge, sanitizeMarketplaceName} from '@/forms/project-form';
 import {trackAbEvent, useAbExperiment} from '@/lib/experiments/ab-experiments';
 import {iconNameForMissionType} from '@/lib/marketplace/service-categories';
 import {useI18n} from '@/providers/I18nContext';
-import type {ListingType, MarketplaceListing, PricingModel} from '@/types/marketplace/marketplace.types';
+import type {ListingType, MarketplaceListing, PricingModel} from '@/types/marketplace.types';
 
 const BANNED_LOGO_IMAGE_PATTERN =
     /usgs-plum-island-team|data-collection-corridor|managed-ops-command|step-01-select-service|usgs-yosemite-preflight/i;

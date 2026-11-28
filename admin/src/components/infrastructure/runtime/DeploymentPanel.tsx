@@ -3,9 +3,9 @@
 import {GitCommitHorizontal, History, Lock, Server} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
-import type {DeploymentInfo, TlsCertificateInfo} from '@/types/infrastructure/infrastructure.types';
+import type {DeploymentInfo, TlsCertificateInfo} from '@/types/infrastructure.types';
 import {Facts, formatDuration, Note, Panel, StatusBanner, type Tone} from './InfraUi';
-import {useDeploymentInfo} from '@/hooks/infrastructure/useInfrastructure';
+import {useDeploymentInfo} from '@/hooks/useInfrastructure';
 
 export function tlsTone(tls: TlsCertificateInfo): Tone {
     if (tls.status === 'EXPIRED') return 'bad';

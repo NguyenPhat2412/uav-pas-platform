@@ -18,12 +18,12 @@ import {
     IllustrativeFooterNote,
 } from '@/components/marketplace/provider/IllustrativeDisclaimer';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
-import {useMyProviderProfile, useMyProviderWallet} from '@/hooks/marketplace/useMarketplace';
+import {useMyProviderProfile, useMyProviderWallet} from '@/hooks/useMarketplace';
 import {
     extractActionableError,
     formatVndCompact,
     sanitizeEntityName,
-} from '@/forms/marketplace/marketplace-forms';
+} from '@/forms/marketplace-forms';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 

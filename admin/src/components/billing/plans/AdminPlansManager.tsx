@@ -11,16 +11,16 @@ import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
 import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
-import {useAllPlans, usePlanMutations, usePlanStats} from '@/hooks/billing/useBillingAdmin';
+import {useAllPlans, usePlanMutations, usePlanStats} from '@/hooks/useBillingAdmin';
 import {
     canSubmitServicePlan,
     createServicePlanDraft,
     servicePlanFieldErrors,
     toServicePlanPayload,
-} from '@/forms/billing/billing-form';
+} from '@/forms/billing-form';
 import type {ServicePlan} from '@/types';
-import type {PlanStatsRow} from '@/types/billing/billing.types';
-import {clampPercent} from '@/utils/billing/plan-stats';
+import type {PlanStatsRow} from '@/types/billing.types';
+import {clampPercent} from '@/utils/plan-stats';
 import {AdminPlanStats} from '@/components/billing/plans/AdminPlanStats';
 
 /** BASIC is assigned to every new customer, so the backend refuses to deactivate it. */

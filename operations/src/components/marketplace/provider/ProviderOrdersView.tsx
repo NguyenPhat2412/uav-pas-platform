@@ -33,7 +33,7 @@ import {
     useProviderOrderActions,
     useProviderOrders,
     useProviderPilots,
-} from '@/hooks/marketplace/useMarketplace';
+} from '@/hooks/useMarketplace';
 import {
     classifySellerOrderTab,
     extractActionableError,
@@ -42,10 +42,10 @@ import {
     sanitizeEntityName,
     sanitizeMarketplaceText,
     type SellerOrderTab,
-} from '@/forms/marketplace/marketplace-forms';
+} from '@/forms/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
-import type {Mission} from '@/types/mission/mission.types';
-import {MEDIA_ACCEPT} from '@/utils/media/media-policy';
+import type {Mission} from '@/types/mission.types';
+import {MEDIA_ACCEPT} from '@/utils/media-policy';
 
 const INPUT_CLASS =
     'h-10 w-full rounded-control border border-slate-300 bg-white px-3 text-xs font-medium text-slate-900 outline-none focus:border-primary';

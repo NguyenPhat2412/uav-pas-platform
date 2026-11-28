@@ -3,9 +3,9 @@
 import {Badge, Card} from '@/components/ui';
 import {Drawer} from '@/components/data/Drawer';
 import {QueryState} from '@/components/data/WorkspaceState';
-import {useSettingHistory} from '@/hooks/settings/useSettings';
+import {useSettingHistory} from '@/hooks/useSettings';
 import {useI18n} from '@/providers/I18nContext';
-import type {TypedSetting} from '@/types/settings/platform-settings.types';
+import type {TypedSetting} from '@/types/platform-settings.types';
 
 /** Catalog keys cannot contain dots, so setting keys are flattened for label lookup. */
 export const flatKey = (key: string) => key.replace(/[^A-Za-z0-9]/g, '_');

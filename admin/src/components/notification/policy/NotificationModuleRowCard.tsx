@@ -6,14 +6,14 @@ import {Badge, Button, Card, FormField, Input, Select, Switch} from '@/component
 import {
     pickLocalizedModuleCopy,
     toUpdateModulePolicyPayload,
-} from '@/forms/notification/notification-policy-form';
+} from '@/forms/notification-policy-form';
 import {
     notificationSeverities,
     type NotificationModuleCode,
     type NotificationModulePolicy,
     type NotificationSeverity,
     type UpdateNotificationModulePolicyInput,
-} from '@/types/notification/notification.types';
+} from '@/types/notification.types';
 import {useI18n} from '@/providers/I18nContext';
 
 interface NotificationModuleRowCardProps {

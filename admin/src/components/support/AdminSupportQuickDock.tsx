@@ -6,7 +6,7 @@ import {useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent} from 
 import {ArrowLeft, ArrowUpRight, MessagesSquare, Send, X, Zap} from 'lucide-react';
 import {OPEN_ADMIN_SUPPORT_DOCK_EVENT} from '@/components/shared/UnifiedFloatingLauncher';
 import {SupportMessageStatusRow} from '@/components/support/SupportMessageStatusRow';
-import {sanitizeEntityName} from '@/forms/marketplace/admin-marketplace-form';
+import {sanitizeEntityName} from '@/forms/admin-marketplace-form';
 import {
     personalizeQuickReply,
     useAdminSupportRealtime,
@@ -15,19 +15,19 @@ import {
     useSupportSummary,
     useSupportThreadDetail,
     useSupportThreads,
-} from '@/hooks/support/useAdminSupport';
-import {useSupportOutbox} from '@/hooks/support/useSupportOutbox';
+} from '@/hooks/useAdminSupport';
+import {useSupportOutbox} from '@/hooks/useSupportOutbox';
 import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {toast} from '@/providers/ToastContext';
-import {mergeMessagesWithOutbox, resolveSupportMessageReceipt} from '@/utils/support/message-status';
+import {mergeMessagesWithOutbox, resolveSupportMessageReceipt} from '@/utils/message-status';
 import {
     formatSupportSource,
     formatSupportTime,
     formatSupportTopic,
     prioritizeQuickReplies,
     SUPPORT_STATUS_META,
-} from '@/utils/support/support-format';
+} from '@/utils/support-format';
 
 export function AdminSupportQuickDock({hideLauncher = false}: { hideLauncher?: boolean } = {}) {
     const {user, isAuthenticated, permissionsReady, can} = useAuth();

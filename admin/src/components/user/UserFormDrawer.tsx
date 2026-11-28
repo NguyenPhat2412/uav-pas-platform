@@ -3,14 +3,14 @@
 import {useRef, useState, type FormEvent} from 'react';
 import {X} from 'lucide-react';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
-import {useAdminMutations} from '@/hooks/user/useAdminUsers';
+import {useAdminMutations} from '@/hooks/useAdminUsers';
 import {
     adminUserFieldErrors,
     canSubmitAdminCreateUser,
     emptyAdminCreateUserDraft,
     toAdminCreateUserPayload,
     type AdminCreateUserDraft,
-} from '@/forms/user/user-form';
+} from '@/forms/user-form';
 import {roles} from '@/types/admin';
 import {displayLabel} from '@/lib/presentation';
 import {ErrorNotice} from '@/components/data/WorkspaceState';

@@ -2,12 +2,12 @@ import React, {useState} from 'react';
 import {Alert, Pressable, StyleSheet, View} from 'react-native';
 import {Plus, Trash2, Zap} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, ChipGroup, FieldLabel, LoadingState, SectionTitle, TextField} from '@/components/ui';
-import {signInErrorText} from '@/forms/auth/sign-in-flow';
-import {useAdminQuickReplies, useAdminSupportMutations} from '@/hooks/support/useAdminSupportMobile';
+import {signInErrorText} from '@/forms/sign-in-flow';
+import {useAdminQuickReplies, useAdminSupportMutations} from '@/hooks/useAdminSupportMobile';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import type {SupportQuickReply, SupportTopic} from '@/shared/types/support/support.types';
-import {formatSupportTopic, SUPPORT_TOPIC_OPTIONS} from '@/shared/utils/support/support-format';
+import type {SupportQuickReply, SupportTopic} from '@/shared/types/support.types';
+import {formatSupportTopic, SUPPORT_TOPIC_OPTIONS} from '@/shared/utils/support-format';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 const TOPIC_OPTIONS: { value: SupportTopic; label: string }[] = SUPPORT_TOPIC_OPTIONS.map(option => ({

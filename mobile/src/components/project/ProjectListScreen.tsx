@@ -15,10 +15,10 @@ import {
     Screen,
     TextField,
 } from '@/components/ui';
-import {useProjectList} from '@/hooks/project/useProjects';
+import {useProjectList} from '@/hooks/useProjects';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
+import {cleanEntityName} from '@/utils/clean-text';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 /**

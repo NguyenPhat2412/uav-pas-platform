@@ -8,10 +8,10 @@ import {Alert, Button, Card, CardContent, ConfirmDialog, KpiCard, MetricStrip} f
 import {AirspaceDraftMap, AirspaceOverviewMap} from '@/components/airspace/AirspaceMapCanvas';
 import {AirspaceZoneFormCard} from '@/components/airspace/AirspaceZoneFormCard';
 import {AirspaceZonesTableCard} from '@/components/airspace/AirspaceZonesTableCard';
-import {toAirspaceZoneTogglePayload} from '@/forms/airspace/airspace-zone-form';
-import {useAirspaceZones, useDeleteAirspaceZone, useUpdateAirspaceZone} from '@/hooks/airspace/useAirspace';
+import {toAirspaceZoneTogglePayload} from '@/forms/airspace-zone-form';
+import {useAirspaceZones, useDeleteAirspaceZone, useUpdateAirspaceZone} from '@/hooks/useAirspace';
 import {useI18n} from '@/providers/I18nContext';
-import type {AirspaceZone, AirspaceZoneType} from '@/types/airspace/airspace.types';
+import type {AirspaceZone, AirspaceZoneType} from '@/types/airspace.types';
 
 function AdminAirspaceContent() {
     const {t} = useI18n();

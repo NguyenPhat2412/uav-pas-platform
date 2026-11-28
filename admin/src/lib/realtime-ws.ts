@@ -2,7 +2,7 @@ import type {
     SupportAdminSummary,
     SupportChatMessage,
     SupportThread,
-} from '@/types/support/support.types';
+} from '@/types/support.types';
 
 export type AdminRealtimeFrame =
     | { type: 'CONNECTED'; timestamp: string; authenticated: boolean; adminSupport: boolean }

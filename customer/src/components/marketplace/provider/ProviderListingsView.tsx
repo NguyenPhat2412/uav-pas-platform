@@ -6,8 +6,8 @@ import {Edit3, Eye, PauseCircle, PlayCircle, Plus} from 'lucide-react';
 import {Button} from '@/components/customer/CustomerUi';
 import {ProviderListingForm} from '@/components/marketplace/provider/ProviderListingForm';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
-import {useMyProviderListings, useMyProviderProfile, useProviderListingActions} from '@/hooks/marketplace/useMarketplace';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+import {useMyProviderListings, useMyProviderProfile, useProviderListingActions} from '@/hooks/useMarketplace';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {
     extractActionableError,
     formatVndCompact,
@@ -15,8 +15,8 @@ import {
     listingTypeLabel,
     moderationStatusLabel,
     pricingUnitLabel,
-} from '@/forms/marketplace/marketplace-forms';
-import type {MarketplaceListing, MarketplaceListingUpsertInput} from '@/types/marketplace/marketplace.types';
+} from '@/forms/marketplace-forms';
+import type {MarketplaceListing, MarketplaceListingUpsertInput} from '@/types/marketplace.types';
 
 export default function ProviderListingsView() {
     const {defaultServiceRadiusKm} = useSiteInfo();

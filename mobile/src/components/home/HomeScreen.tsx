@@ -11,7 +11,7 @@ import {MarketplaceListingGrid} from '@/components/marketplace/catalog/Marketpla
 import {UserAvatar} from '@/components/profile/UserAvatar';
 import {AppLogo} from '@/components/shared/BrandMark';
 import {IllustrativeFooterNote} from '@/components/shared/IllustrativeDisclaimer';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
+import {cleanEntityName} from '@/utils/clean-text';
 import {
     AppText,
     Button,
@@ -21,9 +21,9 @@ import {
     Screen,
     SectionTitle,
 } from '@/components/ui';
-import {usePublicListings} from '@/hooks/marketplace/useMarketplaceCatalog';
-import {useNotifications} from '@/hooks/notification/useNotifications';
-import {useCustomerOrderSummary} from '@/hooks/order/useOrders';
+import {usePublicListings} from '@/hooks/useMarketplaceCatalog';
+import {useNotifications} from '@/hooks/useNotifications';
+import {useCustomerOrderSummary} from '@/hooks/useOrders';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {colors, radius, spacing} from '@/styles/tokens';

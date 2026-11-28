@@ -5,10 +5,10 @@ import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {MailOtpConfigSection} from '@/components/infrastructure/data/MailOtpConfigSection';
 import {OtpSupportMonitorSection} from '@/components/infrastructure/data/OtpSupportMonitorSection';
 import {Facts, Note, Panel, StatusBanner, type Tone} from '@/components/infrastructure/runtime/InfraUi';
-import {useEmailStatus, useMailOtpSettings, useSendTestEmail} from '@/hooks/infrastructure/useInfrastructure';
+import {useEmailStatus, useMailOtpSettings, useSendTestEmail} from '@/hooks/useInfrastructure';
 import {cn} from '@/lib/utils';
 import {useI18n} from '@/providers/I18nContext';
-import type {EmailStatus, MailConnectionCheck} from '@/types/infrastructure/infrastructure.types';
+import type {EmailStatus, MailConnectionCheck} from '@/types/infrastructure.types';
 
 const connectionTone: Record<MailConnectionCheck['status'], Tone> = {
     UP: 'good',

@@ -1,5 +1,5 @@
 'use client';
-import {useCustomerMissionWorkflow} from '@/hooks/mission/useMissionWorkflow';
+import {useCustomerMissionWorkflow} from '@/hooks/useMissionWorkflow';
 import Link from 'next/link';
 import {displayLabel, serviceName} from "@/lib/presentation";
 import {useRouter, useSearchParams} from 'next/navigation';
@@ -7,7 +7,7 @@ import {useState} from 'react';
 import {PageGuard} from "@/components/customer/CustomerLayout";
 import {Button, Panel} from "@/components/customer/CustomerUi";
 import {useAuth} from '@/providers/AuthContext';
-import {useMissionActions, useServices} from '@/hooks/mission/useCustomerMissions';
+import {useMissionActions, useServices} from '@/hooks/useCustomerMissions';
 import {
     focusMissionErrors,
     MissionErrorSummary,
@@ -20,10 +20,10 @@ import {
     missionTypes,
     missionFieldErrors,
     missionCreatePayload,
-} from "@/forms/mission/mission-form";
-import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplace';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
-import {estimateBookingSubtotal} from '@/forms/marketplace/marketplace-forms';
+} from "@/forms/mission-form";
+import {usePublicListingDetail} from '@/hooks/useMarketplace';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
+import {estimateBookingSubtotal} from '@/forms/marketplace-forms';
 import {MissionMarketplaceBanner} from '@/components/mission/customer/MissionMarketplaceBanner';
 import {MissionReviewSummaryList} from '@/components/mission/customer/MissionReviewSummaryList';
 import type {MissionInput, MissionType} from "@/types/customer";

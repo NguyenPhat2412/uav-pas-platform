@@ -9,8 +9,8 @@ import {planName} from '@/lib/presentation';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {cn} from '@/lib/utils';
-import type {PlanStats, PlanStatsMonth, PlanStatsRow} from '@/types/billing/billing.types';
-import {axisTicks, clampPercent, earningCodes, MISSION_KEY, percentChange, stackMonths} from '@/utils/billing/plan-stats';
+import type {PlanStats, PlanStatsMonth, PlanStatsRow} from '@/types/billing.types';
+import {axisTicks, clampPercent, earningCodes, MISSION_KEY, percentChange, stackMonths} from '@/utils/plan-stats';
 
 export const PLAN_STATS_PERIODS = ['3', '6', '12'] as const;
 

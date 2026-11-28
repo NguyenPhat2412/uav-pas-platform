@@ -19,9 +19,9 @@ import {Card, CardContent} from '@/components/ui';
 import {
     ALL_PROVIDER_DOCUMENT_REQUIREMENTS,
     type DocumentRequirementLevel,
-} from '@/forms/marketplace/provider-verification-checklist';
+} from '@/forms/provider-verification-checklist';
 import {useI18n} from '@/providers/I18nContext';
-import type {ProviderVerificationStatus} from '@/types/marketplace/marketplace.types';
+import type {ProviderVerificationStatus} from '@/types/marketplace.types';
 
 export function resolveVerificationStepNumber(status?: ProviderVerificationStatus | ''): 1 | 2 | 3 | 4 | 5 {
     switch (status) {

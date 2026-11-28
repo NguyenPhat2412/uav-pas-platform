@@ -2,9 +2,9 @@
 
 import React, {useMemo, useState} from 'react';
 import {CheckCircle2, Eye, EyeOff, Flame, ImageOff, Sliders} from 'lucide-react';
-import {useMediaDownloadUrl} from '@/hooks/media/useMedia';
-import {useSarVerifyDetection} from '@/hooks/sar/useSar';
-import type {AiDetection, AiViewfinderProps} from '@/types/sar/sar.types';
+import {useMediaDownloadUrl} from '@/hooks/useMedia';
+import {useSarVerifyDetection} from '@/hooks/useSar';
+import type {AiDetection, AiViewfinderProps} from '@/types/sar.types';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import {cn} from '@/lib/utils';

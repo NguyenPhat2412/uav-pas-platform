@@ -20,7 +20,7 @@ import type {
     ProviderProfile,
     ProviderType,
     ProviderVerificationStatus,
-} from '@/types/marketplace/marketplace.types';
+} from '@/types/marketplace.types';
 
 export type DocRequirementLevel = 'REQUIRED' | 'CONDITIONAL' | 'NOT_APPLICABLE';
 

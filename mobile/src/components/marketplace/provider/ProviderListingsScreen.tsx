@@ -6,7 +6,7 @@ import {
     IllustrativeBadge,
     IllustrativeFooterNote,
 } from '@/components/shared/IllustrativeDisclaimer';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
+import {cleanEntityName} from '@/utils/clean-text';
 import {
     AppText,
     Badge,
@@ -25,8 +25,8 @@ import {
     useMyProviderListings,
     useMyProviderProfile,
     useProviderStudioMutations,
-} from '@/hooks/marketplace/useProviderStudio';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+} from '@/hooks/useProviderStudio';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {
@@ -38,15 +38,15 @@ import {
     moderationStatusLabel,
     PRICING_MODEL_OPTIONS,
     pricingUnitLabel,
-} from '@/shared/forms/marketplace/marketplace-forms';
-import {missionTypes} from '@/shared/forms/mission/mission-form';
+} from '@/shared/forms/marketplace-forms';
+import {missionTypes} from '@/shared/forms/mission-form';
 import {displayLabel} from '@/shared/lib/presentation';
 import type {
     ListingType,
     MarketplaceListingUpsertInput,
     PricingModel,
-} from '@/shared/types/marketplace/marketplace.types';
-import type {MissionType} from '@/shared/types/mission/mission.types';
+} from '@/shared/types/marketplace.types';
+import type {MissionType} from '@/shared/types/mission.types';
 import {colors, spacing} from '@/styles/tokens';
 
 type CreateMode = 'TEMPLATE' | 'CUSTOM';

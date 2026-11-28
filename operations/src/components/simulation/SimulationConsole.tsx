@@ -11,16 +11,16 @@ import {type SimulationParams, SimulationSetupCard} from '@/components/simulatio
 import {SimulationTargetCard} from '@/components/simulation/SimulationTargetCard';
 import {SimulationTelemetryHud} from '@/components/simulation/SimulationTelemetryHud';
 import {UavModelViewer} from '@/components/visuals/UavModelViewer';
-import {useAirspaceZones} from '@/hooks/airspace/useAirspace';
-import {useProviderOrders} from '@/hooks/marketplace/useMarketplace';
-import {useMissions} from '@/hooks/mission/useOperationsMissions';
-import {useSimulationMutations, useSimulationRuns, useSimulations} from '@/hooks/simulation/useSimulation';
-import {useUavs} from '@/hooks/uav/useUavs';
+import {useAirspaceZones} from '@/hooks/useAirspace';
+import {useProviderOrders} from '@/hooks/useMarketplace';
+import {useMissions} from '@/hooks/useOperationsMissions';
+import {useSimulationMutations, useSimulationRuns, useSimulations} from '@/hooks/useSimulation';
+import {useUavs} from '@/hooks/useUavs';
 import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import type {LatLng, SimCommand, SimEventLevel, SimulationState, SurveyPlan} from '@/types/simulation/simulation.types';
+import type {LatLng, SimCommand, SimEventLevel, SimulationState, SurveyPlan} from '@/types/simulation.types';
 
 const SimulationMap = dynamic(() => import('@/components/simulation/SimulationMap').then(m => m.SimulationMap), {ssr: false});
 

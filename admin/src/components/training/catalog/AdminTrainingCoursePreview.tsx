@@ -2,10 +2,10 @@
 
 import {useSearchParams} from 'next/navigation';
 import {AdminPage} from '@/components/layout/AdminPage';
-import {useTrainingCourse} from '@/hooks/training/useTraining';
-import type {TrainingPortalTier} from '@/types/training/training.types';
+import {useTrainingCourse} from '@/hooks/useTraining';
+import type {TrainingPortalTier} from '@/types/training.types';
 import {TrainingCoursePlayer} from '@/components/training/player/TrainingCoursePlayer';
-import {adminTrainingHome} from '@/utils/training/training-meta';
+import {adminTrainingHome} from '@/utils/training-meta';
 
 const PORTALS: readonly TrainingPortalTier[] = ['CUSTOMER', 'OPERATIONS', 'ADMIN'];
 

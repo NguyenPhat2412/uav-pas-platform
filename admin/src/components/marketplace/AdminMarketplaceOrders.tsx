@@ -25,15 +25,15 @@ import {
     MarketplaceStatusTabs,
 } from '@/components/marketplace/MarketplaceShared';
 import {OrderTwoSidedDrawer} from '@/components/marketplace/OrderTwoSidedDrawer';
-import {formatMarketplaceVnd, sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
+import {formatMarketplaceVnd, sanitizeMarketplaceText} from '@/forms/admin-marketplace-form';
 import {
     useAdminMarketplaceOrders,
     useAdminMarketplaceRealtime,
     useAdminProviders,
-} from '@/hooks/marketplace/useAdminMarketplace';
+} from '@/hooks/useAdminMarketplace';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
-import type {AdminMarketplaceOrder} from '@/types/marketplace/marketplace.types';
+import type {AdminMarketplaceOrder} from '@/types/marketplace.types';
 
 const ORDER_STATUS_TABS = [
     '',

@@ -3,10 +3,10 @@ import type {ReactNode} from 'react';
 import {MapPin, UserCheck} from 'lucide-react';
 import {UavIcon} from '@/components/shared/UavIcon';
 import {UavModelViewer} from '@/components/visuals/UavModelViewer';
-import {sanitizeMarketplaceName} from '@/forms/project/project-form';
+import {sanitizeMarketplaceName} from '@/forms/project-form';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
-import {useUav} from '@/hooks/uav/useUavs';
+import {useUav} from '@/hooks/useUavs';
 import type {Mission} from '@/types/customer';
 
 /** Equipment and crew assigned by dispatch. Operator identity stays private; only assignment state is shown. */

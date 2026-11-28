@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {useSystemHealth} from '@/hooks/settings/useSettings';
-import {useFleetTelemetry} from '@/hooks/uav/useTelemetry';
-import {useSarMissions} from '@/hooks/sar/useSar';
-import type {HealthStatus} from '@/types/settings/system-health.types';
-import type {FleetSummary, MonitoringTone} from '@/types/dashboard/dashboard.types';
+import {useSystemHealth} from '@/hooks/useSettings';
+import {useFleetTelemetry} from '@/hooks/useTelemetry';
+import {useSarMissions} from '@/hooks/useSar';
+import type {HealthStatus} from '@/types/system-health.types';
+import type {FleetSummary, MonitoringTone} from '@/types/dashboard.types';
 import {cn} from '@/lib/utils';
 
 export type {FleetSummary};

@@ -3,14 +3,14 @@ import {StyleSheet, View} from 'react-native';
 import MapView, {Marker, Polygon} from 'react-native-maps';
 import {LocateFixed, RotateCcw} from 'lucide-react-native';
 import {AppText, Badge, Button, FieldLabel} from '@/components/ui';
-import {useDeviceLocation} from '@/hooks/location/useDeviceLocation';
+import {useDeviceLocation} from '@/hooks/useDeviceLocation';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {
     circleToGeoJsonPolygon,
     geoJsonPolygonToVertices,
     verticesToGeoJsonPolygon,
-} from '@/shared/forms/project/project-form';
+} from '@/shared/forms/project-form';
 import {airspaceMapTone, colors, radius, spacing} from '@/styles/tokens';
 
 /**

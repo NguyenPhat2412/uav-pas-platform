@@ -1,6 +1,6 @@
 'use client';
 import {useI18n} from '@/providers/I18nContext';
-import {useSiteWeather} from '@/hooks/mission/useSiteWeather';
+import {useSiteWeather} from '@/hooks/useSiteWeather';
 import {PreflightWeatherCard} from '@/components/weather/PreflightWeatherCard';
 import type {Mission} from '@/types/customer';
 

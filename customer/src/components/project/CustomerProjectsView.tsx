@@ -10,14 +10,14 @@ import {ProjectSubscriptionsSection} from '@/components/project/ProjectSubscript
 import {ProjectUpsertDialog} from '@/components/project/ProjectUpsertDialog';
 import {IllustratedEmptyState} from '@/components/shared/IllustratedEmptyState';
 import {Alert, Button} from '@/components/ui';
-import {extractActionableError} from '@/forms/marketplace/marketplace-forms';
-import {useMissions} from '@/hooks/mission/useCustomerMissions';
-import {useCustomerProjects, useProjectActions} from '@/hooks/project/useCustomerProjects';
+import {extractActionableError} from '@/forms/marketplace-forms';
+import {useMissions} from '@/hooks/useCustomerMissions';
+import {useCustomerProjects, useProjectActions} from '@/hooks/useCustomerProjects';
 import {ApiError} from '@/lib/api';
 import {formatShortDate} from '@/lib/format';
 import {toMissionSlug} from '@/lib/url-slugs';
 import {useI18n} from '@/providers/I18nContext';
-import type {CustomerProject} from '@/types/project/project.types';
+import type {CustomerProject} from '@/types/project.types';
 
 export default function CustomerProjectsPage() {
     return (

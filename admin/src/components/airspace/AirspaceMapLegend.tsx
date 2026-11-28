@@ -2,10 +2,10 @@
 
 import React from 'react';
 import {Badge, Input} from '@/components/ui';
-import type {AirspaceZoneDraft} from '@/forms/airspace/airspace-zone-form';
+import type {AirspaceZoneDraft} from '@/forms/airspace-zone-form';
 import {cn} from '@/lib/utils';
 import {useI18n} from '@/providers/I18nContext';
-import type {AirspaceZoneType} from '@/types/airspace/airspace.types';
+import type {AirspaceZoneType} from '@/types/airspace.types';
 
 const ZONE_LEGEND_SWATCH: Record<AirspaceZoneType, string> = {
     PROHIBITED: 'border-red-600 bg-red-500/20',

@@ -12,22 +12,22 @@ import {
 } from 'lucide-react-native';
 import {AppText, Card, GlassSurface, LoadingState, SectionTitle, TextField} from '@/components/ui';
 import {GlassSelectCards, GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
-import {usePublicListings} from '@/hooks/marketplace/useMarketplaceCatalog';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+import {usePublicListings} from '@/hooks/useMarketplaceCatalog';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {useI18n} from '@/providers/I18nContext';
 import {
     estimateBookingSubtotal,
     formatVndCompact,
     pricingUnitLabel,
-} from '@/shared/forms/marketplace/marketplace-forms';
+} from '@/shared/forms/marketplace-forms';
 import {
     missionTypeForService,
     missionTypes,
     type MissionFormErrors,
-} from '@/shared/forms/mission/mission-form';
+} from '@/shared/forms/mission-form';
 import {displayLabel, serviceName} from '@/shared/lib/presentation';
-import type {MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
-import type {MissionInput, MissionType, UavService} from '@/shared/types/mission/mission.types';
+import type {MarketplaceListing} from '@/shared/types/marketplace.types';
+import type {MissionInput, MissionType, UavService} from '@/shared/types/mission.types';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 type BookingMode = 'STANDARD' | 'MARKETPLACE' | 'RFQ';

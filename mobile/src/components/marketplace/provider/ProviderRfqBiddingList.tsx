@@ -3,9 +3,9 @@ import {StyleSheet, View} from 'react-native';
 import {Megaphone, Send} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, EmptyState, LoadingState, TextField} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
-import {formatVndCompact, initialBidForm} from '@/shared/forms/marketplace/marketplace-forms';
-import type {MissionBid, MissionBidCreateInput} from '@/shared/types/marketplace/marketplace.types';
-import type {Mission} from '@/shared/types/mission/mission.types';
+import {formatVndCompact, initialBidForm} from '@/shared/forms/marketplace-forms';
+import type {MissionBid, MissionBidCreateInput} from '@/shared/types/marketplace.types';
+import type {Mission} from '@/shared/types/mission.types';
 import {colors, spacing} from '@/styles/tokens';
 
 export function ProviderRfqBiddingList({

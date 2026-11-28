@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {readFileSync, existsSync} from 'node:fs';
-import {parseSiteInfo} from '../src/utils/settings/site-info-parser.ts';
+import {parseSiteInfo} from '../src/utils/site-info-parser.ts';
 
 const src = new URL('../src/', import.meta.url).pathname;
 const read = rel => readFileSync(`${src}${rel}`, 'utf8');
@@ -35,7 +35,7 @@ test('mobile marketplace: Liquid Glass select option primitive powers booking, c
 });
 
 test('mobile marketplace: dynamic site-info parser and all Seller Studio + Escrow routes exist', () => {
-    const parser = read('utils/settings/site-info-parser.ts');
+    const parser = read('utils/site-info-parser.ts');
     assert.match(parser, /marketplace\.platform_fee_rate/);
     assert.match(parser, /marketplace\.min_payout_vnd/);
     assert.match(parser, /marketplace\.rfq_enabled/);
@@ -113,24 +113,24 @@ test('mobile ios-design-review: HIG touch targets, NativeTabs clearance, Vietnam
 });
 
 test('cross-platform Web ↔ Mobile sync: WebSocket invalidates live state and 409 conflicts self-heal via onSettled', () => {
-    const notifications = read('hooks/notification/useNotifications.ts');
+    const notifications = read('hooks/useNotifications.ts');
     assert.match(notifications, /NOTIFICATION_CREATED/);
     assert.match(notifications, /q\.queryKey\[0\] === 'marketplace'/);
     assert.match(notifications, /q\.queryKey\[0\] === 'public'/);
 
-    const billing = read('hooks/billing/useCustomerBilling.ts');
+    const billing = read('hooks/useCustomerBilling.ts');
     assert.match(billing, /escrowStatus[\s\S]*?'HELD'/);
     assert.match(billing, /queryKeys\.feature\(userId, 'marketplace'\)/);
     assert.match(billing, /queryKeys\.feature\(userId, 'customer'\)/);
 
-    const providerStudio = read('hooks/marketplace/useProviderStudio.ts');
+    const providerStudio = read('hooks/useProviderStudio.ts');
     assert.match(providerStudio, /onSettled:\s*refresh/);
     assert.doesNotMatch(providerStudio, /onSuccess:\s*refresh/);
 
-    const catalogHooks = read('hooks/marketplace/useMarketplaceCatalog.ts');
+    const catalogHooks = read('hooks/useMarketplaceCatalog.ts');
     assert.match(catalogHooks, /onSettled:/);
 
-    const missionHooks = read('hooks/mission/useCustomerMissions.ts');
+    const missionHooks = read('hooks/useCustomerMissions.ts');
     assert.match(missionHooks, /cancel:\s*useMutation\(\{[^}]*onSettled:/);
     assert.match(missionHooks, /upsertReview:\s*useMutation\(\{[\s\S]*?onSettled:/);
 });

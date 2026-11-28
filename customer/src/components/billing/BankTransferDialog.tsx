@@ -8,7 +8,7 @@ import {Alert, Button, Spinner} from '@/components/ui';
 import {
     isBankTransferUnconfiguredError,
     useBankTransferInstructions,
-} from '@/hooks/billing/useCustomerBilling';
+} from '@/hooks/useCustomerBilling';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';

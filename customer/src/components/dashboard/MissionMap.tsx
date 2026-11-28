@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import {useEffect, useRef, useState} from 'react';
 import type {Control, LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
 import {MapLayerToolbar} from '@/components/shared/MapLayerToolbar';
-import type {MapPoint} from '@/types/dashboard/dashboard.types';
+import type {MapPoint} from '@/types/dashboard.types';
 import {MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 
 export type {MapPoint};

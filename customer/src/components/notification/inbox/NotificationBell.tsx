@@ -4,7 +4,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {AlertCircle, Bell, CheckCheck, CheckCircle2, ChevronRight, Info, ShieldAlert} from 'lucide-react';
 import {Alert, Badge, Button, Card, Spinner} from '@/components/ui';
-import {useNotifications} from '@/hooks/notification/useNotifications';
+import {useNotifications} from '@/hooks/useNotifications';
 import {useI18n} from '@/providers/I18nContext';
 
 /** Top-bar notifications popover; viewAllHref points at the portal's own notifications page. */

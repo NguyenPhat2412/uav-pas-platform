@@ -103,11 +103,11 @@ function harness(auth, search, storedDemo) {
     };
     modules['@/components/ui'] = modules['@/components/ui'];
     modules['@/components/layout/AdminAppShell'] = modules['@/components/layout/AppShell'];
-    modules['@/api/user/users.api'] = {usersService: {}};
-    modules['@/api/access/access.api'] = {accessService: {}};
-    modules['@/api/dashboard/admin-dashboard.api'] = {adminDashboardService: {}};
-    modules['@/api/audit/audit.api'] = {auditService: {}};
-    modules['@/api/mission/missions.api'] = {missionService: {}};
+    modules['@/api/users.api'] = {usersService: {}};
+    modules['@/api/access.api'] = {accessService: {}};
+    modules['@/api/admin-dashboard.api'] = {adminDashboardService: {}};
+    modules['@/api/audit.api'] = {auditService: {}};
+    modules['@/api/missions.api'] = {missionService: {}};
     modules['@/components/dashboard/overview/AdminMonitoringCard'] = {AdminMonitoringCard: () => null};
 
     function load(path) {
@@ -128,12 +128,12 @@ function harness(auth, search, storedDemo) {
 
     modules['@/lib/api/routes'] = load('src/lib/api/routes.ts');
     modules['@/lib/query'] = load('src/lib/query/index.ts');
-    modules['@/hooks/dashboard/query-keys'] = load('src/hooks/dashboard/query-keys.ts');
-    modules['@/hooks/dashboard/useAdminDashboard'] = load('src/hooks/dashboard/useAdminDashboard.ts');
-    modules['@/hooks/audit/useAdminAudit'] = load('src/hooks/audit/useAdminAudit.ts');
+    modules['@/hooks/dashboard-query-keys'] = load('src/hooks/dashboard-query-keys.ts');
+    modules['@/hooks/useAdminDashboard'] = load('src/hooks/useAdminDashboard.ts');
+    modules['@/hooks/useAdminAudit'] = load('src/hooks/useAdminAudit.ts');
     modules['@/components/data/WorkspaceState'] = load('src/components/data/WorkspaceState.tsx');
-    modules['@/utils/auth/portal'] = load('src/utils/auth/portal.ts');
-    modules['@/utils/auth/auth-entry'] = load('src/utils/auth/auth-entry.ts');
+    modules['@/utils/portal'] = load('src/utils/portal.ts');
+    modules['@/utils/auth-entry'] = load('src/utils/auth-entry.ts');
     return {load, redirects, permissions, cards};
 }
 
@@ -232,7 +232,7 @@ for (const [search, storedDemo] of [['', null], ['?demo=true', null], ['', 'true
     for (const [ready, allowed] of [[false, false], [false, true], [true, false], [true, true]]) {
         test(`admin user query requires ready USER_VIEW (${ready}/${allowed}) with ${mode}`, () => {
             const h = harness({isAuthenticated: true, permissionsReady: ready, allowed}, search, storedDemo);
-            const {useAdminUsers} = h.load('src/hooks/user/useAdminUsers.ts');
+            const {useAdminUsers} = h.load('src/hooks/useAdminUsers.ts');
             assert.equal(useAdminUsers(0, '').enabled, ready && allowed);
         });
     }

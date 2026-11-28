@@ -12,8 +12,8 @@ import {
     useStoragePoolOverview,
     useSyncDriveNode,
     useUpdateDriveNode,
-} from '@/hooks/storage/useStoragePool';
-import type {StorageDriveNode, StoragePoolOverview} from '@/types/storage/storage-pool.types';
+} from '@/hooks/useStoragePool';
+import type {StorageDriveNode, StoragePoolOverview} from '@/types/storage-pool.types';
 import {GoogleDriveNodeModal} from './GoogleDriveNodeModal';
 import {StorageDriveNodeCard} from './StorageDriveNodeCard';
 import {StoragePolicyFormSection} from './StoragePolicyFormSection';

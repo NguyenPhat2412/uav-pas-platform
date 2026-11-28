@@ -4,7 +4,7 @@ import {Receipt} from 'lucide-react';
 import {Metadata} from '@/components/data/Drawer';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {useI18n} from '@/providers/I18nContext';
-import {useUserBillingProfile} from '@/hooks/billing/useBillingAdmin';
+import {useUserBillingProfile} from '@/hooks/useBillingAdmin';
 
 /** Read-only invoicing details a customer saved in their profile; editing stays with the customer. */
 export function CustomerBillingProfileCard({userId}: { userId: number }) {

@@ -6,7 +6,7 @@ import {X} from 'lucide-react';
 import {ExifPanel} from '@/components/mission/customer/ExifPanel';
 import {Button, Card} from '@/components/ui';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
-import {useMediaDownloadUrls} from '@/hooks/media/useMedia';
+import {useMediaDownloadUrls} from '@/hooks/useMedia';
 import {useI18n} from '@/providers/I18nContext';
 import type {MissionMedia} from '@/types/customer';
 

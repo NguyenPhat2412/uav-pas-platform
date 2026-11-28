@@ -3,9 +3,9 @@
 import {Calendar, FolderKanban, MapPin, Plane, Send, Sparkles, Star, User, Zap} from 'lucide-react';
 import {Button, OptionalMark} from '@/components/ui';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
-import {formatMarketplaceVnd, sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
+import {formatMarketplaceVnd, sanitizeMarketplaceText} from '@/forms/admin-marketplace-form';
 import {useI18n} from '@/providers/I18nContext';
-import type {AdminDispatchQueueItem} from '@/types/marketplace/marketplace.types';
+import type {AdminDispatchQueueItem} from '@/types/marketplace.types';
 
 export function DispatchQueueCard({
     item,

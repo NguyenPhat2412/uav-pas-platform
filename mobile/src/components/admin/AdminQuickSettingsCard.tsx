@@ -5,10 +5,10 @@ import {AppText, Badge, Button, Card, EmptyState, LoadingState, TextField} from 
 import {
     useAdminMarketplaceMutations,
     useAdminPlatformSettings,
-} from '@/hooks/marketplace/useAdminMarketplaceMobile';
+} from '@/hooks/useAdminMarketplaceMobile';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {extractActionableError} from '@/shared/forms/marketplace/marketplace-forms';
+import {extractActionableError} from '@/shared/forms/marketplace-forms';
 import {colors, spacing} from '@/styles/tokens';
 
 export function AdminSettingsTabContent() {

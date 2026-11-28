@@ -9,14 +9,14 @@ import {
 import {
     AppText, Badge, Card, ErrorState, LoadingState, ScaledText, Screen, SectionTitle,
 } from '@/components/ui';
-import {useMissionDetail} from '@/hooks/mission/useCustomerMissions';
-import {useOrderTracking} from '@/hooks/order/useOrders';
+import {useMissionDetail} from '@/hooks/useCustomerMissions';
+import {useOrderTracking} from '@/hooks/useOrders';
 import {useI18n} from '@/providers/I18nContext';
-import type {OrderStatusGroup} from '@/shared/types/project/project.types';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
-import {formatTrackingLink, ORDER_STATUS_GROUPS, resolveOrderStatusGroup} from '@/utils/mission/order-groups';
-import {isFinitePoint} from '@/utils/operations/map-shapes';
-import {computeFitRegion, toLatLngList, type LatLng} from '@/utils/order/tracking-geometry';
+import type {OrderStatusGroup} from '@/shared/types/project.types';
+import {cleanEntityName} from '@/utils/clean-text';
+import {formatTrackingLink, ORDER_STATUS_GROUPS, resolveOrderStatusGroup} from '@/utils/order-groups';
+import {isFinitePoint} from '@/utils/map-shapes';
+import {computeFitRegion, toLatLngList, type LatLng} from '@/utils/tracking-geometry';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 const MILESTONE_ICONS: Record<OrderStatusGroup, LucideIcon> = {

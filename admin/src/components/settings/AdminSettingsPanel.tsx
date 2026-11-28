@@ -9,9 +9,9 @@ import {Alert, Button, Card, FieldLabelMark, FormField, Input, Select, Switch} f
 import {AssistantSettingsSection} from '@/components/assistant/console/AssistantSettingsSection';
 import {PaymentGatewaySettingsSection} from '@/components/billing/reconciliation/PaymentGatewaySettingsSection';
 import {WeatherProviderSettingsSection} from '@/components/weather/WeatherProviderSettingsSection';
-import type {TypedSetting} from '@/types/settings/platform-settings.types';
-import {changedSettings, settingEmptyProblem, settingServerError, sortedSettingsToSave, toSettingUpdatePayload} from '@/forms/settings/settings-form';
-import {usePlatformSettings, useSaveSetting} from '@/hooks/settings/useSettings';
+import type {TypedSetting} from '@/types/platform-settings.types';
+import {changedSettings, settingEmptyProblem, settingServerError, sortedSettingsToSave, toSettingUpdatePayload} from '@/forms/settings-form';
+import {usePlatformSettings, useSaveSetting} from '@/hooks/useSettings';
 import {useI18n} from '@/providers/I18nContext';
 import {useUnsavedChanges} from '@/hooks/useWorkspaceTabs';
 import {buildSettingHint, flatKey, SettingHistoryDrawer} from './SettingHistoryDrawer';

@@ -3,7 +3,7 @@
 import React from 'react';
 import {ArrowRight, Briefcase, Radar, ShieldCheck} from 'lucide-react';
 import {Button} from '@/components/ui';
-import type {Portal} from '@/types/auth/auth.types';
+import type {Portal} from '@/types/auth.types';
 
 export interface AuthPortalSelectStepProps {
     portals: Portal[];

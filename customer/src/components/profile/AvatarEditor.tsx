@@ -5,9 +5,9 @@ import {Avatar} from '@/components/shared/Avatar';
 import {Button, Panel} from '@/components/customer/CustomerUi';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {AVATAR_TYPES, avatarFileError} from '@/utils/profile/avatar';
-import {useAvatarMutations} from '@/hooks/profile/useProfile';
-import type {AvatarUploadStatus as Status} from '@/types/profile/profile.types';
+import {AVATAR_TYPES, avatarFileError} from '@/utils/avatar';
+import {useAvatarMutations} from '@/hooks/useProfile';
+import type {AvatarUploadStatus as Status} from '@/types/profile.types';
 
 /** Upload, replace or remove the signed-in user's avatar; the account refreshes so every avatar updates. */
 export function AvatarEditor({name}: { name: string }) {

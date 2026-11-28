@@ -22,8 +22,8 @@ import {
     LoadingState,
     SectionTitle,
 } from '@/components/ui';
-import {useBilling, useBillingActions} from '@/hooks/billing/useCustomerBilling';
-import {useAcceptMissionBid, useMissionBids} from '@/hooks/marketplace/useMarketplaceCatalog';
+import {useBilling, useBillingActions} from '@/hooks/useCustomerBilling';
+import {useAcceptMissionBid, useMissionBids} from '@/hooks/useMarketplaceCatalog';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {
@@ -31,9 +31,9 @@ import {
     extractActionableError,
     formatVndCompact,
     providerOrderStatusLabel,
-} from '@/shared/forms/marketplace/marketplace-forms';
-import type {MissionBid} from '@/shared/types/marketplace/marketplace.types';
-import type {Mission} from '@/shared/types/mission/mission.types';
+} from '@/shared/forms/marketplace-forms';
+import type {MissionBid} from '@/shared/types/marketplace.types';
+import type {Mission} from '@/shared/types/mission.types';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export function MobileMissionMarketplaceCard({

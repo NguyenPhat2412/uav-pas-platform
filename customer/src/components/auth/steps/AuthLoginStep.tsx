@@ -4,9 +4,9 @@ import React, {type FormEvent, useState} from 'react';
 import {Eye, EyeOff} from 'lucide-react';
 import {Button, FormField, Input} from '@/components/ui';
 import {RequiredMark} from '@/components/shared/RequiredMark';
-import {toLoginPayload} from '@/forms/auth/auth-form';
+import {toLoginPayload} from '@/forms/auth-form';
 import {useAuth} from '@/providers/AuthContext';
-import type {AuthResponse} from '@/types/auth/auth.types';
+import type {AuthResponse} from '@/types/auth.types';
 import {
     AUTH_INPUT_CLASS,
     AUTH_LABEL_CLASS,

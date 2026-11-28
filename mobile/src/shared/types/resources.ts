@@ -2,7 +2,7 @@
 // change the web file, then run `npm run sync:shared` in mobile/.
 import type {AuditLog, PageResponse} from '@/shared/types';
 import type {User} from '@/shared/types/admin';
-import type {Mission} from '@/shared/types/mission/mission.types';
+import type {Mission} from '@/shared/types/mission.types';
 
 export type {AuditLog, PageResponse};
 

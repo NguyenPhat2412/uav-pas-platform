@@ -10,7 +10,7 @@ import {
     KpiCard,
     MetricStrip,
 } from '@/components/ui';
-import {useOperatorLogbook} from '@/hooks/mission/useOperationsMissions';
+import {useOperatorLogbook} from '@/hooks/useOperationsMissions';
 import {useI18n} from '@/providers/I18nContext';
 
 export function OperatorLogbookSummary() {

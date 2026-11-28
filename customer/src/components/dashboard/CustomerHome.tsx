@@ -6,8 +6,8 @@ import {CUSTOMER_SIDEBAR_ROUTES} from '@/config/sidebar-routes';
 import {CUSTOMER_RECENT_PAGES_KEY} from '@/lib/recent-pages';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
-import {useCustomerAnalytics} from '@/hooks/dashboard/useCustomerAnalytics';
-import {useMissions} from '@/hooks/mission/useCustomerMissions';
+import {useCustomerAnalytics} from '@/hooks/useCustomerAnalytics';
+import {useMissions} from '@/hooks/useCustomerMissions';
 import {formatShortDate} from '@/lib/format';
 import {toMissionSlug} from '@/lib/url-slugs';
 

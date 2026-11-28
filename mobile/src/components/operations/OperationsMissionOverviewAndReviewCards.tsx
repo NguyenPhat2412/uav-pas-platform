@@ -14,10 +14,10 @@ import {AirspaceBadge} from '@/components/operations/OperationsMissionPreflightC
 import {Verdict} from '@/components/weather/WeatherCard';
 import {useI18n} from '@/providers/I18nContext';
 import {displayLabel} from '@/shared/lib/presentation';
-import type {AirspaceCheckResult} from '@/shared/types/airspace/airspace.types';
-import type {Mission, MissionReview} from '@/shared/types/mission/mission.types';
-import type {UavTelemetry} from '@/shared/types/uav/telemetry.types';
-import type {WeatherAssessment} from '@/shared/types/weather/weather.types';
+import type {AirspaceCheckResult} from '@/shared/types/airspace.types';
+import type {Mission, MissionReview} from '@/shared/types/mission.types';
+import type {UavTelemetry} from '@/shared/types/telemetry.types';
+import type {WeatherAssessment} from '@/shared/types/weather.types';
 import {colors, spacing} from '@/styles/tokens';
 
 export function OperationsMissionOverviewCards({

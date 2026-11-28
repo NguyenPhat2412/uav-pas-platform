@@ -30,7 +30,7 @@ import {
     SectionTitle,
     TextField,
 } from '@/components/ui';
-import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplaceCatalog';
+import {usePublicListingDetail} from '@/hooks/useMarketplaceCatalog';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
@@ -39,9 +39,9 @@ import {
     formatVndCompact,
     listingTypeLabel,
     pricingUnitLabel,
-} from '@/shared/forms/marketplace/marketplace-forms';
+} from '@/shared/forms/marketplace-forms';
 import {displayLabel} from '@/shared/lib/presentation';
-import {cleanDescriptionText, cleanEntityName} from '@/utils/marketplace/clean-text';
+import {cleanDescriptionText, cleanEntityName} from '@/utils/clean-text';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 export function MarketplaceListingDetailScreen() {

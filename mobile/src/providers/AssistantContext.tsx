@@ -1,5 +1,5 @@
 import React, {createContext, ReactNode, useContext, useMemo, useState} from 'react';
-import type {ChatMessage} from '@/shared/types/assistant/assistant.types';
+import type {ChatMessage} from '@/shared/types/assistant.types';
 
 interface AssistantThread {
     messages: ChatMessage[];

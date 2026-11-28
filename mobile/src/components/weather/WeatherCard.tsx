@@ -1,18 +1,18 @@
 import React, {ReactNode, useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, View} from 'react-native';
 import {AlertTriangle, Ban, ChevronLeft, ChevronRight, Eye, HelpCircle, PlaneTakeoff, Umbrella, Wind, type LucideIcon} from 'lucide-react-native';
-import {useForecastTimeline} from '@/hooks/weather/useWeather';
+import {useForecastTimeline} from '@/hooks/useWeather';
 import {useI18n} from '@/providers/I18nContext';
-import {conditionOf, isDaytime, rainLevel, visibilityLevel, windLevel, type Level} from '@/shared/utils/weather/conditions';
+import {conditionOf, isDaytime, rainLevel, visibilityLevel, windLevel, type Level} from '@/shared/utils/conditions';
 import {
     WEATHER_MAX_DAY_OFFSET,
     WEATHER_MIN_DAY_OFFSET,
     clampDayOffset,
     dateAtDayOffset,
     weatherTimelineForDay,
-} from '@/shared/utils/weather/flight-window';
-import {skyTheme} from '@/shared/utils/weather/sky-theme';
-import type {FlightClearanceLevel, WeatherAssessment} from '@/shared/types/weather/weather.types';
+} from '@/shared/utils/flight-window';
+import {skyTheme} from '@/shared/utils/sky-theme';
+import type {FlightClearanceLevel, WeatherAssessment} from '@/shared/types/weather.types';
 import {SkyGradient, WeatherBackdrop, WeatherIcon} from '@/components/weather/WeatherVisuals';
 import {ScaledText} from '@/components/ui';
 import {clearanceTone, colors, font, radius, spacing} from '@/styles/tokens';

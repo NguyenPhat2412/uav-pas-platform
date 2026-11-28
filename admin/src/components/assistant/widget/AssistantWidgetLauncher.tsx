@@ -3,7 +3,7 @@
 import {type PointerEvent, useLayoutEffect, useRef, useState} from 'react';
 import {Button} from '@/components/ui';
 import {SuperheroLogo} from '@/components/assistant/widget/SuperheroLogo';
-import type {AssistantCorner as Corner} from '@/types/assistant/assistant.types';
+import type {AssistantCorner as Corner} from '@/types/assistant.types';
 import {cn} from '@/lib/utils';
 
 export const CORNER_KEY = 'uav_assistant_corner';

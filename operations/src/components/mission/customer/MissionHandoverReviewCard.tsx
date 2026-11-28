@@ -15,7 +15,7 @@ import {
     Switch,
     Textarea,
 } from '@/components/ui';
-import {useMissionActions, useMissionReview} from '@/hooks/mission/useCustomerMissions';
+import {useMissionActions, useMissionReview} from '@/hooks/useCustomerMissions';
 import {useI18n} from '@/providers/I18nContext';
 import type {MissionReview} from '@/types/customer';
 

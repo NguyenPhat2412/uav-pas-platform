@@ -12,11 +12,11 @@ import {
     emptyAirspaceZoneDraft,
     toAirspaceZoneUpsertPayload,
     type AirspaceZoneDraft,
-} from '@/forms/airspace/airspace-zone-form';
-import {useCreateAirspaceZone, useUpdateAirspaceZone} from '@/hooks/airspace/useAirspace';
+} from '@/forms/airspace-zone-form';
+import {useCreateAirspaceZone, useUpdateAirspaceZone} from '@/hooks/useAirspace';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {useI18n} from '@/providers/I18nContext';
-import type {AirspaceZone, AirspaceZoneType} from '@/types/airspace/airspace.types';
+import type {AirspaceZone, AirspaceZoneType} from '@/types/airspace.types';
 
 export interface AirspaceZoneFormCardProps {
     zone: AirspaceZone | null;

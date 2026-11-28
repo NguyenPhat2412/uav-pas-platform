@@ -8,7 +8,7 @@ import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {TEXT_SIZES, useTextSize, type TextSize} from '@/providers/TextSizeContext';
 import {localeMetaMap, supportedLocales, type SupportedLocale} from '@/shared/i18n/config';
-import {canUsePortal} from '@/shared/utils/auth/portal';
+import {canUsePortal} from '@/shared/utils/portal';
 import {colors, spacing} from '@/styles/tokens';
 
 /**

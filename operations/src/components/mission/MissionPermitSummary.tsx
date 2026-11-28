@@ -4,7 +4,7 @@ import {useId} from 'react';
 import {CheckCircle2, Download, XCircle} from 'lucide-react';
 import {Button, Card, Textarea} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
-import type {FlightPermitStatus, MissionMedia, MissionPermit} from '@/types/mission/mission.types';
+import type {FlightPermitStatus, MissionMedia, MissionPermit} from '@/types/mission.types';
 
 export interface MissionPermitSummaryProps {
     permit: MissionPermit | null;

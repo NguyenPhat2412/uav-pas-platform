@@ -59,7 +59,7 @@ test('API_ROUTES defines all 6 multi-tier UAV PAS capability endpoints', async (
 });
 
 test('airspace-zone-form handles temporary NOTAM windows and planned flight windows', async () => {
-    const zoneForm = await loadTsModule('src/forms/airspace/airspace-zone-form.ts');
+    const zoneForm = await loadTsModule('src/forms/airspace-zone-form.ts');
 
     assert.equal(zoneForm.normalizeOptionalLocalDateTime('2026-11-12T08:30'), '2026-11-12T08:30:00');
     assert.equal(zoneForm.normalizeOptionalLocalDateTime('  '), null);

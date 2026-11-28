@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import {ArrowRight, BadgeCheck, Landmark, Package, ShieldAlert, Store, Wallet} from 'lucide-react';
-import {useMyProviderProfile} from '@/hooks/marketplace/useMarketplace';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+import {useMyProviderProfile} from '@/hooks/useMarketplace';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {useI18n} from '@/providers/I18nContext';
 import {Badge, Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
 

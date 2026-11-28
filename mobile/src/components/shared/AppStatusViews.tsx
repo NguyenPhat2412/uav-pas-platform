@@ -27,8 +27,8 @@ import {
     classifyRuntimeException,
     errorReference,
     type ExceptionKind,
-} from '@/shared/utils/errors/runtime-error';
-import {resolvePortalEntryHref} from '@/utils/operations/portal-routing';
+} from '@/shared/utils/runtime-error';
+import {resolvePortalEntryHref} from '@/utils/portal-routing';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 /** Only seen when the session check outlasts the native splash (slow network): the 3D drone and the wordmark. */

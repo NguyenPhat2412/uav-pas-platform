@@ -6,10 +6,10 @@ import {OptionalMark, RequiredMark} from '@/components/ui';
 import {ProviderDocumentsSection} from '@/components/marketplace/provider/ProviderDocumentsSection';
 import {ProviderKycReadinessCard} from '@/components/marketplace/provider/ProviderKycReadinessCard';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
-import {useMyProviderProfile, useProviderOnboardingActions} from '@/hooks/marketplace/useMarketplace';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
-import {extractActionableError, initialOnboardingForm} from '@/forms/marketplace/marketplace-forms';
-import type {ProviderOnboardingInput, ProviderProfile, ProviderType} from '@/types/marketplace/marketplace.types';
+import {useMyProviderProfile, useProviderOnboardingActions} from '@/hooks/useMarketplace';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
+import {extractActionableError, initialOnboardingForm} from '@/forms/marketplace-forms';
+import type {ProviderOnboardingInput, ProviderProfile, ProviderType} from '@/types/marketplace.types';
 
 const INPUT_CLASS =
     'h-10 w-full rounded-control border border-slate-300 bg-white px-3 text-xs font-medium text-slate-900 outline-none focus:border-primary';

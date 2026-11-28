@@ -6,17 +6,17 @@ import type {LucideIcon} from 'lucide-react';
 import {Button, FormField, Input} from '@/components/ui';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
-import {useSaveTrainingLesson} from '@/hooks/training/useTraining';
-import type {AdminTrainingLesson, TrainingLessonType} from '@/types/training/training.types';
+import {useSaveTrainingLesson} from '@/hooks/useTraining';
+import type {AdminTrainingLesson, TrainingLessonType} from '@/types/training.types';
 import {
     lessonDraftFromDetail,
     lessonDraftProblem,
     toUpsertTrainingLessonPayload,
     trainingLessonFieldErrors,
     type TrainingLessonDraft,
-} from '@/forms/training/training-form';
+} from '@/forms/training-form';
 import {TrainingLessonMediaFields} from '@/components/training/editor/TrainingLessonMediaFields';
-import {LESSON_TYPE_LABELS} from '@/utils/training/course-helpers';
+import {LESSON_TYPE_LABELS} from '@/utils/course-helpers';
 
 export const TRAINING_LESSON_TYPE_ICONS: Record<TrainingLessonType, LucideIcon> = {
     VIDEO: Video,

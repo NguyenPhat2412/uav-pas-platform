@@ -5,10 +5,10 @@ import * as Clipboard from 'expo-clipboard';
 import QRCode from 'react-native-qrcode-svg';
 import {AlertTriangle, Ban, CalendarClock, CheckCircle2, Copy, Download, ImageDown, Mail, MessageCircle, Radio, Receipt, RefreshCw, XCircle} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
-import {useBankTransferInstructions, useBillingActions, useBillingRealtime, useInvoiceRecord} from '@/hooks/billing/useCustomerBilling';
+import {useBankTransferInstructions, useBillingActions, useBillingRealtime, useInvoiceRecord} from '@/hooks/useCustomerBilling';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {signInErrorText} from '@/forms/auth/sign-in-flow';
+import {signInErrorText} from '@/forms/sign-in-flow';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 /** A transfer detail with a one-tap copy, for pasting into a banking app. */

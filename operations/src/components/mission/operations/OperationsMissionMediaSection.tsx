@@ -4,8 +4,8 @@ import {useState} from 'react';
 import {Badge, Button, Card, CardContent, CardHeader, CardTitle, Select} from '@/components/ui';
 import {displayLabel, terminalStatuses} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
-import type {MediaRole, Mission, MissionMedia} from '@/types/mission/mission.types';
-import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention} from '@/utils/media/media-policy';
+import type {MediaRole, Mission, MissionMedia} from '@/types/mission.types';
+import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention} from '@/utils/media-policy';
 
 export interface OperationsMissionMediaSectionProps {
     mission: Mission;

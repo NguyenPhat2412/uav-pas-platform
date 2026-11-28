@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Image, StyleSheet, View} from 'react-native';
 import {AppText} from '@/components/ui';
-import {useAvatarSource} from '@/hooks/profile/useProfile';
+import {useAvatarSource} from '@/hooks/useProfile';
 import {useAuth} from '@/providers/AuthContext';
 import {colors} from '@/styles/tokens';
 

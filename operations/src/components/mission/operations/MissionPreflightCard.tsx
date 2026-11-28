@@ -3,10 +3,10 @@
 import {useState} from 'react';
 import {CheckCircle2, ClipboardCheck} from 'lucide-react';
 import {Alert, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Textarea} from '@/components/ui';
-import {useMissionMutations, useMissionPreflight} from '@/hooks/mission/useOperationsMissions';
+import {useMissionMutations, useMissionPreflight} from '@/hooks/useOperationsMissions';
 import {formatDate} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
-import type {Mission} from '@/types/mission/mission.types';
+import type {Mission} from '@/types/mission.types';
 
 const EDITABLE_STATUSES = new Set(['CONFIRMED', 'RESOURCE_RESERVED', 'READY', 'IN_PROGRESS']);
 

@@ -27,7 +27,7 @@ registerHooks({
 });
 
 const {API_ROUTES} = await import('../src/shared/lib/api/routes.ts');
-const zoneForm = await import('../src/shared/forms/airspace/airspace-zone-form.ts');
+const zoneForm = await import('../src/shared/forms/airspace-zone-form.ts');
 const {translate} = await import('../src/lib/i18n/catalog.ts');
 
 const readSrc = rel => readFileSync(new URL(`../src/${rel}`, import.meta.url), 'utf8');

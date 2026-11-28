@@ -6,7 +6,7 @@ import {RefreshCw, RotateCw, ServerOff, ShieldCheck, WifiOff, Wrench} from 'luci
 import {AppBackground} from '@/components/layout/AppBackground';
 import {BrandMark} from '@/components/shared/BrandMark';
 import {AppText, Badge, Button, Card, CONTENT_WIDTH} from '@/components/ui';
-import {useNetworkStatus, type OfflineReason} from '@/hooks/network/useNetworkStatus';
+import {useNetworkStatus, type OfflineReason} from '@/hooks/useNetworkStatus';
 import {useI18n} from '@/providers/I18nContext';
 import {colors, radius, spacing} from '@/styles/tokens';
 

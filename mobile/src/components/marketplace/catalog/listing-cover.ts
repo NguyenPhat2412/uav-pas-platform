@@ -13,7 +13,7 @@ import {
     iconNameForMissionType,
     type ServiceCategoryIconName,
 } from '@/shared/lib/marketplace/service-categories';
-import type {MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
+import type {MarketplaceListing} from '@/shared/types/marketplace.types';
 
 export const LISTING_CATEGORY_ICONS: Record<ServiceCategoryIconName, LucideIcon> = {
     Sparkles,

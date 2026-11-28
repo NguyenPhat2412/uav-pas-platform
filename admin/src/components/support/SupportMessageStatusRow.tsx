@@ -3,7 +3,7 @@
 import {useState} from 'react';
 import {AlertCircle, Check, CheckCheck, Clock} from 'lucide-react';
 import {cn} from '@/lib/utils';
-import type {ResolvedMessageReceipt} from '@/utils/support/message-status';
+import type {ResolvedMessageReceipt} from '@/utils/message-status';
 
 interface SupportMessageStatusRowProps {
     receipt: ResolvedMessageReceipt | null;

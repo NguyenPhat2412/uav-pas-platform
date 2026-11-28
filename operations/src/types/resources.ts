@@ -1,6 +1,6 @@
 import type {AuditLog, PageResponse} from '@/types';
 import type {User} from '@/types/admin';
-import type {Mission} from '@/types/mission/mission.types';
+import type {Mission} from '@/types/mission.types';
 
 export type {AuditLog, PageResponse};
 

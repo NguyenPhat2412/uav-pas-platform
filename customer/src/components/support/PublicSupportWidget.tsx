@@ -13,18 +13,18 @@ import {
     usePublicSupportSession,
     useSendPublicSupportMessage,
     useSupportVisitorPrefill,
-} from '@/hooks/support/usePublicSupport';
+} from '@/hooks/usePublicSupport';
 import type {
     OpenSupportWidgetDetail,
     SupportQuickTopicOption,
     SupportSessionEventDetail,
     SupportStartDraft,
     SupportWidgetMode,
-} from '@/types/support/support.types';
+} from '@/types/support.types';
 import {PublicSupportLauncher} from '@/components/support/PublicSupportLauncher';
 import {PublicSupportChatPanel} from '@/components/support/PublicSupportChatPanel';
-import {useSupportOutbox} from '@/hooks/support/useSupportOutbox';
-import {mergeMessagesWithOutbox} from '@/utils/support/message-status';
+import {useSupportOutbox} from '@/hooks/useSupportOutbox';
+import {mergeMessagesWithOutbox} from '@/utils/message-status';
 
 export const SUPPORT_QUICK_TOPICS: readonly SupportQuickTopicOption[] = [
     {

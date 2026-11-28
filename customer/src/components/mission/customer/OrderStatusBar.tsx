@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import {CalendarClock, Clock3, Layers, PackageCheck, Plane, Star, type LucideIcon} from 'lucide-react';
-import {ORDER_STATUS_GROUPS} from '@/forms/project/project-form';
-import {useOrderRealtimeSync, useOrderSummary} from '@/hooks/project/useCustomerProjects';
+import {ORDER_STATUS_GROUPS} from '@/forms/project-form';
+import {useOrderRealtimeSync, useOrderSummary} from '@/hooks/useCustomerProjects';
 import {useI18n} from '@/providers/I18nContext';
-import type {CustomerOrderSummary, OrderStatusGroup} from '@/types/project/project.types';
+import type {CustomerOrderSummary, OrderStatusGroup} from '@/types/project.types';
 
 interface GroupMeta {
     group: OrderStatusGroup;

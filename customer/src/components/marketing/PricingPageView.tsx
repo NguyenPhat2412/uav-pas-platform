@@ -5,7 +5,7 @@ import {ArrowRight, CheckCircle2, FileCheck2, UserCheck} from 'lucide-react';
 import {keepVietnamesePhrases} from '@/lib/typography';
 import {CustomerCta, PublicPage} from '@/components/marketing/PublicPage';
 import {PlanCards} from '@/components/marketing/PlanCards';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {useI18n} from '@/providers/I18nContext';
 
 function formatRatePct(rate: number): string {

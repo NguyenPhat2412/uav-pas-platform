@@ -15,12 +15,12 @@ import {
     FormField,
     Input,
 } from '@/components/ui';
-import {flightPlanComplete} from '@/forms/mission/mission-form';
-import {useMissionActions, useSavedFlightSites} from '@/hooks/mission/useCustomerMissions';
+import {flightPlanComplete} from '@/forms/mission-form';
+import {useMissionActions, useSavedFlightSites} from '@/hooks/useCustomerMissions';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 import type {MissionInput, MissionType, SavedFlightSite} from '@/types/customer';
-import {defaultFlightPlan} from '@/types/mission/flight-plan.types';
+import {defaultFlightPlan} from '@/types/flight-plan.types';
 
 interface SavedFlightSitesBarProps {
     form: MissionInput;

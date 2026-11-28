@@ -11,7 +11,7 @@ import {
     pdfBookSpread,
     pdfPageStep,
     pdfSpreadLabel,
-} from '@/utils/training/course-helpers';
+} from '@/utils/course-helpers';
 import {
     BOOK_SPINE_GAP,
     isEditableTarget,

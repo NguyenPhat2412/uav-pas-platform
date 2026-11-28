@@ -5,10 +5,10 @@ import {Alert} from '@/components/ui';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {useAuth} from '@/providers/AuthContext';
 import {toast} from '@/providers/ToastContext';
-import {authErrorMessage, authFieldErrors} from '@/forms/auth/auth-form';
-import type {AuthModalView, AuthResponse} from '@/types/auth/auth.types';
-import {availablePortalsForRole, canUsePortal, type Portal, portalForRole, portalHome} from '@/utils/auth/portal';
-import {navigatePortalPath, safeNextPath} from '@/utils/auth/auth-entry';
+import {authErrorMessage, authFieldErrors} from '@/forms/auth-form';
+import type {AuthModalView, AuthResponse} from '@/types/auth.types';
+import {availablePortalsForRole, canUsePortal, type Portal, portalForRole, portalHome} from '@/utils/portal';
+import {navigatePortalPath, safeNextPath} from '@/utils/auth-entry';
 import {AuthLoginStep} from '@/components/auth/steps/AuthLoginStep';
 import {
     AuthModalTopBar,

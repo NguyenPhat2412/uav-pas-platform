@@ -13,10 +13,10 @@ import {
     MessageSquareWarning,
 } from 'lucide-react';
 import {Button} from '@/components/ui';
-import {sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
-import {computeProviderDocumentChecklist} from '@/forms/marketplace/provider-verification-checklist';
+import {sanitizeMarketplaceText} from '@/forms/admin-marketplace-form';
+import {computeProviderDocumentChecklist} from '@/forms/provider-verification-checklist';
 import {useI18n} from '@/providers/I18nContext';
-import type {AdminProviderDocument, AdminProviderProfile} from '@/types/marketplace/marketplace.types';
+import type {AdminProviderDocument, AdminProviderProfile} from '@/types/marketplace.types';
 
 const CHECKLIST_KEYS = ['identity', 'flight', 'fleet', 'payout'] as const;
 const QUICK_REASON_KEYS = ['missingFlight', 'unclearDoc', 'missingFleet', 'bankMismatch'] as const;

@@ -13,19 +13,19 @@ import {MissionPermitCard} from '@/components/mission/MissionPermitCard';
 import {MobileMission3DReplayCard} from '@/components/mission/MobileMission3DReplayCard';
 import {MobileMissionInspectionReportCard} from '@/components/mission/MobileMissionInspectionReportCard';
 import {MobileMissionMarketplaceCard} from '@/components/mission/MobileMissionMarketplaceCard';
-import {fromLocalIso, withStart} from '@/forms/mission/mission-draft';
-import {useMissionAirspaceCheck} from '@/hooks/airspace/useAirspace';
-import {useMissionActions, useMissionDetail} from '@/hooks/mission/useCustomerMissions';
-import {useMediaDownload, useMissionUpload} from '@/hooks/media/useMissionUpload';
+import {fromLocalIso, withStart} from '@/forms/mission-draft';
+import {useMissionAirspaceCheck} from '@/hooks/useAirspace';
+import {useMissionActions, useMissionDetail} from '@/hooks/useCustomerMissions';
+import {useMediaDownload, useMissionUpload} from '@/hooks/useMissionUpload';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {canEditMission, missionFormError, missionFormFromDetail} from '@/shared/forms/mission/mission-form';
-import {canCancelCustomerOrder} from '@/shared/forms/project/project-form';
+import {canEditMission, missionFormError, missionFormFromDetail} from '@/shared/forms/mission-form';
+import {canCancelCustomerOrder} from '@/shared/forms/project-form';
 import {eventNote, eventTitle, missionHint, terminalStatuses} from '@/shared/lib/presentation';
 import {formatFileSize} from '@/shared/lib/format';
-import {canCancel} from '@/utils/mission/status';
-import {isFinitePoint} from '@/utils/operations/map-shapes';
+import {canCancel} from '@/utils/status';
+import {isFinitePoint} from '@/utils/map-shapes';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export function MissionDetailScreen() {

@@ -78,7 +78,7 @@ for (const file of files.filter(name => /\.[cm]?[jt]sx?$/.test(name))) {
     assert.ok(source.trim().split('\n').length > 1, `${file}: 1-line proxy files are not allowed`);
     if (file.includes('/src/app/') && file.endsWith('/page.tsx')) {
         routes++;
-        assert.match(source, /from ['"]@\/(api|components|content|forms|hooks|types|utils)\/[a-z-]+\//, file);
+        assert.match(source, /from ['"]@\/(api|components|content|forms|hooks|types|utils)\/[a-zA-Z0-9_-]+/, file);
         assert.doesNotMatch(source, /^\s*export\s+\{\s*default\b/, `${file}: route pages must be real components, not 1-line re-exports`);
         assert.doesNotMatch(source, /useState|useQuery|apiClient/, `${file}: keep route entries thin`);
     }
@@ -86,10 +86,14 @@ for (const file of files.filter(name => /\.[cm]?[jt]sx?$/.test(name))) {
 for (const forbiddenGroup of ["(customer)","(public)","(admin)"]) {
     assert.ok(!existsSync(path.join(root, 'src/app', forbiddenGroup)), `Portal isolation violated: ${forbiddenGroup} belongs to another top-level portal`);
 }
+const flatLayers = new Set(['api', 'forms', 'hooks', 'types', 'utils']);
 const subpackagedComponents = new Set(['assistant', 'auth', 'notification', 'training']);
 for (const file of files.filter(name => /\.[cm]?[jt]sx?$/.test(name))) {
     const rel = path.relative(root, file).replaceAll('\\', '/');
     const parts = rel.split('/');
+    if (parts[0] === 'src' && flatLayers.has(parts[1])) {
+        assert.equal(parts.length, 3, `${rel}: keep src/${parts[1]}/ flat without nested feature folders`);
+    }
     if (parts[0] === 'src' && parts[1] === 'components' && subpackagedComponents.has(parts[2])) {
         assert.ok(parts.length >= 5, `${rel}: organize large component modules into src/components/${parts[2]}/<sub-domain>/`);
     }

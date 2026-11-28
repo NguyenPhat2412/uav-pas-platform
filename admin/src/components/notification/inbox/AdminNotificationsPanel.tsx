@@ -11,16 +11,16 @@ import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
 import {cn} from '@/lib/utils';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
-import {useNotificationPage, useNotificationReadActions, useRecipientSearch, useSendNotification} from '@/hooks/notification/useNotifications';
+import {useNotificationPage, useNotificationReadActions, useRecipientSearch, useSendNotification} from '@/hooks/useNotifications';
 import {
     canSubmitSendNotification,
     emptySendNotificationDraft,
     notificationFieldErrors,
     toSendNotificationPayload,
-} from '@/forms/notification/notification-form';
+} from '@/forms/notification-form';
 import {RequiredMark} from '@/components/shared/RequiredMark';
 import {FilterSelect} from '@/components/shared/FilterSelect';
-import {notificationTypes, type NotificationRecord, type NotificationType} from '@/types/notification/notification.types';
+import {notificationTypes, type NotificationRecord, type NotificationType} from '@/types/notification.types';
 
 const PAGE_SIZE = 20;
 

@@ -5,9 +5,9 @@ import {
     Cloud, CloudDrizzle, CloudFog, CloudLightning, CloudMoon, CloudRain, CloudRainWind, CloudSun, HelpCircle, Moon, Snowflake, Sun,
     type LucideIcon,
 } from 'lucide-react-native';
-import type {WeatherCondition} from '@/shared/utils/weather/conditions';
-import type {SkyEffect} from '@/shared/utils/weather/sky-theme';
-import {gradientStops} from '@/utils/weather/gradient';
+import type {WeatherCondition} from '@/shared/utils/conditions';
+import type {SkyEffect} from '@/shared/utils/sky-theme';
+import {gradientStops} from '@/utils/gradient';
 
 const DAY_ICON: Record<WeatherCondition, LucideIcon> = {
     clear: Sun, partly: CloudSun, cloudy: Cloud, fog: CloudFog, drizzle: CloudDrizzle, rain: CloudRain,

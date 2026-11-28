@@ -12,17 +12,17 @@ import {
     useSupportQuickReplies,
     useSupportSummary,
     useSupportThreads,
-} from '@/hooks/support/useAdminSupport';
+} from '@/hooks/useAdminSupport';
 import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
-import type {SupportThreadStatus} from '@/types/support/support.types';
+import type {SupportThreadStatus} from '@/types/support.types';
 import {
     formatSupportSource,
     formatSupportTime,
     formatSupportTopic,
     SUPPORT_STATUS_META,
     SUPPORT_TOPIC_OPTIONS,
-} from '@/utils/support/support-format';
+} from '@/utils/support-format';
 
 type StatusTab = 'ALL' | 'UNREAD' | SupportThreadStatus;
 

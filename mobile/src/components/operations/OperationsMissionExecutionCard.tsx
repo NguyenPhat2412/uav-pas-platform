@@ -10,7 +10,7 @@ import {
     XCircle,
 } from 'lucide-react-native';
 import {AppText, Button, Card, SectionTitle, TextField} from '@/components/ui';
-import {canSubmitCompletion, canSubmitFailure, canSubmitReasonNote} from '@/forms/operations/field-report-form';
+import {canSubmitCompletion, canSubmitFailure, canSubmitReasonNote} from '@/forms/field-report-form';
 import {useI18n} from '@/providers/I18nContext';
 import {colors, spacing} from '@/styles/tokens';
 

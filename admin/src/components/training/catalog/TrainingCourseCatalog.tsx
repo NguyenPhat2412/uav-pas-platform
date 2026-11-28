@@ -4,13 +4,13 @@ import {useMemo, useState} from 'react';
 import Link from 'next/link';
 import {CircleCheck, RefreshCw, Search, X} from 'lucide-react';
 import {Badge, Button, Input} from '@/components/ui';
-import {useTrainingCourses} from '@/hooks/training/useTraining';
+import {useTrainingCourses} from '@/hooks/useTraining';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
-import type {TrainingCourseSummary, TrainingPortalTier} from '@/types/training/training.types';
-import {PORTAL_META, TRAINING_CATEGORY_ICONS, TrainingDefaultCategoryIcon, trainingCategoryLabel} from '@/utils/training/training-meta';
-import {courseCallToAction, matchesCourseSearch} from '@/utils/training/course-helpers';
-import type {CourseCallToAction} from '@/utils/training/course-helpers';
+import type {TrainingCourseSummary, TrainingPortalTier} from '@/types/training.types';
+import {PORTAL_META, TRAINING_CATEGORY_ICONS, TrainingDefaultCategoryIcon, trainingCategoryLabel} from '@/utils/training-meta';
+import {courseCallToAction, matchesCourseSearch} from '@/utils/course-helpers';
+import type {CourseCallToAction} from '@/utils/course-helpers';
 
 /**
  * The learner's course catalogue: a grid of course cards with search and a topic filter.

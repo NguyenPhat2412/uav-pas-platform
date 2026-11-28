@@ -9,10 +9,10 @@ import {
     useCreateSupportQuickReply,
     useDeleteSupportQuickReply,
     useSupportQuickReplies,
-} from '@/hooks/support/useAdminSupport';
+} from '@/hooks/useAdminSupport';
 import {confirmDialog} from '@/providers/ConfirmContext';
 import {toast} from '@/providers/ToastContext';
-import {formatSupportTopic, SUPPORT_TOPIC_OPTIONS} from '@/utils/support/support-format';
+import {formatSupportTopic, SUPPORT_TOPIC_OPTIONS} from '@/utils/support-format';
 
 interface SupportQuickRepliesDrawerProps {
     open: boolean;

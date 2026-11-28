@@ -3,11 +3,11 @@
 import type {Dispatch, SetStateAction} from 'react';
 import {Button} from '@/components/customer/CustomerUi';
 import {OptionalMark, RequiredMark} from '@/components/ui';
-import {LISTING_TYPE_OPTIONS, PRICING_MODEL_OPTIONS} from '@/forms/marketplace/marketplace-forms';
-import {missionTypes} from '@/forms/mission/mission-form';
+import {LISTING_TYPE_OPTIONS, PRICING_MODEL_OPTIONS} from '@/forms/marketplace-forms';
+import {missionTypes} from '@/forms/mission-form';
 import {displayLabel} from '@/lib/presentation';
-import type {ListingType, MarketplaceListingUpsertInput, PricingModel} from '@/types/marketplace/marketplace.types';
-import type {MissionType} from '@/types/mission/mission.types';
+import type {ListingType, MarketplaceListingUpsertInput, PricingModel} from '@/types/marketplace.types';
+import type {MissionType} from '@/types/mission.types';
 
 const INPUT_CLASS =
     'h-10 w-full rounded-control border border-slate-300 bg-white px-3 text-xs font-medium text-slate-900 outline-none focus:border-primary';

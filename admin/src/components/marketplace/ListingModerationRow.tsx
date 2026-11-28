@@ -13,9 +13,9 @@ import {
 } from 'lucide-react';
 import {Button, OptionalMark} from '@/components/ui';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
-import {formatMarketplaceVnd, sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
+import {formatMarketplaceVnd, sanitizeMarketplaceText} from '@/forms/admin-marketplace-form';
 import {useI18n} from '@/providers/I18nContext';
-import type {AdminMarketplaceListing, ListingModerationStatus} from '@/types/marketplace/marketplace.types';
+import type {AdminMarketplaceListing, ListingModerationStatus} from '@/types/marketplace.types';
 
 export function ListingModerationRow({
     item,

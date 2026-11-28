@@ -2,7 +2,7 @@
 
 import {useCallback, useEffect, useState} from 'react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import type {AuthModalView, TwoFactorMethod} from '@/types/auth/auth.types';
+import type {AuthModalView, TwoFactorMethod} from '@/types/auth.types';
 import {type AuthChallengeState, INITIAL_CHALLENGE} from '@/components/auth/modal/AuthModalChrome';
 
 interface UseAuthModalSyncOptions {

@@ -1,7 +1,7 @@
 'use client';
 import {Input} from '@/components/ui';
 import type {Uav} from "@/types/resources";
-import type {OrderFields, ScheduleFields} from "@/types/maintenance/maintenance.types";
+import type {OrderFields, ScheduleFields} from "@/types/maintenance.types";
 import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';
 

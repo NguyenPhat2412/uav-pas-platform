@@ -1,8 +1,8 @@
 'use client';
 import {useState, type FormEvent} from 'react';
 import {auditDetail, displayLabel, formatDate} from "@/lib/presentation";
-import {useAdminAnalytics} from '@/hooks/dashboard/useAdminDashboard';
-import {useAdminAudit} from '@/hooks/audit/useAdminAudit';
+import {useAdminAnalytics} from '@/hooks/useAdminDashboard';
+import {useAdminAudit} from '@/hooks/useAdminAudit';
 import {EmptyState, QueryState} from "@/components/data/WorkspaceState";
 import {Pagination} from "@/components/data/Pagination";
 import {Button} from "@/components/ui";

@@ -5,16 +5,16 @@ import {useRouter} from 'next/navigation';
 import {CalendarClock, Check, FolderKanban, MapPin, X} from 'lucide-react';
 import {AreaStepPanel, ProjectStepPanel, ScheduleStepPanel} from '@/components/marketplace/booking/ProjectSubscriptionStepPanels';
 import {Alert, Button} from '@/components/ui';
-import {estimateBookingSubtotal, extractActionableError, pricingUnitLabel} from '@/forms/marketplace/marketplace-forms';
-import {flightPlanToGeoJson, geoJsonToFlightPlan, validateProjectInput, validateSubscriptionBooking} from '@/forms/project/project-form';
-import {useCustomerProjects, useProjectActions} from '@/hooks/project/useCustomerProjects';
+import {estimateBookingSubtotal, extractActionableError, pricingUnitLabel} from '@/forms/marketplace-forms';
+import {flightPlanToGeoJson, geoJsonToFlightPlan, validateProjectInput, validateSubscriptionBooking} from '@/forms/project-form';
+import {useCustomerProjects, useProjectActions} from '@/hooks/useCustomerProjects';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {ApiError} from '@/lib/api';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import type {MarketplaceListing} from '@/types/marketplace/marketplace.types';
-import type {FlightPlanInput} from '@/types/mission/flight-plan.types';
-import type {CustomerProject, ProjectScheduleType} from '@/types/project/project.types';
+import type {MarketplaceListing} from '@/types/marketplace.types';
+import type {FlightPlanInput} from '@/types/flight-plan.types';
+import type {CustomerProject, ProjectScheduleType} from '@/types/project.types';
 
 function defaultStartDateIso(): string {
     return new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);

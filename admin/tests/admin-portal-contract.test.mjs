@@ -20,7 +20,7 @@ test('admin writes only through shared API client and uses actual permission end
     assert.doesNotMatch(source, /\bfetch\s*\(/);
     const routes = readFileSync(`${root}src/lib/api/routes.ts`, 'utf8');
     for (const endpoint of ['/api/v1/users', '/api/v1/permissions', '/api/v1/role-templates', '/api/v1/audit-logs', '/api/v1/dashboard/summary']) assert.match(routes, new RegExp(endpoint.replaceAll('/', '\\/')));
-    for (const [file, group] of [['api/user/users.api.ts', 'users'], ['api/access/access.api.ts', 'permissions'], ['api/access/access.api.ts', 'roleTemplates'], ['api/audit/audit.api.ts', 'auditLogs'], ['api/dashboard/admin-dashboard.api.ts', 'dashboard']]) {
+    for (const [file, group] of [['api/users.api.ts', 'users'], ['api/access.api.ts', 'permissions'], ['api/access.api.ts', 'roleTemplates'], ['api/audit.api.ts', 'auditLogs'], ['api/admin-dashboard.api.ts', 'dashboard']]) {
         assert.match(readFileSync(`${root}src/${file}`, 'utf8'), new RegExp(`API_ROUTES\\.${group}\\.`), file);
     }
     assert.match(readFileSync(`${root}src/components/access/PermissionEditor.tsx`, 'utf8'), /admin\.access\.overrideHint/);
@@ -33,7 +33,7 @@ test('admin keeps mission administration in Operations ownership', () => {
     assert.doesNotMatch(readFileSync(`${root}src/components/layout/AdminAppShell.tsx`, 'utf8'), /MISSION_VIEW_ALL|dispatch\/missions/);
 });
 test('permission editor retains partial write outcomes and supports inherit', () => {
-    const model = readFileSync(`${root}src/utils/access/permission-model.ts`, 'utf8');
+    const model = readFileSync(`${root}src/utils/permission-model.ts`, 'utf8');
     assert.match(model, /for \(const change of changes\)/);
     assert.match(model, /failed\.push/);
     assert.match(model, /allowed: null/);

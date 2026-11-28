@@ -13,12 +13,12 @@ import {NotificationBell} from '@/components/notification/inbox/NotificationBell
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import {Alert, Button, LanguageSwitcher, UavLoader} from '@/components/ui';
 import {CUSTOMER_SIDEBAR_ROUTES, resolveSidebarActiveItem} from '@/config/sidebar-routes';
-import {useOwnProfile} from '@/hooks/profile/useProfile';
+import {useOwnProfile} from '@/hooks/useProfile';
 import {useSidebarController} from '@/hooks/useSidebarController';
 import {CUSTOMER_RECENT_PAGES_KEY, rememberRecentPage} from '@/lib/recent-pages';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {loginEntryForPage} from '@/utils/auth/auth-entry';
+import {loginEntryForPage} from '@/utils/auth-entry';
 
 // Cấu hình routes của Sidebar Khách hàng (bao gồm /billing, /notifications, v.v.)
 // được tách riêng và quản lý tập trung tại `@/config/sidebar-routes.ts`.

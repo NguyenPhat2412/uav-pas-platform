@@ -8,8 +8,8 @@ import {
 } from 'lucide-react-native';
 import {AppText, Badge, Button, Card, SectionTitle} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
-import type {Mission} from '@/shared/types/mission/mission.types';
-import type {SimCommand, SimulationRunLog, SimulationState} from '@/shared/types/simulation/simulation.types';
+import type {Mission} from '@/shared/types/mission.types';
+import type {SimCommand, SimulationRunLog, SimulationState} from '@/shared/types/simulation.types';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export interface OperationsRehearsalSimulationCardProps {

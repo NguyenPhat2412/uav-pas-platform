@@ -1,6 +1,6 @@
 'use client';
 import {useI18n} from '@/providers/I18nContext';
-import {useImageExif} from '@/hooks/media/useMedia';
+import {useImageExif} from '@/hooks/useMedia';
 
 const num = (value: unknown) => typeof value === 'number' && Number.isFinite(value) ? value
     : typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value)) ? Number(value) : undefined;

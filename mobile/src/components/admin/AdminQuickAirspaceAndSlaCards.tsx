@@ -2,10 +2,10 @@ import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Clock, Power, ShieldAlert, Wrench} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, EmptyState, ErrorState, LoadingState, SectionTitle} from '@/components/ui';
-import {signInErrorText} from '@/forms/auth/sign-in-flow';
+import {signInErrorText} from '@/forms/sign-in-flow';
 import {useI18n} from '@/providers/I18nContext';
-import {businessToday} from '@/shared/utils/maintenance/workflows';
-import type {AirspaceZone} from '@/shared/types/airspace/airspace.types';
+import {businessToday} from '@/shared/utils/maintenance-workflows';
+import type {AirspaceZone} from '@/shared/types/airspace.types';
 import type {SlaIntelligenceData} from '@/shared/types/admin';
 import {colors, radius, spacing} from '@/styles/tokens';
 

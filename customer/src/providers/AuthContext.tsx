@@ -3,8 +3,8 @@
 import {clearWelcomeFlags} from '@/lib/welcome-flag';
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
-import type {AppleLoginInput, AuthContextType, AuthResponse, RegisterRequest, UserResponse} from "@/types/auth/auth.types";
-import {authService} from '@/api/auth/auth.api';
+import type {AppleLoginInput, AuthContextType, AuthResponse, RegisterRequest, UserResponse} from "@/types/auth.types";
+import {authService} from '@/api/auth.api';
 import {API_ROUTES, ApiError, apiClient, knownSignedOut, PERMISSIONS_EVENT, rememberSessionUser, SESSION_EVENT, SESSION_STORAGE_KEY, sessionOwnerOf, setAuthSession, TRANSPORT_EVENT, type TransportState} from "@/lib/api";
 import {toast} from '@/providers/ToastContext';
 import {useI18n} from '@/providers/I18nContext';

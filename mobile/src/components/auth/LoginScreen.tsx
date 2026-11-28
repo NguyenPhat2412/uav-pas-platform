@@ -6,7 +6,7 @@ import {AuthLayout} from '@/components/auth/AuthLayout';
 import {SocialSignInRow} from '@/components/auth/SocialSignInRow';
 import {AppLogo} from '@/components/shared/BrandMark';
 import {AppText, Button, KeyboardAnchor, TextField} from '@/components/ui';
-import {nextSignInStep, signInErrorText} from '@/forms/auth/sign-in-flow';
+import {nextSignInStep, signInErrorText} from '@/forms/sign-in-flow';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';

@@ -54,7 +54,7 @@ test('AccountMenu and CustomerAccountMenu use compact sign-out button styling', 
 
 test('pure profile-form helpers enforce dynamic server AccountDeletionPolicy without hardcoded values', async () => {
     const formatUrl = compileModule(read('src/lib/format.ts'));
-    const profileForm = await import(compileModule(read('src/forms/profile/profile-form.ts').replaceAll('@/lib/format', formatUrl)));
+    const profileForm = await import(compileModule(read('src/forms/profile-form.ts').replaceAll('@/lib/format', formatUrl)));
 
     const basePolicy = {
         enabled: true,

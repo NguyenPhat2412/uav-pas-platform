@@ -1,10 +1,10 @@
 'use client';
-import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention} from "@/utils/media/media-policy";
+import {MEDIA_ACCEPT, mediaUploadPolicy, mediaUploadRetention} from "@/utils/media-policy";
 import {displayLabel} from "@/lib/presentation";
 import {useState} from 'react';
 import {Badge, Button, Input, OptionalMark, RequiredMark} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
-import {useMediaMutations} from '@/hooks/media/useMedia';
+import {useMediaMutations} from '@/hooks/useMedia';
 import {useCollection} from '@/hooks/useCollection';
 import {MEDIA_VISIBILITIES, type MediaAsset, type MediaVisibility} from "@/types/resources";
 import {DataTable, Detail, ErrorNotice, selectClass} from "@/components/data/ResourceState";

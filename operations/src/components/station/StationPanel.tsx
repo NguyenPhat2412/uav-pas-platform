@@ -4,7 +4,7 @@ import {useMemo, useState} from 'react';
 import {Plus} from 'lucide-react';
 import {Button, Card, CardContent, StatusBadge} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
-import {useStationMutations} from '@/hooks/station/useStations';
+import {useStationMutations} from '@/hooks/useStations';
 import {useCollection} from '@/hooks/useCollection';
 import {DataTable, options} from '@/components/data/DataTable';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
@@ -13,11 +13,11 @@ import {
     emptyStationDraft,
     stationFieldErrors,
     toStationPayload,
-} from '@/forms/station/station-form';
+} from '@/forms/station-form';
 import type {Station} from '@/types/resources';
 import {resolveStationIdFromParam, toStationSlug} from '@/lib/url-slugs';
 import {useI18n} from '@/providers/I18nContext';
-import {useStationsWeather} from '@/hooks/weather/useWeather';
+import {useStationsWeather} from '@/hooks/useWeather';
 import {StationWeatherCell} from '@/components/weather/StationWeatherCell';
 import {StationFormDrawer, StationFormFields} from '@/components/station/StationFormDrawer';
 

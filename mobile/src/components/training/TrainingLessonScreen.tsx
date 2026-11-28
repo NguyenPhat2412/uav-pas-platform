@@ -8,11 +8,11 @@ import {ChevronLeft, ChevronRight, CircleCheck, Download, ExternalLink, FileText
 import {AppText, Badge, Button, Card, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
 import {LESSON_ICONS} from '@/components/training/TrainingBits';
 import {MarkdownText} from '@/components/training/MarkdownText';
-import {useTrainingLesson, useTrainingLessonProgress} from '@/hooks/training/useTraining';
+import {useTrainingLesson, useTrainingLessonProgress} from '@/hooks/useTraining';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {formatFileSize, isLastSlide, isPositionSaveDue, isVideoWatched, resumePosition, slideCounter} from '@/shared/utils/training/course-helpers';
-import type {TrainingLessonDetail, TrainingLessonSlide, UpdateTrainingLessonProgressPayload} from '@/shared/types/training/training.types';
+import {formatFileSize, isLastSlide, isPositionSaveDue, isVideoWatched, resumePosition, slideCounter} from '@/shared/utils/course-helpers';
+import type {TrainingLessonDetail, TrainingLessonSlide, UpdateTrainingLessonProgressPayload} from '@/shared/types/training.types';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 type Save = (payload: UpdateTrainingLessonProgressPayload) => void;

@@ -1,6 +1,6 @@
 import {Cloud, CloudDrizzle, CloudFog, CloudLightning, CloudMoon, CloudRain, CloudRainWind, CloudSnow, CloudSun, Moon, Sun, type LucideIcon} from 'lucide-react';
 import {cn} from '@/lib/utils';
-import type {WeatherCondition} from '@/utils/weather/conditions';
+import type {WeatherCondition} from '@/utils/conditions';
 
 // Conventional weather colours (sun amber, rain blue, storm violet), given as hex so the portal's grey
 // palette overrides for blue/sky utilities do not wash them out.

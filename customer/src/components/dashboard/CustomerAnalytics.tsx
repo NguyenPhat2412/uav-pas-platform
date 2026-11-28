@@ -5,9 +5,9 @@ import {CalendarClock} from 'lucide-react';
 import {Panel, Status} from '@/components/customer/CustomerUi';
 import {displayLabel, planName} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
-import {useCustomerAnalytics} from '@/hooks/dashboard/useCustomerAnalytics';
+import {useCustomerAnalytics} from '@/hooks/useCustomerAnalytics';
 import {useAuth} from '@/providers/AuthContext';
-import type {CustomerAnalytics as Analytics} from '@/types/dashboard/dashboard.types';
+import type {CustomerAnalytics as Analytics} from '@/types/dashboard.types';
 import {BarList, ColumnChart, Legend, SegmentBar, seriesColors} from '@/components/dashboard/AdminCharts';
 
 const MissionMap = dynamic(() => import('@/components/dashboard/MissionMap').then(m => m.MissionMap), {ssr: false});

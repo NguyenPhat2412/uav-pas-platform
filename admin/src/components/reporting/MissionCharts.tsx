@@ -3,7 +3,7 @@
 import {useState} from 'react';
 import {useAuth} from '@/providers/AuthContext';
 import {displayLabel} from '@/lib/presentation';
-import {useReportMissions} from '@/hooks/reporting/useReports';
+import {useReportMissions} from '@/hooks/useReports';
 import type {MissionOutcome as Outcome} from '@/types/admin';
 import type {Mission, MissionStatus} from '@/types/customer';
 import {useI18n} from '@/providers/I18nContext';

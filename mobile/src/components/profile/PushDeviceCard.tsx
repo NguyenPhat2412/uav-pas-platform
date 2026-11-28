@@ -2,10 +2,10 @@ import React, {useState} from 'react';
 import {Linking, StyleSheet, Switch, View} from 'react-native';
 import {ExternalLink, Smartphone} from 'lucide-react-native';
 import {AppText, Button, Card} from '@/components/ui';
-import {useNotifications} from '@/hooks/notification/useNotifications';
+import {useNotifications} from '@/hooks/useNotifications';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {signInErrorText} from '@/forms/auth/sign-in-flow';
+import {signInErrorText} from '@/forms/sign-in-flow';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 /** Sleek, single-row device push notification toggle (native iOS/Android permissions + APNs/Expo Push). */

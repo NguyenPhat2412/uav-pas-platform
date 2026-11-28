@@ -3,8 +3,8 @@
 import React, {type FormEvent, useState} from 'react';
 import {ArrowLeft, KeyRound, Mail} from 'lucide-react';
 import {Badge, Button, FormField, Input, PasswordInput} from '@/components/ui';
-import {toForgotPasswordPayload, toResetPasswordPayload} from '@/forms/auth/auth-form';
-import {useAuthFlow} from '@/hooks/auth/useAuthFlow';
+import {toForgotPasswordPayload, toResetPasswordPayload} from '@/forms/auth-form';
+import {useAuthFlow} from '@/hooks/useAuthFlow';
 import {toast} from '@/providers/ToastContext';
 import {OtpCodeInput} from '@/components/auth/social/OtpCodeInput';
 import {

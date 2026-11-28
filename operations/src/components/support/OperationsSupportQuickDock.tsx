@@ -5,7 +5,7 @@ import {useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent} from 
 import {ArrowLeft, MessagesSquare, Send, X, Zap} from 'lucide-react';
 import {OPEN_OPS_SUPPORT_DOCK_EVENT} from '@/components/shared/UnifiedFloatingLauncher';
 import {SupportMessageStatusRow} from '@/components/support/SupportMessageStatusRow';
-import {sanitizeEntityName} from '@/forms/marketplace/marketplace-forms';
+import {sanitizeEntityName} from '@/forms/marketplace-forms';
 import {
     formatOpsSupportSource,
     formatOpsSupportTime,
@@ -19,12 +19,12 @@ import {
     useOpsSupportSummary,
     useOpsSupportThreadDetail,
     useOpsSupportThreads,
-} from '@/hooks/support/useOperationsSupport';
-import {useSupportOutbox} from '@/hooks/support/useSupportOutbox';
+} from '@/hooks/useOperationsSupport';
+import {useSupportOutbox} from '@/hooks/useSupportOutbox';
 import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {toast} from '@/providers/ToastContext';
-import {mergeMessagesWithOutbox, resolveSupportMessageReceipt} from '@/utils/support/message-status';
+import {mergeMessagesWithOutbox, resolveSupportMessageReceipt} from '@/utils/message-status';
 
 export function OperationsSupportQuickDock({hideLauncher = false}: { hideLauncher?: boolean } = {}) {
     const {user, isAuthenticated, permissionsReady, can} = useAuth();

@@ -18,9 +18,9 @@ import {useI18n} from '@/providers/I18nContext';
 import {
     formatVndCompact,
     pricingUnitLabel,
-} from '@/shared/forms/marketplace/marketplace-forms';
-import type {MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
+} from '@/shared/forms/marketplace-forms';
+import type {MarketplaceListing} from '@/shared/types/marketplace.types';
+import {cleanEntityName} from '@/utils/clean-text';
 import {colors, font, spacing} from '@/styles/tokens';
 
 /**

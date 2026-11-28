@@ -9,12 +9,12 @@ import {
     resolveListingPhoto,
 } from '@/components/marketplace/catalog/MarketplaceListingCard';
 import {ServiceCategoryIcon} from '@/components/marketplace/shop/ServiceCategoryIcon';
-import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplace';
-import {resolveListingBadge, sanitizeMarketplaceText} from '@/forms/project/project-form';
+import {usePublicListingDetail} from '@/hooks/useMarketplace';
+import {resolveListingBadge, sanitizeMarketplaceText} from '@/forms/project-form';
 import {iconNameForMissionType} from '@/lib/marketplace/service-categories';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
-import type {ListingType} from '@/types/marketplace/marketplace.types';
+import type {ListingType} from '@/types/marketplace.types';
 
 export function PublicListingDetail({slug}: { slug: string }) {
     const {t, locale} = useI18n();

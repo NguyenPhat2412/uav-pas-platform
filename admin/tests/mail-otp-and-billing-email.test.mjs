@@ -34,7 +34,7 @@ test('API_ROUTES exposes invoice email dispatch and dynamic SMTP/OTP management 
 });
 
 test('mail-otp-form strips 16-digit Google App Password spaces and builds clean payloads', async () => {
-    const form = await load(compile(read('src/forms/infrastructure/mail-otp-form.ts')));
+    const form = await load(compile(read('src/forms/mail-otp-form.ts')));
     assert.equal(form.stripAppPasswordSpaces('abcd efgh ijkl mnop'), 'abcdefghijklmnop');
 
     const draft = form.mailOtpDraftFromSettings({
@@ -101,7 +101,7 @@ test('infrastructureService and billingAdminService call exact SMTP/OTP and invo
         },
     };
     try {
-        const infraSource = compile(read('src/api/infrastructure/infrastructure.api.ts')).replace(/^import .*?;\n/gm, '');
+        const infraSource = compile(read('src/api/infrastructure.api.ts')).replace(/^import .*?;\n/gm, '');
         const {infrastructureService} = await load(
             'const {API_ROUTES,apiClient,buildQueryString}=globalThis.__mailOtpContractTest;\n' + infraSource,
         );
@@ -112,7 +112,7 @@ test('infrastructureService and billingAdminService call exact SMTP/OTP and invo
         await infrastructureService.sendResetOtp(' forgot@uav.vn ');
         await infrastructureService.clearOtpRateLimit(' locked@uav.vn ');
 
-        const billingSource = compile(read('src/api/billing/billing-admin.api.ts')).replace(/^import .*?;\n/gm, '');
+        const billingSource = compile(read('src/api/billing-admin.api.ts')).replace(/^import .*?;\n/gm, '');
         const {billingAdminService} = await load(
             'const {API_ROUTES,apiClient,buildQueryString}=globalThis.__mailOtpContractTest;\n' + billingSource,
         );

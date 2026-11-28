@@ -4,9 +4,9 @@ import MapView, {Circle, Marker, Polygon, type MapPressEvent} from 'react-native
 import {BookmarkPlus, LocateFixed, MapPinned, Save, Trash2} from 'lucide-react-native';
 import {AppText, Button, Card, ScaledText, SectionTitle, TextField} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
-import type {MissionFormErrors} from '@/shared/forms/mission/mission-form';
-import type {MissionInput, SavedFlightSite} from '@/shared/types/mission/mission.types';
-import {isFinitePoint, verticesToMapCoordinates} from '@/utils/operations/map-shapes';
+import type {MissionFormErrors} from '@/shared/forms/mission-form';
+import type {MissionInput, SavedFlightSite} from '@/shared/types/mission.types';
+import {isFinitePoint, verticesToMapCoordinates} from '@/utils/map-shapes';
 import {airspaceMapTone, colors, font, radius, spacing} from '@/styles/tokens';
 
 export interface MissionFlightPlanSectionProps {

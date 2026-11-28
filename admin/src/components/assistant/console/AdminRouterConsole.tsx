@@ -6,9 +6,9 @@ import Link from 'next/link';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {useI18n} from '@/providers/I18nContext';
-import {useRouterSettings} from '@/hooks/assistant/useAssistant';
+import {useRouterSettings} from '@/hooks/useAssistant';
 import {AssistantConversations} from '@/components/assistant/console/AssistantConversations';
-import type {RouterConsoleTab} from '@/types/assistant/assistant.types';
+import type {RouterConsoleTab} from '@/types/assistant.types';
 import {cn} from '@/lib/utils';
 
 /** The gateway's console address: the configured API base without its /v1 suffix. */

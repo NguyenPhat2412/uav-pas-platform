@@ -10,8 +10,8 @@ import {
     profileError,
     type ProfileErrors,
     type ProfileFields,
-} from "@/forms/profile/profile-form";
-import {useOwnProfile, useUpdateProfile} from '@/hooks/profile/useProfile';
+} from "@/forms/profile-form";
+import {useOwnProfile, useUpdateProfile} from '@/hooks/useProfile';
 import {confirmDialog} from '@/providers/ConfirmContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';

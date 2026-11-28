@@ -4,7 +4,7 @@ import type {FormEvent} from 'react';
 import {Loader2, Sparkles} from 'lucide-react';
 import {OptionalMark, RequiredMark} from '@/components/ui';
 import {cn} from '@/lib/utils';
-import type {SupportQuickTopicOption, SupportStartDraft} from '@/types/support/support.types';
+import type {SupportQuickTopicOption, SupportStartDraft} from '@/types/support.types';
 
 export interface PublicSupportStartFormProps {
     quickTopics: readonly SupportQuickTopicOption[];

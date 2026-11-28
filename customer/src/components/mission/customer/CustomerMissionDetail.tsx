@@ -1,5 +1,5 @@
 'use client';
-import {useCustomerMissionWorkflow} from '@/hooks/mission/useMissionWorkflow';
+import {useCustomerMissionWorkflow} from '@/hooks/useMissionWorkflow';
 import Link from 'next/link';
 import {MissionRequestDetails} from '@/components/mission/MissionRequestDetails';
 import {useParams, useRouter} from 'next/navigation';
@@ -10,9 +10,9 @@ import {PageGuard} from "@/components/customer/CustomerLayout";
 import {Button, Status} from "@/components/customer/CustomerUi";
 import {PageSkeleton} from "@/components/ui";
 import {useAuth} from '@/providers/AuthContext';
-import {useMissionActions, useMissionDetail, useServices} from '@/hooks/mission/useCustomerMissions';
-import {canEditMission} from "@/forms/mission/mission-form";
-import {canCancelCustomerOrder} from '@/forms/project/project-form';
+import {useMissionActions, useMissionDetail, useServices} from '@/hooks/useCustomerMissions';
+import {canEditMission} from "@/forms/mission-form";
+import {canCancelCustomerOrder} from '@/forms/project-form';
 import {MissionProgress} from "@/components/mission/customer/MissionProgress";
 import {OrderDeliveryTrackingCard} from '@/components/mission/customer/OrderDeliveryTrackingCard';
 import {MediaPreview} from "@/components/mission/customer/MediaPreview";
@@ -26,7 +26,7 @@ import {MissionInspectionReportCard} from "@/components/mission/MissionInspectio
 import {CustomerMissionMarketplaceCard} from "@/components/marketplace/escrow/CustomerMissionMarketplaceCard";
 import {parseEntityId, toMissionSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/providers/I18nContext';
-import type {MissionTab} from '@/types/mission/mission.types';
+import type {MissionTab} from '@/types/mission.types';
 
 export default function MissionDetailPage() {
     return <PageGuard><MissionDetail/></PageGuard>;

@@ -5,7 +5,7 @@ import {useSidebarController} from '@/hooks/useSidebarController';
 import {AssistantWidget} from '@/components/assistant/widget/AssistantWidget';
 import {AdminSupportQuickDock} from '@/components/support/AdminSupportQuickDock';
 import {UnifiedFloatingLauncher} from '@/components/shared/UnifiedFloatingLauncher';
-import {useSupportSummary} from '@/hooks/support/useAdminSupport';
+import {useSupportSummary} from '@/hooks/useAdminSupport';
 import {WelcomeBack} from '@/components/shared/WelcomeBack';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';

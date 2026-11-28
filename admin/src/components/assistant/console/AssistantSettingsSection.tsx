@@ -8,7 +8,7 @@ import {QueryState} from '@/components/data/WorkspaceState';
 import {confirmDialog} from '@/providers/ConfirmContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import {useRouterSettings, useRouterStatus, useSaveRouterSettings} from '@/hooks/assistant/useAssistant';
+import {useRouterSettings, useRouterStatus, useSaveRouterSettings} from '@/hooks/useAssistant';
 import {
     aiRouterDraftFromSettings,
     aiRouterFieldErrors,
@@ -16,8 +16,8 @@ import {
     resolveAiRouterErrorCode,
     toAiRouterSettingsPayload,
     type AiRouterFormDraft,
-} from '@/forms/assistant/assistant-settings-form';
-import type {AiRouterSettings, AiRouterStatus} from '@/types/assistant/assistant.types';
+} from '@/forms/assistant-settings-form';
+import type {AiRouterSettings, AiRouterStatus} from '@/types/assistant.types';
 import {SuperheroLogo} from '@/components/assistant/widget/SuperheroLogo';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {cn} from '@/lib/utils';

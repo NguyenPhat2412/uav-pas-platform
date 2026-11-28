@@ -6,10 +6,10 @@ import {AdminPage} from '@/components/layout/AdminPage';
 import {Pagination} from '@/components/data/Pagination';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {Alert, Badge, Button, Card, CardContent, CardHeader, CardTitle, FormField, Input, Select, Textarea} from '@/components/ui';
-import {useAdminI18nMutations, useAdminI18nNamespaces, useAdminTranslations} from '@/hooks/i18n/useAdminI18n';
+import {useAdminI18nMutations, useAdminI18nNamespaces, useAdminTranslations} from '@/hooks/useAdminI18n';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import type {UiTranslationRow} from '@/types/i18n/i18n.types';
+import type {UiTranslationRow} from '@/types/i18n.types';
 
 interface DraftEditorState {
     translationKey: string;

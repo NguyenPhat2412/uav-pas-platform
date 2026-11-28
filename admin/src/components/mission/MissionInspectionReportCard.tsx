@@ -3,7 +3,7 @@
 import {useState} from 'react';
 import {Award, CheckCircle2, Clock, Download, FileCheck2, Layers, MapPin, Printer, ShieldCheck, SlidersHorizontal} from 'lucide-react';
 import {Button} from '@/components/ui';
-import {useMissionInspectionReport} from '@/hooks/mission/useCustomerMissions';
+import {useMissionInspectionReport} from '@/hooks/useCustomerMissions';
 import {useI18n} from '@/providers/I18nContext';
 
 export interface MissionInspectionReportCardProps {

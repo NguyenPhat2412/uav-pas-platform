@@ -7,9 +7,9 @@ import {Button} from '@/components/customer/CustomerUi';
 import {OptionalMark, RequiredMark} from '@/components/ui';
 import {ProviderStudioShell} from '@/components/marketplace/provider/ProviderStudioShell';
 import {ProviderWalletLedger} from '@/components/marketplace/escrow/ProviderWalletLedger';
-import {useMyProviderProfile, useMyProviderWallet, useRequestPayout} from '@/hooks/marketplace/useMarketplace';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
-import {extractActionableError, formatVndCompact} from '@/forms/marketplace/marketplace-forms';
+import {useMyProviderProfile, useMyProviderWallet, useRequestPayout} from '@/hooks/useMarketplace';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
+import {extractActionableError, formatVndCompact} from '@/forms/marketplace-forms';
 
 export default function ProviderWalletView() {
     const profileQuery = useMyProviderProfile();

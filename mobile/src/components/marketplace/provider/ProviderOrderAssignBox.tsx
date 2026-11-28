@@ -3,11 +3,11 @@ import {StyleSheet, View} from 'react-native';
 import {Plane, Play, UserCheck} from 'lucide-react-native';
 import {Button} from '@/components/ui';
 import {GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
-import {type ProviderPilot} from '@/hooks/marketplace/useProviderStudio';
+import {type ProviderPilot} from '@/hooks/useProviderStudio';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import type {ProviderUav} from '@/shared/types/marketplace/marketplace.types';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
+import type {ProviderUav} from '@/shared/types/marketplace.types';
+import {cleanEntityName} from '@/utils/clean-text';
 import {spacing} from '@/styles/tokens';
 
 /**

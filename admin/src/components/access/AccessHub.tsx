@@ -4,7 +4,7 @@ import {AccessControl, TemplateEditor} from "@/components/access/PermissionEdito
 import {Registry} from "@/components/access/Registry";
 import {RoleMatrix} from "@/components/access/RoleMatrix";
 import {useI18n} from '@/providers/I18nContext';
-import type {AccessTab} from '@/types/access/access.types';
+import type {AccessTab} from '@/types/access.types';
 
 export type {AccessTab};
 

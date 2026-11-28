@@ -14,11 +14,11 @@ import {
     preflightProgressCount,
     type PreflightChecklistKey,
     type PreflightChecklistState,
-} from '@/forms/operations/preflight-checklist';
+} from '@/forms/preflight-checklist';
 import {useI18n} from '@/providers/I18nContext';
-import {missionFormError} from '@/shared/forms/mission/mission-form';
-import type {AirspaceClearance} from '@/shared/types/airspace/airspace.types';
-import type {Mission, MissionPreflight} from '@/shared/types/mission/mission.types';
+import {missionFormError} from '@/shared/forms/mission-form';
+import type {AirspaceClearance} from '@/shared/types/airspace.types';
+import type {Mission, MissionPreflight} from '@/shared/types/mission.types';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export {OperationsDispatchResourceCard} from './OperationsDispatchResourceCard';

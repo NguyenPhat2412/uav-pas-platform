@@ -11,7 +11,7 @@ async function loadTs(path) {
     return import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
 }
 
-const files = await loadTs('../src/utils/storage/files.ts');
+const files = await loadTs('../src/utils/files.ts');
 const admin = async locale => JSON.parse(await readFile(new URL(`../src/messages/sections/admin/${locale}.json`, import.meta.url), 'utf8')).admin;
 
 const file = (over = {}) => ({

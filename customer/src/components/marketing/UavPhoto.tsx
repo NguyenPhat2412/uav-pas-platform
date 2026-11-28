@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import type {UavScene} from '@/types/marketing/marketing.types';
+import type {UavScene} from '@/types/marketing.types';
 
 export type {UavScene};
 

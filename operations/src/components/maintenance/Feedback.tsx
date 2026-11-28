@@ -2,7 +2,7 @@
 import {useEffect, useRef} from 'react';
 import {Alert, Button} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
-import type {MaintenanceAction} from '@/hooks/maintenance/useMaintenanceAction';
+import type {MaintenanceAction} from '@/hooks/useMaintenanceAction';
 
 export function Feedback({error, success}: { error?: string; success?: string }) {
     const ref = useRef<HTMLDivElement>(null);

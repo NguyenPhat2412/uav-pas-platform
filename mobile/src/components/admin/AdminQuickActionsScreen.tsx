@@ -31,20 +31,20 @@ import {
 } from '@/components/admin/AdminQuickAirspaceAndSlaCards';
 import {AdminMarketplaceTabContent} from '@/components/admin/AdminQuickMarketplaceCards';
 import {AdminSettingsTabContent} from '@/components/admin/AdminQuickSettingsCard';
-import {signInErrorText} from '@/forms/auth/sign-in-flow';
+import {signInErrorText} from '@/forms/sign-in-flow';
 import {
     useAdminAirspaceZones,
     useAdminPendingInvoices,
     useAdminQuickMutations,
     useAdminSlaIntelligence,
     useAdminUsers,
-} from '@/hooks/admin/useAdminQuickActions';
+} from '@/hooks/useAdminQuickActions';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {displayLabel} from '@/shared/lib/presentation';
 import type {User} from '@/shared/types/admin';
-import type {AirspaceZone} from '@/shared/types/airspace/airspace.types';
+import type {AirspaceZone} from '@/shared/types/airspace.types';
 import {colors, spacing} from '@/styles/tokens';
 
 type AdminTab = 'marketplace' | 'settings' | 'users' | 'invoices' | 'airspace' | 'sla';

@@ -11,13 +11,13 @@ import {
     renderFlightPlanOverlay,
     roundCoord,
 } from '@/components/mission/customer/location-picker-helpers';
-import {useAirspaceZones} from '@/hooks/airspace/useAirspace';
+import {useAirspaceZones} from '@/hooks/useAirspace';
 import {MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
 import {useI18n} from '@/providers/I18nContext';
-import {defaultFlightPlan, type FlightPlanInput} from '@/types/mission/flight-plan.types';
-import type {PlannerTool} from '@/types/mission/mission.types';
-import {renderAirspaceZonesLayer} from '@/utils/airspace/map-overlays';
-import {flightGeometry} from '@/utils/mission/flight-geometry';
+import {defaultFlightPlan, type FlightPlanInput} from '@/types/flight-plan.types';
+import type {PlannerTool} from '@/types/mission.types';
+import {renderAirspaceZonesLayer} from '@/utils/map-overlays';
+import {flightGeometry} from '@/utils/flight-geometry';
 
 /**
  * GIS flight area planner: a takeoff/landing zone plus an optional survey polygon or radius circle. Emits the plan

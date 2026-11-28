@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 import {CheckCircle2, Clock, FileSpreadsheet, LifeBuoy, PlaneTakeoff} from 'lucide-react';
 import {Alert, Button, KpiCard, MetricStrip, Spinner} from '@/components/ui';
 import {AdminPage} from '@/components/layout/AdminPage';
-import {useExportOperationsCsv, useOperationsReport} from '@/hooks/reporting/useReports';
+import {useExportOperationsCsv, useOperationsReport} from '@/hooks/useReports';
 import {MissionCharts} from '@/components/reporting/MissionCharts';
 import {AdminSlaIntelligenceSection} from '@/components/reporting/AdminSlaIntelligenceSection';
 import {useI18n} from '@/providers/I18nContext';

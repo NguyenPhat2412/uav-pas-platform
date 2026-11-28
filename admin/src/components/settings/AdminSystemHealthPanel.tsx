@@ -5,8 +5,8 @@ import {Alert, Badge, type BadgeProps, Button, Card, CardHeader, CardTitle, KpiC
 import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {cn} from '@/lib/utils';
-import {useSystemHealth} from '@/hooks/settings/useSettings';
-import type {HealthStatus, SystemHealth} from '@/types/settings/system-health.types';
+import {useSystemHealth} from '@/hooks/useSettings';
+import type {HealthStatus, SystemHealth} from '@/types/system-health.types';
 
 const tone: Record<HealthStatus, { stripe: string; text: string; badge: NonNullable<BadgeProps['variant']>; icon: typeof CheckCircle2 }> = {
     UP: {stripe: 'border-l-uav-blue', text: 'text-uav-blue', badge: 'success', icon: CheckCircle2},

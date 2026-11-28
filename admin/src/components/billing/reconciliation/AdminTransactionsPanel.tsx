@@ -7,10 +7,10 @@ import {Drawer, Metadata} from '@/components/data/Drawer';
 import {Pagination} from '@/components/data/Pagination';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {AdminPage} from '@/components/layout/AdminPage';
-import {useAdminBillingRealtime, useBillingTransactions, useRefundTransaction} from '@/hooks/billing/useBillingAdmin';
+import {useAdminBillingRealtime, useBillingTransactions, useRefundTransaction} from '@/hooks/useBillingAdmin';
 import {toast} from '@/providers/ToastContext';
 import {useI18n} from '@/providers/I18nContext';
-import type {AdminPaymentTransaction, TransactionFilters} from '@/types/billing/billing-admin.types';
+import type {AdminPaymentTransaction, TransactionFilters} from '@/types/billing-admin.types';
 
 const statuses = ['SUCCESS', 'PENDING', 'MISMATCH', 'UNMATCHED', 'FAILED'] as const;
 const gateways = ['VIETQR_SEPAY_AUTO', 'VIETQR_NAPAS_247', 'BANK_TRANSFER_MANUAL', 'VIETQR_NAPAS'] as const;

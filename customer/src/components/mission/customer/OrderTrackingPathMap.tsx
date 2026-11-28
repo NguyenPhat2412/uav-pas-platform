@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import type {LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
 import {MAP_BASEMAPS, useMapConfig} from '@/lib/map-config';
-import type {OrderTrackingPosition} from '@/types/project/project.types';
+import type {OrderTrackingPosition} from '@/types/project.types';
 
 function toLatLngList(raw?: readonly (readonly [number, number])[] | null): [number, number][] {
     if (!Array.isArray(raw)) return [];

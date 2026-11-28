@@ -2,7 +2,7 @@
 
 import {useEffect, useRef, useState} from 'react';
 import {MessageCircleMore, Sparkles, X} from 'lucide-react';
-import {OPEN_SUPPORT_WIDGET_EVENT} from '@/hooks/support/usePublicSupport';
+import {OPEN_SUPPORT_WIDGET_EVENT} from '@/hooks/usePublicSupport';
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
 

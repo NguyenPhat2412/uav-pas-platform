@@ -7,11 +7,11 @@ import {MarketplaceListingCard} from '@/components/marketplace/catalog/Marketpla
 import {CustomerShopCategoryStrip} from '@/components/marketplace/shop/CustomerShopCategoryStrip';
 import {CustomerShopHeroBanner} from '@/components/marketplace/shop/CustomerShopHeroBanner';
 import {Alert, Button} from '@/components/ui';
-import {usePublicListings} from '@/hooks/marketplace/useMarketplace';
+import {usePublicListings} from '@/hooks/useMarketplace';
 import {WEB_SERVICE_CATEGORIES, type ServiceCategoryDef} from '@/lib/marketplace/service-categories';
 import {useI18n} from '@/providers/I18nContext';
-import type {ListingSortOption, ListingType} from '@/types/marketplace/marketplace.types';
-import type {MissionType} from '@/types/mission/mission.types';
+import type {ListingSortOption, ListingType} from '@/types/marketplace.types';
+import type {MissionType} from '@/types/mission.types';
 
 export function CustomerShopCatalogView() {
     const {t} = useI18n();

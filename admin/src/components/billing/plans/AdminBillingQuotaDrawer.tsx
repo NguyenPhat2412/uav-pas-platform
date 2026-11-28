@@ -7,7 +7,7 @@ import {
     canSubmitUserQuota,
     quotaFieldErrors,
     type UserQuotaDraft,
-} from '@/forms/billing/billing-form';
+} from '@/forms/billing-form';
 import {planName} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 import type {UserQuota} from '@/types/admin';

@@ -5,7 +5,7 @@ import {Badge, Button, Card} from '@/components/ui';
 import {formatBytes} from '@/components/infrastructure/runtime/InfraUi';
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
-import type {StorageDriveNode} from '@/types/storage/storage-pool.types';
+import type {StorageDriveNode} from '@/types/storage-pool.types';
 
 interface StorageDriveNodeCardProps {
     node: StorageDriveNode;

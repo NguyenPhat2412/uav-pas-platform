@@ -2,7 +2,7 @@ import React from 'react';
 import {Redirect} from 'expo-router';
 import {useAuth} from '@/providers/AuthContext';
 import {AppSplash, AppUnreachable} from '@/components/shared/AppStatusViews';
-import {resolvePortalEntryHref} from '@/utils/operations/portal-routing';
+import {resolvePortalEntryHref} from '@/utils/portal-routing';
 
 export const ROUTE_META = {
     id: 'root.index',

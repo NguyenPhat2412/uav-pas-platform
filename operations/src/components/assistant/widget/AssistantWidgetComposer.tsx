@@ -11,8 +11,8 @@ import {
 import {Film, Paperclip, SendHorizontal, X} from 'lucide-react';
 import {Button, Input, Spinner} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
-import type {AssistantMode, AssistantPortal, PendingAttachment} from '@/types/assistant/assistant.types';
-import {FRAMES_PER_VIDEO, MAX_ATTACHMENTS, imageAttachment, videoAttachments} from '@/utils/assistant/attachments';
+import type {AssistantMode, AssistantPortal, PendingAttachment} from '@/types/assistant.types';
+import {FRAMES_PER_VIDEO, MAX_ATTACHMENTS, imageAttachment, videoAttachments} from '@/utils/attachments';
 import {cn} from '@/lib/utils';
 
 /** The composer grows with its text up to about five lines, then scrolls. */

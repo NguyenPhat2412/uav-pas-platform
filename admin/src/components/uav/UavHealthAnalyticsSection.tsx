@@ -2,7 +2,7 @@
 
 import {Activity, AlertTriangle, BatteryCharging, CheckCircle2, Cpu, Gauge, ShieldAlert, Wrench} from 'lucide-react';
 import {Button} from '@/components/ui';
-import {useUavHealthAnalytics} from '@/hooks/uav/useUavs';
+import {useUavHealthAnalytics} from '@/hooks/useUavs';
 import {useI18n} from '@/providers/I18nContext';
 
 export interface UavHealthAnalyticsSectionProps {

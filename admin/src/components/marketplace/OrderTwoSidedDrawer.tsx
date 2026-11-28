@@ -10,12 +10,12 @@ import {
     formatMarketplaceVnd,
     sanitizeMarketplaceText,
     validateAdminOrderCancelReason,
-} from '@/forms/marketplace/admin-marketplace-form';
-import {useAdminMarketplaceOrderDetail, useCancelMarketplaceOrder} from '@/hooks/marketplace/useAdminMarketplace';
+} from '@/forms/admin-marketplace-form';
+import {useAdminMarketplaceOrderDetail, useCancelMarketplaceOrder} from '@/hooks/useAdminMarketplace';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import type {AdminMarketplaceOrder} from '@/types/marketplace/marketplace.types';
+import type {AdminMarketplaceOrder} from '@/types/marketplace.types';
 
 export function OrderTwoSidedDrawer({
     initialOrder,

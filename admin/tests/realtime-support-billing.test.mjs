@@ -16,11 +16,11 @@ test('Admin WebSocket hub & support/billing hooks wire real-time events cleanly'
     assert.match(wsClient, /SUPPORT_VISITOR_TYPING/);
     assert.match(wsClient, /INVOICE_UPDATED/);
 
-    const supportHook = read('src/hooks/support/useAdminSupport.ts');
+    const supportHook = read('src/hooks/useAdminSupport.ts');
     assert.match(supportHook, /useAdminSupportRealtime/);
     assert.match(supportHook, /ADMIN_TYPING/);
 
-    const billingHook = read('src/hooks/billing/useBillingAdmin.ts');
+    const billingHook = read('src/hooks/useBillingAdmin.ts');
     assert.match(billingHook, /useAdminBillingRealtime/);
     assert.match(billingHook, /usePaymentGatewayConfig/);
     assert.match(billingHook, /useUpdatePaymentGatewayConfig/);
@@ -31,7 +31,7 @@ test('Admin support & billing components respect palette guardrails and <= 300 l
         'src/components/support/SupportInboxWorkspace.tsx',
         'src/components/support/SupportThreadConversationPane.tsx',
         'src/components/support/AdminSupportQuickDock.tsx',
-        'src/utils/support/support-format.ts',
+        'src/utils/support-format.ts',
         'src/components/billing/reconciliation/PaymentGatewaySettingsSection.tsx',
         'src/components/billing/invoices/AdminInvoiceDialogs.tsx',
         'src/components/billing/invoices/AdminInvoicesPanel.tsx',

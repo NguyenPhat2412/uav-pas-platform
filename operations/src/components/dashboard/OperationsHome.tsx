@@ -3,7 +3,7 @@
 import {MapPinned, PlaneTakeoff} from 'lucide-react';
 import {PortalHomeColumn, PortalHomeHero, PortalHomeRow} from '@/components/layout/PortalHomeHero';
 import {OPERATIONS_SIDEBAR_ROUTES} from '@/config/sidebar-routes';
-import {sanitizeEntityName} from '@/forms/marketplace/marketplace-forms';
+import {sanitizeEntityName} from '@/forms/marketplace-forms';
 import {OPERATIONS_RECENT_PAGES_KEY} from '@/lib/recent-pages';
 import {displayLabel} from '@/lib/presentation';
 import {useAuth} from '@/providers/AuthContext';

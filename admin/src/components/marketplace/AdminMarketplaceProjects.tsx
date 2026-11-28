@@ -21,10 +21,10 @@ import {
     MarketplacePagination,
 } from '@/components/marketplace/MarketplaceShared';
 import {ProjectSubscriptionsDrawer} from '@/components/marketplace/ProjectSubscriptionsDrawer';
-import {sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
-import {useAdminCustomerProjects} from '@/hooks/marketplace/useAdminMarketplace';
+import {sanitizeMarketplaceText} from '@/forms/admin-marketplace-form';
+import {useAdminCustomerProjects} from '@/hooks/useAdminMarketplace';
 import {useI18n} from '@/providers/I18nContext';
-import type {AdminCustomerProject, AdminProjectStatus} from '@/types/marketplace/marketplace.types';
+import type {AdminCustomerProject, AdminProjectStatus} from '@/types/marketplace.types';
 
 export function AdminMarketplaceProjects() {
     const {t} = useI18n();

@@ -10,7 +10,7 @@ import {RequiredMark} from '@/components/shared/RequiredMark';
 import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
 import type {WebhookEndpointItem} from '@/types/admin';
-import {useCreateWebhook, useWebhookSubscriptionMutations} from '@/hooks/webhook/useWebhooks';
+import {useCreateWebhook, useWebhookSubscriptionMutations} from '@/hooks/useWebhooks';
 import {
     canSubmitWebhookSubscription,
     createWebhookSubscriptionDraft,
@@ -18,7 +18,7 @@ import {
     toWebhookSubscriptionPayload,
     WEBHOOK_EVENTS,
     webhookFieldErrors,
-} from '@/forms/webhook/webhook-form';
+} from '@/forms/webhook-form';
 import {WebhookSecretDialog} from '@/components/webhook/WebhookSecretDialog';
 
 export function WebhookSubscriptions({items, onChanged}: { items: WebhookEndpointItem[]; onChanged: () => void }) {

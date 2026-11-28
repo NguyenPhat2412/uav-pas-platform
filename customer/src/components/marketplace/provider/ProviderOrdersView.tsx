@@ -12,9 +12,9 @@ import {
     useOpenRfqMissions,
     useProviderOrderActions,
     useProviderOrders,
-} from '@/hooks/marketplace/useMarketplace';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
-import {extractActionableError} from '@/forms/marketplace/marketplace-forms';
+} from '@/hooks/useMarketplace';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
+import {extractActionableError} from '@/forms/marketplace-forms';
 
 export default function ProviderOrdersView() {
     const {rfqEnabled, requireEscrowBeforeStart} = useSiteInfo();

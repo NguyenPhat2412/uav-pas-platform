@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {AlertCircle, Check, CheckCheck, Clock} from 'lucide-react-native';
 import {ScaledText} from '@/components/ui';
-import type {ResolvedMessageReceipt} from '@/shared/utils/support/message-status';
+import type {ResolvedMessageReceipt} from '@/shared/utils/message-status';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 export function SupportMessageStatusRow({

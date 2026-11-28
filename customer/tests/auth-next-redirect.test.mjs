@@ -5,7 +5,7 @@ import vm from 'node:vm';
 import test from 'node:test';
 
 const ts = createRequire(import.meta.url)('typescript');
-const source = readFileSync(new URL('../src/utils/auth/auth-entry.ts', import.meta.url), 'utf8');
+const source = readFileSync(new URL('../src/utils/auth-entry.ts', import.meta.url), 'utf8');
 const js = ts.transpileModule(source, {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022}}).outputText;
 const sandboxModule = {exports: {}};
 vm.runInNewContext(js, {module: sandboxModule, exports: sandboxModule.exports, URL, encodeURIComponent});

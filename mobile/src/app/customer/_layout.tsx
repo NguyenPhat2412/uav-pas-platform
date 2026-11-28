@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Redirect, Stack, usePathname} from 'expo-router';
-import {useOrderRealtimeSync} from '@/hooks/order/useOrders';
+import {useOrderRealtimeSync} from '@/hooks/useOrders';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {AssistantProvider} from '@/providers/AssistantContext';

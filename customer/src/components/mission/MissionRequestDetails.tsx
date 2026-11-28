@@ -1,5 +1,5 @@
 import {useI18n} from '@/providers/I18nContext';
-import type {MissionRequestDetailsData as RequestDetails} from '@/types/mission/mission.types';
+import type {MissionRequestDetailsData as RequestDetails} from '@/types/mission.types';
 
 /** The original customer request, shared by the customer and dispatch detail views. */
 export function MissionRequestDetails({mission}: { mission: RequestDetails }) {

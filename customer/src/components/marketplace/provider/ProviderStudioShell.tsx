@@ -13,8 +13,8 @@ import {
     Wallet,
 } from 'lucide-react';
 import {PageGuard} from '@/components/customer/CustomerLayout';
-import {useMyProviderProfile} from '@/hooks/marketplace/useMarketplace';
-import {verificationStatusLabel} from '@/forms/marketplace/marketplace-forms';
+import {useMyProviderProfile} from '@/hooks/useMarketplace';
+import {verificationStatusLabel} from '@/forms/marketplace-forms';
 
 const STUDIO_TABS = [
     {href: '/customer/provider/onboarding', label: 'Hồ sơ Đối tác', icon: Building2},

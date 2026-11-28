@@ -3,7 +3,7 @@ import {Pressable, StyleSheet, View} from 'react-native';
 import {ChevronRight, Home, Pause, Play, ShieldAlert} from 'lucide-react-native';
 import {AppText, Badge, Button, Card} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
-import type {SimCommand, SimulationRunLog, SimulationState} from '@/shared/types/simulation/simulation.types';
+import type {SimCommand, SimulationRunLog, SimulationState} from '@/shared/types/simulation.types';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export function SimulationSessionCard({

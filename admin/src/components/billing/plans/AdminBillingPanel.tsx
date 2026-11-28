@@ -4,13 +4,13 @@ import React, {useCallback, useMemo, useState} from 'react';
 import {Activity, Clock, ShieldAlert, Users} from 'lucide-react';
 import {Alert, KpiCard, MetricStrip} from '@/components/ui';
 import {AdminPage} from '@/components/layout/AdminPage';
-import {useBillingPlans, useUpdateQuota, useUserQuotas} from '@/hooks/billing/useBillingAdmin';
+import {useBillingPlans, useUpdateQuota, useUserQuotas} from '@/hooks/useBillingAdmin';
 import {
     canSubmitUserQuota,
     toUserQuotaDraft,
     toUserQuotaPayload,
     type UserQuotaDraft,
-} from '@/forms/billing/billing-form';
+} from '@/forms/billing-form';
 import type {UserQuota} from '@/types/admin';
 import {useI18n} from '@/providers/I18nContext';
 import {AdminInvoicesPanel} from '@/components/billing/invoices/AdminInvoicesPanel';

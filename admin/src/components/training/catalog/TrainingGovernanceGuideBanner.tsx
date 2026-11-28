@@ -11,7 +11,7 @@ import {
     ShieldCheck,
     Sparkles,
 } from 'lucide-react';
-import type {TrainingPortalTier} from '@/types/training/training.types';
+import type {TrainingPortalTier} from '@/types/training.types';
 
 const WORKFLOW_STEPS = [
     {

@@ -12,11 +12,11 @@ import {
     toPaymentGatewayPayload,
     validatePaymentGatewayDraft,
     type PaymentGatewayDraft,
-} from '@/forms/billing/payment-gateway-form';
-import {usePaymentGatewayConfig, useUpdatePaymentGatewayConfig} from '@/hooks/billing/useBillingAdmin';
+} from '@/forms/payment-gateway-form';
+import {usePaymentGatewayConfig, useUpdatePaymentGatewayConfig} from '@/hooks/useBillingAdmin';
 import {useAuth} from '@/providers/AuthContext';
 import {toast} from '@/providers/ToastContext';
-import type {PaymentGatewayConfig} from '@/types/billing/billing-admin.types';
+import type {PaymentGatewayConfig} from '@/types/billing-admin.types';
 
 export function PaymentGatewaySettingsSection({onSaved}: { onSaved?: () => void } = {}) {
     const {can, permissionsReady} = useAuth();

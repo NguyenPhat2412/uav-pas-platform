@@ -3,7 +3,7 @@ import {Alert, Pressable, StyleSheet, View} from 'react-native';
 import {LogOut, UserX} from 'lucide-react-native';
 import {AppText} from '@/components/ui';
 import {AccountDeletionModal} from '@/components/profile/AccountDeletionModal';
-import {useAccountDeletionPolicy} from '@/hooks/profile/useProfile';
+import {useAccountDeletionPolicy} from '@/hooks/useProfile';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {colors, spacing} from '@/styles/tokens';

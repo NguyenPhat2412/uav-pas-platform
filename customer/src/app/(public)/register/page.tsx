@@ -1,5 +1,5 @@
 import {redirect} from 'next/navigation';
-import {authEntryUrl} from '@/utils/auth/auth-entry';
+import {authEntryUrl} from '@/utils/auth-entry';
 
 export const metadata = {robots: {index: false, follow: false}};
 export default function Page() {

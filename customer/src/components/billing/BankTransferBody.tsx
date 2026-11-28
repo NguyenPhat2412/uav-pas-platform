@@ -4,13 +4,13 @@ import React, {useEffect, useState} from 'react';
 import QRCode from 'qrcode';
 import {CheckCircle2, Copy, Download, MessageCircleMore, Printer, RefreshCw} from 'lucide-react';
 import {Alert, Badge, Button, Card, CardContent} from '@/components/ui';
-import {useDownloadInvoiceReceipt} from '@/hooks/billing/useCustomerBilling';
-import {openPublicSupportWidget} from '@/hooks/support/usePublicSupport';
+import {useDownloadInvoiceReceipt} from '@/hooks/useCustomerBilling';
+import {openPublicSupportWidget} from '@/hooks/usePublicSupport';
 import {formatShortDate} from '@/lib/format';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import type {BankTransferInstructions} from '@/types/billing/billing.types';
-import {buildInvoiceSupportPrompt, printInvoice} from '@/utils/billing/invoice-print';
+import type {BankTransferInstructions} from '@/types/billing.types';
+import {buildInvoiceSupportPrompt, printInvoice} from '@/utils/invoice-print';
 
 export interface BankTransferBodyProps {
     data: BankTransferInstructions;

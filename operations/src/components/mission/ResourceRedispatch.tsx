@@ -4,12 +4,12 @@ import {Button} from '@/components/ui';
 import type {
     RedispatchFormState as Form,
     ResourceRedispatchProps as Props,
-} from "@/types/mission/mission.types";
-import {reservationQuantity} from "@/utils/mission/workflows";
-import {canSubmitResourceRedispatch, redispatchAvailableQuantity} from "@/forms/mission/operations-mission-form";
+} from "@/types/mission.types";
+import {reservationQuantity} from "@/utils/mission-workflows";
+import {canSubmitResourceRedispatch, redispatchAvailableQuantity} from "@/forms/operations-mission-form";
 import {OptionalMark, RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';
-import {useMissionWorkflow} from '@/hooks/mission/useMissionWorkflow';
+import {useMissionWorkflow} from '@/hooks/useMissionWorkflow';
 
 export function ResourceRedispatch({snapshot, stations, operators, equipment, allowed, disabled, action}: Props) {
     const missions = useMissionWorkflow();

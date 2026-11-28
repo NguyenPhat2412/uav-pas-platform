@@ -7,15 +7,15 @@ import {cn} from '@/lib/utils';
 import {PublicSupportStartForm} from '@/components/support/PublicSupportStartForm';
 import {SupportMessageStatusRow} from '@/components/support/SupportMessageStatusRow';
 import {ZaloBrandIcon} from '@/components/support/ZaloBrandIcon';
-import {formatPhoneDisplay, toZaloChatUrl} from '@/utils/support/contact-format';
-import {resolveSupportMessageReceipt} from '@/utils/support/message-status';
+import {formatPhoneDisplay, toZaloChatUrl} from '@/utils/contact-format';
+import {resolveSupportMessageReceipt} from '@/utils/message-status';
 import type {
     PublicSupportThreadSession,
     SupportAdminTypingState,
     SupportQuickTopicOption,
     SupportStartDraft,
     SupportWidgetMode,
-} from '@/types/support/support.types';
+} from '@/types/support.types';
 
 export interface PublicSupportChatPanelProps {
     mode?: SupportWidgetMode;

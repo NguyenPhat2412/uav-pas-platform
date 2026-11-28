@@ -10,15 +10,15 @@ import {FleetStationCard, FleetUavCard, RepairOrderCard} from '@/components/uav/
 import {SimulationRunLogCard, SimulationSessionCard} from '@/components/uav/FleetSimulationCards';
 import {MobileUav3DViewerCard} from '@/components/uav/MobileUav3DViewerCard';
 import {MobileUavHealthAnalyticsCard} from '@/components/uav/MobileUavHealthAnalyticsCard';
-import {useNotifications} from '@/hooks/notification/useNotifications';
-import {useSimulationActions, useSimulationRuns, useSimulations} from '@/hooks/simulation/useSimulation';
-import {useFleetOverview, useMaintenanceOrderActions, useMaintenanceOrders} from '@/hooks/uav/useFleetAndMaintenance';
+import {useNotifications} from '@/hooks/useNotifications';
+import {useSimulationActions, useSimulationRuns, useSimulations} from '@/hooks/useSimulation';
+import {useFleetOverview, useMaintenanceOrderActions, useMaintenanceOrders} from '@/hooks/useFleetAndMaintenance';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {buildMaintenanceCompletionPayload} from '@/forms/operations/field-report-form';
-import {missionFormError} from '@/shared/forms/mission/mission-form';
-import type {UavHealthProfile} from '@/shared/types/uav/telemetry.types';
+import {buildMaintenanceCompletionPayload} from '@/forms/field-report-form';
+import {missionFormError} from '@/shared/forms/mission-form';
+import type {UavHealthProfile} from '@/shared/types/telemetry.types';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 type FleetTab = 'uavs' | 'stations' | 'maintenance' | 'simulation';

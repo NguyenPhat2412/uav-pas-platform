@@ -5,8 +5,8 @@ import {auditDetail, displayLabel, formatDate} from "@/lib/presentation";
 import {useAuth} from '@/providers/AuthContext';
 import {KpiCard, MetricStrip} from "@/components/ui";
 import {EmptyState, QueryState} from "@/components/data/WorkspaceState";
-import {useAdminDashboardSummary} from '@/hooks/dashboard/useAdminDashboard';
-import {useAdminAudit} from '@/hooks/audit/useAdminAudit';
+import {useAdminDashboardSummary} from '@/hooks/useAdminDashboard';
+import {useAdminAudit} from '@/hooks/useAdminAudit';
 import {useI18n} from '@/providers/I18nContext';
 import {AdminMonitoringCard} from '@/components/dashboard/overview/AdminMonitoringCard';
 

@@ -4,11 +4,11 @@ import {useLocalSearchParams, useRouter} from 'expo-router';
 import {KeyRound, RotateCw, ShieldCheck} from 'lucide-react-native';
 import {Button, KeyboardAnchor, TextField} from '@/components/ui';
 import {AuthLayout} from '@/components/auth/AuthLayout';
-import {useAuthFlows} from '@/hooks/auth/useAuthFlows';
+import {useAuthFlows} from '@/hooks/useAuthFlows';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {nextSignInStep, normalizeCode, RESEND_COOLDOWN_SECONDS, signInErrorText, type VerifyParams} from '@/forms/auth/sign-in-flow';
+import {nextSignInStep, normalizeCode, RESEND_COOLDOWN_SECONDS, signInErrorText, type VerifyParams} from '@/forms/sign-in-flow';
 import {spacing} from '@/styles/tokens';
 
 /** The six-digit code of a 2FA sign-in (email or authenticator app) or of a new account's email verification. */

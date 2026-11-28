@@ -10,14 +10,14 @@ import {
     Rocket,
     ShieldAlert,
 } from 'lucide-react';
-import {verificationStatusLabel} from '@/forms/marketplace/marketplace-forms';
+import {verificationStatusLabel} from '@/forms/marketplace-forms';
 import type {
     ProviderDocument,
     ProviderDocumentType,
     ProviderProfile,
     ProviderType,
     ProviderVerificationStatus,
-} from '@/types/marketplace/marketplace.types';
+} from '@/types/marketplace.types';
 
 export type CustomerDocRequirementLevel = 'REQUIRED' | 'CONDITIONAL' | 'NOT_APPLICABLE';
 

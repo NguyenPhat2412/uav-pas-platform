@@ -8,11 +8,11 @@ import {Pagination} from '@/components/data/Pagination';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {AdminPage} from '@/components/layout/AdminPage';
 import {FilterSelect} from '@/components/shared/FilterSelect';
-import {useBillingOutbox, useRetryOutbox} from '@/hooks/billing/useBillingAdmin';
+import {useBillingOutbox, useRetryOutbox} from '@/hooks/useBillingAdmin';
 import {confirmDialog} from '@/providers/ConfirmContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import type {FinancialOutboxEvent} from '@/types/billing/billing-admin.types';
+import type {FinancialOutboxEvent} from '@/types/billing-admin.types';
 
 const filters = ['ALL', 'PENDING', 'WAITING_SUBSCRIBERS', 'FAILED', 'LOCAL_COMPLETED'] as const;
 

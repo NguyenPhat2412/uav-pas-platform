@@ -4,9 +4,9 @@ import {CalendarClock, ChevronRight, MapPin} from 'lucide-react-native';
 import {AppText, Badge, Card} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 import {displayLabel} from '@/shared/lib/presentation';
-import type {Mission, MissionStatus} from '@/shared/types/mission/mission.types';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
-import {statusTone, type StatusTone} from '@/utils/mission/status';
+import type {Mission, MissionStatus} from '@/shared/types/mission.types';
+import {cleanEntityName} from '@/utils/clean-text';
+import {statusTone, type StatusTone} from '@/utils/status';
 import {colors, spacing} from '@/styles/tokens';
 
 const TONE: Record<StatusTone, { background: string; color: string }> = {

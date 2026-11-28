@@ -4,13 +4,13 @@ import {useState} from 'react';
 import {ResourceRedispatch} from '@/components/mission/ResourceRedispatch';
 import {OperationsMissionUavRedispatchSection} from '@/components/mission/operations/OperationsMissionUavRedispatchSection';
 import {Button, Card, CardContent, CardHeader, CardTitle, FormField, Input, Select} from '@/components/ui';
-import {isValidEquipmentQuantity} from '@/forms/mission/operations-mission-form';
-import type {useMissionWorkflow} from '@/hooks/mission/useMissionWorkflow';
+import {isValidEquipmentQuantity} from '@/forms/operations-mission-form';
+import type {useMissionWorkflow} from '@/hooks/useMissionWorkflow';
 import {useI18n} from '@/providers/I18nContext';
-import type {DispatchResources, Mission} from '@/types/mission/mission.types';
+import type {DispatchResources, Mission} from '@/types/mission.types';
 import type {Equipment, Operator, Station, Uav} from '@/types/resources';
-import type {missionControls} from '@/utils/mission/presentation';
-import {reservationQuantity} from '@/utils/mission/workflows';
+import type {missionControls} from '@/utils/presentation';
+import {reservationQuantity} from '@/utils/mission-workflows';
 
 export interface OperationsMissionDispatchSectionProps {
     mission: Mission;

@@ -3,11 +3,11 @@ import {useRouter} from 'expo-router';
 import {KeyRound, Mail} from 'lucide-react-native';
 import {Button, KeyboardAnchor, TextField} from '@/components/ui';
 import {AuthLayout} from '@/components/auth/AuthLayout';
-import {useAuthFlows} from '@/hooks/auth/useAuthFlows';
+import {useAuthFlows} from '@/hooks/useAuthFlows';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {authFieldErrors, type ResetPasswordFormDraft} from '@/shared/forms/auth/auth-form';
-import {normalizeCode, signInErrorText} from '@/forms/auth/sign-in-flow';
+import {authFieldErrors, type ResetPasswordFormDraft} from '@/shared/forms/auth-form';
+import {normalizeCode, signInErrorText} from '@/forms/sign-in-flow';
 
 /** Step 1 asks for the email; step 2 takes the emailed code and the new password. */
 export function ForgotPasswordScreen() {

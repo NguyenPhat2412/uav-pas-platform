@@ -11,9 +11,9 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui';
-import {useDispatchCandidates} from '@/hooks/mission/useOperationsMissions';
+import {useDispatchCandidates} from '@/hooks/useOperationsMissions';
 import {useI18n} from '@/providers/I18nContext';
-import type {Mission} from '@/types/mission/mission.types';
+import type {Mission} from '@/types/mission.types';
 
 export function SmartDispatchCard({
     mission,

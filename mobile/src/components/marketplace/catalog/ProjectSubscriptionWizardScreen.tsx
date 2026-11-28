@@ -21,14 +21,14 @@ import {
     SectionTitle,
     TextField,
 } from '@/components/ui';
-import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplaceCatalog';
-import {useProjectList, useProjectMutations} from '@/hooks/project/useProjects';
+import {usePublicListingDetail} from '@/hooks/useMarketplaceCatalog';
+import {useProjectList, useProjectMutations} from '@/hooks/useProjects';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {extractActionableError} from '@/shared/forms/marketplace/marketplace-forms';
-import {validateProjectInput, validateSubscriptionBooking} from '@/shared/forms/project/project-form';
-import type {CustomerProject, ProjectScheduleType} from '@/shared/types/project/project.types';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
+import {extractActionableError} from '@/shared/forms/marketplace-forms';
+import {validateProjectInput, validateSubscriptionBooking} from '@/shared/forms/project-form';
+import type {CustomerProject, ProjectScheduleType} from '@/shared/types/project.types';
+import {cleanEntityName} from '@/utils/clean-text';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 /**

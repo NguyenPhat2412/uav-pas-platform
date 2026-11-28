@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {usePathname, useRouter} from 'next/navigation';
 import {ArrowLeft} from 'lucide-react';
-import {navigatePortalPath, resolvePortalHref} from '@/utils/auth/auth-entry';
+import {navigatePortalPath, resolvePortalHref} from '@/utils/auth-entry';
 
 export type NotFoundLink = { href: string; label: string };
 /** Sends a portal URL home to that portal: the first entry whose prefix matches the path wins. */

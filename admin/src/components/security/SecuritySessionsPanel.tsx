@@ -11,9 +11,9 @@ import {Pagination} from '@/components/data/Pagination';
 import {displayLabel} from '@/lib/presentation';
 import {roles} from '@/types/admin';
 import {cn} from '@/lib/utils';
-import {useSecurityActions, useSecuritySessions} from '@/hooks/security/useSecurity';
+import {useSecurityActions, useSecuritySessions} from '@/hooks/useSecurity';
 import {} from '@/components/security/SecurityShared';
-import type {SecurityActionResult, SecuritySession, SessionFilter, SessionState} from '@/types/security/security.types';
+import type {SecurityActionResult, SecuritySession, SessionFilter, SessionState} from '@/types/security.types';
 
 const stateStyle: Record<SessionState, string> = {
     ACTIVE: 'bg-uav-blue-light text-uav-blue',

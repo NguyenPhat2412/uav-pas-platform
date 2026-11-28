@@ -9,7 +9,7 @@ import {useI18n} from '@/providers/I18nContext';
 import {WebhookSubscriptions} from '@/components/webhook/WebhookSubscriptions';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
 import {toast} from '@/providers/ToastContext';
-import {useRetryDelivery, useWebhookOverview, useWebhookTestDispatch} from '@/hooks/webhook/useWebhooks';
+import {useRetryDelivery, useWebhookOverview, useWebhookTestDispatch} from '@/hooks/useWebhooks';
 import type {Translate} from '@/types';
 
 const knownStatuses = ['QUEUED', 'DELIVERED', 'FAILED', 'RETRYING', 'CANCELLED', 'UNCONFIGURED', 'LEGACY_UNVERIFIED'];

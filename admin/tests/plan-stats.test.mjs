@@ -15,7 +15,7 @@ async function loadTs(path) {
 }
 
 const {percentChange, stackMonths, earningCodes, axisTicks, clampPercent, MISSION_KEY} =
-    await loadTs('../src/utils/billing/plan-stats.ts');
+    await loadTs('../src/utils/plan-stats.ts');
 
 const readJson = async path => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8')).admin;
 
@@ -96,7 +96,7 @@ test('Plan stats: endpoint, client and query wiring', async () => {
     const manager = await readFile(new URL('../src/components/billing/plans/AdminPlansManager.tsx', import.meta.url), 'utf8');
     // The stats key sits under the prefix every plan mutation invalidates.
     assert.match(manager, /usePlanStats\(months\)/);
-    const hooks = await readFile(new URL('../src/hooks/billing/useBillingAdmin.ts', import.meta.url), 'utf8');
+    const hooks = await readFile(new URL('../src/hooks/useBillingAdmin.ts', import.meta.url), 'utf8');
     assert.match(hooks, /queryKey: billingKeys\.planStats\(user\?\.id, months\)/);
     assert.match(hooks, /invalidateQueries\(\{queryKey: billingKeys\.plans\(user\?\.id\)\}\)/);
     const stats = await readFile(new URL('../src/components/billing/plans/AdminPlanStats.tsx', import.meta.url), 'utf8');

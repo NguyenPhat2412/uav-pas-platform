@@ -6,7 +6,7 @@ import {Alert, Button, Card, CardContent, FormField, Input} from '@/components/u
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
 import type {DrawMode} from '@/components/simulation/SimulationMap';
-import type {SurveyPlan} from '@/types/simulation/simulation.types';
+import type {SurveyPlan} from '@/types/simulation.types';
 
 export interface SimulationParams {
     altitudeMeters: number;

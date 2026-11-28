@@ -3,7 +3,7 @@ import {Platform, StyleSheet, View} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {CheckCircle2, ExternalLink, FileCheck2, ImagePlus, Pencil, Save, XCircle} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, ChipGroup, FieldLabel, SectionTitle, TextField} from '@/components/ui';
-import {fromLocalIso, toLocalIso} from '@/forms/mission/mission-draft';
+import {fromLocalIso, toLocalIso} from '@/forms/mission-draft';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {
@@ -15,14 +15,14 @@ import {
     toPermitUpsertPayload,
     toPermitVerifyPayload,
     type PermitDraft,
-} from '@/shared/forms/mission/permit-form';
+} from '@/shared/forms/permit-form';
 import type {
     FlightPermitStatus,
     Mission,
     MissionMedia,
     MissionPermitUpsertInput,
     MissionPermitVerifyInput,
-} from '@/shared/types/mission/mission.types';
+} from '@/shared/types/mission.types';
 import {colors, spacing} from '@/styles/tokens';
 
 function permitStatusTone(status: FlightPermitStatus): { background: string; color: string } {

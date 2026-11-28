@@ -6,13 +6,13 @@ import {Alert, Button, FormField, Select} from '@/components/ui';
 import {formatBytes, Panel} from '@/components/infrastructure/runtime/InfraUi';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import {useMigrateR2Batch} from '@/hooks/storage/useStoragePool';
-import {buildStorageR2MigrationInput} from '@/forms/storage/storage-pool-form';
+import {useMigrateR2Batch} from '@/hooks/useStoragePool';
+import {buildStorageR2MigrationInput} from '@/forms/storage-pool-form';
 import type {
     StorageDriveNode,
     StoragePoolOverview,
     StorageR2MigrationResult,
-} from '@/types/storage/storage-pool.types';
+} from '@/types/storage-pool.types';
 
 export function StorageR2MigrationCard({
     overview,

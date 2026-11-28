@@ -26,8 +26,8 @@ import {
     useMyProviderProfile,
     useProviderListingActions,
     useServiceTemplates,
-} from '@/hooks/marketplace/useMarketplace';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+} from '@/hooks/useMarketplace';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {
     extractActionableError,
     formatVndCompact,
@@ -37,16 +37,16 @@ import {
     PRICING_MODEL_CODES,
     sanitizeEntityName,
     sanitizeMarketplaceText,
-} from '@/forms/marketplace/marketplace-forms';
+} from '@/forms/marketplace-forms';
 import {displayLabel, serviceName} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
-import type {UavService} from '@/types/mission/mission.types';
+import type {UavService} from '@/types/mission.types';
 import type {
     ListingType,
     MarketplaceListing,
     MarketplaceListingUpsertInput,
     PricingModel,
-} from '@/types/marketplace/marketplace.types';
+} from '@/types/marketplace.types';
 
 const INPUT_CLASS =
     'h-11 w-full rounded-control border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900 outline-none focus:border-primary';

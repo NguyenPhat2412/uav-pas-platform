@@ -9,7 +9,7 @@ import {
     contactFieldErrors,
     emptyContactInquiryDraft,
     toContactInquiryPayload,
-} from '@/forms/marketing/contact-form';
+} from '@/forms/contact-form';
 import {
     CONTACT_SCOPE_KEYS,
     CONTACT_TOPIC_OPTIONS,
@@ -20,9 +20,9 @@ import {
     openPublicSupportWidget,
     saveStoredSupportToken,
     useCreatePublicSupportThread,
-} from '@/hooks/support/usePublicSupport';
+} from '@/hooks/usePublicSupport';
 import {useI18n} from '@/providers/I18nContext';
-import type {PublicSupportThreadSession} from '@/types/support/support.types';
+import type {PublicSupportThreadSession} from '@/types/support.types';
 
 const inputCls =
     'w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 transition-colors focus:border-primary focus:bg-white focus:outline-none';

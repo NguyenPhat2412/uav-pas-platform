@@ -19,11 +19,11 @@ import {
     useMyProviderPilots,
     useProviderStudioMutations,
     type ProviderPilotStatus,
-} from '@/hooks/marketplace/useProviderStudio';
+} from '@/hooks/useProviderStudio';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {extractActionableError} from '@/shared/forms/marketplace/marketplace-forms';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
+import {extractActionableError} from '@/shared/forms/marketplace-forms';
+import {cleanEntityName} from '@/utils/clean-text';
 import {colors, spacing} from '@/styles/tokens';
 
 function pilotBadgeColors(status: ProviderPilotStatus) {

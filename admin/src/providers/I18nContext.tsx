@@ -1,7 +1,7 @@
 'use client';
 
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useState, useSyncExternalStore} from 'react';
-import {fetchPublicLocaleBundle, switchPublicLocale} from '@/api/i18n/i18n.api';
+import {fetchPublicLocaleBundle, switchPublicLocale} from '@/api/i18n.api';
 import {useBrowserStorage, writeBrowserStorage} from '@/hooks/useBrowserStorage';
 import {
   defaultLocale,

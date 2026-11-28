@@ -2,10 +2,10 @@
 
 import {useState} from 'react';
 import {Button, Card, Textarea} from '@/components/ui';
-import {canSubmitMissionConfirmation} from '@/forms/mission/operations-mission-form';
-import type {useMissionWorkflow} from '@/hooks/mission/useMissionWorkflow';
+import {canSubmitMissionConfirmation} from '@/forms/operations-mission-form';
+import type {useMissionWorkflow} from '@/hooks/useMissionWorkflow';
 import {useI18n} from '@/providers/I18nContext';
-import type {Mission, MissionConfirmationKind} from '@/types/mission/mission.types';
+import type {Mission, MissionConfirmationKind} from '@/types/mission.types';
 
 export interface OperationsMissionConfirmSectionProps {
     missionId: number;

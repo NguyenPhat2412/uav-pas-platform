@@ -1,7 +1,7 @@
 'use client';
 
 import {MissionList} from '@/components/mission/MissionList';
-import {useMissions} from '@/hooks/mission/useOperationsMissions';
+import {useMissions} from '@/hooks/useOperationsMissions';
 import {OperationsPage} from '@/components/layout/OperationsPage';
 import {useI18n} from '@/providers/I18nContext';
 

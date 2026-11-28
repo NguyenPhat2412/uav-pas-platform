@@ -6,12 +6,12 @@ import {Bell, ChevronRight, Compass, Cpu, Crosshair, Radio, Users} from 'lucide-
 import {AppText, Badge, Card, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState} from '@/components/ui';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {AppBackground} from '@/components/layout/AppBackground';
-import {useNotifications} from '@/hooks/notification/useNotifications';
-import {useSarMissions} from '@/hooks/sar/useSarCockpit';
+import {useNotifications} from '@/hooks/useNotifications';
+import {useSarMissions} from '@/hooks/useSarCockpit';
 import {useI18n} from '@/providers/I18nContext';
 import {displayLabel} from '@/shared/lib/presentation';
-import type {SarCockpitMission, SarStatus} from '@/shared/types/sar/sar.types';
-import {isFinitePoint} from '@/utils/operations/map-shapes';
+import type {SarCockpitMission, SarStatus} from '@/shared/types/sar.types';
+import {isFinitePoint} from '@/utils/map-shapes';
 import {colors, spacing} from '@/styles/tokens';
 
 type SarFilterMode = 'active' | 'all';

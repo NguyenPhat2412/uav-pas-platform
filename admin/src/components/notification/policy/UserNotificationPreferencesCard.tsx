@@ -6,15 +6,15 @@ import {Badge, Button, Card, Switch} from '@/components/ui';
 import {
     useUserNotificationPreferenceActions,
     useUserNotificationPreferences,
-} from '@/hooks/notification/useNotifications';
+} from '@/hooks/useNotifications';
 import {
     pickLocalizedModuleCopy,
     toUpdateUserPreferencePayload,
-} from '@/forms/notification/notification-policy-form';
+} from '@/forms/notification-policy-form';
 import type {
     UpdateUserNotificationPreferenceInput,
     UserNotificationModulePreference,
-} from '@/types/notification/notification.types';
+} from '@/types/notification.types';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 

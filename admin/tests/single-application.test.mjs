@@ -35,7 +35,7 @@ test('feature route entries contain no duplicated page implementation', () => {
     assert.ok(pages.length >= (hasSiblingPortals ? 56 : 20));
     for (const p of pages) {
         const s = readFileSync(p, 'utf8');
-        assert.match(s, /from ['"]@\/(api|components|content|forms|hooks|types|utils)\/[a-z-]+\//, p);
+        assert.match(s, /from ['"]@\/(api|components|content|forms|hooks|types|utils)\/[a-zA-Z0-9_-]+/, p);
         assert.doesNotMatch(s, /useState|apiClient|useQuery/, p);
     }
 });

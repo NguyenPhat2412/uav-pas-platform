@@ -2,7 +2,7 @@
 
 import {useEffect, useRef, useState} from 'react';
 import {MessageCircleMore, Sparkles, X} from 'lucide-react';
-import {useOpsSupportSummary} from '@/hooks/support/useOperationsSupport';
+import {useOpsSupportSummary} from '@/hooks/useOperationsSupport';
 import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';

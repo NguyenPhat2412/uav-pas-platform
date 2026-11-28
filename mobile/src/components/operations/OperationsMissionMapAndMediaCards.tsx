@@ -6,10 +6,10 @@ import {AppText, Button, Card, ChipGroup, EmptyState, LoadingState, SectionTitle
 import {useI18n} from '@/providers/I18nContext';
 import {formatFileSize} from '@/shared/lib/format';
 import {eventNote, eventTitle} from '@/shared/lib/presentation';
-import type {AirspaceZone} from '@/shared/types/airspace/airspace.types';
-import type {Mission, MissionEvent, MissionMedia} from '@/shared/types/mission/mission.types';
-import type {UavTelemetry} from '@/shared/types/uav/telemetry.types';
-import {isFinitePoint, verticesToMapCoordinates} from '@/utils/operations/map-shapes';
+import type {AirspaceZone} from '@/shared/types/airspace.types';
+import type {Mission, MissionEvent, MissionMedia} from '@/shared/types/mission.types';
+import type {UavTelemetry} from '@/shared/types/telemetry.types';
+import {isFinitePoint, verticesToMapCoordinates} from '@/utils/map-shapes';
 import {airspaceMapTone, colors, radius, sarMapTone, spacing} from '@/styles/tokens';
 
 export {

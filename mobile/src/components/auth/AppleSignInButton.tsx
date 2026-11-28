@@ -12,7 +12,7 @@ import {
     isAppleSignInCanceled,
     nextSignInStep,
     signInErrorText,
-} from '@/forms/auth/sign-in-flow';
+} from '@/forms/sign-in-flow';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 type AppleAuthModule = typeof import('expo-apple-authentication');

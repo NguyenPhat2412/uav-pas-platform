@@ -3,9 +3,9 @@ import {StyleSheet, View} from 'react-native';
 import {Cpu, RadioTower, Sparkles, UserCheck} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, ChipGroup, SectionTitle} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
-import type {Mission, MissionDispatchCandidates} from '@/shared/types/mission/mission.types';
+import type {Mission, MissionDispatchCandidates} from '@/shared/types/mission.types';
 import type {Operator} from '@/shared/types/resources';
-import type {FleetStation, FleetUav} from '@/shared/types/uav/fleet-map.types';
+import type {FleetStation, FleetUav} from '@/shared/types/fleet-map.types';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export interface OperationsDispatchResourceCardProps {

@@ -7,10 +7,10 @@ import {
     formatVndCompact,
     pricingUnitLabel,
     providerOrderStatusLabel,
-} from '@/forms/marketplace/marketplace-forms';
+} from '@/forms/marketplace-forms';
 import {formatDate} from '@/lib/presentation';
-import type {ProviderUav} from '@/types/marketplace/marketplace.types';
-import type {Mission} from '@/types/mission/mission.types';
+import type {ProviderUav} from '@/types/marketplace.types';
+import type {Mission} from '@/types/mission.types';
 
 export function ProviderDirectOrderCard({
     mission,

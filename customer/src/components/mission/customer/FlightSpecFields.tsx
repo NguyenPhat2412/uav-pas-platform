@@ -10,7 +10,7 @@ import {
     flightSensors,
     type FlightPlanInput,
     type FlightSensor,
-} from '@/types/mission/flight-plan.types';
+} from '@/types/flight-plan.types';
 
 /** Professional flight parameters stored with the plan: altitude, GSD, image overlap, payload and site safety. */
 export function FlightSpecFields({plan, onChange}: { plan: FlightPlanInput; onChange: (plan: FlightPlanInput) => void }) {

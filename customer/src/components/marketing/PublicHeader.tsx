@@ -12,7 +12,7 @@ import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {openAuthModal} from '@/components/auth/modal/AuthModalPopup';
-import {canUsePortal, portalForRole, portalHome} from '@/utils/auth/portal';
+import {canUsePortal, portalForRole, portalHome} from '@/utils/portal';
 
 const primaryNavLinks = [
     ['/services', 'publicHeader.services'],

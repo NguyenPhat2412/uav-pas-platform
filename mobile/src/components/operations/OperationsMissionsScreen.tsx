@@ -8,12 +8,12 @@ import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {MissionStatusBadge} from '@/components/mission/MissionBits';
 import {PermitStatusBadge} from '@/components/mission/MissionPermitCard';
-import {useNotifications} from '@/hooks/notification/useNotifications';
-import {useOperationsMissionList, useOperatorLogbook} from '@/hooks/operations/useOperationsMissions';
+import {useNotifications} from '@/hooks/useNotifications';
+import {useOperationsMissionList, useOperatorLogbook} from '@/hooks/useOperationsMissions';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {displayLabel} from '@/shared/lib/presentation';
-import type {Mission} from '@/shared/types/mission/mission.types';
+import type {Mission} from '@/shared/types/mission.types';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 type OpsMissionFilter = 'assigned' | 'ready' | 'pending' | 'completed' | 'all';

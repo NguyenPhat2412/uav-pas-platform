@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import {Download, FileText, Mail, MessageCircleMore} from 'lucide-react';
 import {Badge, Button, Card, CardContent, CardHeader, CardTitle, StatusBadge} from '@/components/ui';
-import {openPublicSupportWidget} from '@/hooks/support/usePublicSupport';
+import {openPublicSupportWidget} from '@/hooks/usePublicSupport';
 import {planName} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 import type {Invoice} from '@/types/customer';
-import {buildInvoiceSupportPrompt} from '@/utils/billing/invoice-print';
+import {buildInvoiceSupportPrompt} from '@/utils/invoice-print';
 
 export interface CustomerBillingInvoicesCardProps {
     testId: string;

@@ -89,7 +89,7 @@ test('operations catalogs and components contain zero school branding, military 
         // Keep API wire routes/client signatures intact per contract; check all UI/hooks/forms/utils/messages
         const skipRfqApiWire =
             codeRel === 'src/lib/api/routes.ts' ||
-            codeRel === 'src/api/marketplace/marketplace.api.ts' ||
+            codeRel === 'src/api/marketplace.api.ts' ||
             codeRel.startsWith('src/types/');
         const patterns = skipRfqApiWire
             ? BANNED_EVERYWHERE

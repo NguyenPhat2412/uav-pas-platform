@@ -11,7 +11,7 @@ import {ToastProvider} from '@/providers/ToastContext';
 import {AppErrorView} from '@/components/shared/AppStatusViews';
 import {GlobalOfflineScreen} from '@/components/shared/ConnectionLostScreen';
 import {LiveNotificationBanner} from '@/components/notification/LiveNotificationBanner';
-import {useDevSimulatorQa} from '@/hooks/dev/useDevSimulatorQa';
+import {useDevSimulatorQa} from '@/hooks/useDevSimulatorQa';
 import {colors} from '@/styles/tokens';
 
 function DevQaController() {

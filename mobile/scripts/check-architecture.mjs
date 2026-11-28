@@ -51,7 +51,7 @@ for (const file of files(src)) {
     if (has('@react-native-async-storage/async-storage') && rel !== 'lib/storage/preferences.ts') fail(file, 'AsyncStorage only in lib/storage/preferences.ts');
     if (/AsyncStorage[\s\S]{0,80}(token|Token)/.test(code)) fail(file, 'tokens never go to AsyncStorage');
     // Colours come from styles/tokens.ts; the weather sky and the assistant mascot keep their own artwork palette, as on the web.
-    if (/['"]#[0-9a-fA-F]{3,8}['"]/.test(code) && rel !== 'styles/tokens.ts' && !rel.startsWith('components/weather/') && !rel.startsWith('utils/weather/')
+    if (/['"]#[0-9a-fA-F]{3,8}['"]/.test(code) && rel !== 'styles/tokens.ts' && !rel.startsWith('components/weather/') && rel !== 'utils/gradient.ts'
         && rel !== 'components/assistant/AssistantMascot.tsx') {
         fail(file, 'use colours from styles/tokens.ts');
     }
@@ -63,6 +63,9 @@ for (const file of files(src)) {
         fail(file, `too long (${lineCount} lines > 360 max): split into focused feature subcomponents`);
     }
     const parts = rel.split('/');
+    if (['api', 'forms', 'hooks', 'utils'].includes(parts[0]) && parts.length !== 2) {
+        fail(file, `keep src/${parts[0]}/ flat without nested feature folders`);
+    }
     if (parts[0] === 'components' && parts[1] === 'marketplace' && parts.length < 4) {
         fail(file, 'organize marketplace components into components/marketplace/<sub-domain>/');
     }

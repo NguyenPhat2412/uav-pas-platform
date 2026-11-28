@@ -2,8 +2,8 @@ import React from 'react';
 import {Pressable, Share, StyleSheet, View} from 'react-native';
 import {Award, CheckCircle2, FileCheck2, MapPin, Share2, ShieldCheck} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, LoadingState, SectionTitle} from '@/components/ui';
-import {useMissionInspectionReport} from '@/hooks/mission/useCustomerMissions';
-import {useOperationsMissionInspectionReport} from '@/hooks/operations/useOperationsMissions';
+import {useMissionInspectionReport} from '@/hooks/useCustomerMissions';
+import {useOperationsMissionInspectionReport} from '@/hooks/useOperationsMissions';
 import {useI18n} from '@/providers/I18nContext';
 import {colors, radius, spacing} from '@/styles/tokens';
 

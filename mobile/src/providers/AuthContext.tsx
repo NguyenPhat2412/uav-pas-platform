@@ -2,10 +2,10 @@ import React, {createContext, ReactNode, useCallback, useContext, useEffect, use
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import * as SplashScreen from 'expo-splash-screen';
 import {queryKeys} from '@/shared/lib/query';
-import {canUsePortal} from '@/shared/utils/auth/portal';
-import type {AuthResponse, UserResponse} from '@/shared/types/auth/auth.types';
-import {authService, permissionService, type AppleLoginPayload} from '@/api/auth/auth.api';
-import {notificationsService} from '@/api/notification/notifications.api';
+import {canUsePortal} from '@/shared/utils/portal';
+import type {AuthResponse, UserResponse} from '@/shared/types/auth.types';
+import {authService, permissionService, type AppleLoginPayload} from '@/api/auth.api';
+import {notificationsService} from '@/api/notifications.api';
 import {ApiError} from '@/lib/api/client';
 import {onSessionEnded, restoreSession, sessionStore} from '@/lib/api/session';
 import {
@@ -16,7 +16,7 @@ import {
     type PortalPreference,
 } from '@/lib/storage/preferences';
 import {clearQueryCache, persistQueryCache, restoreQueryCache} from '@/lib/storage/query-cache';
-import {resolveMobilePortal} from '@/utils/operations/portal-routing';
+import {resolveMobilePortal} from '@/utils/portal-routing';
 
 /** loading: reading the Keychain / asking /auth/me. unreachable: a session exists but the API could not be reached. */
 export type AuthStatus = 'loading' | 'signed-out' | 'signed-in' | 'unreachable';

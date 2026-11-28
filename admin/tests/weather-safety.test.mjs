@@ -17,7 +17,17 @@ const load = async (path, replace = s => s) => {
     const compiled = ts.transpileModule(replace(read(path)), {compilerOptions: {module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022}}).outputText;
     return import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
 };
-const weatherFiles = dir => readdirSync(new URL(`src/${dir}/weather`, root)).map(name => `src/${dir}/weather/${name}`);
+const weatherFiles = dir => {
+    if (dir === 'components') {
+        return readdirSync(new URL(`src/${dir}/weather`, root)).map(name => `src/${dir}/weather/${name}`);
+    }
+    const flatByLayer = {
+        api: ['src/api/weather.api.ts'],
+        hooks: ['src/hooks/useWeather.ts', 'src/hooks/useWeatherAdmin.ts', 'src/hooks/weather-query-keys.ts'],
+        utils: ['src/utils/clearance.ts', 'src/utils/conditions.ts', 'src/utils/flight-window.ts', 'src/utils/sky-theme.ts'],
+    };
+    return (flatByLayer[dir] ?? []).filter(file => existsSync(resolvePortalUrl(file)));
+};
 
 const hasBackend = existsSync(new URL('../backend/src/main/java/com/uav/platform/config/ApiRoutes.java', root));
 
@@ -35,14 +45,14 @@ test('Weather: routes match the backend ApiRoutes.Weather contract', async () =>
 });
 
 test('Weather: requests go through the shared API client, never fetch or the retired browser client', () => {
-    const api = read('src/api/weather/weather.api.ts');
+    const api = read('src/api/weather.api.ts');
     assert.match(api, /from '@\/lib\/api'/);
     assert.match(api, /API_ROUTES\.weather\.forecast/);
     for (const file of [...weatherFiles('api'), ...weatherFiles('hooks'), ...weatherFiles('components')]) {
         assert.doesNotMatch(read(file), /\bfetch\s*\(/, file);
     }
-    assert.match(read('src/hooks/mission/useSiteWeather.ts'), /useMissionWeather/);
-    assert.doesNotMatch(read('src/hooks/mission/useSiteWeather.ts'), /external\/weather/);
+    assert.match(read('src/hooks/useSiteWeather.ts'), /useMissionWeather/);
+    assert.doesNotMatch(read('src/hooks/useSiteWeather.ts'), /external\/weather/);
 });
 
 test('Weather: UI follows the design system (no green, no pill badges)', () => {
@@ -51,7 +61,7 @@ test('Weather: UI follows the design system (no green, no pill badges)', () => {
         assert.doesNotMatch(source, /\b(emerald|green|teal)-\d/, file);
         assert.doesNotMatch(source, /rounded-full/, file);
     }
-    const tones = read('src/utils/weather/clearance.ts');
+    const tones = read('src/utils/clearance.ts');
     assert.match(tones, /GO: 'bg-sky-50 text-uav-blue border-sky-200'/);
     assert.match(tones, /CAUTION: 'bg-amber-50 text-amber-800 border-amber-200'/);
     assert.match(tones, /NO_GO: 'bg-red-50 text-danger border-red-200'/);
@@ -93,7 +103,7 @@ test('Weather: applying a recommended window keeps the flight duration and the r
         isHistoricalWeatherTime,
         shiftWeatherDay,
         weatherTimelineForDay,
-    } = await load('src/utils/weather/flight-window.ts', s => s.replace(/^import type .*$/m, ''));
+    } = await load('src/utils/flight-window.ts', s => s.replace(/^import type .*$/m, ''));
     const form = {startTime: '2026-10-31T13:00', expectedEndTime: '2026-10-31T14:30', requestedDate: '2026-10-31', title: 'x'};
     assert.deepEqual(applyFlightWindow(form, '2026-11-01T07:00'),
         {...form, startTime: '2026-11-01T07:00', expectedEndTime: '2026-11-01T08:30', requestedDate: '2026-11-01'});
@@ -132,5 +142,5 @@ test('Weather: the three portals render the shared preflight card', () => {
     assert.match(read('src/components/mission/operations/OperationsMissionDetail.tsx'), /PreflightWeatherCard/);
     assert.match(read('src/components/station/StationPanel.tsx'), /useStationsWeather\(\)/);
     assert.match(read('src/components/settings/AdminSettingsPanel.tsx'), /WeatherProviderSettingsSection/);
-    assert.doesNotMatch(read('src/types/weather/weather.types.ts'), /apiKeyCipher/);
+    assert.doesNotMatch(read('src/types/weather.types.ts'), /apiKeyCipher/);
 });

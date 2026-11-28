@@ -27,7 +27,7 @@ test('operations owns the M2 canonical routes and compatibility aliases', () => 
 test('operations uses real service endpoints and the shared API boundary', () => {
     const routes = readFileSync(`${root}src/lib/api/routes.ts`, 'utf8');
     for (const endpoint of ['/api/v1/stations', '/api/v1/uavs', '/api/v1/inventory', '/api/v1/media', '/api/v1/audit-logs']) assert.match(routes, new RegExp(endpoint.replaceAll('/', '\\/')));
-    for (const [file, group] of [['api/station/stations.api.ts', 'stations'], ['api/uav/uavs.api.ts', 'uavs'], ['api/inventory/inventory.api.ts', 'inventory'], ['api/media/media.api.ts', 'media'], ['api/audit/operations-audit.api.ts', 'auditLogs']]) {
+    for (const [file, group] of [['api/stations.api.ts', 'stations'], ['api/uavs.api.ts', 'uavs'], ['api/inventory.api.ts', 'inventory'], ['api/media.api.ts', 'media'], ['api/operations-audit.api.ts', 'auditLogs']]) {
         assert.match(readFileSync(`${root}src/${file}`, 'utf8'), new RegExp(`API_ROUTES\\.${group}\\.`), file);
     }
     assert.match(readFileSync(`${root}src/lib/api/index.ts`, 'utf8'), /@\/lib\/api/);

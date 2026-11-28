@@ -5,10 +5,10 @@ import {Briefcase, ChevronDown, LogOut, Radar, Settings, ShieldCheck, UserRound}
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {Avatar} from '@/components/shared/Avatar';
-import {sanitizeEntityName} from '@/forms/marketplace/marketplace-forms';
+import {sanitizeEntityName} from '@/forms/marketplace-forms';
 import {displayLabel} from '@/lib/presentation';
-import {canUsePortal} from '@/utils/auth/portal';
-import {resolvePortalHref} from '@/utils/auth/auth-entry';
+import {canUsePortal} from '@/utils/portal';
+import {resolvePortalHref} from '@/utils/auth-entry';
 import {useDropdownMenu} from '@/hooks/useDropdownMenu';
 import {cn} from '@/lib/utils';
 

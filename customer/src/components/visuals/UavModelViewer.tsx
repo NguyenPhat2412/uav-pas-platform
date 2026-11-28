@@ -13,7 +13,7 @@ import {
     resolveAirframeClass,
     type UavAirframeClass,
     type UavAttitudeState,
-} from '@/utils/uav/uav-3d-model';
+} from '@/utils/uav-3d-model';
 
 type CameraPreset = 'iso' | 'top' | 'front' | 'side';
 type ViewerTab = '3d' | 'blueprint' | 'turnaround';

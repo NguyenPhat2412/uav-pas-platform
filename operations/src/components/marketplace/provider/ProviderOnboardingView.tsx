@@ -21,13 +21,13 @@ import {
     ProviderDocumentChecklist,
     ProviderVerificationStepper,
 } from '@/components/marketplace/provider/ProviderVerificationStepper';
-import {useMyProviderProfile, useProviderOnboardingActions} from '@/hooks/marketplace/useMarketplace';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+import {useMyProviderProfile, useProviderOnboardingActions} from '@/hooks/useMarketplace';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {
     DOCUMENT_TYPE_CODES,
     extractActionableError,
     initialOnboardingForm,
-} from '@/forms/marketplace/marketplace-forms';
+} from '@/forms/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
 import type {
     ProviderDocumentInput,
@@ -35,7 +35,7 @@ import type {
     ProviderOnboardingInput,
     ProviderProfile,
     ProviderType,
-} from '@/types/marketplace/marketplace.types';
+} from '@/types/marketplace.types';
 
 const INPUT_CLASS =
     'h-11 w-full rounded-control border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900 outline-none focus:border-primary';

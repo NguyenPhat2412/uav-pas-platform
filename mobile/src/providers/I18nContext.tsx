@@ -1,6 +1,6 @@
 import React, {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import {getLocales} from 'expo-localization';
-import {fetchMobileLocaleBundle, switchMobileLocale} from '@/api/i18n/i18n.api';
+import {fetchMobileLocaleBundle, switchMobileLocale} from '@/api/i18n.api';
 import {normalizeLocale, supportedLocales, type SupportedLocale} from '@/shared/i18n/config';
 import {setPresentationLocale} from '@/shared/lib/presentation';
 import {readSavedLocale, saveLocale} from '@/lib/storage/preferences';

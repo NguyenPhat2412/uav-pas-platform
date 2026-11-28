@@ -7,7 +7,7 @@ import {Card, CardContent, CardHeader, CardTitle, StatusBadge} from '@/component
 import {DataTable, type TableColumn, type TableFilter} from '@/components/data/DataTable';
 import {EmptyState} from '@/components/data/WorkspaceState';
 import {useI18n} from '@/providers/I18nContext';
-import type {SimRunStatus, SimulationRunLog} from '@/types/simulation/simulation.types';
+import type {SimRunStatus, SimulationRunLog} from '@/types/simulation.types';
 
 const RUN_STATUSES: readonly SimRunStatus[] = [
     'RUNNING',

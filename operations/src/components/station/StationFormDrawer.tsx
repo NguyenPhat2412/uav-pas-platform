@@ -4,7 +4,7 @@ import {useState} from 'react';
 import {Edit3, Trash2} from 'lucide-react';
 import {Alert, Button, Card, CardContent, FormField, Input, Select, StatusBadge} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
-import {useStation, useStationMutations} from '@/hooks/station/useStations';
+import {useStation, useStationMutations} from '@/hooks/useStations';
 import {Drawer, Metadata, Tabs} from '@/components/data/Drawer';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {SectionHeading} from '@/components/layout/PageHeader';
@@ -14,7 +14,7 @@ import {
     stationFieldErrors,
     toStationDraft,
     toStationPayload,
-} from '@/forms/station/station-form';
+} from '@/forms/station-form';
 import {displayLabel} from '@/lib/presentation';
 import {cn} from '@/lib/utils';
 import {useI18n} from '@/providers/I18nContext';

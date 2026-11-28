@@ -2,7 +2,7 @@
 
 import {useI18n} from '@/providers/I18nContext';
 import {ClearanceBadge} from '@/components/weather/PreflightWeatherCard';
-import type {StationWeatherSummary} from '@/types/weather/weather.types';
+import type {StationWeatherSummary} from '@/types/weather.types';
 
 /** Clearance, wind at 80 m and temperature at one ground station, for the stations table. */
 export function StationWeatherCell({summary, loading}: { summary?: StationWeatherSummary; loading?: boolean }) {

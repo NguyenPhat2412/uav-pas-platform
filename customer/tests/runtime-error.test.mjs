@@ -3,7 +3,7 @@ import test from 'node:test';
 import ts from 'typescript';
 import {readFile} from 'node:fs/promises';
 
-const source = await readFile(new URL('../src/utils/errors/runtime-error.ts', import.meta.url), 'utf8');
+const source = await readFile(new URL('../src/utils/runtime-error.ts', import.meta.url), 'utf8');
 const compiled = ts.transpileModule(source, {compilerOptions: {module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022}}).outputText;
 const {isChunkLoadError, classifyRuntimeException, errorReference, shouldAutoReload, CHUNK_RELOAD_WINDOW_MS} =
     await import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));

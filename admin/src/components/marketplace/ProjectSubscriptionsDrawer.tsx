@@ -22,11 +22,11 @@ import {
     canAdminCancelSubscription,
     formatMarketplaceVnd,
     sanitizeMarketplaceText,
-} from '@/forms/marketplace/admin-marketplace-form';
+} from '@/forms/admin-marketplace-form';
 import {
     useAdminProjectSubscriptions,
     useCancelAdminProjectSubscription,
-} from '@/hooks/marketplace/useAdminMarketplace';
+} from '@/hooks/useAdminMarketplace';
 import {useAuth} from '@/providers/AuthContext';
 import {confirmDialog} from '@/providers/ConfirmContext';
 import {useI18n} from '@/providers/I18nContext';
@@ -34,7 +34,7 @@ import {toast} from '@/providers/ToastContext';
 import type {
     AdminCustomerProject,
     AdminProjectSubscription,
-} from '@/types/marketplace/marketplace.types';
+} from '@/types/marketplace.types';
 
 export function ProjectSubscriptionsDrawer({
     project,

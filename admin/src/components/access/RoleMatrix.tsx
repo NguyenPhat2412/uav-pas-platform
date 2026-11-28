@@ -2,7 +2,7 @@
 import {Fragment, useState} from 'react';
 import {Check, Minus} from 'lucide-react';
 import {displayLabel, permissionLabel} from "@/lib/presentation";
-import {useAdminReferenceData} from '@/hooks/user/useAdminUsers';
+import {useAdminReferenceData} from '@/hooks/useAdminUsers';
 import {EmptyState, QueryState} from "@/components/data/WorkspaceState";
 import {useI18n} from '@/providers/I18nContext';
 

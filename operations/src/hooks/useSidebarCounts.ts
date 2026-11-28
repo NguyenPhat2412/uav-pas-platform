@@ -1,9 +1,9 @@
 'use client';
 import {useQuery} from '@tanstack/react-query';
 import {useAuth} from '@/providers/AuthContext';
-import {useCustomerScope} from '@/hooks/mission/useCustomerMissions';
-import {dashboardService} from '@/api/dashboard/dashboard.api';
-import {notificationsService} from '@/api/notification/notifications.api';
+import {useCustomerScope} from '@/hooks/useCustomerMissions';
+import {dashboardService} from '@/api/dashboard.api';
+import {notificationsService} from '@/api/notifications.api';
 
 const REFRESH_MS = 60_000;
 

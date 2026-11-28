@@ -7,7 +7,7 @@ import {AppBackground} from '@/components/layout/AppBackground';
 import {GlassSurface, liquidGlass, ScaledText} from '@/components/ui';
 import {useOptionalAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {resolvePortalEntryHref} from '@/utils/operations/portal-routing';
+import {resolvePortalEntryHref} from '@/utils/portal-routing';
 import {colors, font} from '@/styles/tokens';
 
 const SHEETS = new Set(['modal', 'formSheet', 'pageSheet', 'fullScreenModal']);

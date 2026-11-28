@@ -8,14 +8,14 @@ import {Button, OptionalMark, RequiredMark} from '@/components/ui';
 import {stripFieldLabelMarker} from '@/components/shared/RequiredMark';
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
-import type {CreatedDeviceKey, DeviceKey} from '@/types/devicekey/device-key.types';
+import type {CreatedDeviceKey, DeviceKey} from '@/types/device-key.types';
 import {
     canSubmitDeviceKeyCreate,
     deviceKeyFieldErrors,
     emptyDeviceKeyCreateDraft,
     toDeviceKeyCreatePayload,
-} from '@/forms/devicekey/device-key-form';
-import {useCreateDeviceKey, useDeviceKeys, useDeviceKeyUavOptions, useRevokeDeviceKey} from '@/hooks/devicekey/useDeviceKeys';
+} from '@/forms/device-key-form';
+import {useCreateDeviceKey, useDeviceKeys, useDeviceKeyUavOptions, useRevokeDeviceKey} from '@/hooks/useDeviceKeys';
 
 interface UavOption {
     id: number;

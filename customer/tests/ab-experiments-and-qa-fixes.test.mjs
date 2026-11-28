@@ -123,7 +123,7 @@ test('EXP-1, EXP-2, EXP-3, and EXP-4 are wired cleanly with event tracking', () 
 });
 
 test('RBAC & UI E2E regressions: Operations blocks ROLE_PILOT, Basic UAV Rental localized, Admin permission labels exist', () => {
-    const opsPortal = fs.readFileSync(path.join(repoRoot, 'operations/src/utils/auth/portal.ts'), 'utf8');
+    const opsPortal = fs.readFileSync(path.join(repoRoot, 'operations/src/utils/portal.ts'), 'utf8');
     const opsRolesLine = opsPortal.match(/operations:\s*\[[^\]]+\]/)?.[0] ?? '';
     assert.ok(opsRolesLine.length > 0, 'operations portalRoles line must exist');
     assert.doesNotMatch(opsRolesLine, /ROLE_PILOT/, 'ROLE_PILOT customer accounts must not access Operations portal');

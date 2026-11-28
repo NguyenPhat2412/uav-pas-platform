@@ -21,8 +21,8 @@ import {
     IllustrativeTag,
     MarketplaceErrorPanel,
 } from '@/components/marketplace/MarketplaceShared';
-import {formatMarketplaceVnd} from '@/forms/marketplace/admin-marketplace-form';
-import {useAdminMarketplaceRealtime, useAdminMarketplaceStats} from '@/hooks/marketplace/useAdminMarketplace';
+import {formatMarketplaceVnd} from '@/forms/admin-marketplace-form';
+import {useAdminMarketplaceRealtime, useAdminMarketplaceStats} from '@/hooks/useAdminMarketplace';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 

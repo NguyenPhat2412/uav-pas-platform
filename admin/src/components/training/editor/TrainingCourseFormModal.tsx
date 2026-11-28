@@ -8,12 +8,12 @@ import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {
     canSubmitTrainingDocument,
     toUpsertTrainingDocumentPayload,
-} from '@/forms/training/training-form';
+} from '@/forms/training-form';
 import type {
     TrainingDocument,
     TrainingPortalTier,
     UpsertTrainingDocumentPayload,
-} from '@/types/training/training.types';
+} from '@/types/training.types';
 
 export interface TrainingCourseFormModalProps {
     editingDoc: TrainingDocument | null;

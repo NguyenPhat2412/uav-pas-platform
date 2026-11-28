@@ -8,7 +8,7 @@ import type {
     TrainingLessonDetail,
     TrainingLessonType,
     UpdateTrainingLessonProgressPayload,
-} from '@/types/training/training.types';
+} from '@/types/training.types';
 import {
     ArticleLesson,
     DocumentLesson,

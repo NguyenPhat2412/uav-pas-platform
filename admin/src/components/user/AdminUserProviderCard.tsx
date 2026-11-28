@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {ArrowRight, BadgeCheck, FileCheck2, Landmark, Store} from 'lucide-react';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
-import {useAdminProviders} from '@/hooks/marketplace/useAdminMarketplace';
+import {useAdminProviders} from '@/hooks/useAdminMarketplace';
 import {Badge, Card, CardContent, CardHeader, CardTitle, StatusBadge} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 

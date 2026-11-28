@@ -16,12 +16,12 @@ import {
     useAdminMarketplaceRealtime,
     useAutoDispatchOrder,
     useManualDispatchOrder,
-} from '@/hooks/marketplace/useAdminMarketplace';
+} from '@/hooks/useAdminMarketplace';
 import {
     buildAutoDispatchInput,
     buildManualDispatchInput,
     formatAdminConflictError,
-} from '@/forms/marketplace/admin-marketplace-form';
+} from '@/forms/admin-marketplace-form';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';

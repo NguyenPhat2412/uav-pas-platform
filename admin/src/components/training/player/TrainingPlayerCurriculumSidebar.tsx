@@ -15,14 +15,14 @@ import {
 import type {LucideIcon} from 'lucide-react';
 import {Button} from '@/components/ui';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
-import {useTrainingLesson} from '@/hooks/training/useTraining';
+import {useTrainingLesson} from '@/hooks/useTraining';
 import type {
     TrainingCourseLessonItem,
     TrainingCourseSection,
     TrainingLessonType,
-} from '@/types/training/training.types';
+} from '@/types/training.types';
 import {LessonResourceList} from '@/components/training/player/TrainingLessonViewers';
-import {LESSON_TYPE_LABELS, sumLessonMinutes} from '@/utils/training/course-helpers';
+import {LESSON_TYPE_LABELS, sumLessonMinutes} from '@/utils/course-helpers';
 
 const LESSON_ICONS: Record<TrainingLessonType, LucideIcon> = {
     VIDEO: Video,

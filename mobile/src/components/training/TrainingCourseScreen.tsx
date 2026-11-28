@@ -5,11 +5,11 @@ import {CheckSquare, ChevronRight, CircleCheck, GraduationCap, Play, Square} fro
 import {AppText, Badge, Button, Card, EmptyState, ErrorState, LoadingState, Screen, SectionTitle} from '@/components/ui';
 import {categoryLabel, LESSON_ICONS, ProgressBar} from '@/components/training/TrainingBits';
 import {MarkdownText} from '@/components/training/MarkdownText';
-import {useTrainingCourse, useTrainingCourseChecklist} from '@/hooks/training/useTraining';
+import {useTrainingCourse, useTrainingCourseChecklist} from '@/hooks/useTraining';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {courseCallToAction, courseLessonProgress, pickStartLesson} from '@/shared/utils/training/course-helpers';
-import type {TrainingCourseDetail} from '@/shared/types/training/training.types';
+import {courseCallToAction, courseLessonProgress, pickStartLesson} from '@/shared/utils/course-helpers';
+import type {TrainingCourseDetail} from '@/shared/types/training.types';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 function Checklist({course, slug, allLessonsDone}: { course: TrainingCourseDetail; slug: string; allLessonsDone: boolean }) {

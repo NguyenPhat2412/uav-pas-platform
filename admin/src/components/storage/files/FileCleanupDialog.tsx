@@ -6,9 +6,9 @@ import {Alert, Badge, Button, Card, CardFooter, CardHeader, CardTitle, Spinner} 
 import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
-import type {StoredFile} from '@/types/storage/files.types';
-import {formatFileSize, totalBytes} from '@/utils/storage/files';
-import {useCleanupCandidates, useRemoveFile} from '@/hooks/storage/useAdminFiles';
+import type {StoredFile} from '@/types/files.types';
+import {formatFileSize, totalBytes} from '@/utils/files';
+import {useCleanupCandidates, useRemoveFile} from '@/hooks/useAdminFiles';
 import {StatusBadge} from './AdminFileManager';
 
 type Phase = 'select' | 'confirm' | 'running' | 'done';

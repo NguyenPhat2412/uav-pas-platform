@@ -3,12 +3,12 @@ import {StyleSheet, View} from 'react-native';
 import {Layers, Send, Tag} from 'lucide-react-native';
 import {Button, TextField} from '@/components/ui';
 import {GlassSelectField, type GlassOption} from '@/components/ui/GlassSelect';
-import {useServices} from '@/hooks/mission/useCustomerMissions';
-import {type CreateListingFromTemplateInput} from '@/hooks/marketplace/useProviderStudio';
+import {useServices} from '@/hooks/useCustomerMissions';
+import {type CreateListingFromTemplateInput} from '@/hooks/useProviderStudio';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {PRICING_MODEL_OPTIONS} from '@/shared/forms/marketplace/marketplace-forms';
-import type {PricingModel} from '@/shared/types/marketplace/marketplace.types';
+import {PRICING_MODEL_OPTIONS} from '@/shared/forms/marketplace-forms';
+import type {PricingModel} from '@/shared/types/marketplace.types';
 import {spacing} from '@/styles/tokens';
 
 /**

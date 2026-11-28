@@ -11,9 +11,9 @@ import {
     type LucideIcon,
 } from 'lucide-react-native';
 import {AppText, Card, ErrorState, ScaledText, SectionTitle, Skeleton} from '@/components/ui';
-import {useCustomerOrderSummary} from '@/hooks/order/useOrders';
+import {useCustomerOrderSummary} from '@/hooks/useOrders';
 import {useI18n} from '@/providers/I18nContext';
-import type {OrderStatusGroup} from '@/shared/types/project/project.types';
+import type {OrderStatusGroup} from '@/shared/types/project.types';
 import {colors, spacing} from '@/styles/tokens';
 
 interface StatusItem {

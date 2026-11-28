@@ -4,12 +4,12 @@ import {useState} from 'react';
 import Link from 'next/link';
 import {CalendarClock, Pause, Play, Plus, Trash2} from 'lucide-react';
 import {Alert, Button, StatusBadge} from '@/components/ui';
-import {extractActionableError, formatVndCompact} from '@/forms/marketplace/marketplace-forms';
-import {PROJECT_SCHEDULE_TYPES} from '@/forms/project/project-form';
-import {useProjectActions, useProjectSubscriptions} from '@/hooks/project/useCustomerProjects';
+import {extractActionableError, formatVndCompact} from '@/forms/marketplace-forms';
+import {PROJECT_SCHEDULE_TYPES} from '@/forms/project-form';
+import {useProjectActions, useProjectSubscriptions} from '@/hooks/useCustomerProjects';
 import {ApiError} from '@/lib/api';
 import {useI18n} from '@/providers/I18nContext';
-import type {ProjectScheduleType, ProjectSubscription} from '@/types/project/project.types';
+import type {ProjectScheduleType, ProjectSubscription} from '@/types/project.types';
 
 export function ProjectSubscriptionsSection({projectId}: { projectId: number }) {
     const {t, formatDate} = useI18n();

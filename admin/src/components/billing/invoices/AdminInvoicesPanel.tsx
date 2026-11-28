@@ -18,14 +18,14 @@ import {
     useDownloadAdminInvoiceReceipt,
     usePaymentGatewayConfig,
     useSendAdminInvoiceEmail,
-} from '@/hooks/billing/useBillingAdmin';
+} from '@/hooks/useBillingAdmin';
 import {formatShortDate} from '@/lib/format';
 import {planName} from '@/lib/presentation';
 import {cn} from '@/lib/utils';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import type {Invoice} from '@/types';
-import type {InvoiceFilterKey, InvoiceFilters} from '@/types/billing/billing.types';
+import type {InvoiceFilterKey, InvoiceFilters} from '@/types/billing.types';
 
 const filters: InvoiceFilterKey[] = ['ALL', 'PENDING', 'OVERDUE', 'PAID', 'FAILED', 'CANCELLED'];
 

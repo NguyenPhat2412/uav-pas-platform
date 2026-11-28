@@ -27,7 +27,7 @@ const compile = source => ts.transpileModule(source, {
 const load = source => import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'));
 
 const {API_ROUTES} = await load(compile(read('src/lib/api/routes.ts')));
-const receiptHelper = await load(compile(read('src/utils/billing/receipt-download.ts')));
+const receiptHelper = await load(compile(read('src/utils/receipt-download.ts')));
 
 test('billing routes expose invoice PDF receipt and SePay webhook paths', () => {
     assert.equal(API_ROUTES.billing.invoiceReceipt(42), '/api/v1/billing/invoices/42/receipt');
@@ -157,11 +157,11 @@ test('customer and admin billing services, polling hooks, and trilingual PDF mes
         },
     };
     try {
-        const customerCompiled = compile(read('src/api/billing/customer-billing.api.ts')).replace(/^import .*?;\n/gm, '');
+        const customerCompiled = compile(read('src/api/customer-billing.api.ts')).replace(/^import .*?;\n/gm, '');
         const {customerBillingService} = await load('const {API_ROUTES,apiClient}=globalThis.__billingReceiptTest;\n' + customerCompiled);
         await customerBillingService.downloadReceipt(12);
 
-        const adminCompiled = compile(read('src/api/billing/billing-admin.api.ts')).replace(/^import .*?;\n/gm, '');
+        const adminCompiled = compile(read('src/api/billing-admin.api.ts')).replace(/^import .*?;\n/gm, '');
         const {billingAdminService} = await load('const {API_ROUTES,apiClient,buildQueryString}=globalThis.__billingReceiptTest;\n' + adminCompiled);
         await billingAdminService.downloadReceipt(34);
 
@@ -173,10 +173,10 @@ test('customer and admin billing services, polling hooks, and trilingual PDF mes
         delete globalThis.__billingReceiptTest;
     }
 
-    const customerHookSource = read('src/hooks/billing/useCustomerBilling.ts');
+    const customerHookSource = read('src/hooks/useCustomerBilling.ts');
     assert.match(customerHookSource, /refetchInterval:[\s\S]*?status\s*(?:!==|===)\s*'PENDING'[\s\S]*?(?:5000|5_000)/);
     assert.match(customerHookSource, /export function useDownloadInvoiceReceipt/);
-    assert.match(read('src/hooks/billing/useBillingAdmin.ts'), /export function useDownloadAdminInvoiceReceipt/);
+    assert.match(read('src/hooks/useBillingAdmin.ts'), /export function useDownloadAdminInvoiceReceipt/);
 
     for (const locale of ['vi', 'en', 'ja']) {
         const customer = JSON.parse(read(`src/messages/customer/${locale}.json`));

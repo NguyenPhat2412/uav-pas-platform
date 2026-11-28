@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {ActivityIndicator, Linking, Pressable, StyleSheet, View} from 'react-native';
 import {ChevronDown, ChevronUp, Mail, MapPin, MessageCircle, PhoneCall} from 'lucide-react-native';
 import {AppText, Card, ScaledText, SectionTitle} from '@/components/ui';
-import {usePublicSiteInfo} from '@/hooks/support/usePublicSupportMobile';
+import {usePublicSiteInfo} from '@/hooks/usePublicSupportMobile';
 import {useI18n} from '@/providers/I18nContext';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 

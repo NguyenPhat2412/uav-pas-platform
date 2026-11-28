@@ -2,7 +2,7 @@
 import {useRef, useState} from 'react';
 import {Button, Input} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
-import {useEquipmentMutations, useInventoryHistory} from '@/hooks/inventory/useInventory';
+import {useEquipmentMutations, useInventoryHistory} from '@/hooks/useInventory';
 import {useCollection} from '@/hooks/useCollection';
 import {DataTable, options} from '@/components/data/DataTable';
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
@@ -17,7 +17,7 @@ import {
     equipmentFieldErrors,
     toEquipmentCreatePayload,
     toInventoryMovementPayload,
-} from "@/forms/inventory/equipment-form";
+} from "@/forms/equipment-form";
 import type {Equipment} from "@/types/resources";
 import {OptionalMark, RequiredMark, stripFieldLabelMarker} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';

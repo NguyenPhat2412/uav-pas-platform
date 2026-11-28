@@ -7,10 +7,10 @@ import {
     estimateBookingSubtotal,
     formatVndCompact,
     pricingUnitLabel,
-} from '@/shared/forms/marketplace/marketplace-forms';
+} from '@/shared/forms/marketplace-forms';
 import {displayLabel} from '@/shared/lib/presentation';
-import type {MarketplaceListing} from '@/shared/types/marketplace/marketplace.types';
-import type {MissionInput} from '@/shared/types/mission/mission.types';
+import type {MarketplaceListing} from '@/shared/types/marketplace.types';
+import type {MissionInput} from '@/shared/types/mission.types';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 export type CheckoutStep = 1 | 2 | 3;

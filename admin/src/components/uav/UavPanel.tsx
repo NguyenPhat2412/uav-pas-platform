@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {Plus} from 'lucide-react';
 import {Button, Input, StatusBadge} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
-import {useUav, useUavHistory, useUavMutations} from '@/hooks/uav/useUavs';
+import {useUav, useUavHistory, useUavMutations} from '@/hooks/useUavs';
 import {useCollection} from '@/hooks/useCollection';
 import {DataTable, options} from '@/components/data/DataTable';
 import {Drawer, Metadata, Tabs} from '@/components/data/Drawer';
@@ -18,8 +18,8 @@ import {
     emptyUavCreateDraft,
     toUavCreatePayload,
     uavFieldErrors,
-} from "@/forms/uav/uav-form";
-import {uavHistoryReason} from "@/utils/uav/workflows";
+} from "@/forms/uav-form";
+import {uavHistoryReason} from "@/utils/uav-workflows";
 import {displayLabel, formatDate} from "@/lib/presentation";
 import type {Uav} from "@/types/resources";
 import {RequiredMark} from "@/components/shared/RequiredMark";

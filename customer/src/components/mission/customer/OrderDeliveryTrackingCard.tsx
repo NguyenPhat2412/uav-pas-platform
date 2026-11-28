@@ -12,11 +12,11 @@ import {
     Star,
 } from 'lucide-react';
 import {OrderTrackingPathMap} from '@/components/mission/customer/OrderTrackingPathMap';
-import {formatTrackingLink} from '@/forms/project/project-form';
-import {useOrderRealtimeSync, useOrderTracking} from '@/hooks/project/useCustomerProjects';
+import {formatTrackingLink} from '@/forms/project-form';
+import {useOrderRealtimeSync, useOrderTracking} from '@/hooks/useCustomerProjects';
 import {useI18n} from '@/providers/I18nContext';
-import type {Mission} from '@/types/mission/mission.types';
-import type {OrderTrackingSnapshot} from '@/types/project/project.types';
+import type {Mission} from '@/types/mission.types';
+import type {OrderTrackingSnapshot} from '@/types/project.types';
 
 function resolveMilestoneIndex(mission: Mission, snapshot?: OrderTrackingSnapshot | null): number {
     const effectiveStatus = snapshot?.status || mission.status;

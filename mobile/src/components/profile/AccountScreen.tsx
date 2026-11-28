@@ -10,13 +10,13 @@ import {AccountQuickGrid} from '@/components/profile/AccountQuickGrid';
 import {PushDeviceCard} from '@/components/profile/PushDeviceCard';
 import {UserAvatar} from '@/components/profile/UserAvatar';
 import {AppText, Badge, Button, Card, Screen} from '@/components/ui';
-import {useAvatarMutations} from '@/hooks/profile/useProfile';
+import {useAvatarMutations} from '@/hooks/useProfile';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {displayLabel} from '@/shared/lib/presentation';
-import {canUsePortal} from '@/shared/utils/auth/portal';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
+import {canUsePortal} from '@/shared/utils/portal';
+import {cleanEntityName} from '@/utils/clean-text';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export function AccountRow({icon: Icon, label, onPress, danger = false, right}: {

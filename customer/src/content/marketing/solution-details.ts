@@ -1,4 +1,4 @@
-import type {SolutionDetailEntry} from '@/types/marketing/marketing.types';
+import type {SolutionDetailEntry} from '@/types/marketing.types';
 
 export type {SolutionDetailEntry};
 

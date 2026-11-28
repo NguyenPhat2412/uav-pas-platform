@@ -8,10 +8,10 @@ import {AppBackground} from '@/components/layout/AppBackground';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {MissionRow} from '@/components/mission/MissionBits';
 import {Button, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState, Screen} from '@/components/ui';
-import {useMissionList} from '@/hooks/mission/useCustomerMissions';
+import {useMissionList} from '@/hooks/useCustomerMissions';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {MISSION_FILTERS, type MissionFilter} from '@/utils/mission/status';
+import {MISSION_FILTERS, type MissionFilter} from '@/utils/status';
 import {colors, spacing} from '@/styles/tokens';
 
 const FILTERS = Object.keys(MISSION_FILTERS) as MissionFilter[];

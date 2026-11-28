@@ -14,9 +14,9 @@ import {AppText, Badge, Button, Card, EmptyState, LoadingState, SectionTitle} fr
 import {SarStatusBadge} from '@/components/sar/SarMissionsScreen';
 import {useI18n} from '@/providers/I18nContext';
 import {displayLabel} from '@/shared/lib/presentation';
-import type {AiDetection, AiTask, SarCockpitMission} from '@/shared/types/sar/sar.types';
-import type {UavTelemetry} from '@/shared/types/uav/telemetry.types';
-import {isFinitePoint} from '@/utils/operations/map-shapes';
+import type {AiDetection, AiTask, SarCockpitMission} from '@/shared/types/sar.types';
+import type {UavTelemetry} from '@/shared/types/telemetry.types';
+import {isFinitePoint} from '@/utils/map-shapes';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export function SarMissionHeaderCard({

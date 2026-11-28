@@ -3,12 +3,12 @@ import {useState} from 'react';
 import {Button} from '@/components/ui';
 import {Drawer} from '@/components/data/Drawer';
 import type {Uav} from "@/types/resources";
-import type {MaintenanceSchedule, RepairOrder} from "@/types/maintenance/maintenance.types";
+import type {MaintenanceSchedule, RepairOrder} from "@/types/maintenance.types";
 import {OrderFieldsForm, UavField} from "@/components/maintenance/Fields";
 import {ActionFeedback} from "@/components/maintenance/Feedback";
-import {useMaintenanceAction} from '@/hooks/maintenance/useMaintenanceAction';
-import {createMaintenanceOrderDraft} from "@/forms/maintenance/maintenance-form";
-import {positiveId} from "@/utils/maintenance/workflows";
+import {useMaintenanceAction} from '@/hooks/useMaintenanceAction';
+import {createMaintenanceOrderDraft} from "@/forms/maintenance-form";
+import {positiveId} from "@/utils/maintenance-workflows";
 import {useI18n} from '@/providers/I18nContext';
 
 export function OrderCreate({schedule, uavId: initialUavId, uavs, canRead, onClose, onCreated, refresh}: {

@@ -6,7 +6,7 @@ import {
     matchesOrderStatusGroup,
     ORDER_STATUS_GROUPS,
     resolveOrderStatusGroup,
-} from '../src/utils/mission/order-groups.ts';
+} from '../src/utils/order-groups.ts';
 
 const srcDir = new URL('../src/', import.meta.url).pathname;
 const read = rel => readFileSync(`${srcDir}${rel}`, 'utf8');
@@ -174,23 +174,23 @@ test('S1 VoiceOver a11y & ORDER_UPDATED realtime sync across Home, Projects, and
     const customerLayout = read('app/customer/_layout.tsx');
     assert.match(customerLayout, /useOrderRealtimeSync\(\{notifyToast:\s*true\}\)/);
 
-    const ordersHook = read('hooks/order/useOrders.ts');
+    const ordersHook = read('hooks/useOrders.ts');
     assert.match(ordersHook, /realtimeWs\.syncAccessToken/);
     assert.match(ordersHook, /frame\.type !== 'ORDER_UPDATED'/);
     assert.match(ordersHook, /projectKeys\.all\(userId\)/);
     assert.match(ordersHook, /projectKeys\.orderTracking\(userId,\s*resolvedId\)/);
     assert.match(ordersHook, /describeOrderRealtimeToast/);
 
-    const projectsHook = read('hooks/project/useProjects.ts');
+    const projectsHook = read('hooks/useProjects.ts');
     assert.match(projectsHook, /useOrderRealtimeSync\(\)/);
 
-    const missionsHook = read('hooks/mission/useCustomerMissions.ts');
+    const missionsHook = read('hooks/useCustomerMissions.ts');
     assert.match(missionsHook, /useOrderRealtimeSync/);
 });
 
 test('UI-REVIEW-9-FIXES S1: clean entity names, USGS-free cover fallback, NativeTabs automatic inset, flight path tracking, RFQ hidden, shared categories & 409 conflicts', async () => {
-    const {cleanEntityName, cleanDescriptionText, formatProviderConflictError} = await import('../src/utils/marketplace/clean-text.ts');
-    const {computeFitRegion, toLatLngList} = await import('../src/utils/order/tracking-geometry.ts');
+    const {cleanEntityName, cleanDescriptionText, formatProviderConflictError} = await import('../src/utils/clean-text.ts');
+    const {computeFitRegion, toLatLngList} = await import('../src/utils/tracking-geometry.ts');
     const {SERVICE_CATEGORIES, WEB_SERVICE_CATEGORIES} = await import('../src/shared/lib/marketplace/service-categories.ts');
 
     // #1: Never attach "— minh hoạ" / "(minh hoạ)" to service, UAV, pilot, fleet, or project names
@@ -229,7 +229,7 @@ test('UI-REVIEW-9-FIXES S1: clean entity names, USGS-free cover fallback, Native
     assert.doesNotMatch(providerOrders, /ProviderRfqBidForm/);
     const detailScreen = read('components/marketplace/catalog/MarketplaceListingDetailScreen.tsx');
     assert.doesNotMatch(detailScreen, /needCustomQuote/);
-    const apiSrc = read('api/marketplace/marketplace.api.ts');
+    const apiSrc = read('api/marketplace.api.ts');
     assert.match(apiSrc, /listOpenRfqs:/);
 
     // #8: Shared service categories synced from customer/src/lib/marketplace/service-categories.ts

@@ -23,7 +23,7 @@ import {
     useTrainingCourses,
     useTrainingLesson,
     useUpdateTrainingLessons,
-} from '@/hooks/training/useTraining';
+} from '@/hooks/useTraining';
 import {confirmDialog} from '@/providers/ConfirmContext';
 import {useI18n} from '@/providers/I18nContext';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
@@ -31,8 +31,8 @@ import type {
     AdminTrainingLesson,
     TrainingDocument,
     TrainingPortalTier,
-} from '@/types/training/training.types';
-import {lessonPayloadFromDetail} from '@/forms/training/training-form';
+} from '@/types/training.types';
+import {lessonPayloadFromDetail} from '@/forms/training-form';
 import {TrainingAssetUpload} from '@/components/training/editor/TrainingAssetUpload';
 import {TrainingBulkLessonUpload} from '@/components/training/editor/TrainingBulkLessonUpload';
 import {
@@ -40,12 +40,12 @@ import {
     TrainingLessonEditorModal,
 } from '@/components/training/editor/TrainingLessonEditorModal';
 import {isDarkStage, TrainingPlayerStage} from '@/components/training/player/TrainingPlayerStage';
-import {adminTrainingPreviewHref} from '@/utils/training/training-meta';
+import {adminTrainingPreviewHref} from '@/utils/training-meta';
 import {
     LESSON_TYPE_LABELS,
     moveItem,
     respacedSortOrders,
-} from '@/utils/training/course-helpers';
+} from '@/utils/course-helpers';
 
 const iconBtnClass = 'h-7 w-7 px-0';
 

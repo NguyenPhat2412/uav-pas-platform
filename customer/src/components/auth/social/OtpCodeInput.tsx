@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useRef} from 'react';
-import type {OtpCodeInputProps} from '@/types/auth/auth.types';
+import type {OtpCodeInputProps} from '@/types/auth.types';
 
 export function OtpCodeInput({
     value,

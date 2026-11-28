@@ -28,7 +28,7 @@ import {
     useRefreshCustomerBilling,
     useSendInvoiceEmail,
     useSubscribePlan,
-} from '@/hooks/billing/useCustomerBilling';
+} from '@/hooks/useCustomerBilling';
 import {displayLabel, planName} from '@/lib/presentation';
 import {confirmDialog} from '@/providers/ConfirmContext';
 import {useI18n} from '@/providers/I18nContext';

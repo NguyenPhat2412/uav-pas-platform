@@ -156,12 +156,12 @@ test('api client: getBytes refreshes on 401 and bytesToBase64 encodes binary PDF
     assert.deepEqual(state.tokens, {accessToken: 'a2', refreshToken: 'r2'});
     assert.equal(`data:application/pdf;base64,${bytesToBase64(downloaded)}`, `data:application/pdf;base64,${Buffer.from(pdfBytes).toString('base64')}`);
 
-    const customerApiSource = readFileSync(new URL('../src/api/billing/customer-billing.api.ts', import.meta.url), 'utf8');
+    const customerApiSource = readFileSync(new URL('../src/api/customer-billing.api.ts', import.meta.url), 'utf8');
     assert.match(customerApiSource, /receiptDataUri:/);
     assert.match(customerApiSource, /sendInvoiceEmail:/);
     assert.doesNotMatch(customerApiSource, /confirmPayment/, 'customer mobile app must never call admin-only confirmPayment');
 
-    const hookSource = readFileSync(new URL('../src/hooks/billing/useCustomerBilling.ts', import.meta.url), 'utf8');
+    const hookSource = readFileSync(new URL('../src/hooks/useCustomerBilling.ts', import.meta.url), 'utf8');
     assert.match(hookSource, /refetchInterval:.*status === 'PENDING' \? 5000 : false/);
     assert.match(hookSource, /downloadReceipt:/);
     assert.match(hookSource, /sendEmail:/);

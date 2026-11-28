@@ -9,7 +9,7 @@ import {confirmDialog} from '@/providers/ConfirmContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import {cn} from '@/lib/utils';
-import {useUpdateWeatherProvider, useWeatherProvider} from '@/hooks/weather/useWeather';
+import {useUpdateWeatherProvider, useWeatherProvider} from '@/hooks/useWeather';
 import {
     canSubmitWeatherProvider,
     toWeatherProviderPayload,
@@ -17,8 +17,8 @@ import {
     weatherProviderDraftFromSettings,
     weatherProviderFieldErrors,
     type WeatherProviderFormDraft,
-} from '@/forms/weather/weather-provider-form';
-import type {WeatherProviderSettings, WeatherProviderType} from '@/types/weather/weather.types';
+} from '@/forms/weather-provider-form';
+import type {WeatherProviderSettings, WeatherProviderType} from '@/types/weather.types';
 
 /**
  * Weather source for flight-safety checks: Open-Meteo (no key) or OpenWeatherMap with a key the

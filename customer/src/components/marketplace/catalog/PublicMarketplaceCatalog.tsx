@@ -7,13 +7,13 @@ import {CheckCircle2, Lock, ShieldCheck, Sparkles} from 'lucide-react';
 import {MarketplaceFilterBar} from '@/components/marketplace/catalog/MarketplaceFilterBar';
 import {MarketplaceListingCard} from '@/components/marketplace/catalog/MarketplaceListingCard';
 import {CustomerShopCategoryStrip} from '@/components/marketplace/shop/CustomerShopCategoryStrip';
-import {usePublicListings} from '@/hooks/marketplace/useMarketplace';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+import {usePublicListings} from '@/hooks/useMarketplace';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {useAbExperiment} from '@/lib/experiments/ab-experiments';
 import {WEB_SERVICE_CATEGORIES, type ServiceCategoryDef} from '@/lib/marketplace/service-categories';
 import {useI18n} from '@/providers/I18nContext';
-import type {ListingSortOption, ListingType, PricingModel} from '@/types/marketplace/marketplace.types';
-import type {MissionType} from '@/types/mission/mission.types';
+import type {ListingSortOption, ListingType, PricingModel} from '@/types/marketplace.types';
+import type {MissionType} from '@/types/mission.types';
 
 export function PublicMarketplaceCatalog({mode = 'public'}: { mode?: 'public' | 'portal' }) {
     const {t} = useI18n();

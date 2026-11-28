@@ -2,7 +2,7 @@
 import {useRef, useState} from 'react';
 import {Alert, Button} from '@/components/ui';
 import {ApiError} from '@/lib/api';
-import {useUavMutations} from '@/hooks/uav/useUavs';
+import {useUavMutations} from '@/hooks/useUavs';
 import type {Station, Uav} from "@/types/resources";
 import {
     canAssignUavToStation,
@@ -12,8 +12,8 @@ import {
     toUavStationAssignPayload,
     type UavLifecycleAction,
     type UavLifecycleConfirmation,
-} from "@/forms/uav/uav-form";
-import {uavControls} from "@/utils/uav/workflows";
+} from "@/forms/uav-form";
+import {uavControls} from "@/utils/uav-workflows";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';
 

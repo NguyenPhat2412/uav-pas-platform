@@ -5,7 +5,7 @@ import {readFile} from 'node:fs/promises';
 
 const ts = createRequire(new URL('../package.json', import.meta.url))('typescript');
 
-const formsSource = await readFile(new URL('../src/forms/marketplace/marketplace-forms.ts', import.meta.url), 'utf8');
+const formsSource = await readFile(new URL('../src/forms/marketplace-forms.ts', import.meta.url), 'utf8');
 const formsJs = ts.transpileModule(formsSource, {
     compilerOptions: {module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022},
 }).outputText;
@@ -46,7 +46,7 @@ test('marketplace form initializers honor dynamic defaultServiceRadiusKm without
 });
 
 test('useSiteInfo, CustomerMissionMarketplaceCard, and trilingual adminPlatform catalogs stay wired', async () => {
-    const siteInfoSrc = await readFile(new URL('../src/hooks/settings/useSiteInfo.ts', import.meta.url), 'utf8');
+    const siteInfoSrc = await readFile(new URL('../src/hooks/useSiteInfo.ts', import.meta.url), 'utf8');
     for (const key of [
         'marketplace.platform_fee_rate',
         'marketplace.min_payout_vnd',

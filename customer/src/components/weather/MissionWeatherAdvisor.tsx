@@ -1,10 +1,10 @@
 'use client';
 
 import {useI18n} from '@/providers/I18nContext';
-import {useForecastAssessment} from '@/hooks/weather/useWeather';
+import {useForecastAssessment} from '@/hooks/useWeather';
 import {PreflightWeatherCard} from '@/components/weather/PreflightWeatherCard';
-import {applyFlightWindow} from '@/utils/weather/flight-window';
-import type {MissionInput} from '@/types/mission/mission.types';
+import {applyFlightWindow} from '@/utils/flight-window';
+import type {MissionInput} from '@/types/mission.types';
 
 type PlannedFlight = Pick<MissionInput, 'latitude' | 'longitude' | 'startTime' | 'expectedEndTime' | 'requestedDate' | 'serviceId'>;
 

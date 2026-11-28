@@ -3,8 +3,8 @@ import {StyleSheet, View} from 'react-native';
 import {useRouter} from 'expo-router';
 import {BadgeCheck, Building2, Edit3, Package, Save, Store, Wallet, X} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, SectionTitle, TextField} from '@/components/ui';
-import {useMyProviderProfile} from '@/hooks/marketplace/useProviderStudio';
-import {useBillingProfile, useUpdateBillingProfile} from '@/hooks/profile/useProfile';
+import {useMyProviderProfile} from '@/hooks/useProviderStudio';
+import {useBillingProfile, useUpdateBillingProfile} from '@/hooks/useProfile';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {
@@ -14,7 +14,7 @@ import {
     toBillingProfilePayload,
     type BillingProfileFieldErrors,
     type BillingProfileFields,
-} from '@/shared/forms/profile/profile-form';
+} from '@/shared/forms/profile-form';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export function MobileBillingProfileCard() {

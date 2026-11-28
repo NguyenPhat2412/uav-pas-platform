@@ -19,7 +19,7 @@ test('customer billing email route, billingEmail profile field, and trilingual c
     const {API_ROUTES} = await import(compileModule(read('src/lib/api/routes.ts')));
     assert.equal(API_ROUTES.billing.sendInvoiceEmail(88), '/api/v1/billing/invoices/88/send-email');
 
-    const profileForm = await import(compileModule(read('src/forms/profile/profile-form.ts').replaceAll('@/lib/format', formatUrl)));
+    const profileForm = await import(compileModule(read('src/forms/profile-form.ts').replaceAll('@/lib/format', formatUrl)));
     assert.equal(profileForm.BILLING_PROFILE_FIELD_KEYS.includes('billingEmail'), true);
 
     const draft = profileForm.billingProfileDraftFromDetail({

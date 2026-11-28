@@ -29,7 +29,7 @@ export type {
     MissionReviewUpsertInput,
     DeliverableGeoPin,
     MissionInspectionReport,
-} from '@/types/mission/mission.types';
+} from '@/types/mission.types';
 
 export type {
     ProjectScheduleType,
@@ -45,4 +45,4 @@ export type {
     OrderTrackingSnapshot,
     CustomerProjectPage,
     ProjectSubscriptionPage,
-} from '@/types/project/project.types';
+} from '@/types/project.types';

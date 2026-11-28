@@ -7,7 +7,7 @@ import {backupTone} from './BackupsPanel';
 import {tlsTone} from './DeploymentPanel';
 import {Panel, type Tone} from './InfraUi';
 import {cn} from '@/lib/utils';
-import {useBackupStatus, useDeploymentInfo, useEmailStatus} from '@/hooks/infrastructure/useInfrastructure';
+import {useBackupStatus, useDeploymentInfo, useEmailStatus} from '@/hooks/useInfrastructure';
 
 const toneDot: Record<Tone, string> = {good: 'bg-uav-blue', warn: 'bg-amber-500', bad: 'bg-red-600', neutral: 'bg-slate-400', off: 'bg-slate-300'};
 

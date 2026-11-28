@@ -4,8 +4,8 @@ import Svg, {Circle, Line, Polyline} from 'react-native-svg';
 import {AlertTriangle, Compass, Pause, Play, RotateCcw, ShieldCheck} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, ChipGroup, LoadingState, SectionTitle} from '@/components/ui';
 import {MobileUav3DViewerCard} from '@/components/uav/MobileUav3DViewerCard';
-import {useMissionTelemetryReplay} from '@/hooks/mission/useCustomerMissions';
-import {useOperationsMissionTelemetryReplay} from '@/hooks/operations/useOperationsMissions';
+import {useMissionTelemetryReplay} from '@/hooks/useCustomerMissions';
+import {useOperationsMissionTelemetryReplay} from '@/hooks/useOperationsMissions';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 interface Props {

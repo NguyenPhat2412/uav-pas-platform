@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {Check, Star} from 'lucide-react';
 import {FlatTag} from '@/components/marketing/FlatTag';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {useI18n} from '@/providers/I18nContext';
 
 function formatRatePct(rate: number): string {

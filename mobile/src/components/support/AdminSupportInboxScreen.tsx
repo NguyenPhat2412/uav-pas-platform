@@ -23,11 +23,11 @@ import {
     useAdminSupportSummary,
     useAdminSupportThreads,
     useCanManageSupport,
-} from '@/hooks/support/useAdminSupportMobile';
+} from '@/hooks/useAdminSupportMobile';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import type {SupportThreadFilter, SupportThreadStatus} from '@/shared/types/support/support.types';
-import {formatSupportTime, formatSupportTopic} from '@/shared/utils/support/support-format';
+import type {SupportThreadFilter, SupportThreadStatus} from '@/shared/types/support.types';
+import {formatSupportTime, formatSupportTopic} from '@/shared/utils/support-format';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 type InboxFilterChip = 'ALL' | 'UNREAD' | 'OPEN' | 'IN_PROGRESS' | 'RESOLVED';

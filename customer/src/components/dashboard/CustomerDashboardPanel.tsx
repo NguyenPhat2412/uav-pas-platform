@@ -7,9 +7,9 @@ import {
     CustomerOperationalInsights,
     CustomerUpcomingStrip,
 } from "@/components/dashboard/CustomerAnalytics";
-import {useCustomerAnalytics} from '@/hooks/dashboard/useCustomerAnalytics';
+import {useCustomerAnalytics} from '@/hooks/useCustomerAnalytics';
 import {Delta} from "@/components/dashboard/AdminCharts";
-import {useMissions, useServices} from '@/hooks/mission/useCustomerMissions';
+import {useMissions, useServices} from '@/hooks/useCustomerMissions';
 import {formatShortDate} from "@/lib/format";
 import {toMissionSlug} from "@/lib/url-slugs";
 import {

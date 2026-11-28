@@ -3,13 +3,13 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import type {ReactNode} from 'react';
 import {VideoOff} from 'lucide-react';
-import type {UpdateTrainingLessonProgressPayload} from '@/types/training/training.types';
+import type {UpdateTrainingLessonProgressPayload} from '@/types/training.types';
 import {
     isPositionSaveDue,
     isVideoEmbedUrl,
     isVideoWatched,
     resumePosition,
-} from '@/utils/training/course-helpers';
+} from '@/utils/course-helpers';
 
 /** The player's media frame: 16:9, never taller than 70 % of the viewport. */
 export const STAGE_FRAME = 'aspect-video max-h-[70vh] w-full';

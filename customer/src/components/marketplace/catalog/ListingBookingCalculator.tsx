@@ -6,12 +6,12 @@ import {ArrowUpRight, Clock3} from 'lucide-react';
 import {openAuthModal} from '@/components/auth/modal/AuthModalPopup';
 import {localizeOfficialListingTitle} from '@/components/marketplace/catalog/MarketplaceListingCard';
 import {RequiredMark} from '@/components/ui';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
-import {estimateBookingSubtotal, formatVndCompact} from '@/forms/marketplace/marketplace-forms';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
+import {estimateBookingSubtotal, formatVndCompact} from '@/forms/marketplace-forms';
 import {trackAbEvent, useAbExperiment} from '@/lib/experiments/ab-experiments';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import type {MarketplaceListing, PricingModel} from '@/types/marketplace/marketplace.types';
+import type {MarketplaceListing, PricingModel} from '@/types/marketplace.types';
 
 export function ListingBookingCalculator({listing}: { listing: MarketplaceListing }) {
     const {t, locale} = useI18n();

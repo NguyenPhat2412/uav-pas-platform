@@ -3,7 +3,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {cn} from '@/lib/utils';
 import {getPresentationLocale} from '@/lib/presentation';
-import {mountUav3dLoader} from '@/utils/digital-twin/uav-3d-loader';
+import {mountUav3dLoader} from '@/utils/uav-3d-loader';
 
 const defaultLabels = {vi: 'Đang tải...', en: 'Loading…', ja: '読み込み中…'} as const;
 

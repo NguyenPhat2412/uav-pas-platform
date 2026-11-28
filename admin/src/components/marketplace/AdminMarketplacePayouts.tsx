@@ -12,16 +12,16 @@ import {
     MarketplacePagination,
     MarketplaceStatusTabs,
 } from '@/components/marketplace/MarketplaceShared';
-import {useAdminPayouts, useProcessPayout} from '@/hooks/marketplace/useAdminMarketplace';
+import {useAdminPayouts, useProcessPayout} from '@/hooks/useAdminMarketplace';
 import {
     formatMarketplaceVnd,
     sanitizeMarketplaceText,
     validatePayoutProcessInput,
-} from '@/forms/marketplace/admin-marketplace-form';
+} from '@/forms/admin-marketplace-form';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import type {AdminProviderPayout, PayoutStatus} from '@/types/marketplace/marketplace.types';
+import type {AdminProviderPayout, PayoutStatus} from '@/types/marketplace.types';
 
 export function AdminMarketplacePayouts() {
     const {t} = useI18n();

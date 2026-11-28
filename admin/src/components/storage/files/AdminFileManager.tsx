@@ -12,10 +12,10 @@ import {toast} from '@/providers/ToastContext';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {Pagination} from '@/components/data/Pagination';
 import {cn} from '@/lib/utils';
-import {useFileList, useFileSummary, useOpenStoredFile, useRefreshFiles} from '@/hooks/storage/useAdminFiles';
-import {useMigrateSingleFile, useStoragePoolOverview} from '@/hooks/storage/useStoragePool';
-import type {FileSortDirection, FileSortField, StoredFile, StoredFileKind, StoredFileModule, StoredFileStatus} from '@/types/storage/files.types';
-import {FILE_KINDS, FILE_MODULES, FILE_PAGE_SIZE, FILE_STATUSES, canDeleteFile, formatFileSize, linkHref, nextSort} from '@/utils/storage/files';
+import {useFileList, useFileSummary, useOpenStoredFile, useRefreshFiles} from '@/hooks/useAdminFiles';
+import {useMigrateSingleFile, useStoragePoolOverview} from '@/hooks/useStoragePool';
+import type {FileSortDirection, FileSortField, StoredFile, StoredFileKind, StoredFileModule, StoredFileStatus} from '@/types/files.types';
+import {FILE_KINDS, FILE_MODULES, FILE_PAGE_SIZE, FILE_STATUSES, canDeleteFile, formatFileSize, linkHref, nextSort} from '@/utils/files';
 import {AdminFileDeleteDialog, AdminFileSummaryCard} from './AdminFileDetailCard';
 import {FileCleanupDialog} from './FileCleanupDialog';
 

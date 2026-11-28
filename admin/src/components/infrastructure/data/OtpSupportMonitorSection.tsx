@@ -7,17 +7,17 @@ import {QueryState} from '@/components/data/WorkspaceState';
 import {Panel} from '@/components/infrastructure/runtime/InfraUi';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {Alert, Badge, Button, Input} from '@/components/ui';
-import {canSubmitOtpSupportEmail} from '@/forms/infrastructure/mail-otp-form';
+import {canSubmitOtpSupportEmail} from '@/forms/mail-otp-form';
 import {
     useAdminOtpTokens,
     useClearOtpRateLimitSupport,
     useInvalidateOtpToken,
     useSendResetOtpSupport,
-} from '@/hooks/infrastructure/useInfrastructure';
+} from '@/hooks/useInfrastructure';
 import {cn} from '@/lib/utils';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import type {AdminOtpToken} from '@/types/infrastructure/infrastructure.types';
+import type {AdminOtpToken} from '@/types/infrastructure.types';
 
 const PURPOSE_OPTIONS = ['ALL', 'PASSWORD_RESET', 'REGISTER_VERIFY', 'LOGIN_2FA', 'ENABLE_2FA_EMAIL'] as const;
 const STATUS_OPTIONS = ['ALL', 'ACTIVE', 'CONSUMED', 'LOCKED', 'EXPIRED'] as const;

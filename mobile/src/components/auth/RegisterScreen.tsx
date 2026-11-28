@@ -5,11 +5,11 @@ import {UserPlus} from 'lucide-react-native';
 import {Button, KeyboardAnchor, TextField} from '@/components/ui';
 import {AuthLayout} from '@/components/auth/AuthLayout';
 import {SocialSignInRow} from '@/components/auth/SocialSignInRow';
-import {useAuthFlows} from '@/hooks/auth/useAuthFlows';
+import {useAuthFlows} from '@/hooks/useAuthFlows';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {authFieldErrors, type RegisterFormDraft} from '@/shared/forms/auth/auth-form';
-import {registerVerifyParams, signInErrorText} from '@/forms/auth/sign-in-flow';
+import {authFieldErrors, type RegisterFormDraft} from '@/shared/forms/auth-form';
+import {registerVerifyParams, signInErrorText} from '@/forms/sign-in-flow';
 import {colors, spacing} from '@/styles/tokens';
 
 const FIELD_ORDER: (keyof RegisterFormDraft)[] = ['username', 'email', 'phoneNumber', 'password', 'confirmPassword'];

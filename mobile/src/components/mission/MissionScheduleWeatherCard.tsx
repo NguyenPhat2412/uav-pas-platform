@@ -3,7 +3,7 @@ import {Platform, Pressable, StyleSheet, View} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {CloudSun} from 'lucide-react-native';
 import {AppText, Card, FieldLabel, ScaledText} from '@/components/ui';
-import {fromLocalIso} from '@/forms/mission/mission-draft';
+import {fromLocalIso} from '@/forms/mission-draft';
 import {useI18n} from '@/providers/I18nContext';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 

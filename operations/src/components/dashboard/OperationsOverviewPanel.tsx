@@ -21,17 +21,17 @@ import {useRouter} from 'next/navigation';
 import {AppShell} from '@/components/layout/AppShell';
 import {UavLoader} from '@/components/ui';
 import {useAuth} from '@/providers/AuthContext';
-import {useOperationsOverview} from '@/hooks/dashboard/useOperationsOverview';
+import {useOperationsOverview} from '@/hooks/useOperationsOverview';
 import {
     useMyProviderFleet,
     useProviderOrders,
-} from '@/hooks/marketplace/useMarketplace';
+} from '@/hooks/useMarketplace';
 import {
     classifySellerOrderTab,
     normalizeUavStatusCardKey,
-} from '@/forms/marketplace/marketplace-forms';
+} from '@/forms/marketplace-forms';
 import {useCollection} from '@/hooks/useCollection';
-import {useFleetTelemetry} from '@/hooks/uav/useTelemetry';
+import {useFleetTelemetry} from '@/hooks/useTelemetry';
 import {useI18n} from '@/providers/I18nContext';
 
 const SHOP_SHORTCUTS = [

@@ -3,7 +3,7 @@
 import {AlertOctagon, AlertTriangle, Info, ShieldCheck} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
-import type {SecurityWarning, WarningSeverity} from '@/types/security/security.types';
+import type {SecurityWarning, WarningSeverity} from '@/types/security.types';
 
 const severityStyle: Record<WarningSeverity, { box: string; text: string; icon: typeof Info }> = {
     CRITICAL: {box: 'border-l-red-600 bg-red-50', text: 'text-red-800', icon: AlertOctagon},

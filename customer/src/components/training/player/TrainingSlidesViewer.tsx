@@ -3,9 +3,9 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {ChevronLeft, ChevronRight, ImageOff, Maximize2, Minimize2} from 'lucide-react';
 import {Button} from '@/components/ui';
-import type {TrainingLessonSlide} from '@/types/training/training.types';
-import {isLastSlide, slideCounter, slideIndexAfter} from '@/utils/training/course-helpers';
-import type {SlideMove} from '@/utils/training/course-helpers';
+import type {TrainingLessonSlide} from '@/types/training.types';
+import {isLastSlide, slideCounter, slideIndexAfter} from '@/utils/course-helpers';
+import type {SlideMove} from '@/utils/course-helpers';
 import {isEditableTarget} from '@/components/training/player/training-pdf-helpers';
 import {LessonMediaEmpty, STAGE_FRAME} from '@/components/training/player/TrainingVideoAndStage';
 

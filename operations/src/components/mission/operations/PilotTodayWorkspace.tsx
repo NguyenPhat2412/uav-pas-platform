@@ -22,12 +22,12 @@ import {
     extractActionableError,
     formatProviderConflictError,
     sanitizeMarketplaceText,
-} from '@/forms/marketplace/marketplace-forms';
-import {usePilotTodayActions} from '@/hooks/marketplace/useMarketplace';
+} from '@/forms/marketplace-forms';
+import {usePilotTodayActions} from '@/hooks/useMarketplace';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import type {Mission} from '@/types/mission/mission.types';
-import {MEDIA_ACCEPT} from '@/utils/media/media-policy';
+import type {Mission} from '@/types/mission.types';
+import {MEDIA_ACCEPT} from '@/utils/media-policy';
 
 type PilotTaskTab = 'ACTIVE' | 'IN_FLIGHT' | 'COMPLETED';
 

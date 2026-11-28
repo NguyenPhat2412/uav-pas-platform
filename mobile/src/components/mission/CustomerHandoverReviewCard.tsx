@@ -2,10 +2,10 @@ import React, {useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {CheckCircle2, CheckSquare, Square, Star} from 'lucide-react-native';
 import {AppText, Badge, Button, Card, FieldLabel, SectionTitle, TextField} from '@/components/ui';
-import {useMissionActions, useMissionReview} from '@/hooks/mission/useCustomerMissions';
+import {useMissionActions, useMissionReview} from '@/hooks/useCustomerMissions';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {missionFormError} from '@/shared/forms/mission/mission-form';
+import {missionFormError} from '@/shared/forms/mission-form';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 function StarRow({

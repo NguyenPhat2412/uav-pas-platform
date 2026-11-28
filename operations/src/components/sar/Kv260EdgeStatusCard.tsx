@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {Activity, Cpu, Flame, Timer, Zap} from 'lucide-react';
-import type {AiTask} from '@/types/sar/sar.types';
+import type {AiTask} from '@/types/sar.types';
 import {useI18n} from '@/providers/I18nContext';
 import {formatTelemetryNumber} from '@/lib/format';
 import {cn} from '@/lib/utils';

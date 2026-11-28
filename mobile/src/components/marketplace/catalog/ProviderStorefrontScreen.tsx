@@ -13,7 +13,7 @@ import {
     Screen,
     SectionTitle,
 } from '@/components/ui';
-import {usePublicProvider} from '@/hooks/marketplace/useMarketplaceCatalog';
+import {usePublicProvider} from '@/hooks/useMarketplaceCatalog';
 import {useI18n} from '@/providers/I18nContext';
 import {colors, radius, spacing} from '@/styles/tokens';
 

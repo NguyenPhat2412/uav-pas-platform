@@ -17,14 +17,14 @@ import {
     useAdminMarketplaceMutations,
     useAdminMarketplacePayouts,
     useAdminMarketplaceProviders,
-} from '@/hooks/marketplace/useAdminMarketplaceMobile';
+} from '@/hooks/useAdminMarketplaceMobile';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {
     extractActionableError,
     formatVndCompact,
     listingTypeLabel,
-} from '@/shared/forms/marketplace/marketplace-forms';
+} from '@/shared/forms/marketplace-forms';
 import {colors, spacing} from '@/styles/tokens';
 
 type ModQueue = 'PROVIDERS' | 'LISTINGS' | 'PAYOUTS';

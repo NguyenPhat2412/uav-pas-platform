@@ -8,9 +8,9 @@ import {QueryState} from '@/components/data/WorkspaceState';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
-import {SEVERITIES, SOURCES, type AlertSeverity, type AlertSource} from '@/types/alerts/alerts.types';
-import {useAlertCenter} from '@/hooks/alerts/useAlertCenter';
-import {useAlertMessage} from '@/hooks/alerts/useAlertMessage';
+import {SEVERITIES, SOURCES, type AlertSeverity, type AlertSource} from '@/types/alerts.types';
+import {useAlertCenter} from '@/hooks/useAlertCenter';
+import {useAlertMessage} from '@/hooks/useAlertMessage';
 
 export const severityStyle: Record<AlertSeverity, { stripe: string; icon: typeof Info; text: string; chip: string }> = {
     CRITICAL: {stripe: 'border-l-red-600', icon: CircleAlert, text: 'text-red-700', chip: 'border-red-200 bg-red-50 text-red-700'},

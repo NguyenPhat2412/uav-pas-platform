@@ -13,12 +13,12 @@ import {
 } from '@/components/marketplace/MarketplaceShared';
 import {ListingModerationDrawer} from '@/components/marketplace/ListingModerationDrawer';
 import {ListingModerationRow} from '@/components/marketplace/ListingModerationRow';
-import {useAdminListings, useModerateListing} from '@/hooks/marketplace/useAdminMarketplace';
-import {validateListingModerationInput} from '@/forms/marketplace/admin-marketplace-form';
+import {useAdminListings, useModerateListing} from '@/hooks/useAdminMarketplace';
+import {validateListingModerationInput} from '@/forms/admin-marketplace-form';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import type {AdminMarketplaceListing, ListingModerationStatus} from '@/types/marketplace/marketplace.types';
+import type {AdminMarketplaceListing, ListingModerationStatus} from '@/types/marketplace.types';
 
 export function AdminMarketplaceListings() {
     const {t} = useI18n();

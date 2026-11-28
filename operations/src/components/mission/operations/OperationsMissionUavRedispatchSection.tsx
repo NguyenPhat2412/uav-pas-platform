@@ -2,12 +2,12 @@
 
 import {useState} from 'react';
 import {Button, Card, CardContent, CardHeader, CardTitle, Select, Textarea} from '@/components/ui';
-import {canSubmitUavRedispatch} from '@/forms/mission/operations-mission-form';
-import type {useMissionWorkflow} from '@/hooks/mission/useMissionWorkflow';
+import {canSubmitUavRedispatch} from '@/forms/operations-mission-form';
+import type {useMissionWorkflow} from '@/hooks/useMissionWorkflow';
 import {useI18n} from '@/providers/I18nContext';
-import type {Mission} from '@/types/mission/mission.types';
+import type {Mission} from '@/types/mission.types';
 import type {Uav} from '@/types/resources';
-import type {missionControls} from '@/utils/mission/presentation';
+import type {missionControls} from '@/utils/presentation';
 
 export interface OperationsMissionUavRedispatchSectionProps {
     mission: Mission;

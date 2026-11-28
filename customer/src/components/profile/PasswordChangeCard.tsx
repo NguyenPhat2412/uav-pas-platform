@@ -7,14 +7,14 @@ import {useI18n} from '@/providers/I18nContext';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
 import {Alert, Button, Card, CardContent, CardHeader, CardTitle, FormField, PasswordInput} from '@/components/ui';
 import {cn} from '@/lib/utils';
-import {useChangePassword} from '@/hooks/profile/useProfile';
+import {useChangePassword} from '@/hooks/useProfile';
 import {
     canSubmitPasswordChange,
     emptyPasswordChangeDraft,
     passwordChangeFieldErrors,
     toPasswordChangePayload,
     type PasswordChangeDraft,
-} from '@/forms/profile/profile-form';
+} from '@/forms/profile-form';
 
 export function PasswordChangeCard() {
     const {logout} = useAuth();

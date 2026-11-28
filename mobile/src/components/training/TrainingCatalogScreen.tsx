@@ -4,10 +4,10 @@ import {usePathname, useRouter} from 'expo-router';
 import {CircleCheck, GraduationCap} from 'lucide-react-native';
 import {AppText, Badge, Card, ChipGroup, EmptyState, ErrorState, LoadingState, Screen, TextField} from '@/components/ui';
 import {categoryLabel, clampPercent, ProgressBar} from '@/components/training/TrainingBits';
-import {useTrainingCourses} from '@/hooks/training/useTraining';
+import {useTrainingCourses} from '@/hooks/useTraining';
 import {useI18n} from '@/providers/I18nContext';
-import {courseCallToAction, matchesCourseSearch} from '@/shared/utils/training/course-helpers';
-import type {TrainingCourseSummary} from '@/shared/types/training/training.types';
+import {courseCallToAction, matchesCourseSearch} from '@/shared/utils/course-helpers';
+import type {TrainingCourseSummary} from '@/shared/types/training.types';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 function CourseCard({course, onPress}: { course: TrainingCourseSummary; onPress: () => void }) {

@@ -5,15 +5,15 @@ import {AppText, styles as ui} from '@/components/ui';
 import {
     useUserNotificationPreferenceActions,
     useUserNotificationPreferences,
-} from '@/hooks/notification/useNotifications';
+} from '@/hooks/useNotifications';
 import {
     pickLocalizedModuleCopy,
     toUpdateUserPreferencePayload,
-} from '@/shared/forms/notification/notification-policy-form';
+} from '@/shared/forms/notification-policy-form';
 import type {
     UpdateUserNotificationPreferenceInput,
     UserNotificationModulePreference,
-} from '@/shared/types/notification/notification.types';
+} from '@/shared/types/notification.types';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {colors, radius, spacing} from '@/styles/tokens';

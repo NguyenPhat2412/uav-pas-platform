@@ -2,7 +2,7 @@
 
 import {Minus, TrendingDown, TrendingUp} from 'lucide-react';
 import {Badge, Card} from '@/components/ui';
-import type {ChartSeries as Series, TrendViewMode} from '@/types/dashboard/dashboard.types';
+import type {ChartSeries as Series, TrendViewMode} from '@/types/dashboard.types';
 import {cn} from '@/lib/utils';
 
 export type {Series, TrendViewMode};

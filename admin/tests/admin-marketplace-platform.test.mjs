@@ -38,7 +38,7 @@ test('adminI18nService.namespaces unwraps DTO { namespaces: string[] } from back
         },
     };
     try {
-        const compiled = compile(read('src/api/i18n/i18n.api.ts')).replace(/^import .*?;\n/gm, '');
+        const compiled = compile(read('src/api/i18n.api.ts')).replace(/^import .*?;\n/gm, '');
         const {adminI18nService} = await load('const {API_ROUTES,apiClient}=globalThis.__i18nTest;\n' + compiled);
         const result = await adminI18nService.namespaces();
         assert.deepEqual(result, ['admin', 'adminCommerce', 'common']);
@@ -48,7 +48,7 @@ test('adminI18nService.namespaces unwraps DTO { namespaces: string[] } from back
 });
 
 test('admin hooks gate server queries behind permissionsReady and PermissionCode checks', () => {
-    const marketplaceHooks = read('src/hooks/marketplace/useAdminMarketplace.ts');
+    const marketplaceHooks = read('src/hooks/useAdminMarketplace.ts');
     assert.match(marketplaceHooks, /permissionsReady && can\('MARKETPLACE_MODERATE'\)/);
     assert.match(marketplaceHooks, /permissionsReady && can\('PAYOUT_MANAGE'\)/);
     assert.match(marketplaceHooks, /keepPreviousData/);
@@ -73,7 +73,7 @@ test('trilingual adminCommerce.marketplace catalog maintains 100% leaf-key parit
 });
 
 test('Provider moderation UI wires skeleton, error/empty states, document drawer, and <= 300 line limit', async () => {
-    const form = await load(compile(read('src/forms/marketplace/admin-marketplace-form.ts')));
+    const form = await load(compile(read('src/forms/admin-marketplace-form.ts')));
     const rejectedWithoutNote = form.validateProviderModerationInput({status: 'REJECTED', rawNote: '   '});
     assert.equal(rejectedWithoutNote.ok, false);
     assert.equal(rejectedWithoutNote.code, 'NOTE_REQUIRED');
@@ -125,11 +125,11 @@ test('Admin dispatch queue wires manual/auto endpoints, ORDER_UPDATED realtime, 
     const wsClient = read('src/lib/realtime-ws.ts');
     assert.match(wsClient, /ORDER_UPDATED/);
 
-    const hookSource = read('src/hooks/marketplace/useAdminMarketplace.ts');
+    const hookSource = read('src/hooks/useAdminMarketplace.ts');
     assert.match(hookSource, /useAdminMarketplaceRealtime/);
     assert.match(hookSource, /ORDER_UPDATED/);
 
-    const form = await load(compile(read('src/forms/marketplace/admin-marketplace-form.ts')));
+    const form = await load(compile(read('src/forms/admin-marketplace-form.ts')));
     assert.deepEqual(form.buildManualDispatchInput({providerId: 9, rawNote: ' Giao ưu tiên '}), {
         providerId: 9,
         note: 'Giao ưu tiên',
@@ -171,7 +171,7 @@ test('Admin customer projects & subscriptions governance wires read-only view, s
     assert.equal(API_ROUTES.projects.subscriptions(12), '/api/v1/projects/12/subscriptions');
     assert.equal(API_ROUTES.projects.subscriptionById(12, 34), '/api/v1/projects/12/subscriptions/34');
 
-    const form = await load(compile(read('src/forms/marketplace/admin-marketplace-form.ts')));
+    const form = await load(compile(read('src/forms/admin-marketplace-form.ts')));
     assert.equal(form.canAdminCancelSubscription('ACTIVE'), true);
     assert.equal(form.canAdminCancelSubscription('PAUSED'), true);
     assert.equal(form.canAdminCancelSubscription('ENDED'), false);

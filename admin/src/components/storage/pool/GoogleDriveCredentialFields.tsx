@@ -2,7 +2,7 @@
 
 import {Alert, FormField, Input, PasswordInput} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
-import type {DriveConnectTab} from '@/forms/storage/storage-pool-form';
+import type {DriveConnectTab} from '@/forms/storage-pool-form';
 
 interface GoogleDriveCredentialFieldsProps {
     tab: DriveConnectTab;

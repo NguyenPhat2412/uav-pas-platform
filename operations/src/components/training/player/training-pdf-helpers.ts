@@ -1,4 +1,4 @@
-import {clampPdfPage} from '@/utils/training/course-helpers';
+import {clampPdfPage} from '@/utils/course-helpers';
 
 type PdfJs = typeof import('pdfjs-dist');
 

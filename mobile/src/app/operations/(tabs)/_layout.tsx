@@ -1,6 +1,6 @@
 import React from 'react';
 import {NativeTabs} from 'expo-router/native-tabs';
-import {useNotifications} from '@/hooks/notification/useNotifications';
+import {useNotifications} from '@/hooks/useNotifications';
 import {useI18n} from '@/providers/I18nContext';
 import {colors} from '@/styles/tokens';
 

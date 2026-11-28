@@ -16,8 +16,8 @@ import {GlassSelectCards, GlassSelectField, type GlassOption} from '@/components
 import {
     useMyProviderProfile,
     useProviderStudioMutations,
-} from '@/hooks/marketplace/useProviderStudio';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+} from '@/hooks/useProviderStudio';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {
@@ -25,12 +25,12 @@ import {
     extractActionableError,
     initialOnboardingForm,
     verificationStatusLabel,
-} from '@/shared/forms/marketplace/marketplace-forms';
+} from '@/shared/forms/marketplace-forms';
 import type {
     ProviderDocumentType,
     ProviderOnboardingInput,
     ProviderType,
-} from '@/shared/types/marketplace/marketplace.types';
+} from '@/shared/types/marketplace.types';
 import {colors, spacing} from '@/styles/tokens';
 
 export function ProviderOnboardingScreen() {

@@ -9,16 +9,16 @@ import {Button, Status} from '@/components/customer/CustomerUi';
 import {LoadingRows} from '@/components/data/WorkspaceState';
 import {OrderStatusBar} from '@/components/mission/customer/OrderStatusBar';
 import {IllustratedEmptyState} from '@/components/shared/IllustratedEmptyState';
-import {formatVndCompact} from '@/forms/marketplace/marketplace-forms';
-import {missionListFilters, missionPageRange} from '@/forms/mission/mission-form';
-import {mapMissionToOrderStatusGroup, ORDER_STATUS_GROUPS} from '@/forms/project/project-form';
-import {useMissionActions, useMissions} from '@/hooks/mission/useCustomerMissions';
-import {useCustomerProjects, useOrderRealtimeSync} from '@/hooks/project/useCustomerProjects';
+import {formatVndCompact} from '@/forms/marketplace-forms';
+import {missionListFilters, missionPageRange} from '@/forms/mission-form';
+import {mapMissionToOrderStatusGroup, ORDER_STATUS_GROUPS} from '@/forms/project-form';
+import {useMissionActions, useMissions} from '@/hooks/useCustomerMissions';
+import {useCustomerProjects, useOrderRealtimeSync} from '@/hooks/useCustomerProjects';
 import {formatDate} from '@/lib/presentation';
 import {toMissionSlug} from '@/lib/url-slugs';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import type {OrderStatusGroup} from '@/types/project/project.types';
+import type {OrderStatusGroup} from '@/types/project.types';
 
 export default function MissionsPage() {
     return (

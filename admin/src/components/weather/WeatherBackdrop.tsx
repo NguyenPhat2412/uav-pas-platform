@@ -1,6 +1,6 @@
 import {useId, type CSSProperties, type ReactNode} from 'react';
 import {cn} from '@/lib/utils';
-import type {SkyEffect} from '@/utils/weather/sky-theme';
+import type {SkyEffect} from '@/utils/sky-theme';
 
 // Fixed pseudo-random spread (same on server and client, so no hydration mismatch and no Math.random()).
 const spread = (i: number, salt: number) => {

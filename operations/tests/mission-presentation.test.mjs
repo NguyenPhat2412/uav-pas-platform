@@ -11,7 +11,7 @@ const compile = source => 'data:text/javascript;base64,' + Buffer.from(ts.transp
 }).outputText).toString('base64');
 const labelsUrl = compile(await readFile(new URL('../src/lib/presentation.ts', import.meta.url), 'utf8'));
 const {displayLabel, eventTitle, eventNote, terminalStatuses, auditDetail} = await import(labelsUrl);
-const source = (await readFile(new URL('../src/utils/mission/presentation.ts', import.meta.url), 'utf8')).replace('@/lib/presentation', labelsUrl);
+const source = (await readFile(new URL('../src/utils/presentation.ts', import.meta.url), 'utf8')).replace('@/lib/presentation', labelsUrl);
 const {missionControls} = await import(compile(source));
 const mission = {id: 1, operatorId: 10, status: 'READY', operatorAccepted: false};
 const all = () => true;

@@ -9,18 +9,18 @@ import {
     useSaveTrainingDocument,
     useTrainingDocumentProgress,
     useTrainingOverview,
-} from '@/hooks/training/useTraining';
+} from '@/hooks/useTraining';
 import {
     emptyTrainingDocumentDraft,
     trainingDocumentDraftFromDetail,
     trainingDocumentFieldErrors,
-} from '@/forms/training/training-form';
+} from '@/forms/training-form';
 import type {
     TrainingAcademyWorkspaceProps,
     TrainingDocument,
     UpsertTrainingDocumentPayload,
-} from '@/types/training/training.types';
-import {adminTrainingPreviewHref, PORTAL_META} from '@/utils/training/training-meta';
+} from '@/types/training.types';
+import {adminTrainingPreviewHref, PORTAL_META} from '@/utils/training-meta';
 import {TrainingCourseCatalog} from '@/components/training/catalog/TrainingCourseCatalog';
 import {TrainingCourseFormModal} from '@/components/training/editor/TrainingCourseFormModal';
 import {TrainingDocumentMasterDetail} from '@/components/training/catalog/TrainingDocumentMasterDetail';

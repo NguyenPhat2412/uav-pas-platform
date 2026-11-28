@@ -3,12 +3,12 @@ import {FlatList, Pressable, RefreshControl, StyleSheet, View} from 'react-nativ
 import {Stack, useRouter} from 'expo-router';
 import {AlertTriangle, Bell, CheckCheck, ChevronRight, Info} from 'lucide-react-native';
 import {AppText, Button, ChipGroup, CONTENT_WIDTH, EmptyState, ErrorState, LoadingState, styles as ui} from '@/components/ui';
-import {useNotifications} from '@/hooks/notification/useNotifications';
+import {useNotifications} from '@/hooks/useNotifications';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {canUsePortal} from '@/shared/utils/auth/portal';
-import type {NotificationRecord} from '@/shared/types/notification/notification.types';
-import {resolveNotificationTarget, type MobilePortal} from '@/utils/operations/portal-routing';
+import {canUsePortal} from '@/shared/utils/portal';
+import type {NotificationRecord} from '@/shared/types/notification.types';
+import {resolveNotificationTarget, type MobilePortal} from '@/utils/portal-routing';
 import {AppBackground} from '@/components/layout/AppBackground';
 import {NotificationModulePrefsCard} from '@/components/notification/NotificationModulePrefsCard';
 import {colors, radius, spacing} from '@/styles/tokens';

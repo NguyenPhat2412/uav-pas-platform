@@ -16,7 +16,7 @@ import {
     toPermitVerifyPayload,
     type PermitDraft,
     type PermitFieldErrors,
-} from '@/forms/mission/permit-form';
+} from '@/forms/permit-form';
 import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
@@ -26,7 +26,7 @@ import type {
     MissionMedia,
     MissionPermitUpsertInput,
     MissionPermitVerifyInput,
-} from '@/types/mission/mission.types';
+} from '@/types/mission.types';
 
 export const PERMIT_STATUS_TONE: Record<FlightPermitStatus, string> = {
     NOT_REQUIRED: 'bg-slate-100 text-slate-600 border-slate-200',

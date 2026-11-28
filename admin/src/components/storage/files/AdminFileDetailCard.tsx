@@ -6,9 +6,9 @@ import {Alert, Badge, Button, Card, CardContent, KpiCard, MetricStrip} from '@/c
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
-import {useDeleteFile} from '@/hooks/storage/useAdminFiles';
-import type {StoredFile, StoredFileSummary} from '@/types/storage/files.types';
-import {formatFileSize, sharePercent} from '@/utils/storage/files';
+import {useDeleteFile} from '@/hooks/useAdminFiles';
+import type {StoredFile, StoredFileSummary} from '@/types/files.types';
+import {formatFileSize, sharePercent} from '@/utils/files';
 
 export function AdminFileSummaryCard({data}: { data: StoredFileSummary }) {
     const {t, formatNumber} = useI18n();

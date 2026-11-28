@@ -29,4 +29,4 @@ export type {
     MissionReviewUpsertInput,
     DeliverableGeoPin,
     MissionInspectionReport,
-} from '@/types/mission/mission.types';
+} from '@/types/mission.types';

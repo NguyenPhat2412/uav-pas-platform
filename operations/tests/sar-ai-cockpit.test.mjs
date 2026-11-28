@@ -5,7 +5,7 @@ import test from 'node:test';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const atRoot = path => `${root}${path}`;
-const sarHooksPath = `${root}src/hooks/sar/useSar.ts`;
+const sarHooksPath = `${root}src/hooks/useSar.ts`;
 
 test('SAR AI Cockpit route exists and is configured with OperationsPage', () => {
     const pagePath = `${root}src/app/(operations)/operations/(portal)/sar-cockpit/page.tsx`;

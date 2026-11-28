@@ -4,9 +4,9 @@ import Link from 'next/link';
 import {RefreshCw} from 'lucide-react';
 import {Button, Spinner, StatusBadge} from '@/components/ui';
 import {DataTable, options, type TableColumn} from '@/components/data/DataTable';
-import {sanitizeEntityName} from '@/forms/marketplace/marketplace-forms';
+import {sanitizeEntityName} from '@/forms/marketplace-forms';
 import {displayLabel} from "@/lib/presentation";
-import {Mission} from "@/types/mission/mission.types";
+import {Mission} from "@/types/mission.types";
 import {toMissionSlug} from "@/lib/url-slugs";
 import {useI18n} from '@/providers/I18nContext';
 

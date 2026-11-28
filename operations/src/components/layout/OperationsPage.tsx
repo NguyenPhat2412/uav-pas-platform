@@ -7,8 +7,8 @@ import {AppShell, OperationsShellHost} from '@/components/layout/AppShell';
 import {PermissionGate} from '@/components/data/WorkspaceState';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {canUsePortal, portalForRole, portalHome} from '@/utils/auth/portal';
-import {loginEntryForPage, navigatePortalPath} from '@/utils/auth/auth-entry';
+import {canUsePortal, portalForRole, portalHome} from '@/utils/portal';
+import {loginEntryForPage, navigatePortalPath} from '@/utils/auth-entry';
 
 /**
  * Signs the visitor in (returning them to this page afterwards), preserves the route when the backend is temporarily

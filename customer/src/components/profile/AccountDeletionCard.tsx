@@ -7,7 +7,7 @@ import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
-import {useAccountDeletionPolicy, useDeleteOwnAccount} from '@/hooks/profile/useProfile';
+import {useAccountDeletionPolicy, useDeleteOwnAccount} from '@/hooks/useProfile';
 import {
     accountDeletionFieldErrors,
     canSubmitAccountDeletion,
@@ -15,7 +15,7 @@ import {
     toAccountDeletionPayload,
     type AccountDeletionDraft,
     type AccountDeletionFieldErrors,
-} from '@/forms/profile/profile-form';
+} from '@/forms/profile-form';
 import {Alert, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, FormField, Input, Textarea} from '@/components/ui';
 import {cn} from '@/lib/utils';
 

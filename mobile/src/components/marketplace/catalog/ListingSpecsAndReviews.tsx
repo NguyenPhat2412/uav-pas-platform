@@ -3,8 +3,8 @@ import {StyleSheet, View} from 'react-native';
 import {CheckCircle2, Star} from 'lucide-react-native';
 import {AppText, Badge, Card, EmptyState, SectionTitle} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
-import type {MarketplaceListing, MarketplaceReview} from '@/shared/types/marketplace/marketplace.types';
-import {cleanDescriptionText, cleanEntityName} from '@/utils/marketplace/clean-text';
+import type {MarketplaceListing, MarketplaceReview} from '@/shared/types/marketplace.types';
+import {cleanDescriptionText, cleanEntityName} from '@/utils/clean-text';
 import {colors, spacing} from '@/styles/tokens';
 
 /**

@@ -2,8 +2,8 @@
 
 import {ExternalLink, Mail, MessageCircleMore, PhoneCall} from 'lucide-react';
 import {ZaloBrandIcon} from '@/components/support/ZaloBrandIcon';
-import {openPublicSupportWidget, usePublicSiteInfo} from '@/hooks/support/usePublicSupport';
-import {formatPhoneDisplay, toTelHref, toZaloChatUrl} from '@/utils/support/contact-format';
+import {openPublicSupportWidget, usePublicSiteInfo} from '@/hooks/usePublicSupport';
+import {formatPhoneDisplay, toTelHref, toZaloChatUrl} from '@/utils/contact-format';
 
 /**
  * Dynamic public contact channels block for the /contact command desk,

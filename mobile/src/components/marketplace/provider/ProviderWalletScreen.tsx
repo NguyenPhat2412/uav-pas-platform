@@ -21,8 +21,8 @@ import {
 import {
     useMyProviderWallet,
     useProviderStudioMutations,
-} from '@/hooks/marketplace/useProviderStudio';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+} from '@/hooks/useProviderStudio';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {
@@ -30,7 +30,7 @@ import {
     formatVndCompact,
     payoutStatusLabel,
     walletTxLabel,
-} from '@/shared/forms/marketplace/marketplace-forms';
+} from '@/shared/forms/marketplace-forms';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 export function ProviderWalletScreen() {

@@ -15,14 +15,14 @@ function compileTsToDataUrl(source) {
     return `data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`;
 }
 
-const flightPlanUrl = compileTsToDataUrl(read('src/types/mission/flight-plan.types.ts'));
+const flightPlanUrl = compileTsToDataUrl(read('src/types/flight-plan.types.ts'));
 const projectFormUrl = compileTsToDataUrl(
-    read('src/forms/project/project-form.ts').replace(
-        '@/types/mission/flight-plan.types',
+    read('src/forms/project-form.ts').replace(
+        '@/types/flight-plan.types',
         flightPlanUrl,
     ),
 );
-const marketplaceFormsUrl = compileTsToDataUrl(read('src/forms/marketplace/marketplace-forms.ts'));
+const marketplaceFormsUrl = compileTsToDataUrl(read('src/forms/marketplace-forms.ts'));
 
 const pf = await import(projectFormUrl);
 const mf = await import(marketplaceFormsUrl);

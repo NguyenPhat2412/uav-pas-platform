@@ -7,9 +7,9 @@ import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {ArrowLeft, PanelRightClose, PanelRightOpen, Trophy} from 'lucide-react';
 import {Button} from '@/components/ui';
 import {ApiError} from '@/lib/api';
-import {useTrainingCourse, useTrainingLesson, useTrainingLessonProgress} from '@/hooks/training/useTraining';
+import {useTrainingCourse, useTrainingLesson, useTrainingLessonProgress} from '@/hooks/useTraining';
 import {ErrorNotice} from '@/components/data/WorkspaceState';
-import type {UpdateTrainingLessonProgressPayload} from '@/types/training/training.types';
+import type {UpdateTrainingLessonProgressPayload} from '@/types/training.types';
 import {STAGE_FRAME} from '@/components/training/player/TrainingLessonViewers';
 import {TrainingPlayerCurriculumSidebar} from '@/components/training/player/TrainingPlayerCurriculumSidebar';
 import {TrainingPlayerLessonTabs} from '@/components/training/player/TrainingPlayerLessonTabs';
@@ -27,7 +27,7 @@ import {
     neighbourLessons,
     parseLessonParam,
     pickStartLesson,
-} from '@/utils/training/course-helpers';
+} from '@/utils/course-helpers';
 
 /**
  * Udemy-style course player: a slim dark top bar (back, course title, progress ring), the lesson

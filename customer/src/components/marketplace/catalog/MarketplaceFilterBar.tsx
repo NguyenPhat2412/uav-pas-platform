@@ -3,8 +3,8 @@
 import {useState} from 'react';
 import {ArrowUpDown, Search, SlidersHorizontal, X} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
-import type {ListingSortOption, ListingType, PricingModel} from '@/types/marketplace/marketplace.types';
-import type {MissionType} from '@/types/mission/mission.types';
+import type {ListingSortOption, ListingType, PricingModel} from '@/types/marketplace.types';
+import type {MissionType} from '@/types/mission.types';
 
 export function MarketplaceFilterBar({
     totalElements,

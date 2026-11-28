@@ -3,10 +3,10 @@
 import React, {type FormEvent} from 'react';
 import {ArrowLeft, Mail, RefreshCw, ShieldCheck, Smartphone} from 'lucide-react';
 import {Badge, Button, FormField} from '@/components/ui';
-import {toVerifyOtpPayload} from '@/forms/auth/auth-form';
-import {useAuthFlow} from '@/hooks/auth/useAuthFlow';
+import {toVerifyOtpPayload} from '@/forms/auth-form';
+import {useAuthFlow} from '@/hooks/useAuthFlow';
 import {toast} from '@/providers/ToastContext';
-import type {AuthResponse} from '@/types/auth/auth.types';
+import type {AuthResponse} from '@/types/auth.types';
 import {OtpCodeInput} from '@/components/auth/social/OtpCodeInput';
 import {
     AUTH_LABEL_CLASS,

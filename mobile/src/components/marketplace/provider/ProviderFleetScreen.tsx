@@ -16,7 +16,7 @@ import {GlassSelectCards, GlassSelectField, type GlassOption} from '@/components
 import {
     useMyProviderFleet,
     useProviderStudioMutations,
-} from '@/hooks/marketplace/useProviderStudio';
+} from '@/hooks/useProviderStudio';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {
@@ -24,9 +24,9 @@ import {
     extractActionableError,
     initialEquipmentForm,
     initialUavForm,
-} from '@/shared/forms/marketplace/marketplace-forms';
-import type {ProviderEquipmentCategory} from '@/shared/types/marketplace/marketplace.types';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
+} from '@/shared/forms/marketplace-forms';
+import type {ProviderEquipmentCategory} from '@/shared/types/marketplace.types';
+import {cleanEntityName} from '@/utils/clean-text';
 import {colors, spacing} from '@/styles/tokens';
 
 type FleetTab = 'UAV' | 'EQUIPMENT';

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {ArrowRight, PackageSearch} from 'lucide-react';
 import {MarketplaceListingCard} from '@/components/marketplace/catalog/MarketplaceListingCard';
 import {Alert, Button} from '@/components/ui';
-import {usePublicListings} from '@/hooks/marketplace/useMarketplace';
+import {usePublicListings} from '@/hooks/useMarketplace';
 import {useI18n} from '@/providers/I18nContext';
 
 export function HomeFeaturedServicesSection() {

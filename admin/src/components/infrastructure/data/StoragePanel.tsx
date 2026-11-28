@@ -3,9 +3,9 @@
 import {HardDrive, Images} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
-import type {StorageStatus} from '@/types/infrastructure/infrastructure.types';
+import type {StorageStatus} from '@/types/infrastructure.types';
 import {formatBytes, Note, Panel, Stat, StatGrid, StatusBanner, type Tone} from '@/components/infrastructure/runtime/InfraUi';
-import {useStorageStatus} from '@/hooks/infrastructure/useInfrastructure';
+import {useStorageStatus} from '@/hooks/useInfrastructure';
 import {GoogleDrivePoolSection} from '@/components/storage/pool/GoogleDrivePoolSection';
 
 const reachTone: Record<StorageStatus['reachable'], Tone> = {UP: 'good', DOWN: 'bad', UNKNOWN: 'neutral'};

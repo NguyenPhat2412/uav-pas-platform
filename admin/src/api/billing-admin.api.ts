@@ -1,0 +1,42 @@
+import {apiClient, API_ROUTES} from '@/lib/api';
+import {buildQueryString} from '@/lib/format';
+import type {PageResponse} from '@/types';
+import type {
+    AdminBillingProfile,
+    AdminPaymentTransaction,
+    FinancialOutboxEvent,
+    PaymentGatewayConfig,
+    PaymentGatewayConfigInput,
+    TransactionFilters,
+} from '@/types/billing-admin.types';
+import type {InvoiceEmailDispatchResult} from '@/types/billing.types';
+
+const BASE = API_ROUTES.billing.admin;
+
+export const billingAdminService = {
+    transactions: (page: number, filters: TransactionFilters, signal?: AbortSignal) =>
+        apiClient.get<PageResponse<AdminPaymentTransaction>>(`${BASE}/transactions?${buildQueryString({
+            page,
+            size: 20,
+            status: filters.status,
+            gateway: filters.gateway,
+            from: filters.from,
+            to: filters.to,
+            invoiceId: filters.invoiceId?.trim(),
+            q: filters.q?.trim(),
+        })}`, {signal}),
+    refundTransaction: (id: number, body: {bankReference: string; note?: string}) =>
+        apiClient.post<AdminPaymentTransaction>(`${BASE}/transactions/${id}/refund`, body),
+    paymentGateway: (signal?: AbortSignal) =>
+        apiClient.get<PaymentGatewayConfig>(`${BASE}/payment-gateway`, {signal}),
+    updatePaymentGateway: (body: PaymentGatewayConfigInput) =>
+        apiClient.put<PaymentGatewayConfig>(`${BASE}/payment-gateway`, body),
+    outbox: (page: number, status: string | undefined, signal?: AbortSignal) =>
+        apiClient.get<PageResponse<FinancialOutboxEvent>>(`${BASE}/outbox?${buildQueryString({page, size: 20, status})}`, {signal}),
+    retryOutbox: (id: string) =>
+        apiClient.post<FinancialOutboxEvent>(`${BASE}/outbox/${encodeURIComponent(id)}/retry`),
+    userBillingProfile: (userId: number, signal?: AbortSignal) =>
+        apiClient.get<AdminBillingProfile>(API_ROUTES.admin.userBillingProfile(userId), {signal}),
+    downloadReceipt: (id: number) => apiClient.getBlob(API_ROUTES.billing.invoiceReceipt(id)),
+    sendInvoiceEmail: (id: number) => apiClient.post<InvoiceEmailDispatchResult>(API_ROUTES.billing.sendInvoiceEmail(id)),
+};

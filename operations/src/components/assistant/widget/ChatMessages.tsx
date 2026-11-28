@@ -4,9 +4,9 @@ import {useEffect, useRef, useState} from 'react';
 import {AlertCircle, Check, CheckCheck, ChevronLeft, ChevronRight, Clock, Film, X} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
-import type {ChatImage, ChatMessage} from '@/types/assistant/assistant.types';
+import type {ChatImage, ChatMessage} from '@/types/assistant.types';
 import {SuperheroLogo} from '@/components/assistant/widget/SuperheroLogo';
-import {groupMessages} from '@/utils/assistant/chat-groups';
+import {groupMessages} from '@/utils/chat-groups';
 import {cn} from '@/lib/utils';
 
 /** Today's messages show only the time; older ones also show the date. */

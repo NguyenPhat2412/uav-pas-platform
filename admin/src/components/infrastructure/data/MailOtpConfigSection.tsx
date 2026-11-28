@@ -11,12 +11,12 @@ import {
     toMailOtpSettingsPayload,
     type MailOtpFieldErrors,
     type MailOtpSettingsDraft,
-} from '@/forms/infrastructure/mail-otp-form';
-import {useUpdateMailOtpSettings} from '@/hooks/infrastructure/useInfrastructure';
+} from '@/forms/mail-otp-form';
+import {useUpdateMailOtpSettings} from '@/hooks/useInfrastructure';
 import {confirmDialog} from '@/providers/ConfirmContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import type {MailOtpSettings} from '@/types/infrastructure/infrastructure.types';
+import type {MailOtpSettings} from '@/types/infrastructure.types';
 
 const OTP_NUMERIC_FIELDS: { key: keyof MailOtpSettingsDraft; id: string; labelKey: string; min: number }[] = [
     {key: 'otpTtlMinutes', id: 'otp-ttl-minutes', labelKey: 'adminInfra.email.otpPolicy.ttlMinutes', min: 1},

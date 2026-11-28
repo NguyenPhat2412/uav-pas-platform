@@ -5,15 +5,15 @@ import {Building2, CheckCircle2, Clock, Mail, Phone, RotateCcw, Send, Settings2,
 import {ErrorNotice, QueryState} from '@/components/data/WorkspaceState';
 import {SupportMessageStatusRow} from '@/components/support/SupportMessageStatusRow';
 import {Button} from '@/components/ui';
-import {personalizeQuickReply, useDeleteSupportThread, useReplySupportThread, useSupportThreadDetail, useUpdateSupportStatus} from '@/hooks/support/useAdminSupport';
-import {useSupportOutbox} from '@/hooks/support/useSupportOutbox';
+import {personalizeQuickReply, useDeleteSupportThread, useReplySupportThread, useSupportThreadDetail, useUpdateSupportStatus} from '@/hooks/useAdminSupport';
+import {useSupportOutbox} from '@/hooks/useSupportOutbox';
 import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {confirmDialog} from '@/providers/ConfirmContext';
 import {toast} from '@/providers/ToastContext';
-import type {SupportQuickReply, SupportThreadStatus} from '@/types/support/support.types';
-import {mergeMessagesWithOutbox, resolveSupportMessageReceipt} from '@/utils/support/message-status';
-import {formatSupportSource, formatSupportTime, formatSupportTopic, prioritizeQuickReplies, resolveContactHref, SUPPORT_STATUS_META} from '@/utils/support/support-format';
+import type {SupportQuickReply, SupportThreadStatus} from '@/types/support.types';
+import {mergeMessagesWithOutbox, resolveSupportMessageReceipt} from '@/utils/message-status';
+import {formatSupportSource, formatSupportTime, formatSupportTopic, prioritizeQuickReplies, resolveContactHref, SUPPORT_STATUS_META} from '@/utils/support-format';
 
 interface SupportThreadConversationPaneProps {
     threadId: number;

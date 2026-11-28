@@ -12,7 +12,7 @@ import {
     canSubmitFailure,
     canSubmitMaintenanceCompletion,
     canSubmitReasonNote,
-} from '../src/forms/operations/field-report-form.ts';
+} from '../src/forms/field-report-form.ts';
 import {
     canTakeoffMission,
     INITIAL_PREFLIGHT_CHECKLIST,
@@ -20,14 +20,14 @@ import {
     PREFLIGHT_CHECKLIST_KEYS,
     preflightProgressCount,
     togglePreflightItem,
-} from '../src/forms/operations/preflight-checklist.ts';
-import {isFinitePoint, parseGeoJsonPolygonCoordinates, verticesToMapCoordinates} from '../src/utils/operations/map-shapes.ts';
+} from '../src/forms/preflight-checklist.ts';
+import {isFinitePoint, parseGeoJsonPolygonCoordinates, verticesToMapCoordinates} from '../src/utils/map-shapes.ts';
 import {
     canAccessOperationsPortal,
     resolveMobilePortal,
     resolveNotificationTarget,
     resolvePortalEntryHref,
-} from '../src/utils/operations/portal-routing.ts';
+} from '../src/utils/portal-routing.ts';
 
 registerHooks({
     resolve(specifier, context, nextResolve) {
@@ -42,12 +42,12 @@ registerHooks({
     },
 });
 
-const {missionControls} = await import('../src/shared/utils/mission/presentation.ts');
+const {missionControls} = await import('../src/shared/utils/presentation.ts');
 const {
     personalizeQuickReply,
     prioritizeQuickReplies,
     resolveContactHref,
-} = await import('../src/shared/utils/support/support-format.ts');
+} = await import('../src/shared/utils/support-format.ts');
 const {API_ROUTES} = await import('../src/shared/lib/api/routes.ts');
 
 const ALL_CHECKED = PREFLIGHT_CHECKLIST_KEYS.reduce(
@@ -310,12 +310,12 @@ test('map shapes: finite coordinate guards, GeoJSON Polygon/Feature, 2D SAR ring
 });
 
 test('push registration, forceFail & operations portal routes are wired end to end', () => {
-    const notificationsApi = readFileSync(new URL('../src/api/notification/notifications.api.ts', import.meta.url), 'utf8');
+    const notificationsApi = readFileSync(new URL('../src/api/notifications.api.ts', import.meta.url), 'utf8');
     assert.match(notificationsApi, /registerPushEndpoint:/);
     assert.match(notificationsApi, /unregisterPushEndpoint:/);
     assert.match(notificationsApi, /API_ROUTES\.notifications\.pushTokens/);
 
-    const opsMissionsApi = readFileSync(new URL('../src/api/operations/operations-missions.api.ts', import.meta.url), 'utf8');
+    const opsMissionsApi = readFileSync(new URL('../src/api/operations-missions.api.ts', import.meta.url), 'utf8');
     assert.match(opsMissionsApi, /API_ROUTES\.missions\.accept\(id\)/);
     assert.match(opsMissionsApi, /API_ROUTES\.missions\.reportConflict\(id\)/);
     assert.match(opsMissionsApi, /API_ROUTES\.missions\.forceFail\(id\)/);
@@ -364,7 +364,7 @@ test('push registration, forceFail & operations portal routes are wired end to e
     assert.match(uiSource, /<OfflineBanner\/>/);
     assert.match(uiSource, /<KeyboardAvoidingView/);
 
-    const useNotificationsSource = readFileSync(new URL('../src/hooks/notification/useNotifications.ts', import.meta.url), 'utf8');
+    const useNotificationsSource = readFileSync(new URL('../src/hooks/useNotifications.ts', import.meta.url), 'utf8');
     assert.match(useNotificationsSource, /requireOptionalNativeModule/);
     assert.match(useNotificationsSource, /PUSH_PERMISSION_DENIED/);
 
@@ -384,7 +384,7 @@ test('push registration, forceFail & operations portal routes are wired end to e
     assert.match(opsDetailScreen, /assignOperator/);
     assert.match(opsDetailScreen, /\['images',\s*'videos'\]/);
 
-    const adminQuickApiSource = readFileSync(new URL('../src/api/admin/admin-quick.api.ts', import.meta.url), 'utf8');
+    const adminQuickApiSource = readFileSync(new URL('../src/api/admin-quick.api.ts', import.meta.url), 'utf8');
     assert.match(adminQuickApiSource, /API_ROUTES\.users\.lock/);
     assert.match(adminQuickApiSource, /API_ROUTES\.users\.unlock/);
     assert.match(adminQuickApiSource, /API_ROUTES\.billing\.confirmPayment/);

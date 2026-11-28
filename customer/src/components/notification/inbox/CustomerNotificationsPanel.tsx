@@ -6,7 +6,7 @@ import {AlertCircle, Bell, CheckCheck, CheckCircle2, Clock, Filter, Info, Shield
 import {PageGuard} from "@/components/customer/CustomerLayout";
 import {Button, Panel} from "@/components/customer/CustomerUi";
 import {PageSkeleton} from "@/components/ui";
-import {type NotificationItem, useNotifications} from '@/hooks/notification/useNotifications';
+import {type NotificationItem, useNotifications} from '@/hooks/useNotifications';
 import {useI18n} from '@/providers/I18nContext';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {UserNotificationPreferencesCard} from '@/components/notification/policy/UserNotificationPreferencesCard';

@@ -17,7 +17,7 @@ let fixture = 0;
 
 async function service(client) {
     globalThis.__webhookFixture = {API_ROUTES, apiClient: client};
-    return (await load('const {API_ROUTES,apiClient}=globalThis.__webhookFixture;\n' + compile(read('src/api/webhook/webhooks.api.ts')).replace(/^import .*?;\n/gm, '') + `\n//${fixture++}`)).webhooksService;
+    return (await load('const {API_ROUTES,apiClient}=globalThis.__webhookFixture;\n' + compile(read('src/api/webhooks.api.ts')).replace(/^import .*?;\n/gm, '') + `\n//${fixture++}`)).webhooksService;
 }
 
 test('subscription and test requests match actual controller paths and queued response', async () => {

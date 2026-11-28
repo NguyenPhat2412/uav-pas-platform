@@ -32,19 +32,19 @@ import {
     useMyProviderPilots,
     useProviderOrders,
     useProviderStudioMutations,
-} from '@/hooks/marketplace/useProviderStudio';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+} from '@/hooks/useProviderStudio';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
 import {
     formatVndCompact,
     providerOrderStatusLabel,
-} from '@/shared/forms/marketplace/marketplace-forms';
+} from '@/shared/forms/marketplace-forms';
 import {
     cleanEntityName,
     formatProviderConflictError,
     isHttpConflict,
-} from '@/utils/marketplace/clean-text';
+} from '@/utils/clean-text';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 /**

@@ -5,10 +5,10 @@ import {Drawer, Metadata} from '@/components/data/Drawer';
 import {LoadingRows} from '@/components/data/WorkspaceState';
 import {useAuth} from '@/providers/AuthContext';
 import {formatDate} from "@/lib/presentation";
-import {useMaintenanceOrder} from '@/hooks/maintenance/useMaintenance';
-import {useMaintenanceAction} from '@/hooks/maintenance/useMaintenanceAction';
-import type {MaintenanceService} from '@/api/maintenance/maintenance.api';
-import {maintenanceError} from '@/utils/maintenance/errors';
+import {useMaintenanceOrder} from '@/hooks/useMaintenance';
+import {useMaintenanceAction} from '@/hooks/useMaintenanceAction';
+import type {MaintenanceService} from '@/api/maintenance.api';
+import {maintenanceError} from '@/utils/errors';
 import {ActionFeedback, Feedback} from "@/components/maintenance/Feedback";
 import {fieldClass, OrderFieldsForm} from "@/components/maintenance/Fields";
 import {MaterialEditor} from "@/components/maintenance/MaterialEditor";
@@ -16,13 +16,13 @@ import {
     canSubmitOrderConfirmation,
     emptyOrderConfirmationDraft,
     toEditOrderFields,
-} from "@/forms/maintenance/maintenance-form";
+} from "@/forms/maintenance-form";
 import {
     calendarDate,
     formatVnd,
     orderControls
-} from "@/utils/maintenance/workflows";
-import type {OrderDetailMode as Mode, OrderFields, RepairOrder} from "@/types/maintenance/maintenance.types";
+} from "@/utils/maintenance-workflows";
+import type {OrderDetailMode as Mode, OrderFields, RepairOrder} from "@/types/maintenance.types";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';
 

@@ -4,7 +4,7 @@ import {type FormEvent, useState} from 'react';
 import {Building2} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import {useBillingProfile, useUpdateBillingProfile} from '@/hooks/profile/useProfile';
+import {useBillingProfile, useUpdateBillingProfile} from '@/hooks/useProfile';
 import {
     BILLING_PROFILE_FIELD_KEYS,
     billingProfileDraftFromDetail,
@@ -12,7 +12,7 @@ import {
     toBillingProfilePayload,
     type BillingProfileFieldErrors,
     type BillingProfileFields,
-} from '@/forms/profile/profile-form';
+} from '@/forms/profile-form';
 import {Alert, Button, Card, CardContent, CardHeader, CardTitle, FormField, Input, Textarea} from '@/components/ui';
 import {cn} from '@/lib/utils';
 import {EnterpriseAccessCard} from '@/components/profile/EnterpriseAccessCard';

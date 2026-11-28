@@ -4,7 +4,7 @@ import type {ReactNode} from 'react';
 import {MissionTimeline} from '@/components/shared/MissionTimeline';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
-import type {Mission, MissionEvent} from '@/types/mission/mission.types';
+import type {Mission, MissionEvent} from '@/types/mission.types';
 import type {Operator, Station, Uav} from '@/types/resources';
 
 export interface OperationsMissionHandoverSectionProps {

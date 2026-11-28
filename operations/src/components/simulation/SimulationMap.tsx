@@ -6,8 +6,8 @@ import type {Control, LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
 import {MapLayerToolbar} from '@/components/shared/MapLayerToolbar';
 import {Badge, Card} from '@/components/ui';
 import {MAP_BASEMAPS, syncScaleControl, useMapConfig} from '@/lib/map-config';
-import type {AirspaceZone} from '@/types/airspace/airspace.types';
-import type {LatLng, SimulationState} from '@/types/simulation/simulation.types';
+import type {AirspaceZone} from '@/types/airspace.types';
+import type {LatLng, SimulationState} from '@/types/simulation.types';
 
 // Leaflet styles vectors through options, so the theme colours are spelled out here.
 const C = {red: '#c43a4a', slate: '#334155', blue: '#0284c7', amber: '#d97706', muted: '#94a3b8'};

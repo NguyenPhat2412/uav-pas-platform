@@ -4,9 +4,9 @@ import {
     formatVndCompact,
     payoutStatusLabel,
     walletTxLabel,
-} from '@/forms/marketplace/marketplace-forms';
+} from '@/forms/marketplace-forms';
 import {formatDate} from '@/lib/presentation';
-import type {ProviderWallet} from '@/types/marketplace/marketplace.types';
+import type {ProviderWallet} from '@/types/marketplace.types';
 
 export function ProviderWalletLedger({wallet}: { wallet: ProviderWallet }) {
     return (

@@ -1,6 +1,6 @@
 import type {LayerGroup} from 'leaflet';
-import type {FlightPlanInput} from '@/types/mission/flight-plan.types';
-import type {PlannerTool} from '@/types/mission/mission.types';
+import type {FlightPlanInput} from '@/types/flight-plan.types';
+import type {PlannerTool} from '@/types/mission.types';
 
 export const roundCoord = (value: number): number => Math.round(value * 1e6) / 1e6;
 

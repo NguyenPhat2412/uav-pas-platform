@@ -4,14 +4,14 @@ import {CheckCircle2, Eye, FileText, MapPin, PauseCircle, Star, XCircle} from 'l
 import {Button, OptionalMark} from '@/components/ui';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
 import {resolveVerificationStepNumber} from '@/components/marketplace/ProviderVerificationWorkflowCard';
-import {sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
-import {computeProviderDocumentChecklist} from '@/forms/marketplace/provider-verification-checklist';
+import {sanitizeMarketplaceText} from '@/forms/admin-marketplace-form';
+import {computeProviderDocumentChecklist} from '@/forms/provider-verification-checklist';
 import {useI18n} from '@/providers/I18nContext';
 import type {
     AdminProviderDocument,
     AdminProviderProfile,
     ProviderVerificationStatus,
-} from '@/types/marketplace/marketplace.types';
+} from '@/types/marketplace.types';
 
 export function ProviderModerationRow({
     provider,

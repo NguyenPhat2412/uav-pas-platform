@@ -2,7 +2,7 @@
 
 import {MessageCircleMore, X} from 'lucide-react';
 import {cn} from '@/lib/utils';
-import type {SupportWidgetMode} from '@/types/support/support.types';
+import type {SupportWidgetMode} from '@/types/support.types';
 
 export interface PublicSupportLauncherProps {
     mode?: SupportWidgetMode;

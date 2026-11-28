@@ -1,8 +1,8 @@
 import type {FeatureGroup, LayerGroup, Map as LeafletMap, TileLayer} from 'leaflet';
-import {formatPolygonVerticesText, type AirspaceZoneDraft} from '@/forms/airspace/airspace-zone-form';
+import {formatPolygonVerticesText, type AirspaceZoneDraft} from '@/forms/airspace-zone-form';
 import {MAP_BASEMAPS} from '@/lib/map-config';
-import type {AirspaceZone} from '@/types/airspace/airspace.types';
-import {AIRSPACE_ZONE_MAP_STYLES, buildAirspaceZoneTooltipHtml} from '@/utils/airspace/map-overlays';
+import type {AirspaceZone} from '@/types/airspace.types';
+import {AIRSPACE_ZONE_MAP_STYLES, buildAirspaceZoneTooltipHtml} from '@/utils/map-overlays';
 
 type LeafletModule = typeof import('leaflet');
 type TranslateFn = Parameters<typeof buildAirspaceZoneTooltipHtml>[1];

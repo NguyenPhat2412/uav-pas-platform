@@ -7,12 +7,12 @@ import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import {cn} from '@/lib/utils';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
-import {useCreateDriveNode, useCreateGoogleAuthorizeUrl, useUpdateDriveNode} from '@/hooks/storage/useStoragePool';
+import {useCreateDriveNode, useCreateGoogleAuthorizeUrl, useUpdateDriveNode} from '@/hooks/useStoragePool';
 import {
     buildGoogleOAuthAuthorizeInput, type DriveConnectTab, parseStorageRoutedModules, STORAGE_ROUTE_TAGS,
     toggleStorageRouteTag, validateAndBuildDriveNodeCreateInput, validateAndBuildDriveNodeUpdateInput,
-} from '@/forms/storage/storage-pool-form';
-import type {StorageDriveNode, StoragePoolOverview} from '@/types/storage/storage-pool.types';
+} from '@/forms/storage-pool-form';
+import type {StorageDriveNode, StoragePoolOverview} from '@/types/storage-pool.types';
 import {GoogleDriveCredentialFields} from './GoogleDriveCredentialFields';
 import {GoogleDriveOAuthSetupBox} from './GoogleDriveOAuthSetupBox';
 

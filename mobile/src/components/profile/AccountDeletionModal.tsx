@@ -3,11 +3,11 @@ import {KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {AlertTriangle, ShieldAlert, Trash2, X} from 'lucide-react-native';
 import {AppText, Badge, Button, ErrorState, LoadingState, TextField} from '@/components/ui';
-import {useAccountDeletionPolicy, useDeleteOwnAccount} from '@/hooks/profile/useProfile';
+import {useAccountDeletionPolicy, useDeleteOwnAccount} from '@/hooks/useProfile';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {canSubmitAccountDeletion, signInErrorText} from '@/forms/auth/sign-in-flow';
+import {canSubmitAccountDeletion, signInErrorText} from '@/forms/sign-in-flow';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 export interface AccountDeletionModalProps {

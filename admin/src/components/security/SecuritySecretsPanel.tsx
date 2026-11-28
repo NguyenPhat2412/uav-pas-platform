@@ -6,9 +6,9 @@ import {useI18n} from '@/providers/I18nContext';
 import {Alert} from '@/components/ui';
 import {QueryState} from '@/components/data/WorkspaceState';
 import {cn} from '@/lib/utils';
-import {useSecuritySecrets} from '@/hooks/security/useSecurity';
+import {useSecuritySecrets} from '@/hooks/useSecurity';
 import {WarningList} from '@/components/security/SecurityShared';
-import type {SecretHealth, SecretsOverview} from '@/types/security/security.types';
+import type {SecretHealth, SecretsOverview} from '@/types/security.types';
 
 const healthStyle: Record<SecretHealth, { text: string; icon: typeof CheckCircle2 }> = {
     OK: {text: 'text-uav-blue', icon: CheckCircle2},

@@ -5,18 +5,18 @@ import {MapPin, X} from 'lucide-react';
 import {LocationPicker} from '@/components/mission/customer/LocationPicker';
 import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {Alert, Button} from '@/components/ui';
-import {extractActionableError} from '@/forms/marketplace/marketplace-forms';
+import {extractActionableError} from '@/forms/marketplace-forms';
 import {
     flightPlanToGeoJson,
     geoJsonToFlightPlan,
     validateProjectInput,
-} from '@/forms/project/project-form';
-import {useProjectActions} from '@/hooks/project/useCustomerProjects';
+} from '@/forms/project-form';
+import {useProjectActions} from '@/hooks/useCustomerProjects';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {ApiError} from '@/lib/api';
 import {useI18n} from '@/providers/I18nContext';
-import type {FlightPlanInput} from '@/types/mission/flight-plan.types';
-import type {CustomerProject} from '@/types/project/project.types';
+import type {FlightPlanInput} from '@/types/flight-plan.types';
+import type {CustomerProject} from '@/types/project.types';
 
 export function ProjectUpsertDialog({
     open,

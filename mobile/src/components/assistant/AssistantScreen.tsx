@@ -6,11 +6,11 @@ import {AlertCircle, ArrowUp, Check, CheckCheck, Clock, Trash2} from 'lucide-rea
 import {AppText, ChipGroup, LoadingState, ScaledText} from '@/components/ui';
 import {AssistantMascot} from '@/components/assistant/AssistantMascot';
 import {AppBackground} from '@/components/layout/AppBackground';
-import {useAssistantChat, useAssistantInfo} from '@/hooks/assistant/useAssistant';
+import {useAssistantChat, useAssistantInfo} from '@/hooks/useAssistant';
 import {useAssistantThread} from '@/providers/AssistantContext';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import type {ChatMessage} from '@/shared/types/assistant/assistant.types';
+import type {ChatMessage} from '@/shared/types/assistant.types';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 /** Starter questions of the customer portal, the same list as the web widget (admin.assistant.faqCustomer.*). */

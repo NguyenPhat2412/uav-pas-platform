@@ -2,10 +2,10 @@
 
 import {useEffect, useId, useRef, useState} from 'react';
 import {Check, ChevronDown, Plane} from 'lucide-react';
-import {normalizeUavStatusCardKey, sanitizeEntityName} from '@/forms/marketplace/marketplace-forms';
+import {normalizeUavStatusCardKey, sanitizeEntityName} from '@/forms/marketplace-forms';
 import {cn} from '@/lib/utils';
 import {useI18n} from '@/providers/I18nContext';
-import type {ProviderUav} from '@/types/marketplace/marketplace.types';
+import type {ProviderUav} from '@/types/marketplace.types';
 
 /**
  * Two-line UAV selector (UI-REVIEW-9-FIXES #9):

@@ -1,5 +1,5 @@
 import type {AuditLog, PageResponse, ServicePlan, UserQuota} from '@/types';
-import type {DashboardSummary} from '@/types/dashboard/dashboard.types';
+import type {DashboardSummary} from '@/types/dashboard.types';
 
 export type {AuditLog, PageResponse, ServicePlan, UserQuota, DashboardSummary};
 

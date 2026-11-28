@@ -5,8 +5,8 @@ import {Button} from '@/components/customer/CustomerUi';
 import {
     extractActionableError,
     formatVndCompact,
-} from '@/forms/marketplace/marketplace-forms';
-import type {MissionBid} from '@/types/marketplace/marketplace.types';
+} from '@/forms/marketplace-forms';
+import type {MissionBid} from '@/types/marketplace.types';
 
 export function CustomerMissionRfqBids({
     isRfq,

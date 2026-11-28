@@ -6,7 +6,7 @@ const readSrc = rel => readFileSync(new URL(`../src/${rel}`, import.meta.url), '
 
 test('mobile LiveNotificationBanner, foreground Expo handler, and NotificationModulePrefsCard are wired end-to-end', () => {
     const rootLayout = readSrc('app/_layout.tsx');
-    const hook = readSrc('hooks/notification/useNotifications.ts');
+    const hook = readSrc('hooks/useNotifications.ts');
     const banner = readSrc('components/notification/LiveNotificationBanner.tsx');
     const prefs = readSrc('components/notification/NotificationModulePrefsCard.tsx');
     const screen = readSrc('components/notification/NotificationsScreen.tsx');

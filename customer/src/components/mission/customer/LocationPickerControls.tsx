@@ -6,8 +6,8 @@ import {MAP_BASEMAP_ORDER} from '@/lib/map-config';
 import {cn} from '@/lib/utils';
 import {useI18n} from '@/providers/I18nContext';
 import type {Basemap} from '@/types';
-import {radiusLimits, type FlightPlanInput} from '@/types/mission/flight-plan.types';
-import type {PlannerTool} from '@/types/mission/mission.types';
+import {radiusLimits, type FlightPlanInput} from '@/types/flight-plan.types';
+import type {PlannerTool} from '@/types/mission.types';
 
 export interface LocationPickerToolbarProps {
     current: FlightPlanInput;

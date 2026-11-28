@@ -5,7 +5,7 @@ import {type FormEvent, useEffect, useState} from 'react';
 import QRCode from 'qrcode';
 import {Copy} from 'lucide-react';
 import {toast} from '@/providers/ToastContext';
-import type {TwoFactorSetupResponse} from '@/types/auth/auth.types';
+import type {TwoFactorSetupResponse} from '@/types/auth.types';
 import {OtpCodeInput} from '@/components/auth/social/OtpCodeInput';
 import {Alert, Button, Card, CardContent, FormField} from '@/components/ui';
 

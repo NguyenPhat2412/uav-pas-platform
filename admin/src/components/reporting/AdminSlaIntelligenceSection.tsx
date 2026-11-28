@@ -14,8 +14,8 @@ import {
 import {QueryState} from '@/components/data/WorkspaceState';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {useCreatePreventiveRepairOrder, useSlaIntelligence} from '@/hooks/reporting/useReports';
-import {businessToday} from '@/utils/maintenance/workflows';
+import {useCreatePreventiveRepairOrder, useSlaIntelligence} from '@/hooks/useReports';
+import {businessToday} from '@/utils/maintenance-workflows';
 import type {UavMaintenanceRiskRow} from '@/types/admin';
 import {SlaLeaderboardAndReviews} from '@/components/reporting/SlaLeaderboardAndReviews';
 import {SlaMaintenanceRiskTable} from '@/components/reporting/SlaMaintenanceRiskTable';

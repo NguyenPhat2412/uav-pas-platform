@@ -19,13 +19,13 @@ import {
     useModerateProvider,
     useModerateProviderDocument,
     useOpenProviderDocument,
-} from '@/hooks/marketplace/useAdminMarketplace';
-import {usePlatformSettings} from '@/hooks/settings/useSettings';
-import {validateProviderModerationInput} from '@/forms/marketplace/admin-marketplace-form';
+} from '@/hooks/useAdminMarketplace';
+import {usePlatformSettings} from '@/hooks/useSettings';
+import {validateProviderModerationInput} from '@/forms/admin-marketplace-form';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import type {AdminProviderProfile, ProviderVerificationStatus} from '@/types/marketplace/marketplace.types';
+import type {AdminProviderProfile, ProviderVerificationStatus} from '@/types/marketplace.types';
 
 export function AdminMarketplaceProviders() {
     const {t} = useI18n();

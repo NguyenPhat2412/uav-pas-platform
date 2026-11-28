@@ -6,7 +6,7 @@ import {Alert, Badge, Button, Spinner} from '@/components/ui';
 import {ChatMessages} from '@/components/assistant/widget/ChatMessages';
 import {SuperheroLogo} from '@/components/assistant/widget/SuperheroLogo';
 import {useI18n} from '@/providers/I18nContext';
-import type {AssistantPortal, ChatMessage} from '@/types/assistant/assistant.types';
+import type {AssistantPortal, ChatMessage} from '@/types/assistant.types';
 import {cn} from '@/lib/utils';
 
 /** Suggested starter questions per portal; the backend's built-in platform guide answers them. */

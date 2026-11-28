@@ -9,7 +9,7 @@ import {
 import {Badge, Button, Card, CardContent, CardHeader, StatusBadge} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 import {cn} from '@/lib/utils';
-import type {SimCommand, SimulationState} from '@/types/simulation/simulation.types';
+import type {SimCommand, SimulationState} from '@/types/simulation.types';
 
 export interface SimulationTelemetryHudProps {
     state: SimulationState;

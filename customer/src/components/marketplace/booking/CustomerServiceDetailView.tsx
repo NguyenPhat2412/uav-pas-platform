@@ -9,9 +9,9 @@ import {localizeOfficialListingTitle, resolveListingPhoto} from '@/components/ma
 import {ServiceCategoryIcon} from '@/components/marketplace/shop/ServiceCategoryIcon';
 import {ProjectSubscriptionWizardDialog} from '@/components/marketplace/booking/ProjectSubscriptionWizardDialog';
 import {Alert, Button} from '@/components/ui';
-import {formatVndCompact, listingTypeLabel, pricingUnitLabel} from '@/forms/marketplace/marketplace-forms';
-import {resolveListingBadge, sanitizeMarketplaceText} from '@/forms/project/project-form';
-import {usePublicListingDetail} from '@/hooks/marketplace/useMarketplace';
+import {formatVndCompact, listingTypeLabel, pricingUnitLabel} from '@/forms/marketplace-forms';
+import {resolveListingBadge, sanitizeMarketplaceText} from '@/forms/project-form';
+import {usePublicListingDetail} from '@/hooks/useMarketplace';
 import {iconNameForMissionType} from '@/lib/marketplace/service-categories';
 import {useI18n} from '@/providers/I18nContext';
 

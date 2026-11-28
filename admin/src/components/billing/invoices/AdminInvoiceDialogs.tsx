@@ -10,14 +10,14 @@ import {
     emptyCreateInvoiceDraft,
     invoiceFieldErrors,
     toCreateInvoicePayload,
-} from '@/forms/billing/billing-form';
+} from '@/forms/billing-form';
 import {
     useBillingPlans,
     useConfirmBankTransfer,
     useCreateInvoice,
     useInvoiceCustomerSearch,
-} from '@/hooks/billing/useBillingAdmin';
-import {useMissions} from '@/hooks/mission/useCustomerMissions';
+} from '@/hooks/useBillingAdmin';
+import {useMissions} from '@/hooks/useCustomerMissions';
 import {useDialogFocusTrap} from '@/hooks/useDialogFocusTrap';
 import {planName} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';

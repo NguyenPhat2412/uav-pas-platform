@@ -16,9 +16,9 @@ import {
 import {Drawer, Metadata} from '@/components/data/Drawer';
 import {Alert, Button, OptionalMark} from '@/components/ui';
 import {IllustrativeTag} from '@/components/marketplace/MarketplaceShared';
-import {formatMarketplaceVnd, sanitizeMarketplaceText} from '@/forms/marketplace/admin-marketplace-form';
+import {formatMarketplaceVnd, sanitizeMarketplaceText} from '@/forms/admin-marketplace-form';
 import {useI18n} from '@/providers/I18nContext';
-import type {AdminMarketplaceListing, ListingModerationStatus} from '@/types/marketplace/marketplace.types';
+import type {AdminMarketplaceListing, ListingModerationStatus} from '@/types/marketplace.types';
 
 export function ListingModerationDrawer({
     listing,

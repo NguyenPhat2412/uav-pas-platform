@@ -24,11 +24,11 @@ const compileModule = source =>
     ).toString('base64')}`;
 
 const formatUrl = compileModule(await readSource('src/lib/format.ts'));
-const flightPlanTypesUrl = compileModule(await readSource('src/types/mission/flight-plan.types.ts'));
+const flightPlanTypesUrl = compileModule(await readSource('src/types/flight-plan.types.ts'));
 const rewritePureImports = source =>
     source
         .replaceAll('@/lib/format', formatUrl)
-        .replaceAll('@/types/mission/flight-plan.types', flightPlanTypesUrl);
+        .replaceAll('@/types/flight-plan.types', flightPlanTypesUrl);
 
 async function loadForm(relativePath) {
     const raw = await readSource(relativePath);
@@ -96,41 +96,41 @@ test('every module in src/forms/** is pure TypeScript and compiles standalone fo
 test('components delegate duplicate regex/range/URL validation to backend and wire src/forms/*', async () => {
     const adminSettings = await readSource('src/components/settings/AdminSettingsPanel.tsx');
     assert.doesNotMatch(adminSettings, /function\s+clientCheck\b/);
-    assert.match(adminSettings, /@\/forms\/settings\/settings-form/);
+    assert.match(adminSettings, /@\/forms\/settings-form/);
 
     const trainingLessons = await readSource('src/components/training/editor/TrainingCourseLessonsPanel.tsx');
     assert.doesNotMatch(trainingLessons, /isSupportedVideoLink|isSupportedDocumentLink/);
-    assert.match(trainingLessons, /@\/forms\/training\/training-form/);
+    assert.match(trainingLessons, /@\/forms\/training-form/);
 
     const weatherSettings = await readSource('src/components/weather/WeatherProviderSettingsSection.tsx');
     assert.doesNotMatch(weatherSettings, />\s*120/);
-    assert.match(weatherSettings, /@\/forms\/weather\/weather-provider-form/);
+    assert.match(weatherSettings, /@\/forms\/weather-provider-form/);
 
     for (const [componentPath, formImport] of [
-        ['src/components/assistant/console/AssistantSettingsSection.tsx', '@/forms/assistant/assistant-settings-form'],
-        ['src/components/auth/modal/AuthModalPopup.tsx', '@/forms/auth/auth-form'],
-        ['src/components/profile/PasswordChangeCard.tsx', '@/forms/profile/profile-form'],
-        ['src/components/user/Users.tsx', '@/forms/user/user-form'],
-        ...(hasSiblingPortals ? [['src/components/mission/operations/OperationsMissionDetail.tsx', '@/forms/mission/operations-mission-form']] : []),
-        ['src/components/uav/UavPanel.tsx', '@/forms/uav/uav-form'],
-        ['src/components/station/StationPanel.tsx', '@/forms/station/station-form'],
-        ['src/components/inventory/EquipmentPanel.tsx', '@/forms/inventory/equipment-form'],
-        ['src/components/maintenance/OrderCreate.tsx', '@/forms/maintenance/maintenance-form'],
-        ['src/components/billing/plans/AdminPlansManager.tsx', '@/forms/billing/billing-form'],
-        ['src/components/billing/invoices/AdminInvoiceDialogs.tsx', '@/forms/billing/billing-form'],
-        ['src/components/billing/reconciliation/PaymentGatewaySettingsSection.tsx', '@/forms/billing/payment-gateway-form'],
-        ['src/components/billing/plans/AdminBillingPanel.tsx', '@/forms/billing/billing-form'],
-        ['src/components/catalog/AdminServicesPanel.tsx', '@/forms/catalog/service-offering-form'],
-        ...(hasSiblingPortals ? [['src/components/marketing/ContactQuickForm.tsx', '@/forms/marketing/contact-form']] : []),
-        ['src/components/webhook/WebhookSubscriptions.tsx', '@/forms/webhook/webhook-form'],
-        ['src/components/devicekey/AdminDeviceKeysPanel.tsx', '@/forms/devicekey/device-key-form'],
-        ['src/components/notification/inbox/AdminNotificationsPanel.tsx', '@/forms/notification/notification-form'],
-        ['src/components/storage/pool/GoogleDriveNodeModal.tsx', '@/forms/storage/storage-pool-form'],
-        ['src/components/storage/pool/StoragePolicyFormSection.tsx', '@/forms/storage/storage-pool-form'],
-        ['src/components/storage/pool/StorageR2MigrationCard.tsx', '@/forms/storage/storage-pool-form'],
-        ['src/components/marketplace/AdminMarketplaceProviders.tsx', '@/forms/marketplace/admin-marketplace-form'],
-        ['src/components/marketplace/AdminMarketplaceListings.tsx', '@/forms/marketplace/admin-marketplace-form'],
-        ['src/components/marketplace/AdminMarketplacePayouts.tsx', '@/forms/marketplace/admin-marketplace-form'],
+        ['src/components/assistant/console/AssistantSettingsSection.tsx', '@/forms/assistant-settings-form'],
+        ['src/components/auth/modal/AuthModalPopup.tsx', '@/forms/auth-form'],
+        ['src/components/profile/PasswordChangeCard.tsx', '@/forms/profile-form'],
+        ['src/components/user/Users.tsx', '@/forms/user-form'],
+        ...(hasSiblingPortals ? [['src/components/mission/operations/OperationsMissionDetail.tsx', '@/forms/operations-mission-form']] : []),
+        ['src/components/uav/UavPanel.tsx', '@/forms/uav-form'],
+        ['src/components/station/StationPanel.tsx', '@/forms/station-form'],
+        ['src/components/inventory/EquipmentPanel.tsx', '@/forms/equipment-form'],
+        ['src/components/maintenance/OrderCreate.tsx', '@/forms/maintenance-form'],
+        ['src/components/billing/plans/AdminPlansManager.tsx', '@/forms/billing-form'],
+        ['src/components/billing/invoices/AdminInvoiceDialogs.tsx', '@/forms/billing-form'],
+        ['src/components/billing/reconciliation/PaymentGatewaySettingsSection.tsx', '@/forms/payment-gateway-form'],
+        ['src/components/billing/plans/AdminBillingPanel.tsx', '@/forms/billing-form'],
+        ['src/components/catalog/AdminServicesPanel.tsx', '@/forms/service-offering-form'],
+        ...(hasSiblingPortals ? [['src/components/marketing/ContactQuickForm.tsx', '@/forms/contact-form']] : []),
+        ['src/components/webhook/WebhookSubscriptions.tsx', '@/forms/webhook-form'],
+        ['src/components/devicekey/AdminDeviceKeysPanel.tsx', '@/forms/device-key-form'],
+        ['src/components/notification/inbox/AdminNotificationsPanel.tsx', '@/forms/notification-form'],
+        ['src/components/storage/pool/GoogleDriveNodeModal.tsx', '@/forms/storage-pool-form'],
+        ['src/components/storage/pool/StoragePolicyFormSection.tsx', '@/forms/storage-pool-form'],
+        ['src/components/storage/pool/StorageR2MigrationCard.tsx', '@/forms/storage-pool-form'],
+        ['src/components/marketplace/AdminMarketplaceProviders.tsx', '@/forms/admin-marketplace-form'],
+        ['src/components/marketplace/AdminMarketplaceListings.tsx', '@/forms/admin-marketplace-form'],
+        ['src/components/marketplace/AdminMarketplacePayouts.tsx', '@/forms/admin-marketplace-form'],
     ]) {
         const componentSource = await readSource(componentPath);
         assert.match(componentSource, new RegExp(formImport.replaceAll('/', '\\/')), componentPath);
@@ -138,7 +138,7 @@ test('components delegate duplicate regex/range/URL validation to backend and wi
 });
 
 test('settings, weather, assistant and training forms forward out-of-range/URL inputs and surface backend field errors', async () => {
-    const settingsForm = await loadForm('src/forms/settings/settings-form.ts');
+    const settingsForm = await loadForm('src/forms/settings-form.ts');
     assert.equal(settingsForm.settingEmptyProblem({emptyAllowed: false}, '   '), 'required');
     assert.equal(settingsForm.settingEmptyProblem({emptyAllowed: false}, '999999'), null);
     assert.equal(
@@ -159,7 +159,7 @@ test('settings, weather, assistant and training forms forward out-of-range/URL i
         ['billing.hourly_rate_vnd', 'uav.safety.min_battery_threshold', 'billing.auto_generate_invoice'],
     );
 
-    const weatherForm = await loadForm('src/forms/weather/weather-provider-form.ts');
+    const weatherForm = await loadForm('src/forms/weather-provider-form.ts');
     const weatherDraft = {
         provider: 'OPEN_METEO',
         apiKey: '  secret-key  ',
@@ -172,7 +172,7 @@ test('settings, weather, assistant and training forms forward out-of-range/URL i
         cacheTtlMinutes: 'TTL không hợp lệ',
     });
 
-    const assistantForm = await loadForm('src/forms/assistant/assistant-settings-form.ts');
+    const assistantForm = await loadForm('src/forms/assistant-settings-form.ts');
     const aiPayload = assistantForm.toAiRouterSettingsPayload(
         {
             baseUrl: ' https://api.openai.com/v1 ',
@@ -195,7 +195,7 @@ test('settings, weather, assistant and training forms forward out-of-range/URL i
         'AI_ROUTER_URL_HTTPS_REQUIRED',
     );
 
-    const trainingForm = await loadForm('src/forms/training/training-form.ts');
+    const trainingForm = await loadForm('src/forms/training-form.ts');
     const videoDraft = {
         ...trainingForm.lessonDraftFromDetail(null, 10, 'Chương 1'),
         title: 'Bài 1',
@@ -212,7 +212,7 @@ test('settings, weather, assistant and training forms forward out-of-range/URL i
 });
 
 test('auth, profile, user and operations-mission forms normalize payloads and map structured errors', async () => {
-    const authForm = await loadForm('src/forms/auth/auth-form.ts');
+    const authForm = await loadForm('src/forms/auth-form.ts');
     assert.deepEqual(authForm.toLoginPayload('  pilot@uav.vn ', 'Secret#123'), {
         usernameOrEmail: 'pilot@uav.vn',
         password: 'Secret#123',
@@ -223,7 +223,7 @@ test('auth, profile, user and operations-mission forms normalize payloads and ma
     );
     assert.deepEqual(orderedAuthErrors?.orderedNames, ['username', 'confirmPassword']);
 
-    const profileForm = await loadForm('src/forms/profile/profile-form.ts');
+    const profileForm = await loadForm('src/forms/profile-form.ts');
     assert.deepEqual(
         profileForm.toPasswordChangePayload({
             currentPassword: 'old',
@@ -233,7 +233,7 @@ test('auth, profile, user and operations-mission forms normalize payloads and ma
         {current: 'old', next: 'new', confirm: 'new'},
     );
 
-    const userForm = await loadForm('src/forms/user/user-form.ts');
+    const userForm = await loadForm('src/forms/user-form.ts');
     const userDraft = {
         ...userForm.emptyAdminCreateUserDraft(),
         username: ' operator_01 ',
@@ -245,7 +245,7 @@ test('auth, profile, user and operations-mission forms normalize payloads and ma
     assert.equal(userForm.canSubmitAdminCreateUser(userDraft), true);
     assert.equal(userForm.toAdminCreateUserPayload(userDraft).fullName, undefined);
 
-    const opsMissionForm = await loadForm('src/forms/mission/operations-mission-form.ts');
+    const opsMissionForm = await loadForm('src/forms/operations-mission-form.ts');
     assert.deepEqual(opsMissionForm.operationsMissionNotice({status: 403}, 'fallback'), {
         key: 'opsMissions.detail.errors.forbidden',
     });
@@ -256,7 +256,7 @@ test('auth, profile, user and operations-mission forms normalize payloads and ma
 });
 
 test('asset, maintenance, billing, catalog, webhook, device-key, notification and contact forms preserve backend contract', async () => {
-    const uavForm = await loadForm('src/forms/uav/uav-form.ts');
+    const uavForm = await loadForm('src/forms/uav-form.ts');
     assert.deepEqual(
         uavForm.toUavCreatePayload({model: ' DJI M30T ', serialNumber: ' SN-01 ', manufacturer: ' DJI '}),
         {model: 'DJI M30T', serialNumber: 'SN-01', manufacturer: 'DJI'},
@@ -264,7 +264,7 @@ test('asset, maintenance, billing, catalog, webhook, device-key, notification an
     assert.equal(uavForm.canAssignUavToStation('2', 1, [{id: 2, status: 'ACTIVE'}]), true);
     assert.equal(uavForm.canAssignUavToStation('1', 1, [{id: 1, status: 'ACTIVE'}]), false);
 
-    const stationForm = await loadForm('src/forms/station/station-form.ts');
+    const stationForm = await loadForm('src/forms/station-form.ts');
     // Out-of-range latitude reaches backend so @DecimalMin/@DecimalMax returns fields.latitude.
     const stationPayload = stationForm.toStationPayload({
         code: ' HN-01 ',
@@ -282,7 +282,7 @@ test('asset, maintenance, billing, catalog, webhook, device-key, notification an
         description: undefined,
     });
 
-    const equipmentForm = await loadForm('src/forms/inventory/equipment-form.ts');
+    const equipmentForm = await loadForm('src/forms/equipment-form.ts');
     assert.deepEqual(
         equipmentForm.toInventoryMovementPayload(
             {id: '5', action: 'stock-in', quantity: '3', note: ' Nhập kho ', stationId: ''},
@@ -291,14 +291,14 @@ test('asset, maintenance, billing, catalog, webhook, device-key, notification an
         {id: 5, action: 'stock-in', quantity: 3, note: 'Nhập kho', stationId: undefined, requestId: 'req-1'},
     );
 
-    const maintenanceForm = await loadForm('src/forms/maintenance/maintenance-form.ts');
+    const maintenanceForm = await loadForm('src/forms/maintenance-form.ts');
     assert.equal(maintenanceForm.maintenanceBusinessToday(new Date('2026-10-15T17:30:00Z')), '2026-10-16');
     assert.deepEqual(
         maintenanceForm.toMaterialRowsPayload([{name: ' Pin ', unit: ' Viên ', quantity: ' 2 ', unitPrice: ' 500000 '}]),
         [{name: 'Pin', unit: 'Viên', quantity: '2', unitPrice: '500000'}],
     );
 
-    const billingForm = await loadForm('src/forms/billing/billing-form.ts');
+    const billingForm = await loadForm('src/forms/billing-form.ts');
     assert.equal(
         billingForm.toServicePlanPayload({
             code: ' enterprise_plus ',
@@ -319,7 +319,7 @@ test('asset, maintenance, billing, catalog, webhook, device-key, notification an
         flightHoursLimit: 2,
     });
 
-    const catalogForm = await loadForm('src/forms/catalog/service-offering-form.ts');
+    const catalogForm = await loadForm('src/forms/service-offering-form.ts');
     const offeringDraft = catalogForm.createServiceOfferingDraft(null);
     offeringDraft.code = ' thermal_scan ';
     offeringDraft.name = ' Quét nhiệt ';
@@ -329,7 +329,7 @@ test('asset, maintenance, billing, catalog, webhook, device-key, notification an
     assert.equal(offeringPayload.details.maxWindMs, 55);
     assert.equal(offeringPayload.details.bestGsdCm, null);
 
-    const webhookForm = await loadForm('src/forms/webhook/webhook-form.ts');
+    const webhookForm = await loadForm('src/forms/webhook-form.ts');
     const shortSecretDraft = {
         name: ' Cảnh báo SAR ',
         targetUrl: ' http://127.0.0.1/hook ',
@@ -344,13 +344,13 @@ test('asset, maintenance, billing, catalog, webhook, device-key, notification an
         eventsSubscribed: 'SAR_EMERGENCY_TRIGGERED',
     });
 
-    const deviceKeyForm = await loadForm('src/forms/devicekey/device-key-form.ts');
+    const deviceKeyForm = await loadForm('src/forms/device-key-form.ts');
     assert.deepEqual(
         deviceKeyForm.toDeviceKeyCreatePayload({name: ' Edge Key ', uavId: '9', expiresAt: '2027-01-01T12:30'}),
         {name: 'Edge Key', uavId: 9, expiresAt: '2027-01-01T12:30:00'},
     );
 
-    const notificationForm = await loadForm('src/forms/notification/notification-form.ts');
+    const notificationForm = await loadForm('src/forms/notification-form.ts');
     assert.deepEqual(
         notificationForm.toSendNotificationPayload({
             recipient: {id: 42, name: 'Pilot'},
@@ -361,7 +361,7 @@ test('asset, maintenance, billing, catalog, webhook, device-key, notification an
         {userId: 42, title: 'Thông báo hệ thống', content: 'Bảo trì định kỳ', type: 'SYSTEM'},
     );
 
-    const contactForm = await loadForm('src/forms/marketing/contact-form.ts');
+    const contactForm = await loadForm('src/forms/contact-form.ts');
     assert.deepEqual(
         contactForm.toContactInquiryPayload({
             fullName: ' Nguyễn Văn A ',
@@ -379,7 +379,7 @@ test('asset, maintenance, billing, catalog, webhook, device-key, notification an
         },
     );
 
-    const storagePoolForm = await loadForm('src/forms/storage/storage-pool-form.ts');
+    const storagePoolForm = await loadForm('src/forms/storage-pool-form.ts');
     assert.deepEqual(
         storagePoolForm.buildStoragePolicyInput({
             primaryBackend: 'HYBRID_TIERED',
@@ -425,7 +425,7 @@ test('asset, maintenance, billing, catalog, webhook, device-key, notification an
         },
     );
 
-    const marketplaceForm = await loadForm('src/forms/marketplace/admin-marketplace-form.ts');
+    const marketplaceForm = await loadForm('src/forms/admin-marketplace-form.ts');
     assert.deepEqual(
         marketplaceForm.validateProviderModerationInput({
             status: 'VERIFIED',

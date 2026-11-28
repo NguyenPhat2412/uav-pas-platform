@@ -11,9 +11,9 @@ import {ADMIN_SIDEBAR_ROUTES} from '@/config/sidebar-routes';
 import {ADMIN_RECENT_PAGES_KEY, parseRecentPages} from '@/lib/recent-pages';
 import {useBrowserStorage} from '@/hooks/useBrowserStorage';
 import {formatDate} from '@/lib/presentation';
-import {useAdminPendingMissions} from '@/hooks/dashboard/useAdminDashboard';
-import {useAlertCenter} from '@/hooks/alerts/useAlertCenter';
-import {useAlertMessage} from '@/hooks/alerts/useAlertMessage';
+import {useAdminPendingMissions} from '@/hooks/useAdminDashboard';
+import {useAlertCenter} from '@/hooks/useAlertCenter';
+import {useAlertMessage} from '@/hooks/useAlertMessage';
 import {cn} from '@/lib/utils';
 import {HomeWeatherWidget} from '@/components/weather/HomeWeatherWidget';
 

@@ -2,8 +2,8 @@
 
 import {useState} from 'react';
 import {auditDetail, displayLabel, formatDate} from '@/lib/presentation';
-import {useAdminAudit} from '@/hooks/audit/useAdminAudit';
-import {useAdminMutations} from '@/hooks/user/useAdminUsers';
+import {useAdminAudit} from '@/hooks/useAdminAudit';
+import {useAdminMutations} from '@/hooks/useAdminUsers';
 import {roles, type User, type UserRole} from '@/types/admin';
 import {useAuth} from '@/providers/AuthContext';
 import {confirmDialog} from '@/providers/ConfirmContext';

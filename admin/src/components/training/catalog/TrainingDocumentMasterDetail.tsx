@@ -2,10 +2,10 @@
 
 import {CheckCircle2, Clock, Edit3, Layers} from 'lucide-react';
 import {Badge, Button, Card} from '@/components/ui';
-import type {TrainingDocument, TrainingPortalTier} from '@/types/training/training.types';
+import type {TrainingDocument, TrainingPortalTier} from '@/types/training.types';
 import {MarkdownSopRenderer} from '@/components/training/player/MarkdownSopRenderer';
 import {TrainingCourseAdminPanel} from '@/components/training/editor/TrainingCourseLessonsPanel';
-import {LEVEL_LABELS} from '@/utils/training/training-meta';
+import {LEVEL_LABELS} from '@/utils/training-meta';
 
 export interface TrainingDocumentMasterDetailProps {
     isLoading: boolean;

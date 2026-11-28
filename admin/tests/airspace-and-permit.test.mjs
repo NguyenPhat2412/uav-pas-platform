@@ -57,7 +57,7 @@ test('API_ROUTES wires airspace, mission permits, and notification push-tokens c
 });
 
 test('permit-form normalizes Spring LocalDateTime strings, validates drafts, and checks permissions', async () => {
-    const permitForm = await loadTsModule('src/forms/mission/permit-form.ts');
+    const permitForm = await loadTsModule('src/forms/permit-form.ts');
 
     assert.equal(permitForm.normalizePermitDateTime('2026-11-10T08:30'), '2026-11-10T08:30:00');
     assert.equal(permitForm.normalizePermitDateTime('2026-11-10T08:30:45'), '2026-11-10T08:30:45');
@@ -142,7 +142,7 @@ test('permit-form normalizes Spring LocalDateTime strings, validates drafts, and
 });
 
 test('airspace-zone-form builds circle/polygon payloads and live check inputs safely', async () => {
-    const zoneForm = await loadTsModule('src/forms/airspace/airspace-zone-form.ts');
+    const zoneForm = await loadTsModule('src/forms/airspace-zone-form.ts');
 
     const circleDraft = {
         ...zoneForm.emptyAirspaceZoneDraft(),
@@ -234,8 +234,8 @@ const hasSiblingPortals =
     existsSync(new URL('../../operations/package.json', import.meta.url));
 
 test('airspace and permit error codes map across operations-mission-form, mission-form, and apiMessages', {skip: !hasSiblingPortals}, async () => {
-    const opsForm = await loadTsModule('src/forms/mission/operations-mission-form.ts');
-    const missionForm = await loadTsModule('src/forms/mission/mission-form.ts');
+    const opsForm = await loadTsModule('src/forms/operations-mission-form.ts');
+    const missionForm = await loadTsModule('src/forms/mission-form.ts');
     const apiMsgMod = await loadTsModule('src/lib/api/messages.ts');
 
     for (const code of [
@@ -291,7 +291,7 @@ test('UI components, map overlays, admin route, trilingual catalogs, and palette
         readSource('src/components/mission/customer/CustomerMissionDetail.tsx'),
         readSource('src/components/mission/operations/OperationsMissionDetail.tsx'),
         readSource('src/components/mission/customer/LocationPicker.tsx'),
-        readSource('src/utils/airspace/map-overlays.ts'),
+        readSource('src/utils/map-overlays.ts'),
         readSource('src/app/(admin)/admin/(portal)/airspace/page.tsx'),
         readSource('src/config/sidebar-routes.ts'),
     ]);
@@ -325,7 +325,7 @@ test('UI components, map overlays, admin route, trilingual catalogs, and palette
         'src/components/airspace/MissionAirspaceAdvisor.tsx',
         'src/components/airspace/AdminAirspacePanel.tsx',
         'src/components/mission/MissionPermitCard.tsx',
-        'src/utils/airspace/map-overlays.ts',
+        'src/utils/map-overlays.ts',
     ];
     for (const file of checkedFiles) {
         const content = await readSource(file);
@@ -340,11 +340,11 @@ test('UI components, map overlays, admin route, trilingual catalogs, and palette
         'src/lib/api/messages.ts',
         'src/lib/api/routes.ts',
         'src/lib/presentation.ts',
-        'src/forms/mission/permit-form.ts',
-        'src/forms/airspace/airspace-zone-form.ts',
-        'src/hooks/airspace/query-keys.ts',
-        'src/types/airspace/airspace.types.ts',
-        'src/types/mission/mission.types.ts',
+        'src/forms/permit-form.ts',
+        'src/forms/airspace-zone-form.ts',
+        'src/hooks/airspace-query-keys.ts',
+        'src/types/airspace.types.ts',
+        'src/types/mission.types.ts',
     ];
     for (const file of sharedTsFiles) {
         const content = await readSource(file);
@@ -357,7 +357,7 @@ test('UI components, map overlays, admin route, trilingual catalogs, and palette
 });
 
 test('map-overlays skips non-finite coordinates and presentation renders permit timeline events across locales', async () => {
-    const overlays = await loadTsModule('src/utils/airspace/map-overlays.ts');
+    const overlays = await loadTsModule('src/utils/map-overlays.ts');
     const presentation = await loadTsModule('src/lib/presentation.ts');
 
     const circles = [];

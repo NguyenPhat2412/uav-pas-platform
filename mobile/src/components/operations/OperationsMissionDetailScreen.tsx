@@ -13,24 +13,24 @@ import {OperationsMissionMapCard, OperationsMissionMediaAndTimelineCards, type U
 import {OperationsCustomerReviewSummaryCard, OperationsMissionOverviewCards} from '@/components/operations/OperationsMissionOverviewAndReviewCards';
 import {opsErrorMessage, PreflightSafetyCard} from '@/components/operations/OperationsMissionPreflightCard';
 import {OperationsRehearsalSimulationCard} from '@/components/operations/OperationsRehearsalSimulationCard';
-import {useAirspaceZones, useMissionAirspaceCheck} from '@/hooks/airspace/useAirspace';
-import {useMediaDownload, useMissionUpload} from '@/hooks/media/useMissionUpload';
+import {useAirspaceZones, useMissionAirspaceCheck} from '@/hooks/useAirspace';
+import {useMediaDownload, useMissionUpload} from '@/hooks/useMissionUpload';
 import {
     useOperationsDispatchCandidates, useOperationsMissionActions, useOperationsMissionDetail,
     useOperationsMissionPreflight, useOperationsMissionReview, useOperatorsList,
-} from '@/hooks/operations/useOperationsMissions';
-import {useFleetOverview} from '@/hooks/uav/useFleetAndMaintenance';
-import {useSimulationActions, useSimulationRuns, useSimulations} from '@/hooks/simulation/useSimulation';
-import {useMissionWeather} from '@/hooks/weather/useWeather';
+} from '@/hooks/useOperationsMissions';
+import {useFleetOverview} from '@/hooks/useFleetAndMaintenance';
+import {useSimulationActions, useSimulationRuns, useSimulations} from '@/hooks/useSimulation';
+import {useMissionWeather} from '@/hooks/useWeather';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {canTakeoffMission, INITIAL_PREFLIGHT_CHECKLIST, togglePreflightItem, type PreflightChecklistState} from '@/forms/operations/preflight-checklist';
+import {canTakeoffMission, INITIAL_PREFLIGHT_CHECKLIST, togglePreflightItem, type PreflightChecklistState} from '@/forms/preflight-checklist';
 import {terminalStatuses} from '@/shared/lib/presentation';
-import {missionControls} from '@/shared/utils/mission/presentation';
-import {handoverEvidence} from '@/shared/utils/mission/workflows';
-import type {MediaRole} from '@/shared/types/mission/mission.types';
-import {isFinitePoint, verticesToMapCoordinates} from '@/utils/operations/map-shapes';
+import {missionControls} from '@/shared/utils/presentation';
+import {handoverEvidence} from '@/shared/utils/mission-workflows';
+import type {MediaRole} from '@/shared/types/mission.types';
+import {isFinitePoint, verticesToMapCoordinates} from '@/utils/map-shapes';
 
 export function OperationsMissionDetailScreen() {
     const {id} = useLocalSearchParams<{ id: string }>();

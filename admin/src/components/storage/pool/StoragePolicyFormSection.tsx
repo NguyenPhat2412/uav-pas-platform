@@ -5,17 +5,17 @@ import {Sliders} from 'lucide-react';
 import {Button, FormField, Input, Select} from '@/components/ui';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
-import {useUpdateStoragePolicy} from '@/hooks/storage/useStoragePool';
+import {useUpdateStoragePolicy} from '@/hooks/useStoragePool';
 import {
     buildStoragePolicyInput,
     STORAGE_BACKEND_MODES,
     STORAGE_STRATEGIES,
-} from '@/forms/storage/storage-pool-form';
+} from '@/forms/storage-pool-form';
 import type {
     DriveAllocationStrategy,
     StorageBackendMode,
     StoragePoolOverview,
-} from '@/types/storage/storage-pool.types';
+} from '@/types/storage-pool.types';
 
 export function StoragePolicyFormSection({overview}: { overview: StoragePoolOverview }) {
     const {t} = useI18n();

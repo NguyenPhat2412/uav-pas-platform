@@ -2,10 +2,10 @@
 
 import {Landmark, MessageCircleMore} from 'lucide-react';
 import {Badge, Button} from '@/components/ui';
-import {openPublicSupportWidget} from '@/hooks/support/usePublicSupport';
+import {openPublicSupportWidget} from '@/hooks/usePublicSupport';
 import {useI18n} from '@/providers/I18nContext';
 import type {Invoice} from '@/types/customer';
-import {buildInvoiceSupportPrompt} from '@/utils/billing/invoice-print';
+import {buildInvoiceSupportPrompt} from '@/utils/invoice-print';
 
 export interface BankTransferUnconfiguredStateProps {
     invoiceId: number;

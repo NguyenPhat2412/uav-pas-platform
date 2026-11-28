@@ -1,5 +1,5 @@
-import type {ListingType} from '@/types/marketplace/marketplace.types';
-import type {MissionType} from '@/types/mission/mission.types';
+import type {ListingType} from '@/types/marketplace.types';
+import type {MissionType} from '@/types/mission.types';
 
 /**
  * Pure TypeScript shared service category taxonomy (used by both Customer Web and Mobile via

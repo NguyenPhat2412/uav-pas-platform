@@ -1,14 +1,14 @@
 'use client';
 import {useState} from 'react';
 import {Button, Input} from '@/components/ui';
-import type {MaterialInput, RepairOrder} from "@/types/maintenance/maintenance.types";
+import type {MaterialInput, RepairOrder} from "@/types/maintenance.types";
 import {
     emptyMaterialRowDraft,
     MAX_MAINTENANCE_MATERIAL_ROWS,
     toMaterialRowsDraft,
     toMaterialRowsPayload,
-} from "@/forms/maintenance/maintenance-form";
-import {formatVnd} from "@/utils/maintenance/workflows";
+} from "@/forms/maintenance-form";
+import {formatVnd} from "@/utils/maintenance-workflows";
 import {Feedback} from "@/components/maintenance/Feedback";
 import {RequiredMark} from "@/components/shared/RequiredMark";
 import {useI18n} from '@/providers/I18nContext';

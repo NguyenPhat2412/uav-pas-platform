@@ -23,8 +23,8 @@ import {
     errorReference,
     type ExceptionKind,
     shouldAutoReload,
-} from '@/utils/errors/runtime-error';
-import {authEntryUrl, resolvePortalHref} from '@/utils/auth/auth-entry';
+} from '@/utils/runtime-error';
+import {authEntryUrl, resolvePortalHref} from '@/utils/auth-entry';
 import {readBrowserStorage} from '@/hooks/useBrowserStorage';
 
 const CHUNK_RELOAD_KEY = 'uav_chunk_reload_at';

@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import {BookOpenText, FileText, GalleryHorizontalEnd, PlayCircle, type LucideIcon} from 'lucide-react-native';
 import {AppText} from '@/components/ui';
-import type {TrainingLessonType} from '@/shared/types/training/training.types';
+import type {TrainingLessonType} from '@/shared/types/training.types';
 import {colors, spacing} from '@/styles/tokens';
 
 export const LESSON_ICONS: Record<TrainingLessonType, LucideIcon> = {

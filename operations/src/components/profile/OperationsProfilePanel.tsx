@@ -9,13 +9,13 @@ import {AvatarEditor} from '@/components/profile/AvatarEditor';
 import {PasswordChangeCard} from '@/components/profile/PasswordChangeCard';
 import {TwoFactorSettingsCard} from '@/components/profile/TwoFactorSettingsCard';
 import {AccountDeletionCard} from '@/components/profile/AccountDeletionCard';
-import {profileError} from '@/forms/profile/profile-form';
-import {useOwnProfile, useUpdateProfile} from '@/hooks/profile/useProfile';
+import {profileError} from '@/forms/profile-form';
+import {useOwnProfile, useUpdateProfile} from '@/hooks/useProfile';
 import {displayLabel} from '@/lib/presentation';
 import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import type {ProfileErrors, ProfileFields} from '@/types/profile/profile.types';
+import type {ProfileErrors, ProfileFields} from '@/types/profile.types';
 
 export default function OperationsProfilePanel() {
     return (

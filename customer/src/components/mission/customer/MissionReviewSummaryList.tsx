@@ -1,12 +1,12 @@
 'use client';
 
 import {displayLabel, serviceName} from '@/lib/presentation';
-import {formatVndCompact, pricingUnitLabel} from '@/forms/marketplace/marketplace-forms';
+import {formatVndCompact, pricingUnitLabel} from '@/forms/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
-import type {MarketplaceListing} from '@/types/marketplace/marketplace.types';
+import type {MarketplaceListing} from '@/types/marketplace.types';
 import type {MissionInput, UavService} from '@/types/customer';
-import {defaultFlightPlan} from '@/types/mission/flight-plan.types';
-import {flightGeometry} from '@/utils/mission/flight-geometry';
+import {defaultFlightPlan} from '@/types/flight-plan.types';
+import {flightGeometry} from '@/utils/flight-geometry';
 
 interface MissionReviewSummaryListProps {
     form: MissionInput;

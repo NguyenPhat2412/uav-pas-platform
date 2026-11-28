@@ -2,7 +2,7 @@
 
 import {useEffect} from 'react';
 import {useAuth} from '@/providers/AuthContext';
-import {sanitizeEntityName} from '@/forms/marketplace/marketplace-forms';
+import {sanitizeEntityName} from '@/forms/marketplace-forms';
 import {useI18n} from '@/providers/I18nContext';
 import {toast} from '@/providers/ToastContext';
 import {claimWelcome} from '@/lib/welcome-flag';

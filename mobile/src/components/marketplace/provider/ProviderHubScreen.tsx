@@ -34,14 +34,14 @@ import {
     useMyProviderProfile,
     useMyProviderWallet,
     useProviderOrders,
-} from '@/hooks/marketplace/useProviderStudio';
-import {useSiteInfo} from '@/hooks/settings/useSiteInfo';
+} from '@/hooks/useProviderStudio';
+import {useSiteInfo} from '@/hooks/useSiteInfo';
 import {useI18n} from '@/providers/I18nContext';
 import {
     formatVndCompact,
     verificationStatusLabel,
-} from '@/shared/forms/marketplace/marketplace-forms';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
+} from '@/shared/forms/marketplace-forms';
+import {cleanEntityName} from '@/utils/clean-text';
 import {colors, radius, spacing} from '@/styles/tokens';
 
 function StudioNavRow({

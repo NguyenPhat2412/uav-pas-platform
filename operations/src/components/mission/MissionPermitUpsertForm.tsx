@@ -7,10 +7,10 @@ import {
     canSubmitPermitDraft,
     type PermitDraft,
     type PermitFieldErrors,
-} from '@/forms/mission/permit-form';
+} from '@/forms/permit-form';
 import {useI18n} from '@/providers/I18nContext';
-import type {MissionMedia} from '@/types/mission/mission.types';
-import {MEDIA_ACCEPT} from '@/utils/media/media-policy';
+import type {MissionMedia} from '@/types/mission.types';
+import {MEDIA_ACCEPT} from '@/utils/media-policy';
 
 export interface MissionPermitUpsertFormProps {
     draft: PermitDraft;

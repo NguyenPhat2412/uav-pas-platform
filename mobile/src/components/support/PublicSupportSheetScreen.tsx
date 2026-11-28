@@ -18,20 +18,20 @@ import {
     SectionTitle,
     TextField,
 } from '@/components/ui';
-import {signInErrorText} from '@/forms/auth/sign-in-flow';
-import {usePublicSupportSession} from '@/hooks/support/usePublicSupportMobile';
-import {useSupportOutboxMobile} from '@/hooks/support/useSupportOutboxMobile';
+import {signInErrorText} from '@/forms/sign-in-flow';
+import {usePublicSupportSession} from '@/hooks/usePublicSupportMobile';
+import {useSupportOutboxMobile} from '@/hooks/useSupportOutboxMobile';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import type {SupportChatMessage, SupportThreadStatus, SupportTopic} from '@/shared/types/support/support.types';
+import type {SupportChatMessage, SupportThreadStatus, SupportTopic} from '@/shared/types/support.types';
 import {
     mergeMessagesWithOutbox,
     resolveSupportMessageReceipt,
     type ResolvedMessageReceipt,
-} from '@/shared/utils/support/message-status';
-import {formatSupportTime, formatSupportTopic, SUPPORT_TOPIC_OPTIONS} from '@/shared/utils/support/support-format';
-import {cleanEntityName} from '@/utils/marketplace/clean-text';
+} from '@/shared/utils/message-status';
+import {formatSupportTime, formatSupportTopic, SUPPORT_TOPIC_OPTIONS} from '@/shared/utils/support-format';
+import {cleanEntityName} from '@/utils/clean-text';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 const TOPIC_CHIPS = SUPPORT_TOPIC_OPTIONS.map(option => ({value: option.value, label: option.label}));

@@ -9,8 +9,8 @@ import {displayLabel} from '@/lib/presentation';
 import {cn} from '@/lib/utils';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
-import {canUsePortal} from '@/utils/auth/portal';
-import {resolvePortalHref} from '@/utils/auth/auth-entry';
+import {canUsePortal} from '@/utils/portal';
+import {resolvePortalHref} from '@/utils/auth-entry';
 
 /** Top-bar account button; its menu holds the account page, billing and sign-out. */
 export function CustomerAccountMenu({name}: { name: string }) {

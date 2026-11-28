@@ -19,8 +19,8 @@ const {
     generateExpandingSquarePattern,
     isPointInsideGeofence,
     calculateRthFeasibility
-} = await loadTs('../src/utils/sar/sar-algorithms.ts');
-const {generateVietQrPayload} = await loadTs('../src/utils/billing/vietqr.ts');
+} = await loadTs('../src/utils/sar-algorithms.ts');
+const {generateVietQrPayload} = await loadTs('../src/utils/vietqr.ts');
 
 test('Algorithm 1: Haversine distance calculates accurate geodesic length', () => {
     // Khoảng cách giữa 2 điểm mẫu tại Vịnh Hạ Long / Cát Bà

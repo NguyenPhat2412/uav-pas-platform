@@ -7,7 +7,7 @@ import {GOOGLE_CLIENT_IDS} from '@/config/env';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import {nextSignInStep, signInErrorText} from '@/forms/auth/sign-in-flow';
+import {nextSignInStep, signInErrorText} from '@/forms/sign-in-flow';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 type GoogleSignInModule = typeof import('@react-native-google-signin/google-signin');

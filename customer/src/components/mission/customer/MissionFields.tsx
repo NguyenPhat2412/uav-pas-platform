@@ -4,11 +4,11 @@ import type {ChangeEvent} from 'react';
 import {FlightSpecFields} from '@/components/mission/customer/FlightSpecFields';
 import {LocationPicker} from '@/components/mission/customer/LocationPicker';
 import {Alert, FormField, Input, Select, Textarea} from '@/components/ui';
-import type {MissionFormErrors} from '@/forms/mission/mission-form';
+import type {MissionFormErrors} from '@/forms/mission-form';
 import {displayLabel} from '@/lib/presentation';
 import {useI18n} from '@/providers/I18nContext';
 import type {MissionInput} from '@/types/customer';
-import {defaultFlightPlan} from '@/types/mission/flight-plan.types';
+import {defaultFlightPlan} from '@/types/flight-plan.types';
 
 export function MissionFields({form, onChange, errors = {}}: {
     form: MissionInput;

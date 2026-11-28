@@ -5,8 +5,8 @@ import {ArrowUp, BatteryMedium, CalendarDays, ChevronLeft, ChevronRight, Clock3,
 import {AppText, Card, GlassSurface, Screen, SectionTitle} from '@/components/ui';
 import {HeaderIconButton} from '@/components/layout/AppHeader';
 import {Verdict, WeatherCard} from '@/components/weather/WeatherCard';
-import {useForecastTimeline} from '@/hooks/weather/useWeather';
-import {useDeviceLocation} from '@/hooks/location/useDeviceLocation';
+import {useForecastTimeline} from '@/hooks/useWeather';
+import {useDeviceLocation} from '@/hooks/useDeviceLocation';
 import {useI18n} from '@/providers/I18nContext';
 import {
     WEATHER_DAY_OFFSETS,
@@ -19,8 +19,8 @@ import {
     dayOffsetFromIso,
     hourFromIso,
     isHistoricalWeatherTime,
-} from '@/shared/utils/weather/flight-window';
-import type {WeatherAssessment} from '@/shared/types/weather/weather.types';
+} from '@/shared/utils/flight-window';
+import type {WeatherAssessment} from '@/shared/types/weather.types';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 type HourMode = 'now' | typeof WEATHER_HOUR_SLOTS[number] | 'custom';

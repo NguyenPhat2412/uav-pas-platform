@@ -84,7 +84,7 @@ async function service(path, exportedName) {
 }
 
 test('customer quota consumer calls the controller quota route and forwards cancellation', {skip: !hasFullMonorepo}, async () => {
-    const {instance, calls} = await service('src/api/billing/customer-billing.api.ts', 'customerBillingService');
+    const {instance, calls} = await service('src/api/customer-billing.api.ts', 'customerBillingService');
     const signal = new AbortController().signal;
     await instance.quota(signal);
     assert.equal(calls[0].endpoint, controllerGet('BillingController.java', 'getQuota'));
@@ -92,7 +92,7 @@ test('customer quota consumer calls the controller quota route and forwards canc
 });
 
 test('admin summary and CSV consumers call their actual role-protected report endpoints', {skip: !hasFullMonorepo}, async () => {
-    const {instance, calls} = await service('src/api/reporting/reports.api.ts', 'reportsService');
+    const {instance, calls} = await service('src/api/reports.api.ts', 'reportsService');
     await instance.operationsReport();
     assert.equal(calls[0].endpoint, controllerGet('ReportController.java', 'getOperationsSummary'));
     assert.equal(API_ROUTES.reports.exportOperationsCsv, controllerGet('ReportController.java', 'exportCsv'));

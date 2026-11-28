@@ -5,8 +5,8 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {GlassView, isGlassEffectAPIAvailable, isLiquidGlassAvailable} from 'expo-glass-effect';
 import {AppLogo} from '@/components/shared/BrandMark';
 import {ScaledText} from '@/components/ui';
-import {useAdminSupportSummary, useCanManageSupport} from '@/hooks/support/useAdminSupportMobile';
-import {usePublicSupportSession} from '@/hooks/support/usePublicSupportMobile';
+import {useAdminSupportSummary, useCanManageSupport} from '@/hooks/useAdminSupportMobile';
+import {usePublicSupportSession} from '@/hooks/usePublicSupportMobile';
 import {useI18n} from '@/providers/I18nContext';
 import {colors, font} from '@/styles/tokens';
 

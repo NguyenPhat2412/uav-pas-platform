@@ -17,7 +17,7 @@ async function loadTs(rel) {
 }
 
 test('notification-policy-form enforces mandatory safety invariants, clamps cooldowns, and maps portal deep-links', async () => {
-    const mod = await loadTs('src/forms/notification/notification-policy-form.ts');
+    const mod = await loadTs('src/forms/notification-policy-form.ts');
 
     assert.equal(mod.popupDurationMs('CRITICAL'), 0);
     assert.equal(mod.popupDurationMs('ACTION'), 6500);

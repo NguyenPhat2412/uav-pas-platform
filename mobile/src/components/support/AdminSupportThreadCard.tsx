@@ -3,20 +3,20 @@ import {Linking, Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import {ArrowLeft, Mail, Phone, Radio, Send, Zap} from 'lucide-react-native';
 import {SupportMessageStatusRow} from '@/components/support/SupportMessageStatusRow';
 import {AppText, Badge, Button, Card, ChipGroup, ErrorState, LoadingState, ScaledText, SectionTitle, TextField} from '@/components/ui';
-import {signInErrorText} from '@/forms/auth/sign-in-flow';
+import {signInErrorText} from '@/forms/sign-in-flow';
 import {
     useAdminQuickReplies,
     useAdminSupportMutations,
     useAdminSupportRealtime,
     useAdminSupportThreadDetail,
-} from '@/hooks/support/useAdminSupportMobile';
-import {useSupportOutboxMobile} from '@/hooks/support/useSupportOutboxMobile';
+} from '@/hooks/useAdminSupportMobile';
+import {useSupportOutboxMobile} from '@/hooks/useSupportOutboxMobile';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {useToast} from '@/providers/ToastContext';
-import type {SupportQuickReply, SupportThreadStatus} from '@/shared/types/support/support.types';
-import {mergeMessagesWithOutbox, resolveSupportMessageReceipt} from '@/shared/utils/support/message-status';
-import {formatSupportSource, formatSupportTime, formatSupportTopic, personalizeQuickReply, prioritizeQuickReplies, resolveContactHref} from '@/shared/utils/support/support-format';
+import type {SupportQuickReply, SupportThreadStatus} from '@/shared/types/support.types';
+import {mergeMessagesWithOutbox, resolveSupportMessageReceipt} from '@/shared/utils/message-status';
+import {formatSupportSource, formatSupportTime, formatSupportTopic, personalizeQuickReply, prioritizeQuickReplies, resolveContactHref} from '@/shared/utils/support-format';
 import {colors, font, radius, spacing} from '@/styles/tokens';
 
 export function AdminSupportThreadCard({threadId, onBack}: { threadId: number; onBack: () => void }) {

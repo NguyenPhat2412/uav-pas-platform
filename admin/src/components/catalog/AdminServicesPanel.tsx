@@ -10,15 +10,15 @@ import {OptionalMark, RequiredMark} from '@/components/shared/RequiredMark';
 import {FilterSelect} from '@/components/shared/FilterSelect';
 import {Switch} from '@/components/ui/Switch';
 import {cn} from '@/lib/utils';
-import {useAdminServiceOfferings, useSaveServiceOffering, useToggleServiceOffering} from '@/hooks/catalog/useServiceOfferings';
+import {useAdminServiceOfferings, useSaveServiceOffering, useToggleServiceOffering} from '@/hooks/useServiceOfferings';
 import {
     canSubmitServiceOffering,
     createServiceOfferingDraft,
     serviceOfferingFieldErrors,
     toServiceOfferingPayload,
     type ServiceOfferingSpecDraft,
-} from '@/forms/catalog/service-offering-form';
-import {serviceSensors, type ServiceOffering} from '@/types/catalog/service-offering.types';
+} from '@/forms/service-offering-form';
+import {serviceSensors, type ServiceOffering} from '@/types/service-offering.types';
 import {toast} from '@/providers/ToastContext';
 
 export function AdminServicesPanel() {

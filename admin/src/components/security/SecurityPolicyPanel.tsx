@@ -4,9 +4,9 @@ import type {ReactNode} from 'react';
 import {Cookie, Globe, KeyRound, Mail, Server, Timer} from 'lucide-react';
 import {useI18n} from '@/providers/I18nContext';
 import {QueryState} from '@/components/data/WorkspaceState';
-import {useSecurityPolicy} from '@/hooks/security/useSecurity';
+import {useSecurityPolicy} from '@/hooks/useSecurity';
 import {Flag, WarningList} from '@/components/security/SecurityShared';
-import type {SecurityPolicy} from '@/types/security/security.types';
+import type {SecurityPolicy} from '@/types/security.types';
 
 export function SecurityPolicyPanel() {
     const {t} = useI18n();

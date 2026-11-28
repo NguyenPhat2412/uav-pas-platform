@@ -3,10 +3,10 @@
 import React, {type FormEvent, useState} from 'react';
 import {Eye, EyeOff} from 'lucide-react';
 import {Button, FormField, Input} from '@/components/ui';
-import {toRegisterPayload} from '@/forms/auth/auth-form';
-import {useAuthFlow} from '@/hooks/auth/useAuthFlow';
+import {toRegisterPayload} from '@/forms/auth-form';
+import {useAuthFlow} from '@/hooks/useAuthFlow';
 import {toast} from '@/providers/ToastContext';
-import type {AuthResponse} from '@/types/auth/auth.types';
+import type {AuthResponse} from '@/types/auth.types';
 import {
     AUTH_INPUT_CLASS,
     AUTH_LABEL_CLASS,

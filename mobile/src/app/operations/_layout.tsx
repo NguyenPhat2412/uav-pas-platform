@@ -7,7 +7,7 @@ import {AssistantProvider} from '@/providers/AssistantContext';
 import {detailHeader} from '@/components/layout/TabStack';
 import {AssistantLauncher} from '@/components/assistant/AssistantLauncher';
 import {PulsingSupportLauncher} from '@/components/support/PulsingSupportLauncher';
-import {canUsePortal} from '@/shared/utils/auth/portal';
+import {canUsePortal} from '@/shared/utils/portal';
 
 /** Field Operations workspace: guarded to ROLE_OPERATOR / ROLE_COMMANDER / ROLE_ADMIN. */
 export default function OperationsLayout() {

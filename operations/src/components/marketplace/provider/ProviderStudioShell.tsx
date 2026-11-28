@@ -12,7 +12,7 @@ import {
     Users,
 } from 'lucide-react';
 import {OperationsPage} from '@/components/layout/OperationsPage';
-import {useMyProviderProfile} from '@/hooks/marketplace/useMarketplace';
+import {useMyProviderProfile} from '@/hooks/useMarketplace';
 import {useI18n} from '@/providers/I18nContext';
 
 const STUDIO_TABS = [

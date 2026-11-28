@@ -13,7 +13,7 @@ test('simulation console calls the backend simulation routes through the shared 
     assert.match(routes, /surveyPlan: '\/api\/v1\/simulation\/survey-plan'/);
     assert.match(routes, /runs: '\/api\/v1\/simulation\/runs'/);
     assert.match(routes, /\/api\/v1\/simulation\/rehearse-mission\/\$\{missionId\}/);
-    const api = read('src/api/simulation/simulation.api.ts');
+    const api = read('src/api/simulation.api.ts');
     assert.match(api, /apiClient\.post<SimulationState>\(API_ROUTES\.simulation\.sessions/);
     assert.match(api, /API_ROUTES\.simulation\.runs/);
     assert.match(api, /API_ROUTES\.simulation\.rehearseMission/);

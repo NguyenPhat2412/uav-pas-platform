@@ -1,7 +1,7 @@
 import React from 'react';
 import {Pressable, StyleSheet, Text} from 'react-native';
 import {ServerOff, WifiOff, Wrench} from 'lucide-react-native';
-import {useNetworkStatus} from '@/hooks/network/useNetworkStatus';
+import {useNetworkStatus} from '@/hooks/useNetworkStatus';
 import {useI18n} from '@/providers/I18nContext';
 import {useTextScale} from '@/providers/TextSizeContext';
 import {colors, font, radius, spacing} from '@/styles/tokens';

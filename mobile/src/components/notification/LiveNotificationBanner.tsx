@@ -8,17 +8,17 @@ import {
     useNotifications,
     useRealtimeMobileNotifications,
     type MobileIncomingNotificationEvent,
-} from '@/hooks/notification/useNotifications';
+} from '@/hooks/useNotifications';
 import {
     formatModuleBadgeLabel,
     popupDurationMs,
-} from '@/shared/forms/notification/notification-policy-form';
+} from '@/shared/forms/notification-policy-form';
 import type {
     NotificationRecord,
     RealtimeNotificationPopupPayload,
-} from '@/shared/types/notification/notification.types';
-import {resolveNotificationTarget} from '@/utils/operations/portal-routing';
-import {canUsePortal} from '@/shared/utils/auth/portal';
+} from '@/shared/types/notification.types';
+import {resolveNotificationTarget} from '@/utils/portal-routing';
+import {canUsePortal} from '@/shared/utils/portal';
 import {useAuth} from '@/providers/AuthContext';
 import {useI18n} from '@/providers/I18nContext';
 import {colors, radius, spacing} from '@/styles/tokens';
